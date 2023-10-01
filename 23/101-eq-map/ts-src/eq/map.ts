@@ -135,6 +135,8 @@ namespace Model
 
 		static list = sitepub.split( "\n" ).map( csv => new Site( csv ) );
 	};
+
+	log( "sitecount", Site.list.length )
 }
 
 
