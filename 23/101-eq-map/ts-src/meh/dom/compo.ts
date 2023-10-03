@@ -20,7 +20,7 @@ export namespace defs
 
 	export type Props < E = {} > =
 	{
-		[ prop in keyof Omit< E, "style" > ] ? : Prop < E [ prop ] > ;
+		[ prop in keyof Omit< E, "style" > ] ? : PropT < E [ prop ] > ;
 	}
 	&
 	{
@@ -29,19 +29,36 @@ export namespace defs
 		style ? : Style ;
 	};
 
-	type Prop < T > = T extends ( string | number ) ? Text : T ;
+	type PropT < T > = T extends string ? Text : T | Leaf < T >;
 
 	export type Class = string | Leaf.String | ToStr | ClassSwitch | Class[];
 
-	type ClassSwitch = { [ name : string ] : boolean | Leaf.Boolean };
+	type ClassSwitch =
+	{
+		[ name : string ] : boolean | Leaf.Boolean
+	};
 
-	export type Style = { [ name in keyof CSSStyleDeclaration ] ? : string | Leaf.String | ToStr };
+	export type Attrs =
+	{
+		[ name : string ] : Attr ;
+	};
+	export type Attr = string | Leaf.String | ToStr;
+
+	export type Style =
+	{
+		[ name in keyof CSSStyleDeclaration ] ? : StyleProp ;
+	};
+	export type StyleProp = string | Leaf.String | ToStr ;
+
 
 	export type Part = Element | Text ;
 
-	export type Text = leaf_t | DynValue | ToStr;
-
-	export type DynValue = Leaf.String | Leaf.Number | Leaf.Boolean;
+	export type Text =
+	(
+		boolean | number | string |
+		Leaf.Boolean | Leaf.Number | Leaf.String |
+		ToStr
+	);
 
 	//  //
 
@@ -101,7 +118,7 @@ export class Component
 			if( name == "attrs" ) this.bindAttrs( value, e );
 			else if( name == "class" ) this.bindClass( value, e );
 			else if( name == "style" && e instanceof HTMLElement ) this.bindStyle( value, e );
-			else bind( e, name, value, this.refs );
+			else bindText( e, name, value, this.refs );
 		}
 	}
 
@@ -110,11 +127,12 @@ export class Component
 		if( def instanceof Array )
 		{
 			for( const subdef of def )  this.bindClass( subdef, e );
+			return;
 		}
 
 		if( typeof def == "string" || def instanceof Leaf )
 		{
-			bind( e, "className", def, this.refs );
+			bindText( e, "className", def, this.refs );
 		}
 
 		else if( typeof def == "object" )
@@ -131,7 +149,7 @@ export class Component
 		for( const [ name, value ] of Object.entries( def ) )
 		{
 			log( "attr", name, value )
-			bind( e, name, value, this.refs );
+			bindText( e, name, value, this.refs );
 		}
 	}
 
@@ -139,7 +157,7 @@ export class Component
 	{
 		for( const [ name, value ] of Object.entries( def ) )
 		{
-			bind( e.style, name, value, this.refs );
+			bindText( e.style, name, value, this.refs );
 		}
 	}
 
@@ -158,7 +176,7 @@ export class Component
 		}
 		
 		const n = document.createTextNode( "" );
-		bind( n, "nodeValue", def, this.refs );
+		bindText( n, "nodeValue", def, this.refs );
 		ce.appendChild( n );
 	}
 
@@ -172,6 +190,49 @@ export class Component
 
 type AnyObj = Record < string, any > ;
 
+const bindClass = ( e : Element, name : string, value : LoL.Boolean, refs : Set < Ref > ) =>
+{
+	if( value instanceof Leaf )
+	{
+		refs.add( value.ref( ( value ) => e.classList.toggle( name, value ) ) );
+	}
+	
+	else  e.classList.toggle( name, value );
+}
+
+const bindProp = ( target : any, name : string, value : any, refs : Set < Ref > ) =>
+{
+	if( value instanceof Leaf || value instanceof ToStr )
+	{
+		refs.add( value.ref( () => { target[ name ] = value.value } ) );
+	}
+
+	else  target[ name ] = value;
+};
+
+const bindAttr = ( target : any, name : string, text : any, refs : Set < Ref > ) =>
+{
+	if( text instanceof Leaf || text instanceof ToStr )
+	{
+		refs.add( text.ref( () => { target[ name ] = text.value } ) );
+	}
+
+	else  target[ name ] = text;
+};
+
+const bindText = ( target : any, name : string, text : any, refs : Set < Ref > ) =>
+{
+	if( text instanceof Leaf || text instanceof ToStr )
+	{
+		refs.add( text.ref( () => { target[ name ] = text.value } ) );
+	}
+
+	else  target[ name ] = text;
+};
+
+
+//  //
+
 class Parts
 {
 	constructor( private compo : Component, private e : Element, def : defs.Part[] )
@@ -184,37 +245,3 @@ class Parts
 		;
 	}
 }
-
-const bind = ( target : any, name : string, value : any, refs : Set < Ref > ) =>
-{
-	if( value instanceof Leaf )
-	{
-		const update = ( value : any ) =>
-		{
-			target[ name ] = value;
-		};
-
-		const ref = value.ref( () => { target[ name ] = value.value } );
-		refs.add( ref );
-	}
-
-	else if( value instanceof ToStr )
-	{
-		refs.add( value.ref( () => { target[ name ] = value.value } ) );
-	}
-
-	else  target[ name ] = value;
-};
-
-const bindClass = ( e : Element, name : string, value : LoL.Boolean, refs : Set < Ref > ) =>
-{
-	if( value instanceof Leaf )
-	{
-		refs.add( value.ref( ( value ) => e.classList.toggle( name, value ) ) );
-	}
-	else
-	{
-		e.classList.toggle( name, value );
-	}
-}
-

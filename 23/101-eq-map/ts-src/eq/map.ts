@@ -28,8 +28,6 @@ namespace Model
 		hover = new Leaf < Site | null > ( null );
 		hoverInfo = new Leaf.String( "" );
 	
-		zoom_wk : ZoomWork;
-	
 		constructor()
 		{
 			const rel = () => this.update();
@@ -40,8 +38,6 @@ namespace Model
 			rel();
 	
 			this.hover.ref( ( site ) => this.hoverInfo.value = site ? `${ site.code } ${ site.name } ${ site.nameR }` : "" );
-
-			this.zoom_wk = new ZoomWork( this );
 		}
 	
 		update()
@@ -72,63 +68,6 @@ namespace Model
 		longToPx( long : number ) { return ( long - this.long.min ) * pxRatio; }
 	
 		get zoomScale() { return 0.1 * Math.pow( 10, this.zoom.value / 5 ); }
-	}
-
-	//
-
-	class ZoomWork
-	{
-		wheelMon = new Leaf.String( "" );
-		wheelZoom : number;
-		wheelCenter : LatLong;
-
-		constructor( protected map : Map )
-		{
-
-			this.wheelZoom = map.zoom.value;
-			this.wheelCenter = map.center.value;
-		}
-
-		putWheelEvent( ev : WheelEvent )
-		{
-			const mode : "scroll" | "zoom" = ( ev.deltaY % 1  ? "zoom" : "scroll" )
-			this.wheelMon.value = `${ mode } ${ ev.deltaX } ${ ev.deltaY }`;
-	
-			if( mode == "zoom" )
-			{
-				const zoom = this.wheelZoom + ev.deltaY * -0.1;
-				this.wheelZoom = Math.min( 10, Math.max( 0, zoom ) );
-				this.map.zoom.value = Math.round( this.wheelZoom );
-			}
-	
-			else // mode == "scroll"
-			{
-				const center = this.map.center.value;
-				const scale = 0.01 / this.map.zoomScale;
-	
-				const long = clip
-				(
-					center.long + ev.deltaX * scale,
-					this.map.long.min,
-					this.map.long.max
-				);
-				
-				const lat = clip
-				(
-					center.lat - ev.deltaY * scale,
-					this.map.lat.min,
-					this.map.lat.max
-				);
-	
-				this.map.center.value = { lat, long };
-			}
-			ev.preventDefault();
-		}
-	
-		putTouchEvent( ev : TouchEvent )
-		{
-			ev.touches.length;
-		}
 	}
 
 	//
@@ -179,44 +118,130 @@ namespace UI
 			onclick()
 			{
 				map.current.value = site;
-			}
+			},
 		};
 
 		return div( props );
 	};
 
-	const MapFrame = ( model : Model.Map ) =>
+	//
+
+	class ZoomWork
 	{
-		const onwheel = ( ev : WheelEvent ) => model.zoom_wk.putWheelEvent( ev );
+		wheelMon = new Leaf.String( "" );
+		wheelZoom : number;
+
+		touchMon = new Leaf.String( "" );
+
+		constructor( protected map : Model.Map )
+		{
+			this.wheelZoom = map.zoom.value;
+		}
+
+		putWheelEvent( ev : WheelEvent )
+		{
+			if( ! ev.cancelable ) return;
+
+			const mode : "scroll" | "zoom" = ( ev.deltaY % 1  ? "zoom" : "scroll" )
+			this.wheelMon.value = `${ mode } ${ ev.deltaX } ${ ev.deltaY }`;
+	
+			if( mode == "zoom" )
+			{
+				const zoom = this.wheelZoom + ev.deltaY * -0.1;
+				this.wheelZoom = Math.min( 10, Math.max( 0, zoom ) );
+				this.map.zoom.value = Math.round( this.wheelZoom );
+			}
+	
+			else // mode == "scroll"
+			{
+				const center = this.map.center.value;
+				const scale = 0.01 / this.map.zoomScale;
+	
+				const long = clip
+				(
+					center.long + ev.deltaX * scale,
+					this.map.long.min,
+					this.map.long.max
+				);
+				
+				const lat = clip
+				(
+					center.lat - ev.deltaY * scale,
+					this.map.lat.min,
+					this.map.lat.max
+				);
+	
+				this.map.center.value = { lat, long };
+			}
+			ev.preventDefault();
+		}
+	
+		putTouchEvent( ev : TouchEvent )
+		{
+			this.touchMon.value = `${ ev.touches.length } ${ ev.touches[ 0 ]?.clientX }`;
+
+			if( ev.cancelable ) ev.preventDefault();
+		}
+	}
+
+	const MapFrame = ( model : Model.Map, zoom_wk : ZoomWork ) =>
+	{
+		const onwheel = ( ev : WheelEvent ) => zoom_wk.putWheelEvent( ev );
+		const ontouchmove = ( ev : TouchEvent ) => zoom_wk.putTouchEvent( ev );
 	
 		const content = div
 		(
-			{ class: "map-content", style: { transform: model.scrollCSS } },
+			{
+				class: "map-content",
+				style: { transform: model.scrollCSS }
+			},
+
 			... Model.Site.list.map( siteInfo => Site( siteInfo, model ) )
 		);
 	
-		const zoomFrame = div( { class: "map-zoom", style: { transform: model.zoomCSS } }, content );
+		const zoomFrame = div
+		(
+			{
+				class: "map-zoom",
+				style: { transform: model.zoomCSS }
+			},
+			
+			content
+		);
 	
-		return div( { class: "map-frame", onwheel }, div(), div(), div(), zoomFrame );
+		return div
+		(
+			{ class: "map-frame", onwheel, ontouchmove },
+
+			div(),
+			div(),
+			div(),
+			zoomFrame
+		);
 	};
 	
 	export const Map = () =>
 	{
 		const model = new Model.Map;
+		const zoom_wk = new ZoomWork( model );
 
 		const curtext = model.current.tostr
 		(
 			site => site && `${ site.code } ${ site.name } ${ site.nameR }` || ""
 		);
 
-		return div( { class: "map applet", style: { color: "green" } },
+		return div( { class: "map applet" },
 			
 			h2( "EQ Site Map" ),
+
 			div( { class: "map-cur-site" }, curtext ),
-			MapFrame( model ),
+			MapFrame( model, zoom_wk ),
 			div( { class: "hover-info" }, model.hoverInfo ),
 			div( Range.UI( { title: "拡大", value: model.zoom, max: 10 } ) ),
-			div( "Wheel", " ", model.zoom_wk.wheelMon ),
+			
+			div( "Wheel", " ", zoom_wk.wheelMon ),
+			div( "Touch", " ", zoom_wk.touchMon ),
+		
 		);
 	}
 }

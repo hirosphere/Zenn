@@ -25,18 +25,16 @@ body
 	overflow: auto;
 }
 
-body { font-family: sans-serif }
+body { font-family: 'Courier New', sans-serif }
 html, button, textarea, input { color: hsl( 45, 0%, 25% ); }
 h1, h2, h3, h4 { margin: 0; padding: 0; }
 
 
 
-input[type="range"] { width: 300px; }
-
 .range { display: grid; grid-template-columns: 5ex 1fr 3ex; gap: 1ex; }
 
 
-.applets { display: flex; flex-direction: column; gap: 3em; }
+.applets { display: flex; flex-direction: column; gap: 2em; }
 
 .applet
 {
@@ -48,7 +46,7 @@ input[type="range"] { width: 300px; }
 .map-frame
 {
 	box-sizing: border-box;
-	width: 360px;
+	max-width: 600px;
 	height: 280px;
 	overflow: hidden;
 	display: grid;
