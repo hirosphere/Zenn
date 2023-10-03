@@ -153,7 +153,7 @@ namespace UI
 		const props =
 		{
 			class: [ "map-site", { selected: site.selected } ],
-			styles: { left, top },
+			style: { left, top },
 			onmouseover( ev : MouseEvent )
 			{
 				map.hover.value = site;
@@ -173,11 +173,11 @@ namespace UI
 	
 		const content = div
 		(
-			{ class: "map-content", styles: { transform: model.scrollCSS } },
+			{ class: "map-content", style: { transform: model.scrollCSS } },
 			... Model.Site.list.map( siteInfo => Site( siteInfo, model ) )
 		);
 	
-		const zoomFrame = div( { class: "map-zoom", styles: { transform: model.zoomCSS } }, content );
+		const zoomFrame = div( { class: "map-zoom", style: { transform: model.zoomCSS } }, content );
 	
 		return div( { class: "map-frame", onwheel }, div(), div(), div(), zoomFrame );
 	};
@@ -185,10 +185,16 @@ namespace UI
 	export const Map = () =>
 	{
 		const model = new Model.Map;
-	
-		return div( { class: "Map" },
+
+		const curtext = model.current.tostr
+		(
+			site => site && `${ site.code } ${ site.name } ${ site.nameR }` || ""
+		);
+
+		return div( { class: "Map", style: { color: "green" } },
+			
 			h2( "EQ Site Map" ),
-			div( { class: "map-cur-site" }, model.current.str( { toref: site => site && `${ site.code } ${ site.name } ${ site.nameR }` || "" } ) ),
+			div( { class: "map-cur-site" }, curtext ),
 			MapFrame( model ),
 			div( { class: "hover-info" }, model.hoverInfo ),
 			div( Range.UI( { title: "拡大", value: model.zoom, max: 10 } ) ),

@@ -19,7 +19,7 @@ export class Leaf < T >
 {
 	protected _value : T;
 	protected rel ? : () => void ;
-	protected refs = new Set < RefI < T > > ;
+	protected refs = new Set < RefImpl < T > > ;
 
 	constructor( value : T, args ? : LeafArgs < T > )
 	{
@@ -27,34 +27,26 @@ export class Leaf < T >
 		this.rel = args?.rel;
 	}
 
-	// conv
+	// ref //
 
-	str( conv ? : ConvFn < string, T > )
+	tostr( toref : ( value : T ) => string )
 	{
-		conv = conv || { toref: ( value ) => String( value ) };
-		return new Conv < string, T > ( this, conv );
-	}
-
-	// ref
-
-	convref( convfn : ( value : T ) => string )
-	{
-		;
+		return new ToStrImpl < T > ( this, toref );
 	}
 
 	ref( update : Update < T > )
 	{
-		const ref = new RefI < T > ( this, update );
+		const ref = new RefImpl < T > ( this, update );
 		this.refs.add( ref );
 		return ref;
 	}
 
-	removeref( ref : RefI < T > )
+	removeref( ref : RefImpl < T > )
 	{
 		this.refs.delete( ref );
 	}
 
-	//
+	// value //
 
 	get value() { return this._value; }
 	set value( value : T ) { this.set( value ); }
@@ -72,6 +64,8 @@ export class Leaf < T >
 		this.refs.forEach( ref => ref.update( value, old ) );
 	}
 
+	// life //
+
 	term()
 	{
 		this.refs.forEach( ref => ref.release() );
@@ -86,7 +80,7 @@ export interface Ref
 	release() : void ;
 }
 
-class RefI < T > implements Ref
+class RefImpl < T > implements Ref
 {
 	constructor( protected source : Leaf < T > | null, protected _update : Update < T > | null )
 	{
@@ -107,6 +101,20 @@ class RefI < T > implements Ref
 	}
 }
 
+export abstract class ToStr
+{
+	abstract ref( update : () => void ) : Ref ;
+	abstract get value() : string ;
+}
+
+class ToStrImpl < T > extends ToStr
+{
+	constructor( readonly source : Leaf < T > , readonly toref : ( value : T ) => string ) { super() }
+
+	ref( update : () => void ) { return this.source.ref( update ); }
+	get value() { return this.toref( this.source.value ); }
+}
+
 //
 
 type ConvFn < R, S > =
@@ -117,7 +125,7 @@ type ConvFn < R, S > =
 
 class Conv < R, S > extends Leaf < R >
 {
-	protected srcRef : RefI < S >;
+	protected srcRef : RefImpl < S >;
 
 	constructor( source: Leaf < S >, conv : ConvFn < R, S > )
 	{

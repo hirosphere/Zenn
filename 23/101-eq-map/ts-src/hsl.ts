@@ -55,7 +55,7 @@ export const HSLApplet = ( value : Branch = new Branch ) =>
 		h2( "HSLApplet" ),
 		div( { className: "applet-body" },
 			HSLRange( value ),
-			div( { styles: { background: value.css } }, value.css ),
+			div( { style: { background: value.css } }, value.css ),
 		)
 	);
 }

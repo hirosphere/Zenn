@@ -1,4 +1,4 @@
-import { iss, isn, isb, leaf_t, Leaf, LoL, Ref } from "../model/leaf.js";
+import { leaf_t, Leaf, LoL, Ref, ToStr } from "../model/leaf.js";
 
 const log = console.log;
 
@@ -15,36 +15,31 @@ export namespace defs
 		type : string ;			// "div" "p" などの「タグ名」
 		props ? : Props < E > ;	// "id"  "href"  "value" などのプロパティー
 		parts ? : Part [] ;		// "childNodes" と名づけるべきですが、好みで。
-		[ isElement ] : true ;	// Props とのユニオンやその他の識別のため。
+		isElement : true ;	// Props とのユニオンやその他の識別のため。
 	};
 
-	export const isElement = Symbol();
-
 	export type Props < E = {} > =
-	{ [ prop in keyof E ] ? : Prop < E [ prop ] > ; }
+	{
+		[ prop in keyof Omit< E, "style" > ] ? : Prop < E [ prop ] > ;
+	}
 	&
 	{
 		class ? : Class ;
-		attrs ? : { [ name : string ] : Value } ;
-		styles ? : Styles ;
+		attrs ? : { [ name : string ] : Text } ;
+		style ? : Style ;
 	};
 
-	type Prop < T > = T extends ( string | number ) ? Value : T ;
+	type Prop < T > = T extends ( string | number ) ? Text : T ;
 
-	export type Class = string | Leaf.String | ClassSwitch | Class[];
+	export type Class = string | Leaf.String | ToStr | ClassSwitch | Class[];
 
 	type ClassSwitch = { [ name : string ] : boolean | Leaf.Boolean };
 
-	export type Styles = { [ name in keyof CSSStyleDeclaration ] ? : CSSStyleDeclaration [ name ] | Leaf < CSSStyleDeclaration [ name ] > };
+	export type Style = { [ name in keyof CSSStyleDeclaration ] ? : string | Leaf.String | ToStr };
 
-	const d : Styles = {};
-	d.background = "";
-	d.fontFamily = "";
-	d.fontFamily = new Leaf < string > ( "" );
+	export type Part = Element | Text ;
 
-	export type Part = Element | Value ;
-
-	export type Value = leaf_t | DynValue | undefined;
+	export type Text = leaf_t | DynValue | ToStr;
 
 	export type DynValue = Leaf.String | Leaf.Number | Leaf.Boolean;
 
@@ -54,13 +49,22 @@ export namespace defs
 	{
 		if( typeof first == "object" )
 		{
-			if( ! ( isElement in first || first instanceof Leaf ) ) 
+			if( ! ( "isElement" in first || first instanceof Leaf || first instanceof ToStr ) ) 
 			{
-				return { type, props: first, parts: rest, [ isElement ]: true };
+				return {
+					isElement: true,
+					type,
+					props: first,
+					parts: rest
+				};
 			}
 		}
 
-		return { type, parts: first ? [ first, ...rest ] : undefined, [ isElement ]: true };
+		return {
+			isElement: true,
+			type,
+			parts: first ? [ first, ...rest ] : undefined
+		};
 	}
 }
 
@@ -96,7 +100,7 @@ export class Component
 		{
 			if( name == "attrs" ) this.bindAttrs( value, e );
 			else if( name == "class" ) this.bindClass( value, e );
-			else if( name == "styles" && e instanceof HTMLElement ) this.bindStyle( value, e );
+			else if( name == "style" && e instanceof HTMLElement ) this.bindStyle( value, e );
 			else bind( e, name, value, this.refs );
 		}
 	}
@@ -131,7 +135,7 @@ export class Component
 		}
 	}
 
-	bindStyle( def : defs.Styles, e : HTMLElement )
+	bindStyle( def : defs.Style, e : HTMLElement )
 	{
 		for( const [ name, value ] of Object.entries( def ) )
 		{
@@ -148,7 +152,7 @@ export class Component
 	{
 		if( def == null ) return;
 
-		if( typeof def == "object" && defs.isElement in def )
+		if( typeof def == "object" && "isElement" in def )
 		{
 			return this.createElement( def, ce );
 		}
@@ -190,8 +194,13 @@ const bind = ( target : any, name : string, value : any, refs : Set < Ref > ) =>
 			target[ name ] = value;
 		};
 
-		const ref = value.ref( update );
+		const ref = value.ref( () => { target[ name ] = value.value } );
 		refs.add( ref );
+	}
+
+	else if( value instanceof ToStr )
+	{
+		refs.add( value.ref( () => { target[ name ] = value.value } ) );
 	}
 
 	else  target[ name ] = value;
