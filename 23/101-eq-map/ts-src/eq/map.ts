@@ -28,9 +28,7 @@ namespace Model
 		hover = new Leaf < Site | null > ( null );
 		hoverInfo = new Leaf.String( "" );
 	
-		wheelMon = new Leaf.String( "wheel" );
-		wheelZoom : number;
-		wheelCenter : LatLong;
+		zoom_wk : ZoomWork;
 	
 		constructor()
 		{
@@ -38,20 +36,17 @@ namespace Model
 	
 			this.zoom  = new Leaf.Number( 5, { rel } );
 			this.center = new Leaf < LatLong > ( { lat: 36.0, long: 139.0 }, { rel } );
-			this.current.ref( ( newItem, oldItem ) => this.updateCurrent( newItem, oldItem ) );
-	
+			this.current.ref( ( newItem, oldItem ) => this.updateCurrent( newItem, oldItem ) );			
 			rel();
 	
-			//
-	
 			this.hover.ref( ( site ) => this.hoverInfo.value = site ? `${ site.code } ${ site.name } ${ site.nameR }` : "" );
-			this.wheelZoom = this.zoom.value;
-			this.wheelCenter = this.center.value;
+
+			this.zoom_wk = new ZoomWork( this );
 		}
 	
 		update()
 		{
-			const scale = this.scale;
+			const scale = this.zoomScale;
 			const tlx = - this.longToPx( this.center.value.long ) + "px";
 			const tly = - this.latToPx( this.center.value.lat ) + "px";
 	
@@ -66,42 +61,6 @@ namespace Model
 			newItem && ( newItem.selected.value = true );
 		}
 	
-		putWheelEvent( ev : WheelEvent )
-		{
-			const mode : "scroll" | "zoom" = ( ev.deltaY % 1  ? "zoom" : "scroll" )
-			this.wheelMon.value = `${ ev.deltaX } ${ ev.deltaY } ${ mode }`;
-	
-			if( mode == "zoom" )
-			{
-				const zoom = this.wheelZoom + ev.deltaY * -0.1;
-				this.wheelZoom = Math.min( 10, Math.max( 0, zoom ) );
-				this.zoom.value = Math.round( this.wheelZoom );
-			}
-	
-			else // mode == "scroll"
-			{
-				const center = this.center.value;
-				const scale = 0.01 / this.scale;
-	
-				const long = clip
-				(
-					center.long + ev.deltaX * scale,
-					this.long.min,
-					this.long.max
-				);
-				
-				const lat = clip
-				(
-					center.lat - ev.deltaY * scale,
-					this.lat.min,
-					this.lat.max
-				);
-	
-				this.center.value = { lat, long };
-			}
-			ev.preventDefault();
-		}
-	
 		cssPos( site : Site )
 		{
 			const left = this.longToPx( site.long ) + "px";
@@ -112,8 +71,67 @@ namespace Model
 		latToPx( lat : number ) { return ( this.lat.max - lat ) * pxRatio; }
 		longToPx( long : number ) { return ( long - this.long.min ) * pxRatio; }
 	
-		get scale() { return 0.1 * Math.pow( 10, this.zoom.value / 5 ); }
+		get zoomScale() { return 0.1 * Math.pow( 10, this.zoom.value / 5 ); }
 	}
+
+	//
+
+	class ZoomWork
+	{
+		wheelMon = new Leaf.String( "" );
+		wheelZoom : number;
+		wheelCenter : LatLong;
+
+		constructor( protected map : Map )
+		{
+
+			this.wheelZoom = map.zoom.value;
+			this.wheelCenter = map.center.value;
+		}
+
+		putWheelEvent( ev : WheelEvent )
+		{
+			const mode : "scroll" | "zoom" = ( ev.deltaY % 1  ? "zoom" : "scroll" )
+			this.wheelMon.value = `${ mode } ${ ev.deltaX } ${ ev.deltaY }`;
+	
+			if( mode == "zoom" )
+			{
+				const zoom = this.wheelZoom + ev.deltaY * -0.1;
+				this.wheelZoom = Math.min( 10, Math.max( 0, zoom ) );
+				this.map.zoom.value = Math.round( this.wheelZoom );
+			}
+	
+			else // mode == "scroll"
+			{
+				const center = this.map.center.value;
+				const scale = 0.01 / this.map.zoomScale;
+	
+				const long = clip
+				(
+					center.long + ev.deltaX * scale,
+					this.map.long.min,
+					this.map.long.max
+				);
+				
+				const lat = clip
+				(
+					center.lat - ev.deltaY * scale,
+					this.map.lat.min,
+					this.map.lat.max
+				);
+	
+				this.map.center.value = { lat, long };
+			}
+			ev.preventDefault();
+		}
+	
+		putTouchEvent( ev : TouchEvent )
+		{
+			ev.touches.length;
+		}
+	}
+
+	//
 
 	export class Site
 	{
@@ -169,7 +187,7 @@ namespace UI
 
 	const MapFrame = ( model : Model.Map ) =>
 	{
-		const onwheel = ( ev : WheelEvent ) => model.putWheelEvent( ev );
+		const onwheel = ( ev : WheelEvent ) => model.zoom_wk.putWheelEvent( ev );
 	
 		const content = div
 		(
@@ -191,14 +209,14 @@ namespace UI
 			site => site && `${ site.code } ${ site.name } ${ site.nameR }` || ""
 		);
 
-		return div( { class: "Map", style: { color: "green" } },
+		return div( { class: "map applet", style: { color: "green" } },
 			
 			h2( "EQ Site Map" ),
 			div( { class: "map-cur-site" }, curtext ),
 			MapFrame( model ),
 			div( { class: "hover-info" }, model.hoverInfo ),
 			div( Range.UI( { title: "拡大", value: model.zoom, max: 10 } ) ),
-			div( model.wheelMon ),
+			div( "Wheel", " ", model.zoom_wk.wheelMon ),
 		);
 	}
 }

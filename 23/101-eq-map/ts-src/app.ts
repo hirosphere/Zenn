@@ -12,7 +12,7 @@ const CompoA = () =>
 
 	return div
 	(
-		{ className: "compo-a" },
+		{ className: "applet" },
 		
 		h2( "Component A" ),
 		div

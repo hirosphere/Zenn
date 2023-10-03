@@ -24,14 +24,26 @@ body
 	padding: 1em 2em;
 	overflow: auto;
 }
+
+body { font-family: sans-serif }
 html, button, textarea, input { color: hsl( 45, 0%, 25% ); }
-h1, h2, h3, h4 { margin: 0; }
+h1, h2, h3, h4 { margin: 0; padding: 0; }
 
 
 
 input[type="range"] { width: 300px; }
 
-.range { display: grid; grid-template-columns: 5ex 280px 3ex; gap: 1ex; }
+.range { display: grid; grid-template-columns: 5ex 1fr 3ex; gap: 1ex; }
+
+
+.applets { display: flex; flex-direction: column; gap: 3em; }
+
+.applet
+{
+	border: 1px solid hsl( 0, 0%, 45% );
+	border-radius: 1ex;
+	padding: 0.6em 1em;
+}
 
 .map-frame
 {
@@ -70,15 +82,16 @@ input[type="range"] { width: 300px; }
 
 .map-site:hover
 {
-	transform: scale( 1.4 );
-	border: 2px solid hsl( 115, 0%, 100% );
+	border: 1px solid hsl( 115, 0%, 100% );
 	background-color: hsl( 120, 60%, 35% );
+	z-index: 2;
 }
 .map-site.selected
 {
-	transform: scale( 1.5 );
+	transform: scale( 1.0 );
 	border-color: hsl( 0, 0%, 100% );
 	background-color: hsl( 20, 90%, 65% );
+	z-index: 1;
 }
 
 

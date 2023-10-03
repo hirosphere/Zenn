@@ -49,13 +49,18 @@ export const HSLRange = ( data : Branch ) =>
 
 export const HSLApplet = ( value : Branch = new Branch ) =>
 {
-	const { div, h2 } = ef;
+	const { div, h2, span } = ef;
 
-	return div( { class: "HSLApplet" },
+	return div( { class: "applet" },
 		h2( "HSLApplet" ),
 		div( { className: "applet-body" },
 			HSLRange( value ),
-			div( { style: { background: value.css } }, value.css ),
+			div
+			(
+				{ style: { background: value.css, height: "300px", borderRadius: "1ex", display: "flex", alignItems: "center", justifyContent: "space-around" } },
+				span( { style: { color: "hsl( 0, 0%, 0% )", flexGrow: "1fr" } }, value.css ),
+				span( { style: { color: "hsl( 0, 0%, 100% )", flexGrow: "1fr" } }, value.css )
+			),
 		)
 	);
 }
