@@ -76,7 +76,6 @@ export class Component
 	{
 		for( const [ name, value ] of Object.entries( def ) )
 		{
-			log( "attr", name, value )
 			bindAttr( e, name, value, this.refs );
 		}
 	}
@@ -150,20 +149,26 @@ const setAttr = ( e : Element, name : string, value : boolean | number | string 
 	{
 		value ? e.setAttribute( name, "" ) : e.removeAttribute( name );
 	}
+	
 	else
 	{
 		e.setAttribute( name, String( value ) );
 	}
 }
 
-const bindAttr = ( e : Element, name : string, text : any, refs : Refs ) =>
+const bindAttr = ( e : Element, name : string, value : defs.Text, refs : Refs ) =>
 {
-	if( text instanceof ToString )
+	if( value instanceof Leaf )
 	{
-		refs.add( text.ref( () => setAttr( e, name, text.toString() ) ) );
+		refs.add( value.ref( () => setAttr( e, name, value.get() ) ) );
 	}
 
-	else setAttr( e, name, text );
+	else if( value instanceof ToString )
+	{
+		refs.add( value.ref( () => setAttr( e, name, value.toString() ) ) );
+	}
+
+	else setAttr( e, name, value );
 };
 
 export const bindText = ( target : any, name : string, text : any, refs : Refs ) =>

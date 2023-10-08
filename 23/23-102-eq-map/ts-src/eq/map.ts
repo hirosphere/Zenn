@@ -1,4 +1,4 @@
-import { Leaf, leaf, ef } from "../meh/index.js";
+import { Leaf, leaf, ef, Lian } from "../meh/index.js";
 import { sitepub } from "./sitepub_all_utf8.js";
 import { Range } from "../range.js";
 const log = console.log;
@@ -23,8 +23,11 @@ namespace Model
 		//  //
 		
 		hover = new Leaf < Site | null > ( null );
-		hoverInfo = new Leaf.String( ".. " );
-		currentInfo = new Leaf.String( ",,, " );
+		hoverInfo = new Leaf.String( "" );
+		currentInfo = new Leaf.String( "" );
+
+		hoverList = new Lian < Site > ;
+		currentList = new Lian < Site > ;
 		
 		scrollCSS = leaf.string( "" );
 		zoomCSS = leaf.string( "" );
@@ -43,11 +46,11 @@ namespace Model
 	
 			this.zoom  = new Leaf.Number( 5, { rel } );
 			this.center = new Leaf < LatLong > ( { lat: 36.0, long: 139.0 }, { rel } );
+			
+			this.hover.ref( () => this.updateHover() );
 			this.current.ref( ( newItem, oldItem ) => this.updateCurrent( newItem, oldItem ) );
+			
 			rel();
-	
-			this.hover.ref( site => this.hoverInfo.value = Site.info( site ) );
-			this.current.ref( site =>  this.currentInfo.value = Site.info( site ) );
 		}
 	
 		update()
@@ -58,6 +61,15 @@ namespace Model
 	
 			this.scrollCSS.value = `translate( ${ tlx }, ${ tly } )`;
 			this.zoomCSS.value = `scale( ${ scale }, ${ scale } )`;
+		}
+
+		updateHover()
+		{
+			const site = this.hover.value;
+			this.hoverInfo.value = Site.info( site );
+			site && this.hoverList.add( site );
+			
+			log( "hoverList", this.hoverList.length )
 		}
 	
 		updateCurrent( newItem : Site | null, oldItem ? : Site | null )
@@ -116,7 +128,7 @@ namespace Model
 
 namespace UI
 {
-	const { div, h2, h3, } = ef;
+	const { div, h2, textarea, } = ef;
 
 	const Site = ( site : Model.Site, map : Model.Map ) =>
 	{
@@ -127,6 +139,7 @@ namespace UI
 			{
 				class: [ "map-site", { selected: site.selected } ],
 				style: { left, top },
+				attrs: { selected: site.selected },
 				acts:
 				{
 					mouseover( ev : MouseEvent )
@@ -252,7 +265,18 @@ namespace UI
 	export const Map = () =>
 	{
 		const model = new Model.Map;
+		const lianMon = new Leaf.String( "" );
 		const zoom_wk = new ZoomWork( model );
+
+		model.hoverList.ref
+		(
+			() =>
+			{
+				const lian = model.hoverList;
+				const list = lian.slice( -100, -1 ).map( site => `${ site.name }` );
+				lianMon.value = "" + lian.length + " " + list.join( ", ")
+			}
+		);
 
 		return div( { class: "map applet" },
 			
@@ -266,6 +290,7 @@ namespace UI
 			div( "Wheel", " ", zoom_wk.wheelMon ),
 			div( "Touch", " ", zoom_wk.touchMon ),
 		
+			textarea( { props: { value: lianMon } } ),
 		);
 	}
 }
