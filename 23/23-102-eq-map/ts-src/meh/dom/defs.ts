@@ -76,7 +76,21 @@ export namespace defs
 	export type OptAction < Ev extends Event = Event > = [ ( ev : Ev ) => void, AddEventListenerOptions ] ;
 	
 
-	export type Part = Element | Text;
+	export type Part = Element | Text | LianParts;
+
+	export class LianParts < ITEM = any >
+	{
+		constructor
+		(
+			public source : Lian < ITEM > ,
+			public create : ( item : ITEM ) => Element
+		){}
+	}
+
+	export const lp = < ITEM = any > ( source : Lian < ITEM >, create : ( item : ITEM ) => Element ) =>
+	{
+		return new LianParts( source, create );
+	};
 
 	export type Text =
 	(

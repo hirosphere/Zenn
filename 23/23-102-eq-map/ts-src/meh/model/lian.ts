@@ -1,15 +1,14 @@
 
 // class Lian ( 連：リエン・れん ) Arrayをリアクティブにするクラス //
 
-type Update = ( start : number, remove : number, add : number ) => void;
-
-export class Lian < T > extends Array < T >
+export class Lian < T = any > extends Array < T >
 {
-	protected refs = new Set < Update > ();
+	protected refs = new Set < Lian.Update > ();
 
-	public ref( update : Update )
+	public ref( update : Lian.Update )
 	{
 		this.refs.add( update );
+		update( 0, 0, this.length );
 	}
 	
 	public add( item : T, order ? : number )
@@ -28,14 +27,5 @@ export class Lian < T > extends Array < T >
 
 export namespace Lian
 {
-	export class Ref < T >
-	{
-		constructor( protected updateOper : Update ) {}
-
-		update( start : number, remove : number, add : number ) : void
-		{
-			this.updateOper( start, remove, add );
-		}
-	}
+	export type Update = ( start : number, remove : number, add : number ) => void;
 }
-

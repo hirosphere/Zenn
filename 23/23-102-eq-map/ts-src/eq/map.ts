@@ -1,4 +1,4 @@
-import { Leaf, leaf, ef, Lian } from "../meh/index.js";
+import { Leaf, leaf, ef, Lian, defs } from "../meh/index.js";
 import { sitepub } from "./sitepub_all_utf8.js";
 import { Range } from "../range.js";
 const log = console.log;
@@ -74,6 +74,8 @@ namespace Model
 	
 		updateCurrent( newItem : Site | null, oldItem ? : Site | null )
 		{
+			this.currentInfo.value = Site.info( newItem );
+
 			log( { new: newItem?.code, old: oldItem?.code } );
 			oldItem && ( oldItem.selected.value = false );
 			newItem && ( newItem.selected.value = true );
@@ -128,7 +130,7 @@ namespace Model
 
 namespace UI
 {
-	const { div, h2, textarea, } = ef;
+	const { div, h2, h3, textarea, } = ef;
 
 	const Site = ( site : Model.Site, map : Model.Map ) =>
 	{
@@ -142,7 +144,7 @@ namespace UI
 				attrs: { selected: site.selected },
 				acts:
 				{
-					mouseover( ev : MouseEvent )
+					mouseover()
 					{
 						map.hover.value = site;
 					},
@@ -273,7 +275,7 @@ namespace UI
 			() =>
 			{
 				const lian = model.hoverList;
-				const list = lian.slice( -100, -1 ).map( site => `${ site.name }` );
+				const list = lian.slice( -130 ).map( site => `${ site.name }` );
 				lianMon.value = "" + lian.length + " " + list.join( ", ")
 			}
 		);
@@ -290,7 +292,9 @@ namespace UI
 			div( "Wheel", " ", zoom_wk.wheelMon ),
 			div( "Touch", " ", zoom_wk.touchMon ),
 		
-			textarea( { props: { value: lianMon } } ),
+			h3( "ホバー履歴" ),
+			div( defs.lp( model.hoverList, item => div( item.code ) ) ),
+			textarea( { props: { value: lianMon }, style: { width: "100%", height: "20em" } } ),
 		);
 	}
 }

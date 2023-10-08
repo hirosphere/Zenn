@@ -44,13 +44,13 @@ export const UI = ( uimsrc : Partial < UIM > ) =>
 			class: "input",
 			props:
 			{
-				min: uim.min,
-				max: uim.max,
-				step: uim.step,
 				value: uim.value,	
 			},
 			attrs:
 			{
+				min: uim.min,
+				max: uim.max,
+				step: uim.step,
 				type: "range",
 			},
 			acts:
