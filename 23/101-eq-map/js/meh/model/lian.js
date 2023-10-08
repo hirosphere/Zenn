@@ -1,0 +1,26 @@
+// class Lian ( 連：リエン・れん ) Arrayをリアクティブにするクラス //
+export class Lian extends Array {
+    refs = new Set();
+    addref(ref) {
+        ;
+    }
+    splice(start, deleteCount, ...items) {
+        const rt = super.splice(start, deleteCount, ...items);
+        deleteCount && this.refs.forEach(ref => ref.remove(start, deleteCount));
+        items?.length && this.refs.forEach(ref => ref.add(start, items.length));
+        return rt;
+    }
+}
+(function (Lian) {
+    class Ref {
+        source;
+        constructor(source) {
+            this.source = source;
+        }
+        add(start, count) { }
+        ;
+        remove(start, count) { }
+    }
+    Lian.Ref = Ref;
+})(Lian || (Lian = {}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibGlhbi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3RzLXNyYy9tZWgvbW9kZWwvbGlhbi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDQSxnREFBZ0Q7QUFFaEQsTUFBTSxPQUFPLElBQVcsU0FBUSxLQUFXO0lBRWhDLElBQUksR0FBRyxJQUFJLEdBQUcsRUFBc0IsQ0FBQztJQUV4QyxNQUFNLENBQUUsR0FBb0I7UUFFbEMsQ0FBQztJQUNGLENBQUM7SUFFTSxNQUFNLENBQUUsS0FBYSxFQUFFLFdBQW1CLEVBQUUsR0FBRyxLQUFVO1FBRS9ELE1BQU0sRUFBRSxHQUFHLEtBQUssQ0FBQyxNQUFNLENBQUUsS0FBSyxFQUFFLFdBQVcsRUFBRSxHQUFJLEtBQUssQ0FBRSxDQUFDO1FBQ3pELFdBQVcsSUFBSSxJQUFJLENBQUMsSUFBSSxDQUFDLE9BQU8sQ0FBRSxHQUFHLENBQUMsRUFBRSxDQUFDLEdBQUcsQ0FBQyxNQUFNLENBQUUsS0FBSyxFQUFFLFdBQVcsQ0FBRSxDQUFFLENBQUM7UUFDNUUsS0FBSyxFQUFFLE1BQU0sSUFBSSxJQUFJLENBQUMsSUFBSSxDQUFDLE9BQU8sQ0FBRSxHQUFHLENBQUMsRUFBRSxDQUFDLEdBQUcsQ0FBQyxHQUFHLENBQUUsS0FBSyxFQUFFLEtBQUssQ0FBQyxNQUFNLENBQUUsQ0FBRSxDQUFDO1FBQzVFLE9BQU8sRUFBRSxDQUFDO0lBQ1gsQ0FBQztDQUNEO0FBRUQsV0FBaUIsSUFBSTtJQUVwQixNQUFzQixHQUFHO1FBRUQ7UUFBdkIsWUFBdUIsTUFBbUI7WUFBbkIsV0FBTSxHQUFOLE1BQU0sQ0FBYTtRQUFJLENBQUM7UUFDL0MsR0FBRyxDQUFFLEtBQWMsRUFBRSxLQUFjLElBQVcsQ0FBQztRQUFBLENBQUM7UUFDaEQsTUFBTSxDQUFFLEtBQWMsRUFBRSxLQUFjLElBQVcsQ0FBQztLQUNsRDtJQUxxQixRQUFHLE1BS3hCLENBQUE7QUFDRixDQUFDLEVBUmdCLElBQUksS0FBSixJQUFJLFFBUXBCIn0=

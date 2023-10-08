@@ -15,7 +15,13 @@ type LeafArgs < T > =
 
 type Update < T > = ( value : T, old ? :T ) => void;
 
-export class Leaf < T >
+export abstract class ToString
+{
+	abstract ref( update : () => void ) : Ref ;
+	abstract toString() : string ;
+}
+
+export class Leaf < T > extends ToString
 {
 	protected _value : T;
 	protected rel ? : () => void ;
@@ -23,16 +29,19 @@ export class Leaf < T >
 
 	constructor( value : T, args ? : LeafArgs < T > )
 	{
+		super();
 		this._value = value;
 		this.rel = args?.rel;
 	}
 
 	// ref //
 
-	tostr( toref : ( value : T ) => string )
+	strconv( toref : ( value : T ) => string )
 	{
-		return new ToStrImpl < T > ( this, toref );
+		return new ToStringTemplate < T > ( this, toref );
 	}
+
+	toString() { return String( this._value ); }
 
 	ref( update : Update < T > )
 	{
@@ -66,7 +75,7 @@ export class Leaf < T >
 
 	// life //
 
-	term()
+	delete()
 	{
 		this.refs.forEach( ref => ref.release() );
 		delete this.rel;
@@ -101,18 +110,15 @@ class RefImpl < T > implements Ref
 	}
 }
 
-export abstract class ToStr
+class ToStringTemplate < T > extends ToString
 {
-	abstract ref( update : () => void ) : Ref ;
-	abstract get value() : string ;
-}
-
-class ToStrImpl < T > extends ToStr
-{
-	constructor( readonly source : Leaf < T > , readonly toref : ( value : T ) => string ) { super() }
+	constructor( readonly source : Leaf < T >, readonly toref : ( value : T ) => string )
+	{
+		super();
+	}
 
 	ref( update : () => void ) { return this.source.ref( update ); }
-	get value() { return this.toref( this.source.value ); }
+	toString() { return this.toref( this.source.value ); }
 }
 
 //

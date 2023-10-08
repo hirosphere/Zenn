@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>EQ-Map</title>
+
+<style>
+
+* { box-sizing: border-box; }
+html
+{
+	background-color: hsl( 50, 7%, 94% );
+	margin: 0; padding: 0;
+	display: grid;
+	justify-content: center;
+	min-height: 100%;
+	overflow: auto;
+}
+body
+{
+	margin: 0;
+	min-width: 360px;
+	background-color: hsl( 0, 0%, 100% );
+	padding: 1em 2em;
+	overflow: auto;
+}
+
+body { font-family: 'Courier New', sans-serif, "meiryo" }
+html, button, textarea, input { color: hsl( 45, 0%, 25% ); }
+h1, h2, h3, h4 { margin: 0; padding: 0; }
+
+
+
+.range
+{
+	display: grid;
+	grid-template-columns: 5ex 1fr 3ex; gap: 1ex;
+}
+
+
+.applets { display: flex; flex-direction: column; gap: 2em; }
+
+.applet
+{
+	border: 1px solid hsl( 0, 0%, 45% );
+	border-radius: 1ex;
+	padding: 0.6em 1em;
+}
+
+.map-frame
+{
+	box-sizing: border-box;
+	max-width: 600px;
+	height: 280px;
+	overflow: hidden;
+	display: grid;
+	grid-template-columns: 50% 50%;
+	grid-template-rows: 50% 50%;
+	background-color: hsl( 215, 65%, 80% );
+}
+
+.map-zoom
+{
+	transition: transform 1.0s;
+	transform-origin: 0% 0%;
+}
+
+.map-content
+{
+	position: relative;
+	transform-origin: 0% 0%;
+}
+
+.map-site
+{
+	position: absolute;
+	cursor: default;
+	margin: 0 0 -5px -5px;
+	border: 1px solid hsl( 215, 50%, 90% );
+	width: 10px;
+	height: 10px;
+	background: hsl( 115, 10%, 100% );
+}
+
+.map-site:hover
+{
+	border: 1px solid hsl( 115, 0%, 100% );
+	background-color: hsl( 120, 60%, 35% );
+	z-index: 2;
+}
+.map-site.selected
+{
+	transform: scale( 1.0 );
+	border-color: hsl( 0, 0%, 100% );
+	background-color: hsl( 20, 90%, 65% );
+	z-index: 1;
+}
+
+
+
+
+</style>
+
+</head>
+<body>
+	<script type="module" src="./js/app.js"></script>
+</body>
+</html>

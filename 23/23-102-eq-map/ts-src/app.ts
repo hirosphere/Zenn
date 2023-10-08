@@ -12,12 +12,12 @@ const CompoA = () =>
 
 	return div
 	(
-		{ className: "applet" },
+		{ class: "applet" },
 		
 		h2( "Component A" ),
 		div
 		(
-			{ className: "applet-body" },
+			{ class: "applet-body" },
 			h3( "8つの浦和駅" ),
 			ul
 			(
@@ -41,8 +41,8 @@ const Applets = () =>
 
 	return div
 	(
-		{ className: "applets" },
-		"Qeust",
+		{ class: "applets" },
+		
 		h1( "Applets" ),
 		Map(),
 		HSLApplet(  ),

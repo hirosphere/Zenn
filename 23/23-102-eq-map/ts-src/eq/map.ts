@@ -10,37 +10,6 @@ const pxRatio = 100;
 
 // Model //
 
-class VO < T >
-{
-	constructor( value : T, rel ? : R < T > ){}
-}
-
-class Branch
-{
-	constructor()
-	{
-		this.update()
-	}
-
-	update() {}
-}
-
-interface R < T > { update(  ) : void ; }
-
-class HSL extends Branch
-{
-	hue = new VO < number > ( 0, this );
-	sat = new VO < number > ( 0, this );
-	lgh = new VO < number > ( 0, this );
-
-	css = new VO < string > ( "" );
-
-	update()
-	{
-		return `hsl( ${ this.hue }, ${ this.sat }%, ${ this.lgh }% )`;
-	}
-}
-
 namespace Model
 {
 	export class Map
@@ -73,7 +42,7 @@ namespace Model
 	
 			this.zoom  = new Leaf.Number( 5, { rel } );
 			this.center = new Leaf < LatLong > ( { lat: 36.0, long: 139.0 }, { rel } );
-			this.current.ref( ( newItem, oldItem ) => this.updateCurrent( newItem, oldItem ) );			
+			this.current.ref( ( newItem, oldItem ) => this.updateCurrent( newItem, oldItem ) );
 			rel();
 	
 			this.hover.ref( ( site ) => this.hoverInfo.value = site ? `${ site.code } ${ site.name } ${ site.nameR }` : "" );
@@ -146,28 +115,31 @@ namespace UI
 	{
 		const { left, top } = map.cssPos( site );
 
-		const props =
-		{
-			class: [ "map-site", { selected: site.selected } ],
-			style: { left, top },
-			onmouseover( ev : MouseEvent )
+		return div
+		(
 			{
-				map.hover.value = site;
-			},
-			onclick()
-			{
-				map.current.value = site;
-			},
-		};
-
-		return div( props );
+				class: [ "map-site", { selected: site.selected } ],
+				style: { left, top },
+				acts:
+				{
+					mouseover( ev : MouseEvent )
+					{
+						map.hover.value = site;
+					},
+					click()
+					{
+						map.current.value = site;
+					},	
+				}	
+			}
+		);
 	};
 
 	//
 
 	class ZoomWork
 	{
-		wheelMon = new Leaf.String( "", { rel: () => this.zoom() } );
+		wheelMon = new Leaf.String( "" );
 		wheelZoom : number;
 
 		touchMon = new Leaf.String( "" );
@@ -227,18 +199,10 @@ namespace UI
 
 			this.map.center.value = { lat, long };
 		}
-
-		zoom()
-		{
-			;
-		}
 	}
 
 	const MapFrame = ( model : Model.Map, zoom_wk : ZoomWork ) =>
 	{
-		const onwheel = ( ev : WheelEvent ) => zoom_wk.putWheelEvent( ev );
-		const ontouchmove = ( ev : TouchEvent ) => zoom_wk.putTouchEvent( ev );
-	
 		const content = div
 		(
 			{
@@ -259,9 +223,17 @@ namespace UI
 			content
 		);
 	
+
+		const wheel = ( ev : WheelEvent ) => zoom_wk.putWheelEvent( ev );
+		const touchmove = ( ev : TouchEvent ) => zoom_wk.putTouchEvent( ev );
+		const opt = { passive: false };
+	
 		return div
 		(
-			{ class: "map-frame", onwheel, ontouchmove },
+			{
+				class: "map-frame",
+				optActs: { wheel: [ wheel, opt ], touchmove: [ touchmove, opt ] }
+			},
 
 			div(),
 			div(),
@@ -275,7 +247,7 @@ namespace UI
 		const model = new Model.Map;
 		const zoom_wk = new ZoomWork( model );
 
-		const curtext = model.current.tostr
+		const curtext = model.current.strconv
 		(
 			site => site && `${ site.code } ${ site.name } ${ site.nameR }` || ""
 		);

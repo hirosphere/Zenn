@@ -234,42 +234,42 @@ namespace UI
 		}
 	}
 
-	const MapFrame = ( model : Model.Map, zoom_wk : ZoomWork ) =>
-	{
-		const onwheel = ( ev : WheelEvent ) => zoom_wk.putWheelEvent( ev );
-		const ontouchmove = ( ev : TouchEvent ) => zoom_wk.putTouchEvent( ev );
-	
-		const content = div
-		(
-			{
-				class: "map-content",
-				style: { transform: model.scrollCSS }
-			},
+const MapFrame = ( model : Model.Map, zoom_wk : ZoomWork ) =>
+{
+  const onwheel = ( ev : WheelEvent ) => zoom_wk.putWheelEvent( ev );
+  const ontouchmove = ( ev : TouchEvent ) => zoom_wk.putTouchEvent( ev );
 
-			... Model.Site.list.map( siteInfo => Site( siteInfo, model ) )
-		);
-	
-		const zoomFrame = div
-		(
-			{
-				class: "map-zoom",
-				style: { transform: model.zoomCSS }
-			},
-			
-			content
-		);
-	
-		return div
-		(
-			{ class: "map-frame", onwheel, ontouchmove },
+  const content = div
+  (
+    {
+      class: "map-content",
+      style: { transform: model.scrollCSS }
+    },
 
-			div(),
-			div(),
-			div(),
-			zoomFrame
-		);
-	};
-	
+    ... Model.Site.list.map( siteInfo => Site( siteInfo, model ) )
+  );
+
+  const zoomFrame = div
+  (
+    {
+      class: "map-zoom",
+      style: { transform: model.zoomCSS }
+    },
+    
+    content
+  );
+
+  return div
+  (
+    { class: "map-frame", onwheel, ontouchmove },
+
+    div(),
+    div(),
+    div(),
+    zoomFrame
+  );
+};
+
 	export const Map = () =>
 	{
 		const model = new Model.Map;

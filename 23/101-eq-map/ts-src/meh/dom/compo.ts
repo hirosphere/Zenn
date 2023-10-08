@@ -1,89 +1,8 @@
-import { leaf_t, Leaf, LoL, Ref, ToStr } from "../model/leaf.js";
+import { Leaf, LoL, Ref, ToStr } from "../model/leaf.js";
+import { defs } from "./defs.js";
+import { Parts } from "./parts.js";
 
 const log = console.log;
-
-//
-
-type gE = globalThis.Element;
-
-export namespace defs
-{
-	export type CreateElement < E > = ( first ? : Props < E > | Part, ... rest : Part [] ) => Element ;
-
-	export type Element < E extends gE = gE > =
-	{
-		type : string ;			// "div" "p" などの「タグ名」
-		props ? : Props < E > ;	// "id"  "href"  "value" などのプロパティー
-		parts ? : Part [] ;		// "childNodes" と名づけるべきですが、好みで。
-		isElement : true ;	// Props とのユニオンやその他の識別のため。
-	};
-
-	export type Props < E = {} > =
-	{
-		[ prop in keyof Omit< E, "style" > ] ? : PropT < E [ prop ] > ;
-	}
-	&
-	{
-		class ? : Class ;
-		attrs ? : { [ name : string ] : Text } ;
-		style ? : Style ;
-	};
-
-	type PropT < T > = T extends string ? Text : T | Leaf < T >;
-
-	export type Class = string | Leaf.String | ToStr | ClassSwitch | Class[];
-
-	type ClassSwitch =
-	{
-		[ name : string ] : boolean | Leaf.Boolean
-	};
-
-	export type Attrs =
-	{
-		[ name : string ] : Attr ;
-	};
-	export type Attr = string | Leaf.String | ToStr;
-
-	export type Style =
-	{
-		[ name in keyof CSSStyleDeclaration ] ? : StyleProp ;
-	};
-	export type StyleProp = string | Leaf.String | ToStr ;
-
-
-	export type Part = Element | Text ;
-
-	export type Text =
-	(
-		boolean | number | string |
-		Leaf.Boolean | Leaf.Number | Leaf.String |
-		ToStr
-	);
-
-	//  //
-
-	export const createElement = ( type : string, first ? : Props | Part, ... rest : Part [] ) : Element =>
-	{
-		if( typeof first == "object" )
-		{
-			if( ! ( "isElement" in first || first instanceof Leaf || first instanceof ToStr ) ) 
-			{
-				return {
-					isElement: true,
-					type,
-					props: first,
-					parts: rest
-				};
-			}
-		}
-
-		return {
-			isElement: true,
-			type,
-			parts: first ? [ first, ...rest ] : undefined
-		};
-	}
-}
 
 //
 
@@ -103,7 +22,8 @@ export class Component
 		const { type, props, parts } =  def;
 
 		const e = document.createElement( type );
-		if( parts ) this.createParts( e, parts );
+		// if( parts ) this.createParts( e, parts );
+		if( parts ) Parts.create( this, e, parts );
 		if( props ) this.bindProps( props, e );
 
 		if( ce ) ce.appendChild( e );
@@ -161,25 +81,6 @@ export class Component
 		}
 	}
 
-	createParts( e : Element, def : defs.Part [] )
-	{
-		this.partsList.add( new Parts( this, e, def ) );
-	}
-
-	createPart( def : defs.Part, ce : Element )
-	{
-		if( def == null ) return;
-
-		if( typeof def == "object" && "isElement" in def )
-		{
-			return this.createElement( def, ce );
-		}
-		
-		const n = document.createTextNode( "" );
-		bindText( n, "nodeValue", def, this.refs );
-		ce.appendChild( n );
-	}
-
 	terminate()
 	{
 		this.partsList.forEach( i => i.terminate() );
@@ -220,28 +121,16 @@ const bindAttr = ( target : any, name : string, text : any, refs : Set < Ref > )
 	else  target[ name ] = text;
 };
 
-const bindText = ( target : any, name : string, text : any, refs : Set < Ref > ) =>
+export const bindText = ( target : any, name : string, text : any, refs : Set < Ref > ) =>
 {
 	if( text instanceof Leaf || text instanceof ToStr )
 	{
 		refs.add( text.ref( () => { target[ name ] = text.value } ) );
 	}
 
-	else  target[ name ] = text;
+	else
+	{
+		if( typeof text == "object" ) log( text.constructor.name );
+		else target[ name ] = text;
+	}
 };
-
-
-//  //
-
-class Parts
-{
-	constructor( private compo : Component, private e : Element, def : defs.Part[] )
-	{
-		for( const partdef of def )  compo.createPart( partdef, e );
-	}
-
-	terminate()
-	{
-		;
-	}
-}
