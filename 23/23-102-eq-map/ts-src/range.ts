@@ -37,10 +37,11 @@ export const UI = ( uimsrc : Partial < UIM > ) =>
 	return div
 	(
 		{ class: "range" },
+
 		span( { class: "title" }, uim.title ),
 		input
 		({
-			class: "range",
+			class: "input",
 			props:
 			{
 				min: uim.min,
@@ -54,13 +55,14 @@ export const UI = ( uimsrc : Partial < UIM > ) =>
 			},
 			acts:
 			{
-				change: inputact,
 				input: inputact,
 			}
 		}),
+
 		span
 		(
 			{ class: "value-unit" },
+			
 			span( { class: "value"}, cv ),
 			span( { class: "unit" }, uim.unit ),
 		)

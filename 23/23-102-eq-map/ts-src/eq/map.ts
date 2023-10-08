@@ -20,10 +20,11 @@ namespace Model
 		zoom : Leaf.Number;
 		center : Leaf < LatLong >;
 
-		// 導出値 //
+		//  //
 		
 		hover = new Leaf < Site | null > ( null );
-		hoverInfo = new Leaf.String( "" );
+		hoverInfo = new Leaf.String( ".. " );
+		currentInfo = new Leaf.String( ",,, " );
 		
 		scrollCSS = leaf.string( "" );
 		zoomCSS = leaf.string( "" );
@@ -45,7 +46,8 @@ namespace Model
 			this.current.ref( ( newItem, oldItem ) => this.updateCurrent( newItem, oldItem ) );
 			rel();
 	
-			this.hover.ref( ( site ) => this.hoverInfo.value = site ? `${ site.code } ${ site.name } ${ site.nameR }` : "" );
+			this.hover.ref( site => this.hoverInfo.value = Site.info( site ) );
+			this.current.ref( site =>  this.currentInfo.value = Site.info( site ) );
 		}
 	
 		update()
@@ -97,6 +99,11 @@ namespace Model
 		get long() : number { return Number( this.src[ 4 ] ); }
 		get elev() : number { return Number( this.src[ 5 ] ); }
 		get depth() : number { return Number( this.src[ 6 ] ); }
+
+		static info( site : Site | null ) : string
+		{
+			return site &&  `${ site.code } ${ site.name } ${ site.nameR }`  || "-"
+		}
 
 		static list = sitepub.split( "\n" ).map( csv => new Site( csv ) );
 	};
@@ -247,16 +254,11 @@ namespace UI
 		const model = new Model.Map;
 		const zoom_wk = new ZoomWork( model );
 
-		const curtext = model.current.strconv
-		(
-			site => site && `${ site.code } ${ site.name } ${ site.nameR }` || ""
-		);
-
 		return div( { class: "map applet" },
 			
 			h2( "EQ Site Map" ),
 
-			div( { class: "map-cur-site" }, curtext ),
+			div( { class: "map-cur-site" }, model.currentInfo ),
 			MapFrame( model, zoom_wk ),
 			div( { class: "hover-info" }, model.hoverInfo ),
 			div( Range.UI( { title: "拡大", value: model.zoom, max: 10 } ) ),
