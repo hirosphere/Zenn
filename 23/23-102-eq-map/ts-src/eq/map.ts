@@ -49,6 +49,9 @@ namespace Model
 			
 			this.hover.ref( () => this.updateHover() );
 			this.current.ref( ( newItem, oldItem ) => this.updateCurrent( newItem, oldItem ) );
+
+			this.hoverList.add( Site.list[ 555 ] );
+			this.hoverList.add( Site.list[ 777 ] );
 			
 			rel();
 		}
@@ -130,7 +133,7 @@ namespace Model
 
 namespace UI
 {
-	const { div, h2, h3, textarea, } = ef;
+	const { div, h2, h3, textarea, p, span } = ef;
 
 	const Site = ( site : Model.Site, map : Model.Map ) =>
 	{
@@ -176,7 +179,7 @@ namespace UI
 			if( ! ev.cancelable ) return;
 
 			const mode : "scroll" | "zoom" = ( ev.deltaY % 1  ? "zoom" : "scroll" )
-			this.wheelMon.value = `${ mode } ${ ev.deltaX } ${ ev.deltaY }`;
+			this.wheelMon.value = `${ mode } ${ ev.deltaX } ${ ev.deltaY } ${ ev.deltaY } ${ ev.deltaMode }`;
 	
 			if( mode == "zoom" )
 			{
@@ -276,7 +279,7 @@ namespace UI
 			{
 				const lian = model.hoverList;
 				const list = lian.slice( -130 ).map( site => `${ site.name }` );
-				lianMon.value = "" + lian.length + " " + list.join( ", ")
+				lianMon.value = "" + lian.length + " " + list.join( " ")
 			}
 		);
 
@@ -293,8 +296,8 @@ namespace UI
 			div( "Touch", " ", zoom_wk.touchMon ),
 		
 			h3( "ホバー履歴" ),
-			div( defs.lp( model.hoverList, item => div( item.code ) ) ),
-			textarea( { props: { value: lianMon }, style: { width: "100%", height: "20em" } } ),
+			div( defs.ap( model.hoverList, item => span( item.code, " " ) ) ),
+			textarea( { props: { value: lianMon }, style: { width: "100%", height: "20em", lineHeight: "1.4em" } } ),
 		);
 	}
 }

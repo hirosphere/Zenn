@@ -10,8 +10,8 @@ class Refs extends Set < Ref > {}
 
 export class Component
 {
-	e : Element | null = null;
-	partsList ? : Parts;
+	e ? : Element;
+	parts ? : Parts;
 	refs = new Refs;
 
 	constructor( def : defs.Element, ce : Element | null )
@@ -111,9 +111,13 @@ export class Component
 
 	delete()
 	{
-		this.partsList?.delete();
-		delete this.partsList;
-		this.e = null;
+		this.parts?.delete();
+		delete this.parts;
+		
+		this.refs.forEach( ref => ref.release() );
+		this.refs.clear();
+
+		delete this.e;
 	}
 }
 
