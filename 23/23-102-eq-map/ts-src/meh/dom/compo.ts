@@ -21,7 +21,7 @@ export class Component
 
 	createElement( def : defs.Element, ce : Element | null ) : Element
 	{
-		const { type, class: className, props, attrs, style, acts, optActs, parts } =  def;
+		const { type, class: className, props, attrs, style, acts, actActs, optActs, parts } =  def;
 
 		const e = document.createElement( type );
 
@@ -31,6 +31,7 @@ export class Component
 		if( attrs ) this.bindAttrs( e, attrs );
 		if( style ) this.bindStyle( e, style );
 		if( acts ) this.bindActs( e, acts );
+		if( actActs ) this.bindActs( e, actActs, { passive: false } );		
 		if( optActs ) this.bindOptActs( e, optActs );
 		
 		if( parts ) Parts.create( this, e, parts );
@@ -88,11 +89,11 @@ export class Component
 		}
 	}
 
-	bindActs ( e : Element, def : defs.Actions )
+	bindActs ( e : Element, def : defs.Actions, opt ? : AddEventListenerOptions )
 	{
 		for( const [ name, act ] of Object.entries( def ) )
 		{
-			e.addEventListener( name, act as EventListener );
+			e.addEventListener( name, act as EventListener, opt );
 		}
 	}
 

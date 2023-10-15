@@ -14,9 +14,8 @@ class Reader
 	get cur() : defs.Part | undefined { return this.parts[ this.index ]; }
 	get next() : defs.Part { return this.parts[ this.index ++ ]; }
 	get hasnext() : boolean { return this.parts[ this.index ] != null; }
-	get curisdyn() : boolean { return this.cur instanceof defs.ArrayParts; }
 	
-	get nextdyn() : defs.ArrayParts | undefined
+	get nextap() : defs.ArrayParts | undefined
 	{
 		const cur = this.cur;
 		if( cur instanceof defs.ArrayParts )
@@ -27,7 +26,6 @@ class Reader
 	}
 }
 
-
 //  //
 
 export class Parts
@@ -35,10 +33,19 @@ export class Parts
 	static create( compo : Component, ce : Element, parts : defs.Part[] )
 	{
 		const rd = new Reader( parts );
-		return new StaticParts( compo, ce, rd );
+		return new StaticParts( compo, ce, rd, null );
 	}
 
-	constructor( protected compo : Component, protected ce : Element ) {}
+	//  //
+
+	next ? : Parts ;
+	prev : Parts | null;
+
+	constructor( protected compo : Component, protected ce : Element, prev : Parts | null )
+	{
+		this.prev = prev;
+		if( prev ) prev.next = this;
+	}
 
 	//  //
 
@@ -59,29 +66,51 @@ export class Parts
 	delete() {}
 }
 
+
 // static parts //
 
 export class StaticParts extends Parts
 {
-	public next ? : Parts ;
-	public prev ? : Parts ;
-
-	constructor( compo : Component, ce : Element, rd : Reader )
+	constructor( compo : Component, ce : Element, rd : Reader, prev : Parts | null )
 	{
-		super( compo, ce );
+		super( compo, ce, prev );
 
 		while( rd.hasnext )
 		{
-			const dyn = rd.nextdyn;
-			if( dyn )
-			{
-				this.next = new DynamicParts( compo, ce, dyn, rd );
-				break;
-			}
+			this.ap( rd );
+			if( this.next ) break;  // next が作成されたらループ終了 //
 
 			const node = this.lastnode = this.createPart( rd.next );
 			this.firstnode = this.firstnode || node;
 		}
+	}
+
+	ap( rd : Reader ) : void
+	{
+		const ap = rd.nextap;
+		if( ! ap ) return;
+
+		// dynamic parts //
+
+		if( ap.source instanceof Lian )
+		{
+			log( "ap * dyn", ap.source )
+			new DynamicParts( this.compo, this.ce, ap, rd, this );
+			return;
+		}
+
+		// static parts //
+
+		log( "pa * stat", ap.source )
+		ap.source.forEach
+		(
+			item =>
+			{
+				const def = ap.create( item );
+				log( "ap*stat", def );
+				this.createPart( def );
+			}
+		);
 	}
 
 	//  //
@@ -104,15 +133,24 @@ export class StaticParts extends Parts
 
 class DynamicParts extends Parts
 {
-	constructor( compo : Component, ce : Element, def : defs.ArrayParts, rd : Reader )
+	constructor
+	(
+		compo : Component,
+		ce : Element,
+		ap : defs.ArrayParts,
+		rd : Reader,
+		prev : Parts | null
+	)
 	{
-		log( "dyn" );
-		super( compo, ce );
+		log( "**dyn**" );
+		super( compo, ce, prev );
 
-		if( def.source instanceof Array )
+		if( ap.source instanceof Array )
 		{
-			def.source.forEach( part => this.createPart( part ) );
+			ap.source.forEach( part => this.createPart( ap.create( part ) ) );
 		}
+
+		if( rd.hasnext ) new StaticParts( compo, ce, rd, this );
 	}
 
 	protected update : Lian.Update = ( start : number, remove : number, add : number ) =>

@@ -16,6 +16,7 @@ export namespace defs
 		attrs ? : Attrs < E > ;
 		style ? : Style ;
 		acts ? : Actions ;
+		actActs ? : Actions ;
 		optActs ? : OptActions ;
 
 		parts ? : Array < Part > ;		// "childNodes"
@@ -29,38 +30,48 @@ export namespace defs
 		attrs ? : Attrs < E > ;
 		style ? : Style ;
 		acts ? : Actions ;
+		actActs ? : Actions ;
 		optActs ? : OptActions ;
 	}
 
-	const e : Element = { isElement: true, type: "a" };
-
-	
-	export type Props < E > =
-	{
-		[ name : string ] : Text ;
-	};
-
-	
-	type PropT < T > = T extends string ? Text : T | Leaf < T >;
-	
 	export type Class = Text | ClassSwitch | Class[];
 	
 	type ClassSwitch =
 	{
 		[ name : string ] : boolean | Leaf.Boolean
 	};
+
+	//  //
+	
+	export type Props < E > =
+	{
+		[ name : string ] : Text ;
+	};
+
+	type PropT < T > = T extends string ? Text : T | Leaf < T >;
+
+	//  //
 	
 	export type Attrs < E = gE > =
 	{
 		[ name : string ] : Text ;
 	};
 	
+	//  //
 
 	export type Style =
 	{
 		[ name in keyof CSSStyleDeclaration ] ? : Text ;
 	};
 	
+	//  //
+
+	export type OptActions =
+	{
+		[ name in keyof GlobalEventHandlersEventMap ] ? : OptAction < GlobalEventHandlersEventMap [ name ] > ;
+	}
+	export type OptAction < Ev extends Event = Event > = [ ( ev : Ev ) => void, AddEventListenerOptions ] ;
+
 
 	export type Actions =
 	{
@@ -69,28 +80,25 @@ export namespace defs
 	export type Action < Ev extends Event = Event > = ( ev : Ev ) => void ;
 	
 
-	export type OptActions =
-	{
-		[ name in keyof GlobalEventHandlersEventMap ] ? : OptAction < GlobalEventHandlersEventMap [ name ] > ;
-	}
-	export type OptAction < Ev extends Event = Event > = [ ( ev : Ev ) => void, AddEventListenerOptions ] ;
-	
+	//  //
 
 	export type Part = Element | Text | ArrayParts;
+
+	export const ap = < ITEM = any > ( source : Array < ITEM >, create : ( item : ITEM ) => Element | Text ) =>
+	{
+		return new ArrayParts( source, create );
+	};
 
 	export class ArrayParts < ITEM = any >
 	{
 		constructor
 		(
 			public source : Array < ITEM > ,
-			public create : ( item : ITEM ) => Element
+			public create : ( item : ITEM ) => Element | Text
 		){}
 	}
 
-	export const ap = < ITEM extends {} = {} > ( source : Lian < ITEM >, create : ( item : ITEM ) => Element ) =>
-	{
-		return new ArrayParts( source, create );
-	};
+	//  //
 
 	export type Text =
 	(
@@ -103,9 +111,8 @@ export namespace defs
 	{
 		if( typeof first == "object" )
 		{
-			if( ! ( "isElement" in first || first instanceof ToString ) )  // ! isPart
+			if( ! ( "isElement" in first || first instanceof ToString || first instanceof ArrayParts ) )  // ! isPart
 			{
-				
 				return {
 					isElement: true,
 					type,
@@ -123,3 +130,27 @@ export namespace defs
 	}	
 }
 
+
+// questplace //
+
+{
+	type sact = EventListener ;
+	type oact = [ sact, AddEventListenerOptions ];
+
+	type cact = sact | oact;
+	type acts = { [ name in "a" | "b" | "c" ] ? : cact };
+
+	const c1 : cact = () => {};
+	const c2 : cact = [ () => {}, {} ];
+
+	const as1 : acts = {};
+	as1.a = () => {};
+	as1.b = [ () => {}, { passive: false } ];
+
+	const ae = ( e : Element | null, n : string, a : EventListener ) =>
+	{
+		e?.addEventListener( n, a );
+	};
+
+	ae( null, "", ( ev : Event ) => { ev.target } );
+}

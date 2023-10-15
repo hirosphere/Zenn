@@ -71,15 +71,12 @@ namespace Model
 			const site = this.hover.value;
 			this.hoverInfo.value = Site.info( site );
 			site && this.hoverList.add( site );
-			
-			log( "hoverList", this.hoverList.length )
 		}
 	
 		updateCurrent( newItem : Site | null, oldItem ? : Site | null )
 		{
 			this.currentInfo.value = Site.info( newItem );
 
-			log( { new: newItem?.code, old: oldItem?.code } );
 			oldItem && ( oldItem.selected.value = false );
 			newItem && ( newItem.selected.value = true );
 		}
@@ -131,175 +128,257 @@ namespace Model
 
 // UI //
 
-namespace UI
+// . site . //
+const { div, h2, h3, textarea, p, span } = ef;
+
+const Site = ( site : Model.Site, map : Model.Map ) =>
 {
-	const { div, h2, h3, textarea, p, span } = ef;
+	const { left, top } = map.cssPos( site );
 
-	const Site = ( site : Model.Site, map : Model.Map ) =>
-	{
-		const { left, top } = map.cssPos( site );
-
-		return div
-		(
+	return div
+	(
+		{
+			class: [ "map-site", { selected: site.selected } ],
+			style: { left, top },
+			attrs: { selected: site.selected },
+			acts:
 			{
-				class: [ "map-site", { selected: site.selected } ],
-				style: { left, top },
-				attrs: { selected: site.selected },
-				acts:
-				{
-					mouseover()
-					{
-						map.hover.value = site;
-					},
-					click()
-					{
-						map.current.value = site;
-					},	
-				}	
-			}
-		);
-	};
+				mouseover() { map.hover.value = site; },
+				click() { map.current.value = site; },
+			}	
+		}
+	);
+};
 
-	//
+// . frame . //
 
-	class ZoomWork
+// .. zoom scroll work .. //
+
+class ScrollWork
+{
+	recx ? : number ;
+	recy ? : number ;
+
+	touchMon = new Leaf.String( "" );
+	mousemon = new Leaf.String( "" );
+
+	constructor( protected map : Model.Map )
 	{
-		wheelMon = new Leaf.String( "" );
-		wheelZoom : number;
-
-		touchMon = new Leaf.String( "" );
-
-		constructor( protected map : Model.Map )
-		{
-			this.wheelZoom = map.zoom.value;
-		}
-
-		putWheelEvent( ev : WheelEvent )
-		{
-			if( ! ev.cancelable ) return;
-
-			const mode : "scroll" | "zoom" = ( ev.deltaY % 1  ? "zoom" : "scroll" )
-			this.wheelMon.value = `${ mode } ${ ev.deltaX } ${ ev.deltaY } ${ ev.deltaY } ${ ev.deltaMode }`;
-	
-			if( mode == "zoom" )
-			{
-				const zoom = this.wheelZoom + ev.deltaY * -0.1;
-				this.wheelZoom = Math.min( 10, Math.max( 0, zoom ) );
-				this.map.zoom.value = Math.round( this.wheelZoom );
-			}
-	
-			else // mode == "scroll"
-				this.scroll( ev.deltaX, ev.deltaY );
-			
-			ev.preventDefault();
-		}
-	
-		putTouchEvent( ev : TouchEvent )
-		{
-			const t0 = ev.touches[ 0 ];
-
-			this.touchMon.value = `${ ev.touches.length } ${ t0.clientX } ${ t0.clientY }, ${ ev.target?.constructor.name } }`;
-
-			if( ev.cancelable ) ev.preventDefault();
-		}
-
-		scroll( deltaX : number, deltaY : number )
-		{
-			const center = this.map.center.value;
-			const scale = 0.01 / this.map.zoomScale;
-
-			const long = clip
-			(
-				center.long + deltaX * scale,
-				this.map.long.min,
-				this.map.long.max
-			);
-			
-			const lat = clip
-			(
-				center.lat - deltaY * scale,
-				this.map.lat.min,
-				this.map.lat.max
-			);
-
-			this.map.center.value = { lat, long };
-		}
 	}
 
-	const MapFrame = ( model : Model.Map, zoom_wk : ZoomWork ) =>
+	mon( name : string, x : number, y : number )
 	{
-		const content = div
-		(
-			{
-				class: "map-content",
-				style: { transform: model.scrollCSS }
-			},
+		this.mousemon.value = `${ name } ${ x } ${ y }`;
+	}
 
-			... Model.Site.list.map( siteInfo => Site( siteInfo, model ) )
-		);
-	
-		const zoomFrame = div
-		(
-			{
-				class: "map-zoom",
-				style: { transform: model.zoomCSS }
-			},
-			
-			content
-		);
-	
-
-		const wheel = ( ev : WheelEvent ) => zoom_wk.putWheelEvent( ev );
-		const touchmove = ( ev : TouchEvent ) => zoom_wk.putTouchEvent( ev );
-		const opt = { passive: false };
-	
-		return div
-		(
-			{
-				class: "map-frame",
-				optActs: { wheel: [ wheel, opt ], touchmove: [ touchmove, opt ] }
-			},
-
-			div(),
-			div(),
-			div(),
-			zoomFrame
-		);
+	mousedown = ( ev : MouseEvent ) =>
+	{
+		if( ev.buttons & 1 )  this.start( ev );
+		this.mon( "down", ev.pageX, ev.pageY );
 	};
-	
-	export const Map = () =>
+
+	mousemove = ( ev : MouseEvent ) =>
 	{
-		const model = new Model.Map;
-		const lianMon = new Leaf.String( "" );
-		const zoom_wk = new ZoomWork( model );
+		this.mon( "move", ev.pageX, ev.pageY );
+		if( ev.buttons & 1 )  this.scroll( ev );
+	};
 
-		model.hoverList.ref
-		(
-			() =>
-			{
-				const lian = model.hoverList;
-				const list = lian.slice( -130 ).map( site => `${ site.name }` );
-				lianMon.value = "" + lian.length + " " + list.join( " ")
-			}
-		);
+	mouseup = ( ev : MouseEvent ) =>
+	{
+		this.mon( "up  ", ev.pageX, ev.pageY );
+	};
 
-		return div( { class: "map applet" },
-			
-			h2( "EQ Site Map" ),
+	touchstart = ( ev : TouchEvent ) =>
+	{
+		const t0 = ev.touches[ 0 ];
+		this.touchMon.value = `start ${ ev.touches.length } ${ t0.clientX } ${ t0.clientY } }`;
+	};
 
-			div( { class: "map-cur-site" }, model.currentInfo ),
-			MapFrame( model, zoom_wk ),
-			div( { class: "hover-info" }, model.hoverInfo ),
-			div( Range.UI( { title: "拡大", value: model.zoom, max: 10 } ) ),
-			
-			div( "Wheel", " ", zoom_wk.wheelMon ),
-			div( "Touch", " ", zoom_wk.touchMon ),
+	touchmove = ( ev : TouchEvent ) =>
+	{
+		const t0 = ev.touches[ 0 ];
+		this.touchMon.value = `move  ${ ev.touches.length } ${ t0.clientX } ${ t0.clientY } }`;
+	};
+
+	touchend = ( ev : TouchEvent ) =>
+	{
+		const t0 = ev.touches[ 0 ];
+
+		this.touchMon.value = `end   ${ ev.touches.length } }`;
+
+		// if( ev.cancelable ) ev.preventDefault();
+	};
+
+	//  //
+
+	start( ev : MouseEvent )
+	{
+		this.recx = ev.pageX
+		this.recy = ev.pageY;
+		ev.preventDefault();
+	}
+
+	scroll( ev : MouseEvent )
+	{
+		const center = this.map.center.value;
+		const scale = 0.01 / this.map.zoomScale;
+
+		const deltaX = this.delta( ev.pageX, this.recx );
+		this.recx = ev.pageX;
 		
-			h3( "ホバー履歴" ),
-			div( defs.ap( model.hoverList, item => span( item.code, " " ) ) ),
-			textarea( { props: { value: lianMon }, style: { width: "100%", height: "20em", lineHeight: "1.4em" } } ),
+		const deltaY = this.delta( ev.pageY, this.recy );
+		this.recy = ev.pageY;
+
+		const long = clip
+		(
+			center.long - deltaX * scale,
+			this.map.long.min,
+			this.map.long.max
 		);
+		
+		const lat = clip
+		(
+			center.lat + deltaY * scale,
+			this.map.lat.min,
+			this.map.lat.max
+		);
+
+		this.map.center.value = { lat, long };
+	}
+
+	delta( mouse : number, rec ? : number ) : number
+	{
+		return rec != null ? ( mouse - rec ) : 0;
 	}
 }
 
-export const Map = UI.Map;
+// .. zoom scroll work .. //
+
+class ZoomWork
+{
+	wheelzoom : number ;
+
+	wheelMon = new Leaf.String( "" );
+
+	constructor( protected map : Model.Map )
+	{
+		this.wheelzoom = map.zoom.value;
+	}
+
+	wheel = ( ev : WheelEvent ) =>
+	{
+		this.wheelMon.value = `${ ev.deltaX } ${ ev.deltaY }`;
+
+		const zoom = this.wheelzoom + ev.deltaY * -0.05;
+		this.wheelzoom = Math.min( 10, Math.max( 0, zoom ) );
+		this.map.zoom.value = Math.round( this.wheelzoom );
+
+		ev.preventDefault();
+	};
+}
+
+// .. ui .. //
+
+const MapFrame = ( model : Model.Map, zoom : ZoomWork, scr : ScrollWork ) =>
+{
+	const content = div
+	(
+		{
+			class: "map-content",
+			style: { transform: model.scrollCSS }
+		},
+
+		... Model.Site.list.map( siteInfo => Site( siteInfo, model ) )
+	);
+
+	const zoomFrame = div
+	(
+		{
+			class: "map-zoom",
+			style: { transform: model.zoomCSS }
+		},
+		
+		content
+	);
+
+
+	const { wheel } = zoom;
+	const { mouseup, touchstart, touchmove, touchend } = scr;
+
+	return div
+	(
+		{
+			class: "map-frame",
+			acts: { mouseup, touchend },
+			actActs: { wheel, touchstart, touchmove, },
+			optActs:
+			{
+				mousedown: [ scr.mousedown, { passive: false, capture: true } ],
+				mousemove: [ scr.mousemove, { passive: false, capture: true } ]
+			},
+		},
+
+		div(),
+		div(),
+		div(),
+		zoomFrame
+	);
+};
+
+
+// main ui //
+
+export const Map = () =>
+{
+	const model = new Model.Map;
+	const lianMon = new Leaf.String( "" );
+	const zoom = new ZoomWork( model );
+	const scr = new ScrollWork( model );
+
+	model.hoverList.ref
+	(
+		() =>
+		{
+			const lian = model.hoverList;
+			const list = lian.slice( -130 ).map( site => `${ site.name }` );
+			lianMon.value = "" + lian.length + " " + list.join( " ")
+		}
+	);
+
+	return div
+	(
+		{ class: "map applet" },
+
+		h2( "EQ Site Map" ),
+		
+		div
+		(
+			div( { class: "map-cur-site" }, model.currentInfo ),
+			MapFrame( model, zoom, scr ),
+			div( { class: "hover-info" }, model.hoverInfo ),
+			div( Range.UI( { title: "拡大", value: model.zoom, max: 10 } ) ),
+		),
+
+		div
+		(
+			div( "wheel", " ", zoom.wheelMon ),
+			div( "mouse", " ", scr.mousemon ),
+			div( "touch", " ", scr.touchMon ),
+		),
+
+		div
+		(
+			h3( "ホバー履歴" ),
+			div
+			(
+				//defs.ap( model.hoverList, item => { log( item.code ); return span( "span" ) } ),
+				defs.ap( model.hoverList, item => item.name + " " ),
+				defs.ap( [ 1, 2, 3 ], item => span( item ) ),
+			),
+			textarea
+			(
+				{ props: { value: lianMon }, style: { width: "100%", height: "20em", lineHeight: "1.4em" } }
+			),
+		),
+	);
+}
