@@ -144,8 +144,12 @@ const Site = ( site : Model.Site, map : Model.Map ) =>
 			acts:
 			{
 				mouseover() { map.hover.value = site; },
-				click() { map.current.value = site; },
-			}	
+				mousedown() { map.current.value = site; },
+			},
+			actActs:
+			{
+				touchstart( ev ) { map.current.value = site;  ev.preventDefault(); }
+			}
 		}
 	);
 };
@@ -161,9 +165,15 @@ class ScrollWork
 
 	touchMon = new Leaf.String( "" );
 	mousemon = new Leaf.String( "" );
+	docmousemon = new Leaf.String( "" );
 
 	constructor( protected map : Model.Map )
 	{
+		document.addEventListener
+		(
+			"mousemove",
+			ev => { this.docmousemon.value = `move ${ ev.screenX } ${ ev.screenY } ${ ev.buttons }` }
+		);
 	}
 
 	mon( name : string, x : number, y : number )
@@ -173,61 +183,59 @@ class ScrollWork
 
 	mousedown = ( ev : MouseEvent ) =>
 	{
-		if( ev.buttons & 1 )  this.start( ev );
-		this.mon( "down", ev.pageX, ev.pageY );
+		if( ev.buttons & 1 )  this.rec( ev.screenX, ev.screenY, ev );
+		this.mon( "down", ev.screenX, ev.screenY );
 	};
 
 	mousemove = ( ev : MouseEvent ) =>
 	{
-		this.mon( "move", ev.pageX, ev.pageY );
-		if( ev.buttons & 1 )  this.scroll( ev );
+		this.mon( "move", ev.screenX, ev.screenY );
+		if( ev.buttons & 1 )  this.scroll( ev.screenX, ev.screenY, ev );
 	};
 
 	mouseup = ( ev : MouseEvent ) =>
 	{
-		this.mon( "up  ", ev.pageX, ev.pageY );
+		this.mon( "up  ", ev.screenX, ev.screenY );
 	};
 
 	touchstart = ( ev : TouchEvent ) =>
 	{
 		const t0 = ev.touches[ 0 ];
-		this.touchMon.value = `start ${ ev.touches.length } ${ t0.clientX } ${ t0.clientY } }`;
+		this.rec( t0.screenX, t0.screenY, ev );
+		this.touchMon.value = `start ${ ev.touches.length } ${ t0.screenX } ${ t0.screenY } }`;
 	};
 
 	touchmove = ( ev : TouchEvent ) =>
 	{
 		const t0 = ev.touches[ 0 ];
-		this.touchMon.value = `move  ${ ev.touches.length } ${ t0.clientX } ${ t0.clientY } }`;
+		this.scroll( t0.screenX, t0.screenY, ev );
+		this.touchMon.value = `move  ${ ev.touches.length } ${ t0.screenX } ${ t0.screenY } }`;
 	};
 
 	touchend = ( ev : TouchEvent ) =>
 	{
 		const t0 = ev.touches[ 0 ];
-
 		this.touchMon.value = `end   ${ ev.touches.length } }`;
-
-		// if( ev.cancelable ) ev.preventDefault();
 	};
 
 	//  //
 
-	start( ev : MouseEvent )
+	rec( screenX : number, screenY : number, ev : UIEvent )
 	{
-		this.recx = ev.pageX
-		this.recy = ev.pageY;
+		this.recx = screenX;
+		this.recy = screenY;
 		ev.preventDefault();
 	}
 
-	scroll( ev : MouseEvent )
+	scroll( screenX : number, screenY : number, ev : UIEvent )
 	{
 		const center = this.map.center.value;
 		const scale = 0.01 / this.map.zoomScale;
 
-		const deltaX = this.delta( ev.pageX, this.recx );
-		this.recx = ev.pageX;
-		
-		const deltaY = this.delta( ev.pageY, this.recy );
-		this.recy = ev.pageY;
+		const deltaX = this.delta( screenX, this.recx );		
+		const deltaY = this.delta( screenY, this.recy );
+
+		this.rec( screenX, screenY, ev );
 
 		const long = clip
 		(
@@ -361,9 +369,10 @@ export const Map = () =>
 
 		div
 		(
-			div( "wheel", " ", zoom.wheelMon ),
+			div( "d.mouse", " ", scr.docmousemon ),
 			div( "mouse", " ", scr.mousemon ),
 			div( "touch", " ", scr.touchMon ),
+			div( "wheel", " ", zoom.wheelMon ),
 		),
 
 		div
