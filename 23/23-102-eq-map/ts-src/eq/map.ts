@@ -158,10 +158,15 @@ const Site = ( site : Model.Site, map : Model.Map ) =>
 
 // .. zoom scroll work .. //
 
+type ScrMode = "none" | "mouse" | "touch";
+
 class ScrollWork
 {
+	// scroll //
+
 	recx ? : number ;
 	recy ? : number ;
+	srcmode : ScrMode = "none" ;
 
 	touchMon = new Leaf.String( "" );
 	mousemon = new Leaf.String( "" );
@@ -169,10 +174,16 @@ class ScrollWork
 
 	constructor( protected map : Model.Map )
 	{
+		this.wheelzoom = map.zoom.value;
+
 		document.addEventListener
 		(
 			"mousemove",
-			ev => { this.docmousemon.value = `move ${ ev.screenX } ${ ev.screenY } ${ ev.buttons }` }
+			ev =>
+			{
+				this.docmousemove( ev );
+				this.docmousemon.value = `move ${ ev.screenX } ${ ev.screenY } ${ ev.buttons }`
+			}
 		);
 	}
 
@@ -183,14 +194,19 @@ class ScrollWork
 
 	mousedown = ( ev : MouseEvent ) =>
 	{
-		if( ev.buttons & 1 )  this.rec( ev.screenX, ev.screenY, ev );
+		if( ev.buttons & 1 )
+		{
+			this.recpos( ev.screenX, ev.screenY, ev );
+			this.srcmode = "mouse";
+		}
 		this.mon( "down", ev.screenX, ev.screenY );
 	};
 
-	mousemove = ( ev : MouseEvent ) =>
+	docmousemove = ( ev : MouseEvent ) =>
 	{
 		this.mon( "move", ev.screenX, ev.screenY );
-		if( ev.buttons & 1 )  this.scroll( ev.screenX, ev.screenY, ev );
+		if( ! ( ev.buttons & 1 ) ) this.srcmode = "none";
+		if( this.srcmode == "mouse" && ev.buttons & 1 )  this.scroll( ev.screenX, ev.screenY, ev );
 	};
 
 	mouseup = ( ev : MouseEvent ) =>
@@ -201,7 +217,7 @@ class ScrollWork
 	touchstart = ( ev : TouchEvent ) =>
 	{
 		const t0 = ev.touches[ 0 ];
-		this.rec( t0.screenX, t0.screenY, ev );
+		this.recpos( t0.screenX, t0.screenY, ev );
 		this.touchMon.value = `start ${ ev.touches.length } ${ t0.screenX } ${ t0.screenY } }`;
 	};
 
@@ -220,7 +236,7 @@ class ScrollWork
 
 	//  //
 
-	rec( screenX : number, screenY : number, ev : UIEvent )
+	recpos( screenX : number, screenY : number, ev : UIEvent )
 	{
 		this.recx = screenX;
 		this.recy = screenY;
@@ -235,7 +251,7 @@ class ScrollWork
 		const deltaX = this.delta( screenX, this.recx );		
 		const deltaY = this.delta( screenY, this.recy );
 
-		this.rec( screenX, screenY, ev );
+		this.recpos( screenX, screenY, ev );
 
 		const long = clip
 		(
@@ -258,20 +274,12 @@ class ScrollWork
 	{
 		return rec != null ? ( mouse - rec ) : 0;
 	}
-}
 
-// .. zoom scroll work .. //
+	// zoom //
 
-class ZoomWork
-{
 	wheelzoom : number ;
 
 	wheelMon = new Leaf.String( "" );
-
-	constructor( protected map : Model.Map )
-	{
-		this.wheelzoom = map.zoom.value;
-	}
 
 	wheel = ( ev : WheelEvent ) =>
 	{
@@ -287,7 +295,7 @@ class ZoomWork
 
 // .. ui .. //
 
-const MapFrame = ( model : Model.Map, zoom : ZoomWork, scr : ScrollWork ) =>
+const MapFrame = ( model : Model.Map, scrzoom : ScrollWork ) =>
 {
 	const content = div
 	(
@@ -310,20 +318,14 @@ const MapFrame = ( model : Model.Map, zoom : ZoomWork, scr : ScrollWork ) =>
 	);
 
 
-	const { wheel } = zoom;
-	const { mouseup, touchstart, touchmove, touchend } = scr;
+	const { mousedown, mouseup, touchstart, touchmove, touchend, wheel } = scrzoom;
 
 	return div
 	(
 		{
 			class: "map-frame",
-			acts: { mouseup, touchend },
-			actActs: { wheel, touchstart, touchmove, },
-			optActs:
-			{
-				mousedown: [ scr.mousedown, { passive: false, capture: true } ],
-				mousemove: [ scr.mousemove, { passive: false, capture: true } ]
-			},
+			acts: { mouseup, touchmove, touchend },
+			actActs: { wheel, mousedown, touchstart, },
 		},
 
 		div(),
@@ -340,8 +342,7 @@ export const Map = () =>
 {
 	const model = new Model.Map;
 	const lianMon = new Leaf.String( "" );
-	const zoom = new ZoomWork( model );
-	const scr = new ScrollWork( model );
+	const scrzoom = new ScrollWork( model );
 
 	model.hoverList.ref
 	(
@@ -362,17 +363,17 @@ export const Map = () =>
 		div
 		(
 			div( { class: "map-cur-site" }, model.currentInfo ),
-			MapFrame( model, zoom, scr ),
+			MapFrame( model, scrzoom ),
 			div( { class: "hover-info" }, model.hoverInfo ),
 			div( Range.UI( { title: "拡大", value: model.zoom, max: 10 } ) ),
 		),
 
 		div
 		(
-			div( "d.mouse", " ", scr.docmousemon ),
-			div( "mouse", " ", scr.mousemon ),
-			div( "touch", " ", scr.touchMon ),
-			div( "wheel", " ", zoom.wheelMon ),
+			div( "d.mouse", " ", scrzoom.docmousemon ),
+			div( "mouse", " ", scrzoom.mousemon ),
+			div( "touch", " ", scrzoom.touchMon ),
+			div( "wheel", " ", scrzoom.wheelMon ),
 		),
 
 		div
