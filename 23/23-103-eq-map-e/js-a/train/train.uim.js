@@ -1,0 +1,4 @@
+export class TrainApp {
+    ;
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidHJhaW4udWltLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vdHMtc3JjL3RyYWluL3RyYWluLnVpbS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFDQSxNQUFNLE9BQU8sUUFBUTtJQUVwQixDQUFDO0NBQ0QifQ==
