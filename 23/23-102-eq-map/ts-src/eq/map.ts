@@ -6,7 +6,7 @@ const log = console.log;
 const clip = ( value : number, min : number, max : number ) => Math.max( min, Math.min( max, value ) );
 
 type LatLong = { lat : number, long : number };
-const pxRatio = 100;
+const pxRatio = 1000;
 
 // Model //
 
@@ -52,6 +52,7 @@ namespace Model
 
 			this.hoverList.add( Site.list[ 555 ] );
 			this.hoverList.add( Site.list[ 777 ] );
+			this.hoverList.add( Site.list[ 999 ] );
 			
 			rel();
 		}
@@ -91,7 +92,13 @@ namespace Model
 		latToPx( lat : number ) { return ( this.lat.max - lat ) * pxRatio; }
 		longToPx( long : number ) { return ( long - this.long.min ) * pxRatio; }
 	
-		get zoomScale() { return 0.1 * Math.pow( 10, this.zoom.value / 5 ); }
+		get zoomScale() { return Math.pow( 10, this.zoom.value / 5 - 2 ); }  // zoom : 0 ~ 5 ~ 10 => scale : 0.01 ~ 0.1 ~ 1
+		get scrollstep()
+		{
+			const rt = 1 / this.zoomScale / pxRatio;
+			log( "scrstep", rt );
+			return rt;
+		}
 	}
 
 	//
@@ -140,17 +147,18 @@ const Site = ( site : Model.Site, map : Model.Map ) =>
 		{
 			class: [ "map-site", { selected: site.selected } ],
 			style: { left, top },
-			attrs: { selected: site.selected },
+			// attrs: { selected: site.selected },
 			acts:
 			{
 				mouseover() { map.hover.value = site; },
-				mousedown() { map.current.value = site; },
+				mousedown( ev ) { map.current.value = site; ev.stopPropagation(); },
 			},
 			actActs:
 			{
 				touchstart( ev ) { map.current.value = site;  ev.preventDefault(); }
 			}
-		}
+		},
+		// div( { class: "map-site-label" }, site.name )
 	);
 };
 
@@ -175,16 +183,7 @@ class ScrollWork
 	constructor( protected map : Model.Map )
 	{
 		this.wheelzoom = map.zoom.value;
-
-		document.addEventListener
-		(
-			"mousemove",
-			ev =>
-			{
-				this.docmousemove( ev );
-				this.docmousemon.value = `move ${ ev.screenX } ${ ev.screenY } ${ ev.buttons }`
-			}
-		);
+		document.addEventListener( "mousemove", this.docmousemove, { passive: false } );
 	}
 
 	mon( name : string, x : number, y : number )
@@ -207,6 +206,8 @@ class ScrollWork
 		this.mon( "move", ev.screenX, ev.screenY );
 		if( ! ( ev.buttons & 1 ) ) this.srcmode = "none";
 		if( this.srcmode == "mouse" && ev.buttons & 1 )  this.scroll( ev.screenX, ev.screenY, ev );
+
+		this.docmousemon.value = `move ${ ev.screenX } ${ ev.screenY } ${ ev.buttons }`
 	};
 
 	mouseup = ( ev : MouseEvent ) =>
@@ -246,7 +247,7 @@ class ScrollWork
 	scroll( screenX : number, screenY : number, ev : UIEvent )
 	{
 		const center = this.map.center.value;
-		const scale = 0.01 / this.map.zoomScale;
+		const stepscale = this.map.scrollstep;
 
 		const deltaX = this.delta( screenX, this.recx );		
 		const deltaY = this.delta( screenY, this.recy );
@@ -255,14 +256,14 @@ class ScrollWork
 
 		const long = clip
 		(
-			center.long - deltaX * scale,
+			center.long - deltaX * stepscale,
 			this.map.long.min,
 			this.map.long.max
 		);
 		
 		const lat = clip
 		(
-			center.lat + deltaY * scale,
+			center.lat + deltaY * stepscale,
 			this.map.lat.min,
 			this.map.lat.max
 		);
@@ -324,8 +325,8 @@ const MapFrame = ( model : Model.Map, scrzoom : ScrollWork ) =>
 	(
 		{
 			class: "map-frame",
-			acts: { mouseup, touchmove, touchend },
-			actActs: { wheel, mousedown, touchstart, },
+			acts: { mouseup, touchend },
+			actActs: { wheel, mousedown, touchstart, touchmove, },
 		},
 
 		div(),

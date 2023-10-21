@@ -11,25 +11,25 @@
 html
 {
 	background-color: hsl( 50, 7%, 94% );
-	margin: 0; padding: 0;
-	display: grid;
-	justify-content: stretch;
+	margin: 0;
+	padding: 0 max( 13% - 70px, 2px );
 	min-height: 100%;
 	overflow: auto;
 }
 
 body
 {
-	margin: 0 calc( 10% - 30px );
+	margin: 0 auto;
 	max-width: 1200px;
+	padding: 1em max( 15% - 70px, 2px );
 	background-color: hsl( 0, 0%, 100% );
-	padding: 1em 2em;
 	overflow: auto;
 }
 
-body { font-family: 'Courier New', sans-serif, "meiryo" }
+body { font-family: 'Courier New', sans-serif }
 html, button, textarea, input { color: hsl( 45, 0%, 25% ); }
 h1, h2, h3, h4 { margin: 0; padding: 0; }
+h1 { padding: 0 1ex; }
 
 
 .applets
@@ -50,12 +50,12 @@ h1, h2, h3, h4 { margin: 0; padding: 0; }
 .map-frame
 {
 	box-sizing: border-box;
-	height: 70vh;
+	height: clamp( 50vh, 50vh + max( 0px, 0.2 * ( 100vw - 300px ) ), 76vh );
 	overflow: hidden;
 	display: grid;
 	grid-template-columns: 50% 50%;
 	grid-template-rows: 50% 50%;
-	background-color: hsl( 215, 65%, 80% );
+	background-color: hsl( 235, 55%, 55% );
 }
 .map-zoom
 {
@@ -71,31 +71,31 @@ h1, h2, h3, h4 { margin: 0; padding: 0; }
 {
 	position: absolute;
 	cursor: default;
-	margin: 0 0 -5px -5px;
-	border: 1px solid hsl( 215, 50%, 90% );
-	width: 10px;
-	height: 10px;
+	margin: 0 0 -50px -50px;
+	border: 10px solid hsl( 215, 50%, 90% );
+	width: 100px;
+	height: 100px;
 	background: hsl( 115, 10%, 100% );
 }
 .map-site:hover
 {
-	border: 1px solid hsl( 115, 0%, 100% );
-	background-color: hsl( 120, 60%, 35% );
+	transform: scale( 1.1 );
+	border: 10px solid hsl( 115, 0%, 100% );
+	background-color: hsl( 95, 75%, 55% );
 	z-index: 2;
 }
 .map-site.selected
 {
-	transform: scale( 1.0 );
+	transform: scale( 1.2 );
 	border-color: hsl( 0, 0%, 100% );
-	background-color: hsl( 20, 90%, 65% );
+	background-color: hsl( 6, 90%, 70% );
 	z-index: 1;
 }
-.map-site[ selected ]
+.map-site-label
 {
-	transform: scale( 1.0 );
-	border-color: hsl( 0, 0%, 100% );
-	background-color: hsl( 50, 90%, 75% );
-	z-index: 1;
+	position: absolute;
+	width: 5em;
+	font-size: 10%;
 }
 
 
