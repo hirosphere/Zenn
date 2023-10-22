@@ -44,7 +44,6 @@ const Applets = () =>
 		{ class: "applets" },
 		
 		h1( "Applets 23-103" ),
-		Map(),
 		HSLApplet(  ),
 		CompoA(),
 	);
