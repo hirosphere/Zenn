@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>EQ-Map</title>
+
+<style>
+
+* { box-sizing: border-box; }
+html
+{
+	background-color: hsl( 50, 7%, 94% );
+	margin: 0;
+	padding: 0 max( 13% - 70px, 2px );
+	min-height: 100%;
+	overflow: auto;
+}
+
+body
+{
+	margin: 0 auto;
+	max-width: 1200px;
+	padding: 1em max( 15% - 70px, 1px );
+	background-color: hsl( 0, 0%, 100% );
+	overflow: auto;
+}
+
+body { font-family: 'Courier New', sans-serif }
+html, button, textarea, input { color: hsl( 45, 0%, 25% ); }
+h1, h2, h3, h4 { margin: 0; padding: 0; }
+h1 { padding: 0 1ex; }
+
+
+.applets
+{
+	display: flex; flex-direction: column; gap: 2rem;
+}
+
+.applet
+{
+	border: 1px solid hsl( 0, 0%, 45% );
+	border-radius: 1ex;
+	padding: 0.6em 1em;
+}
+
+.applet-body
+{
+	padding: 1ex;
+	display: grid;
+	grid-template-rows: auto;
+	gap: 1rem;
+}
+
+/**/
+
+.lian-1 .stations
+{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1ex;
+}
+
+.lian-1 button { padding: 1ex; }
+
+
+/* 地震観測点マップ */
+
+.map-frame
+{
+	box-sizing: border-box;
+	height: clamp( 50vh, 50vh + max( 0px, 0.2 * ( 100vw - 300px ) ), 76vh );
+	overflow: hidden;
+	display: grid;
+	grid-template-columns: 50% 50%;
+	grid-template-rows: 50% 50%;
+	background-color: hsl( 225, 55%, 65% );
+}
+.map-zoom
+{
+	transition: transform 0.6s;
+	transform-origin: 0% 0%;
+}
+.map-content
+{
+	position: relative;
+	transform-origin: 0% 0%;
+}
+.map-site
+{
+	position: absolute;
+	cursor: default;
+	margin: 0 0 -35px -35px;
+	border: 10px solid hsl( 215, 50%, 90% );
+	width: 70px;
+	height: 70px;
+	background: hsl( 115, 10%, 100% );
+}
+.map-site:hover
+{
+	transform: scale( 1.1 );
+	border: 10px solid hsl( 115, 0%, 100% );
+	background-color: hsl( 95, 75%, 55% );
+	z-index: 2;
+}
+.map-site.selected
+{
+	transform: scale( 1.2 );
+	border-color: hsl( 0, 0%, 100% );
+	background-color: hsl( 6, 90%, 70% );
+	z-index: 1;
+}
+.map-site-label
+{
+	position: absolute;
+	width: 5em;
+	font-size: 20px;
+}
+.map-site-info
+{
+	height: 1.5em;
+	overflow: auto;
+	scrollbar-width: none;
+}
+
+
+/* 汎用部品 */
+
+.range
+{
+	max-width: 500px;
+	height: 1.7rem;
+	display: grid;
+	grid-template-columns: 3rem 1fr 3ex; gap: 1ex;
+	align-items: center;
+}
+
+
+</style>
+
+</head>
+<body>
+	<script type="module" src="js-app/js-app.js"></script>
+	<script type="module" src="./js-a/app.js"></script>
+</body>
+</html>
