@@ -12,7 +12,7 @@ html
 {
 	background-color: hsl( 50, 7%, 94% );
 	margin: 0;
-	padding: 0 max( 13% - 70px, 2px );
+	padding: 0 max( 13% - 30px, 0px );
 	min-height: 100%;
 	overflow: auto;
 }
@@ -21,7 +21,7 @@ body
 {
 	margin: 0 auto;
 	max-width: 1200px;
-	padding: 1em max( 15% - 70px, 1px );
+	padding: 1em max( 13% - 30px, 2px );
 	background-color: hsl( 0, 0%, 100% );
 	overflow: auto;
 }
@@ -30,7 +30,7 @@ body { font-family: 'Courier New', sans-serif }
 html, button, textarea, input { color: hsl( 45, 0%, 25% ); }
 h1, h2, h3, h4 { margin: 0; padding: 0; }
 h1 { padding: 0 1ex; }
-
+button { font-size: 15px; }
 
 .applets
 {
@@ -39,9 +39,19 @@ h1 { padding: 0 1ex; }
 
 .applet
 {
-	border: 1px solid hsl( 0, 0%, 45% );
+	border: 1px solid hsl( 0, 0%, 65% );
 	border-radius: 1ex;
 	padding: 0.6em 1em;
+}
+
+@media( width < 560px )
+{
+	button { font-size: 13px; }
+	.applet
+	{
+		border: none;
+		padding: 0;
+	}
 }
 
 .applet-body
@@ -58,10 +68,17 @@ h1 { padding: 0 1ex; }
 {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 1ex;
+	gap: 0.9ex 0.7ex;
+	justify-content: center;
 }
 
-.lian-1 button { padding: 1ex; }
+.lian-1 .stations
+{
+	max-height: 50vh;
+	overflow: auto;
+}
+
+.lian-1 button { padding: 0.6ex 0.8ex; }
 
 
 /* 地震観測点マップ */

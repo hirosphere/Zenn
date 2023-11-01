@@ -27,6 +27,8 @@ export class Component
 
 		if( className ) this.bindClass(  e, className );
 
+		style && log( "cre", style );
+
 		if( props ) this.bindProps( e, props );
 		if( attrs ) this.bindAttrs( e, attrs );
 		if( style ) this.bindStyle( e, style );

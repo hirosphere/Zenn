@@ -121,7 +121,7 @@ export namespace defs
 				};
 			}
 		}
-	
+
 		return {
 			isElement: true,
 			type,

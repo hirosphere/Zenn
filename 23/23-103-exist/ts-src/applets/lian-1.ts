@@ -24,7 +24,8 @@ export const Lian1Applet = ( model : Lian1Model = new Lian1Model ) =>
 
 		div ( { class: "applet-body" },
 			div( { class: "stations" },
-				ap (
+				ap
+				(
 					model.lian,
 					i => button( { acts: { click: () => log( i ) } }, i )
 				),
