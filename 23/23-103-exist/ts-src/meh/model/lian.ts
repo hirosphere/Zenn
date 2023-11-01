@@ -22,8 +22,7 @@ export class Lian < I = any > extends Array < I >
 		const rt = super.splice( start, deleteCount, ... newItems );
 
 		const remove = rt.length;
-		const add = newItems.length;		
-		this.refs.forEach( ref => ref.update( start, remove, add ) );
+		const add = newItems.length;
 		
 		return rt;
 	}
@@ -33,9 +32,5 @@ export namespace Lian
 {
 	export class Ref < I >
 	{
-		;
-
-		update( start : number, removeCount : number, addCount : number )
-		{}
 	}
 }

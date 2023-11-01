@@ -6,6 +6,7 @@ const log = console.log;
 class Lian1Model
 {
 	lian = Lian.from( lines.sobu );
+	clicks = Lian.from < string > ( [ "総武線" ] )
 }
 
 const lines =
@@ -23,13 +24,17 @@ export const Lian1Applet = ( model : Lian1Model = new Lian1Model ) =>
 		h2( "Lian-1 Applet" ),
 
 		div ( { class: "applet-body" },
+			div( button( "シャッフル" ) ),
 			div( { class: "stations" },
 				ap
 				(
 					model.lian,
 					i => button( { acts: { click: () => log( i ) } }, i )
 				),
-			)
+			),
+			div( {  },
+				ap( model.clicks, i => button( i ) ),
+			),
 		),
 	);
 }
