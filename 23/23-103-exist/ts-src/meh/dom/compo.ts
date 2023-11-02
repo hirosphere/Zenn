@@ -1,6 +1,6 @@
 import { Leaf, LoL, Ref, ToString } from "../model/leaf.js";
 import { defs } from "./defs.js";
-import { Parts } from "./parts.js";
+import { Parts } from "./parts2.js";
 
 const log = console.log;
 
@@ -11,24 +11,27 @@ class Refs extends Set < Ref > {}
 export class Component
 {
 	e ? : Element;
-	parts ? : Parts;
+	partsSet = new Set < Parts >;
 	refs = new Refs;
 
-	constructor( def : defs.Element, ce : Element | null )
+	constructor( def : defs.Element, ce : Element | null, rel ? : Node )
 	{
-		this.e = this.createElement( def, ce );
+		this.e = this.createElement( def, ce, rel );
 	}
 
-	createElement( def : defs.Element, ce : Element | null ) : Element
+	createNode( def : defs.Node, ce : Element | null, rel ? : Node ) : Node
+	{
+		if( typeof def == "object" && "isElement" in def )  return this.createElement( def, ce, rel );
+		else  return this.createText( def, ce, rel );
+	}
+
+	createElement( def : defs.Element, ce : Element | null, rel ? : Node ) : Element
 	{
 		const { type, class: className, props, attrs, style, acts, actActs, optActs, parts } =  def;
 
 		const e = document.createElement( type );
 
 		if( className ) this.bindClass(  e, className );
-
-		style && log( "cre", style );
-
 		if( props ) this.bindProps( e, props );
 		if( attrs ) this.bindAttrs( e, attrs );
 		if( style ) this.bindStyle( e, style );
@@ -36,11 +39,21 @@ export class Component
 		if( actActs ) this.bindActs( e, actActs, { passive: false } );		
 		if( optActs ) this.bindOptActs( e, optActs );
 		
-		if( parts ) Parts.create( this, e, parts );
+		if( parts ) this.partsSet.add( Parts.create( this, e, parts ) );
 
-		if( ce ) ce.appendChild( e );
+		if( ce ) ce.insertBefore( e, rel || null );
 
 		return e;
+	}
+
+	createText( def : defs.Text, ce : Element | null, rel ? : Node ) : Text
+	{
+		const node = document.createTextNode( "" );
+		bindText( node, "nodeValue", def, this.refs );
+
+		if( ce )  ce.insertBefore( node, rel || null );
+
+		return node;
 	}
 
 	// bind opers //
@@ -67,7 +80,7 @@ export class Component
 		}
 	}
 
-	bindProps ( e : Element, def : AnyObj )
+	bindProps ( e : Element, def : Record < string, any > )
 	{
 		for( const [ name, value ] of Object.entries( def ) )
 		{
@@ -114,8 +127,8 @@ export class Component
 
 	delete()
 	{
-		this.parts?.delete();
-		delete this.parts;
+		this.partsSet.forEach( parts => parts.delete() );
+		this.partsSet.clear();
 		
 		this.refs.forEach( ref => ref.release() );
 		this.refs.clear();
@@ -124,10 +137,7 @@ export class Component
 	}
 }
 
-
-
-
-type AnyObj = Record < string, any > ;
+// binds //
 
 const bindClass = ( e : Element, name : string, value : LoL.Boolean, refs : Refs ) =>
 {
@@ -139,29 +149,6 @@ const bindClass = ( e : Element, name : string, value : LoL.Boolean, refs : Refs
 	else  e.classList.toggle( name, value );
 }
 
-const bindProp = ( target : any, name : string, value : any, refs : Refs ) =>
-{
-	if( value instanceof ToString )
-	{
-		refs.add( value.ref( () => { target[ name ] = value.toString() } ) );
-	}
-
-	else  target[ name ] = value;
-};
-
-
-const setAttr = ( e : Element, name : string, value : boolean | number | string ) =>
-{
-	if( typeof value == "boolean" )
-	{
-		value ? e.setAttribute( name, "" ) : e.removeAttribute( name );
-	}
-	
-	else
-	{
-		e.setAttribute( name, String( value ) );
-	}
-}
 
 const bindAttr = ( e : Element, name : string, value : defs.Text, refs : Refs ) =>
 {
@@ -178,6 +165,19 @@ const bindAttr = ( e : Element, name : string, value : defs.Text, refs : Refs ) 
 	else setAttr( e, name, value );
 };
 
+const setAttr = ( e : Element, name : string, value : boolean | number | string ) =>
+{
+	if( typeof value == "boolean" )
+	{
+		value ? e.setAttribute( name, "" ) : e.removeAttribute( name );
+	}
+	
+	else
+	{
+		e.setAttribute( name, String( value ) );
+	}
+}
+
 export const bindText = ( target : any, name : string, text : any, refs : Refs ) =>
 {
 	if( text instanceof ToString )
@@ -185,8 +185,5 @@ export const bindText = ( target : any, name : string, text : any, refs : Refs )
 		refs.add( text.ref( () => { target[ name ] = text.toString() } ) );
 	}
 
-	else
-	{
-		target[ name ] = text;
-	}
+	else  target[ name ] = text;
 };

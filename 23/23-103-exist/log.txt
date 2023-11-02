@@ -1,0 +1,6 @@
+
+## 23.11.01
+
+### LianとComponentのPartsクラスの実装
+
+* とりあえず swap から。

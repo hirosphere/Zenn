@@ -27,7 +27,7 @@ const log = console.log;
 
 	const clp = < T > ( src : Lian < T >, create : ( item : T ) => void ) => new LP( src, create );
 
-	const l = new Lian < string > ( ... [ "a", "b", "c" ] );
+	const l = Lian.create < string > ( [ "a", "b", "c" ] );
 
 	const lp : LPB = new LP < string > ( l, ( v ) => console.log( "LP", v ) );
 	

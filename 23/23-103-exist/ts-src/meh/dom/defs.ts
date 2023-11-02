@@ -7,6 +7,8 @@ export namespace defs
 {
 	export type CreateElement < E > = ( first ? : ElementChar < E > | Part, ... rest : Part [] ) => Element ;
 
+	export type Node = Element | Text ;
+
 	export type Element < E extends gE = gE > =
 	{
 		type : string ;
@@ -19,7 +21,7 @@ export namespace defs
 		actActs ? : Actions ;
 		optActs ? : OptActions ;
 
-		parts ? : Array < Part > ;		// "childNodes"
+		parts ? : Parts ;		// "childNodes"
 		isElement : true ;	// ElementChar とのユニオンやその他の識別のため。
 	};
 
@@ -82,7 +84,8 @@ export namespace defs
 
 	//  //
 
-	export type Part = Element | Text | ArrayParts;
+	export type Parts = Part [];
+	type Part = Element | Text | ArrayParts;
 
 	export const ap = < ITEM = any > ( source : Array < ITEM >, create : ( item : ITEM ) => Element | Text ) =>
 	{

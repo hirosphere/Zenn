@@ -344,16 +344,6 @@ export const Map = () =>
 	const lianMon = new Leaf.String( "" );
 	const scrzoom = new ScrollWork( model );
 
-	model.hoverList.ref
-	(
-		() =>
-		{
-			const lian = model.hoverList;
-			const list = lian.slice( -130 ).map( site => `${ site.name }` );
-			lianMon.value = "" + lian.length + " " + list.join( " ")
-		}
-	);
-
 	return div
 	(
 		{ class: "map applet" },
@@ -382,7 +372,7 @@ export const Map = () =>
 			div
 			(
 				//defs.ap( model.hoverList, item => { log( item.code ); return span( "span" ) } ),
-				defs.ap( model.hoverList, item => item.name + " " ),
+				defs.ap( model.hoverList, item => item.value.name + " " ),
 				defs.ap( [ 1, 2, 3 ], item => span( item ) ),
 			),
 			textarea

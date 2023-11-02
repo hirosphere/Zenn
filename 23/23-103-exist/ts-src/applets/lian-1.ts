@@ -5,9 +5,20 @@ const log = console.log;
 
 class Lian1Model
 {
-	lian = Lian.from( lines.sobu );
-	clicks = Lian.from < string > ( [ "総武線" ] )
+	lian = Lian.create( lines.sobu );
+	clicks = Lian.create();
+
+	shuffle()
+	{
+		const a = arrnd( this.lian );
+		const b = arrnd( this.lian );
+		this.lian.swap( a, b );
+	}
 }
+
+
+
+const arrnd = ( ar : Array < any > ) => Math.floor( Math.random() * ar.length );
 
 const lines =
 {
@@ -16,24 +27,32 @@ const lines =
 
 export const Lian1Applet = ( model : Lian1Model = new Lian1Model ) =>
 {
-	const { div, h2, span, button } = ef;
+	const { div, h2, h3, span, button } = ef;
 
-	return div
-	(
-		{ class: "applet lian-1" },
+	return div( { class: "applet lian-1" },
 		h2( "Lian-1 Applet" ),
-
-		div ( { class: "applet-body" },
-			div( button( "シャッフル" ) ),
-			div( { class: "stations" },
-				ap
-				(
-					model.lian,
-					i => button( { acts: { click: () => log( i ) } }, i )
+		div ( { class: "applet-body " },
+			div( { class: "cols-3" },
+				h3( "総武線" ),
+				div( button( { acts: { click(){ model.shuffle(); } } }, "シャッフル" ) ),
+				div( { class: "stations" },
+					ap
+					(
+						model.lian,
+						i => button( { acts: { click: () => model.clicks.add( i.value, 0 ) } }, i )
+					),
 				),
 			),
-			div( {  },
-				ap( model.clicks, i => button( i ) ),
+			div( { class: "cols-3" },
+				h3( "クリック履歴" ),
+				div( button( { acts: { mouseover(){ model.clicks.clear(); } } }, "消去" ) ),
+				div(
+					ap( model.clicks,
+						i => button( { acts: { click(){ i.remove(); } } },
+							i.order.strconv( v => v + 1 + "" ), " : ", i
+						)
+					),
+				),
 			),
 		),
 	);
