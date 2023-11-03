@@ -39,19 +39,20 @@ export const Lian1Applet = ( model : Lian1Model = new Lian1Model ) =>
 					ap
 					(
 						model.lian,
-						i => button( { acts: { click: () => model.clicks.add( i.value, 0 ) } }, i )
+						i => button( { acts: { mouseover: () => model.clicks.add( i.value, 0 ) } }, i )
 					),
 				),
 			),
 			div( { class: "cols-3" },
 				h3( "クリック履歴" ),
-				div( button( { acts: { mouseover(){ model.clicks.clear(); } } }, "消去" ) ),
-				div(
+				div( button( { acts: { click(){ model.clicks.clear(); } } }, "消去" ) ),
+				div( { class: "stations" },
 					ap( model.clicks,
-						i => button( { acts: { click(){ i.remove(); } } },
-							i.order.strconv( v => v + 1 + "" ), " : ", i
+						i => button( { acts: { mouseout(){ i.remove(); } } },
+							i.order.strconv( v => v + 1 + "" ), " ", i
 						)
 					),
+					"あいうえお",
 				),
 			),
 		),

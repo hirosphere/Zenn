@@ -25,8 +25,8 @@ export class Lian < V = any > extends Array < Item < V > >
 
 	public ref( ref : Lian.Ref ) : void
 	{
-		log( "Lian ref", ref );
 		this.refs.add( ref );
+		ref.add?.( 0, this.length );
 	}
 
 	// order operations //
@@ -45,7 +45,7 @@ export class Lian < V = any > extends Array < Item < V > >
 		this.refs.forEach(  ref => ref.add?.( ord, 1 )  );
 	}
 
-	public remove( item : Item < V > ) : void
+	public removeItem( item : Item < V > ) : void
 	{
 		const order = item.order.value;
 		if( order < 0 || this.length <= order ) return;
@@ -94,7 +94,7 @@ class Item < V > extends Leaf < V >
 
 	remove()
 	{
-		this.lian?.remove( this );
+		this.lian?.removeItem( this );
 		this.lian = null;
 	}
 }
@@ -106,6 +106,7 @@ export namespace Lian
 {
 	export interface Ref
 	{
+		bind ? () : void ;
 		swap ? ( low : number, high : number ) : void ;
 		move ? ( from : number, to : number ) : void ;
 		add ? ( order : number, count : number ) : void ;

@@ -1,17 +1,16 @@
 import { defs } from "./defs.js";
-import { Component } from "./compo.js";
+import { Nodette } from "./nodette.js";
 
 const log = console.log;
 //
 
-export const create = ( def : defs.Element, cequ : Element | string ) =>
+export const create = ( def : defs.Element, ceqsel : Element | string, rel ? : Node ) =>
 {
-	const ce = typeof cequ == "string" ? document.querySelector( cequ ) : cequ;
-	let compo = new Component( def, ce );
+	const ce = typeof ceqsel == "string" ? document.querySelector( ceqsel ) : ceqsel;
 
-	// log( JSON.stringify( def, null, "  ") );
+	let nodet = new Nodette( def, ce, rel );
 
-	return { delete() {  } };
+	return { delete() { nodet.delete(); } };
 }
 
 type HTMLElementFactory =

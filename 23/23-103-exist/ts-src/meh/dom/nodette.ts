@@ -1,6 +1,6 @@
 import { Leaf, LoL, Ref, ToString } from "../model/leaf.js";
 import { defs } from "./defs.js";
-import { Parts } from "./parts2.js";
+import { Parts as Parts } from "./parts.js";
 
 const log = console.log;
 
@@ -8,28 +8,25 @@ class Refs extends Set < Ref > {}
 
 //
 
-export class Component
+export class Nodette
 {
-	e ? : Element;
-	partsSet = new Set < Parts >;
-	refs = new Refs;
+	public node ? : Node;
+	public element : Element | null = null;
+	private parts ? : Parts;
+	private refs = new Refs;
 
-	constructor( def : defs.Element, ce : Element | null, rel ? : Node )
+	constructor( def : defs.Node, ce : Element | null, nextNode ? : Node )
 	{
-		this.e = this.createElement( def, ce, rel );
+		if( typeof def == "object" && "isElement" in def )  this.createElement( def, ce, nextNode );
+		else  this.createText( def, ce, nextNode );
 	}
 
-	createNode( def : defs.Node, ce : Element | null, rel ? : Node ) : Node
-	{
-		if( typeof def == "object" && "isElement" in def )  return this.createElement( def, ce, rel );
-		else  return this.createText( def, ce, rel );
-	}
-
-	createElement( def : defs.Element, ce : Element | null, rel ? : Node ) : Element
+	private createElement( def : defs.Element, ce : Element | null, nextNode ? : Node ) : Element
 	{
 		const { type, class: className, props, attrs, style, acts, actActs, optActs, parts } =  def;
 
 		const e = document.createElement( type );
+		this.node = this.element = e;
 
 		if( className ) this.bindClass(  e, className );
 		if( props ) this.bindProps( e, props );
@@ -39,26 +36,27 @@ export class Component
 		if( actActs ) this.bindActs( e, actActs, { passive: false } );		
 		if( optActs ) this.bindOptActs( e, optActs );
 		
-		if( parts ) this.partsSet.add( Parts.create( this, e, parts ) );
+		if( def.parts ) this.parts = Parts.create( this, def.parts );
 
-		if( ce ) ce.insertBefore( e, rel || null );
+		if( ce ) ce.insertBefore( e, nextNode || null );
 
 		return e;
 	}
 
-	createText( def : defs.Text, ce : Element | null, rel ? : Node ) : Text
+	private createText( def : defs.Text, ce : Element | null, nextNode ? : Node ) : Text
 	{
 		const node = document.createTextNode( "" );
 		bindText( node, "nodeValue", def, this.refs );
 
-		if( ce )  ce.insertBefore( node, rel || null );
+		if( ce )  ce.insertBefore( node, nextNode || null );
 
+		this.node = node;
 		return node;
 	}
 
 	// bind opers //
 
-	bindClass ( e : Element, def : defs.Class )
+	private bindClass ( e : Element, def : defs.Class ) :void
 	{
 		if( def instanceof Array )
 		{
@@ -80,7 +78,7 @@ export class Component
 		}
 	}
 
-	bindProps ( e : Element, def : Record < string, any > )
+	private bindProps ( e : Element, def : Record < string, any > ) :void
 	{
 		for( const [ name, value ] of Object.entries( def ) )
 		{
@@ -88,7 +86,7 @@ export class Component
 		}
 	}
 
-	bindAttrs ( e : Element, def : defs.Attrs )
+	private bindAttrs ( e : Element, def : defs.Attrs ) :void
 	{
 		for( const [ name, value ] of Object.entries( def ) )
 		{
@@ -96,15 +94,15 @@ export class Component
 		}
 	}
 
-	bindStyle ( e : HTMLElement, def : defs.Style )
+	private bindStyle ( e : HTMLElement, def : defs.Style ) :void
 	{
 		for( const [ name, value ] of Object.entries( def ) )
 		{
-			bindText( e.style, name, value, this.refs );
+			bindText( e.style, name, value || "", this.refs );
 		}
 	}
 
-	bindActs ( e : Element, def : defs.Actions, opt ? : AddEventListenerOptions )
+	private bindActs ( e : Element, def : defs.Actions, opt ? : AddEventListenerOptions ) :void
 	{
 		for( const [ name, act ] of Object.entries( def ) )
 		{
@@ -112,28 +110,24 @@ export class Component
 		}
 	}
 
-	bindOptActs ( e : Element, def : defs.OptActions )
+	private bindOptActs ( e : Element, def : defs.OptActions ) :void
 	{
 		for( const [ name, actdef ] of Object.entries( def ) )
 		{
 			const [ act, opt ] = actdef;
 			e.addEventListener( name, act as EventListener, opt );
-
-			log( "optAct", name, opt )
 		}
 	}
 
 	//  //
 
-	delete()
+	public delete() :void
 	{
-		this.partsSet.forEach( parts => parts.delete() );
-		this.partsSet.clear();
-		
+		this.node?.parentElement?.removeChild( this.node );
+
+		this.parts?.delete();
 		this.refs.forEach( ref => ref.release() );
 		this.refs.clear();
-
-		delete this.e;
 	}
 }
 
@@ -178,7 +172,7 @@ const setAttr = ( e : Element, name : string, value : boolean | number | string 
 	}
 }
 
-export const bindText = ( target : any, name : string, text : any, refs : Refs ) =>
+export const bindText = ( target : any, name : string, text : defs.Text, refs : Refs ) =>
 {
 	if( text instanceof ToString )
 	{

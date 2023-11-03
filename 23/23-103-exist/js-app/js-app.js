@@ -1,4 +1,4 @@
-import * as meh from "../js-a/meh/index.js";
+import * as meh from "../js-231103/meh/index.js";
 const log = console.log;
 
 meh.Leaf.String;

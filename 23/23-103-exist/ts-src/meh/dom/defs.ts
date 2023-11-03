@@ -85,7 +85,7 @@ export namespace defs
 	//  //
 
 	export type Parts = Part [];
-	type Part = Element | Text | ArrayParts;
+	export type Part = Element | Text | ArrayParts;
 
 	export const ap = < ITEM = any > ( source : Array < ITEM >, create : ( item : ITEM ) => Element | Text ) =>
 	{
