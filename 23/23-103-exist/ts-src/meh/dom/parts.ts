@@ -1,24 +1,26 @@
 /* 
 	DOMエレメント1層分のchildNodesを管理。
 	
-	「LiteralParts」は 実地のparts定義データ(def)をそのまま生成。
+	「LitParts」は リテラルな定義データ( def : Element | Text )からDOMノードを生成。
 	
-	「ArrayParts」は def として与えられた定義 { アレイモデル, 関数 } から、ノード定義を生成。
-	アレイモデルがLianであった場合は、その構造変化を動的に反映。
+	「FuncParts」は ( def : { source: Array, create: ( item ) => Element | Text } ) として与えられた定義から、ノード定義を生成。
+	さらにアレイモデルがLianであった場合は、挿入・削除・移動などその構造変化を動的に反映。
 
 	それぞれのPartsは正確には「PartsFragment 要素連の断片」で、next値で後方へ連結。
 
 	これにより
 		実値パーツフラグメントと関数パーツフラグメントの同居
 		ArrayPartsが動的に要素を追加する時に必要な、後方ノードオブジェクトの提供
-		先頭Partsのdelete()ですべてのchildNodesを破棄・解放
-	などを実現する。
+	などを実現。
+
+	先頭Partsのdelete()ですべてのchildNodesを破棄・解放。
+
 */
 
 
 
 import { defs } from "./defs.js";
-import { Nodette, bindText } from "./nodette.js";
+import { Nodette } from "./nodette.js";
 import { Lian } from "../model/lian.js";
 
 const log = console.log;
@@ -53,7 +55,7 @@ export const createParts = ( nodet : Nodette, def : defs.Parts, index : number )
 	if( partdef instanceof defs.ArrayParts )
 	{
 		index ++;
-		parts = new ArrayParts( partdef, nodet );
+		parts = new FuncParts( partdef, nodet );
 	}
 	
 		//	静的フラグメント作成
@@ -69,7 +71,7 @@ export const createParts = ( nodet : Nodette, def : defs.Parts, index : number )
 			flagdef.push( partdef );
 			index ++;
 		}
-		parts = new LiteralParts( nodet, flagdef, index );	
+		parts = new LitParts( nodet, flagdef, index );	
 	}
 
 	// .  後方フラグメントを作成。
@@ -81,7 +83,7 @@ export const createParts = ( nodet : Nodette, def : defs.Parts, index : number )
 };
 
 
-class LiteralParts extends Parts
+class LitParts extends Parts
 {
 	constructor( private nodet : Nodette, def : defs.Node [], index : number )
 	{
@@ -110,7 +112,7 @@ class LiteralParts extends Parts
 }
 
 
-class ArrayParts extends Parts
+class FuncParts extends Parts
 {
 	constructor( protected def : defs.ArrayParts, private nodet : Nodette )
 	{
@@ -124,17 +126,12 @@ class ArrayParts extends Parts
 
 	add( start : number, count : number )
 	{
-		const next = start + count;
-
-		const partmodels = this.def.source.slice( start, next );
-
+		const partmodels = this.def.source.slice( start, start + count );
 		const nextnode = this.partNodets[ start ]?.node || this.next?.firstnode;
-		
 		const nodets = partmodels.map
 		(
 			partmodel => this.createPart( partmodel, nextnode )
 		);
-
 		this.partNodets.splice( start, 0, ... nodets );
 	}
 	

@@ -29,6 +29,8 @@ export const Lian1Applet = ( model : Lian1Model = new Lian1Model ) =>
 {
 	const { div, h2, h3, span, button } = ef;
 
+	div( { attrs: {  } } );
+
 	return div( { class: "applet lian-1" },
 		h2( "Lian-1 Applet" ),
 		div ( { class: "applet-body " },
@@ -48,7 +50,7 @@ export const Lian1Applet = ( model : Lian1Model = new Lian1Model ) =>
 				div( button( { acts: { click(){ model.clicks.clear(); } } }, "消去" ) ),
 				div( { class: "stations" },
 					ap( model.clicks,
-						i => button( { acts: { mouseout(){ i.remove(); } } },
+						i => button( { acts: { mouseleave(){ i.remove(); } } },
 							i.order.strconv( v => v + 1 + "" ), " ", i
 						)
 					),

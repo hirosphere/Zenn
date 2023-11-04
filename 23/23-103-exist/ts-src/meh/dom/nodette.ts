@@ -67,21 +67,17 @@ export class Nodette
 
 	private bindClass ( e : Element, def : defs.Class ) :void
 	{
-		if( def instanceof Array )
-		{
+		if( def instanceof Array ) {
 			for( const subdef of def )  this.bindClass( e, subdef );
 			return;
 		}
 
-		if( typeof def == "string" || def instanceof Leaf )
-		{
+		if( typeof def == "string" || def instanceof Leaf ) {
 			bindText( e, "className", def, this.refs );
 		}
 
-		else if( typeof def == "object" )
-		{
-			for( const [ name, value ] of Object.entries( def ) )
-			{
+		else if( typeof def == "object" ) {
+			for( const [ name, value ] of Object.entries( def ) ) {
 				bindClass( e, name, value, this.refs );
 			}
 		}
@@ -181,7 +177,7 @@ const setAttr = ( e : Element, name : string, value : boolean | number | string 
 	}
 }
 
-export const bindText = ( target : any, name : string, text : defs.Text, refs : Refs ) =>
+const bindText = ( target : any, name : string, text : defs.Text, refs : Refs ) =>
 {
 	if( text instanceof ToString )
 	{
