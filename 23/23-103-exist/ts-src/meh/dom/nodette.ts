@@ -1,3 +1,12 @@
+/*
+	[ class Nodette ]
+
+	ひとつのDOMノード( Element, TextNode )のライフを管理。
+	・DOMノードとデータオブジェクト(Leaf)の結びつけと解放。
+	・対象DOMノードのコンテナエレメントへの結びつけと解放。
+*/
+
+
 import { Leaf, LoL, Ref, ToString } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import { Parts as Parts } from "./parts.js";

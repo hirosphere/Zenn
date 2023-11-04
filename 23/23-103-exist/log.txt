@@ -4,3 +4,7 @@
 ### LianとComponentのPartsクラスの実装
 
 * とりあえず swap から。
+
+## 23.11.04
+
+LianとArrayPartsの連携スタイルが見えてきてよし。
