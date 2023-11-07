@@ -1,7 +1,11 @@
-import { leaf as l, lol as ll, ef } from "../meh/index.js";
+import { Leaf, ef } from "../meh/index.js";
 import { Range } from "../gui/range.js";
 
-l.bool;
+namespace l
+{
+	export const num = ( value : number, args ?: { rel ?: () => void } ) => new Leaf.Number( value, args );
+	export const str = ( value : string, args ?: { rel ?: () => void } ) => new Leaf.String( value, args );
+}
 
 type HSL = { hue: number; sat: number; lig: number; };
 

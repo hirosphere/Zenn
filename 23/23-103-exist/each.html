@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>each()</title>
+
+<style>
+
+* { box-sizing: border-box; }
+html
+{
+	background-color: hsl( 50, 7%, 94% );
+	margin: 0;
+	padding: 0 max( 12% - 30px, 0px );
+	min-height: 100%;
+	overflow: auto;
+	font-size: clamp( 9px, 0.6vw + 9px, 16px );
+}
+
+body
+{
+	margin: 0 auto;
+	max-width: 1200px;
+	padding: 1em max( 12% - 30px, 2px );
+	background-color: hsl( 0, 0%, 100% );
+	overflow: auto;
+}
+
+body { font-family: 'Courier New', sans-serif }
+html, button, textarea, input
+{
+	color: hsl( 45, 0%, 25% );
+}
+
+.cols-3 { display: flex; flex-direction: column; gap: 0.5rex; }
+
+h1, h2, h3, h4 { margin: 0; padding: 0; }
+h1 { padding: 0 1ex; }
+button { padding: 0.63ex 0.83ex; font-size: 1.00em; }
+
+.applets
+{
+	display: flex; flex-direction: column; gap: 2rem;
+}
+
+.applet
+{
+	border: 1px solid hsl( 0, 0%, 65% );
+	border-radius: 1ex;
+	padding: 0.6em 1em;
+}
+
+@media( width < 560px )
+{
+	.applet
+	{
+		border: none;
+		padding: 0;
+	}
+}
+
+.applet-body
+{
+	padding: 1ex;
+	display: grid;
+	grid-template-rows: auto;
+	gap: 1rem;
+}
+
+/**/
+
+ul { display: flex; flex-wrap: wrap; gap: 1ex; }
+li { display: grid; grid-template-columns: 12ex 12ex; }
+
+/* 汎用部品 */
+
+.range
+{
+	max-width: 500px;
+	height: 1.7rem;
+	display: grid;
+	grid-template-columns: 3rem 1fr 3ex; gap: 1ex;
+	align-items: center;
+}
+
+
+</style>
+
+</head>
+<body>
+
+<script type="module">
+
+import { dom, ef } from "./js-231108-0743/meh/index.js";
+import { EachSample } from "./js-231108-0743/applets/ap-each-sample.js";
+
+const Applets = () => {
+    const { div, h1 } = ef;
+    return div( { class: "applets" }, h1("23-103 each()"), EachSample() );
+};
+dom.create(Applets(), "body");
+
+
+</script>
+
+231108-0743 <span id="host"></span>
+
+<script>
+document.getElementById( "host" ).innerText = location.hostname;
+</script>
+
+</body>
+</html>

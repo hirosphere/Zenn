@@ -1,11 +1,5 @@
 const log = console.log;
 
-export type leaf_t = string | number | boolean;
-
-export const iss = ( value : leaf_t ) : value is string => ( typeof value == "string" );
-export const isn = ( value : leaf_t ) : value is number => ( typeof value == "number" );
-export const isb = ( value : leaf_t ) : value is boolean => ( typeof value == "boolean" );
-
 //
 
 type LeafArgs < T > =
@@ -15,13 +9,15 @@ type LeafArgs < T > =
 
 type Update < T > = ( value : T, old ? :T ) => void;
 
-export abstract class ToString
+export abstract class StringSource
 {
 	abstract ref( update : () => void ) : Ref ;
 	abstract toString() : string ;
 }
 
-export class Leaf < T > extends ToString
+export const setRoValue = Symbol();
+
+class LeafRo < T > extends StringSource
 {
 	protected _value : T;
 	protected rel ? : () => void ;
@@ -36,33 +32,34 @@ export class Leaf < T > extends ToString
 
 	// ref //
 
-	strconv( toref : ( value : T ) => string )
+	public strconv( toref : ( value : T ) => string )
 	{
-		return new ToStringTemplate < T > ( this, toref );
+		return new ConvStrSrc < T > ( this, toref );
 	}
 
-	toString() { return String( this._value ); }
+	public toString() { return String( this._value ); }
 
-	ref( update : Update < T > )
+	public ref( update : Update < T > )
 	{
 		const ref = new RefImpl < T > ( this, update );
 		this.refs.add( ref );
 		return ref;
 	}
 
-	removeref( ref : RefImpl < T > )
+	public removeref( ref : RefImpl < T > )
 	{
 		this.refs.delete( ref );
 	}
 
 	// value //
 
-	get value() { return this._value; }
-	set value( value : T ) { this.set( value ); }
+	public get v() { return this._value ; }
+	public get val() { return this._value ; }
+	public get value() { return this._value; }
 
-	get() : T { return this._value; }
+	public get() : T { return this._value; }
 
-	set( value : T, sender ? : Ref )
+	public [ setRoValue ]( value : T, sender ? : Ref )
 	{
 		if( value === this._value ) return;
 
@@ -75,11 +72,24 @@ export class Leaf < T > extends ToString
 
 	// life //
 
-	delete()
+	public delete()
 	{
 		this.refs.forEach( ref => ref.release() );
 		delete this.rel;
 	}
+}
+
+export class Leaf < T > extends LeafRo < T >
+{
+	public get v() { return this._value ; }
+	public get val() { return this._value ; }
+	public get value() { return this._value; }
+	
+	public set v( value : T ) { this[ setRoValue ]( value ); }
+	public set val( value : T ) { this[ setRoValue ]( value ); }
+	public set value( value : T ) { this[ setRoValue ]( value ); }
+
+	public set( value : T, sender ? : Ref ) { this[ setRoValue ]( value, sender ); }
 }
 
 //
@@ -89,12 +99,43 @@ export interface Ref
 	release() : void ;
 }
 
+export namespace Leaf
+{
+	export class String extends Leaf < string > {};
+	export class Number extends Leaf < number > {};
+	export class Boolean extends Leaf < boolean > {};
+
+	// Readonly //
+
+	export namespace Ro
+	{
+		export const Leaf = LeafRo;
+
+		export class String extends LeafRo < string > {};
+		export class Number extends LeafRo < number > {};
+		export class Boolean extends LeafRo < boolean > {};	
+	}
+
+}
+
+export namespace LoL
+{
+	type lol < T > = T | Leaf < T >;
+	export type Number = lol < number > ;
+	export type String = lol < string > ;
+	export type Boolean = lol < boolean > ;
+}
+
+
+//  //
+
 class RefImpl < T > implements Ref
 {
-	constructor( protected source : Leaf < T > | null, protected _update : Update < T > | null )
-	{
-		this.source && this._update?.( this.source.value );
-	}
+	constructor (
+		protected source : LeafRo < T > | null,
+		protected _update : Update < T > | null
+	)
+	{ this.source && this._update?.( this.source.value ); }
 
 	update( value : T, old ? : T ) : void
 	{
@@ -110,63 +151,15 @@ class RefImpl < T > implements Ref
 	}
 }
 
-class ToStringTemplate < T > extends ToString
+class ConvStrSrc < T > extends StringSource
 {
-	constructor( readonly source : Leaf < T >, readonly toref : ( value : T ) => string )
-	{
-		super();
-	}
+	constructor (
+		readonly source : LeafRo < T >,
+		readonly toref : ( value : T ) => string
+	)
+	{ super(); }
 
 	ref( update : () => void ) { return this.source.ref( update ); }
 	toString() { return this.toref( this.source.value ); }
-}
-
-//
-
-export namespace Leaf
-{
-	export class String extends Leaf < string > {};
-	export class Number extends Leaf < number > {};
-	export class Boolean extends Leaf < boolean > {};
-}
-
-export function leaf < T > ( initv : T | Leaf < T >, args ? : LeafArgs < T > )
-{
-	return initv instanceof Leaf ? initv : new Leaf < T > ( initv, args );
-}
-
-export namespace leaf
-{
-	export const str = leaf < string > ;
-	export const num = leaf < number > ;
-	export const bool = leaf < boolean > ;
-	
-	export const string = leaf < string > ;
-	export const number = leaf < number > ;
-	export const boolean = leaf < boolean > ;
-	
-	export const Str = leaf < string > ;
-	export const Num = leaf < number > ;
-	export const Bool = leaf < boolean > ;
-	
-	export const String = leaf < string > ;
-	export const Number = leaf < number > ;
-	export const Boolean = leaf < boolean > ;
-}
-
-type lol < T > = T | Leaf < T >;
-
-export namespace lol
-{
-	export type num = lol < number > ;
-	export type str = lol < string > ;
-	export type bool = lol < boolean > ;
-}
-
-export namespace LoL
-{
-	export type Number = lol < number > ;
-	export type String = lol < string > ;
-	export type Boolean = lol < boolean > ;
 }
 

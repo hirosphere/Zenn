@@ -1,13 +1,13 @@
 /*
 	[ class Nodette ]
 
-	ひとつのDOMノード( Element, TextNode )のライフを管理。
+	ひとつのDOMノード( Element, Text )のライフを管理。
 	・DOMノードとデータオブジェクト(Leaf)の結びつけと解放。
 	・対象DOMノードのコンテナエレメントへの結びつけと解放。
 */
 
 
-import { Leaf, LoL, Ref, ToString } from "../model/leaf.js";
+import { Leaf, LoL, Ref, StringSource } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import { Parts as Parts } from "./parts.js";
 
@@ -32,18 +32,16 @@ export class Nodette
 
 	private createElement( def : defs.Element, ce : Element | null, nextNode ? : Node ) : Element
 	{
-		const { type, class: className, props, attrs, style, acts, actActs, optActs, parts } =  def;
-
-		const e = document.createElement( type );
+		const e = document.createElement( def.type );
 		this.node = this.element = e;
 
-		if( className ) this.bindClass(  e, className );
-		if( props ) this.bindProps( e, props );
-		if( attrs ) this.bindAttrs( e, attrs );
-		if( style ) this.bindStyle( e, style );
-		if( acts ) this.bindActs( e, acts );
-		if( actActs ) this.bindActs( e, actActs, { passive: false } );		
-		if( optActs ) this.bindOptActs( e, optActs );
+		if( def.class ) this.bindClass(  e, def.class );
+		if( def.props ) this.bindProps( e, def.props );
+		if( def.attrs ) this.bindAttrs( e, def.attrs );
+		if( def.style ) this.bindStyle( e, def.style );
+		if( def.acts ) this.bindActs( e, def.acts );
+		if( def.actActs ) this.bindActs( e, def.actActs, { passive: false } );		
+		if( def.optActs ) this.bindOptActs( e, def.optActs );
 		
 		if( def.parts ) this.parts = Parts.create( this, def.parts );
 
@@ -85,40 +83,35 @@ export class Nodette
 
 	private bindProps ( e : Element, def : Record < string, any > ) :void
 	{
-		for( const [ name, value ] of Object.entries( def ) )
-		{
+		for( const [ name, value ] of Object.entries( def ) ) {
 			bindText( e, name, value, this.refs );
 		}
 	}
 
 	private bindAttrs ( e : Element, def : defs.Attrs ) :void
 	{
-		for( const [ name, value ] of Object.entries( def ) )
-		{
+		for( const [ name, value ] of Object.entries( def ) ) {
 			bindAttr( e, name, value, this.refs );
 		}
 	}
 
 	private bindStyle ( e : HTMLElement, def : defs.Style ) :void
 	{
-		for( const [ name, value ] of Object.entries( def ) )
-		{
+		for( const [ name, value ] of Object.entries( def ) ) {
 			bindText( e.style, name, value || "", this.refs );
 		}
 	}
 
 	private bindActs ( e : Element, def : defs.Actions, opt ? : AddEventListenerOptions ) :void
 	{
-		for( const [ name, act ] of Object.entries( def ) )
-		{
+		for( const [ name, act ] of Object.entries( def ) ) {
 			e.addEventListener( name, act as EventListener, opt );
 		}
 	}
 
 	private bindOptActs ( e : Element, def : defs.OptActions ) :void
 	{
-		for( const [ name, actdef ] of Object.entries( def ) )
-		{
+		for( const [ name, actdef ] of Object.entries( def ) ) {
 			const [ act, opt ] = actdef;
 			e.addEventListener( name, act as EventListener, opt );
 		}
@@ -140,46 +133,37 @@ export class Nodette
 
 const bindClass = ( e : Element, name : string, value : LoL.Boolean, refs : Refs ) =>
 {
-	if( value instanceof Leaf )
-	{
+	if( value instanceof Leaf ) {
 		refs.add( value.ref( ( value ) => e.classList.toggle( name, value ) ) );
 	}
-	
 	else  e.classList.toggle( name, value );
 }
 
 
 const bindAttr = ( e : Element, name : string, value : defs.Text, refs : Refs ) =>
 {
-	if( value instanceof Leaf )
-	{
+	if( value instanceof Leaf ) {
 		refs.add( value.ref( () => setAttr( e, name, value.get() ) ) );
 	}
-
-	else if( value instanceof ToString )
-	{
+	else if( value instanceof StringSource ) {
 		refs.add( value.ref( () => setAttr( e, name, value.toString() ) ) );
 	}
-
 	else setAttr( e, name, value );
 };
 
 const setAttr = ( e : Element, name : string, value : boolean | number | string ) =>
 {
-	if( typeof value == "boolean" )
-	{
+	if( typeof value == "boolean" ) {
 		value ? e.setAttribute( name, "" ) : e.removeAttribute( name );
 	}
-	
-	else
-	{
+	else{
 		e.setAttribute( name, String( value ) );
 	}
 }
 
 const bindText = ( target : any, name : string, text : defs.Text, refs : Refs ) =>
 {
-	if( text instanceof ToString )
+	if( text instanceof StringSource )
 	{
 		refs.add( text.ref( () => { target[ name ] = text.toString() } ) );
 	}

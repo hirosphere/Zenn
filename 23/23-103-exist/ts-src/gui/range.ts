@@ -1,4 +1,4 @@
-import { leaf, lol, LoL, Leaf, ef } from "../meh/index.js";
+import { LoL, Leaf, ef } from "../meh/index.js";
 
 export class UIM
 {

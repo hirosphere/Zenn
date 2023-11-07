@@ -1,8 +1,8 @@
-import { leaf, ef, dom } from "./meh/index.js";
+import { Leaf, ef, dom } from "./meh/index.js";
 import { Range } from "./gui/range.js";
 import { HSLApplet } from "./applets/hsl.js";
-import { Map } from "./applets/eq/map.js";
-import { Lian1 } from "./applets/lian-1.js";
+import { Lian1 } from "./applets/lian1app.js";
+import { EachSample } from "./applets/ap-each-sample.js";
 const log = console.log;
 
 //
@@ -31,7 +31,7 @@ const CompoA = () =>
 				li( "中浦和" ),
 				li( "武蔵浦和" ),
 			),
-			Range.UI( { title: "Range 2023", value: leaf.number( 0.35 ), unit: "%", max: 1, step: 0.01, conv: v => String( Math.round( v * 100 ) ) } ),
+			Range.UI( { title: "Range 2023", value: new Leaf.Number( 0.35 ), unit: "%", max: 1, step: 0.01, conv: v => String( Math.round( v * 100 ) ) } ),
 		),
 	);
 }
@@ -45,6 +45,7 @@ const Applets = () =>
 		{ class: "applets" },
 		
 		h1( "23-103 Lian, Exist" ),
+		EachSample(),
 		Lian1.UI(),
 		HSLApplet(),
 		CompoA(),

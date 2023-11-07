@@ -1,4 +1,4 @@
-import { Leaf, ToString } from "../model/leaf.js";
+import { Leaf, StringSource } from "../model/leaf.js";
 import { Lian } from "../model/lian.js";
 
 type gE = globalThis.Element;
@@ -85,14 +85,14 @@ export namespace defs
 	//  //
 
 	export type Parts = Part [];
-	export type Part = Element | Text | ArrayParts;
+	export type Part = Element | Text | ArrayParts < any >;
 
-	export const ap = < ITEM = any > ( source : Array < ITEM >, create : ( item : ITEM ) => Element | Text ) =>
+	export const ap = < ITEM > ( source : Array < ITEM >, create : ( item : ITEM ) => Element | Text ) =>
 	{
 		return new ArrayParts( source, create );
 	};
 
-	export class ArrayParts < ITEM = any >
+	export class ArrayParts < ITEM >
 	{
 		constructor
 		(
@@ -105,7 +105,7 @@ export namespace defs
 
 	export type Text =
 	(
-		boolean | number | string | ToString
+		boolean | number | string | StringSource
 	);
 	
 	//  //
@@ -114,7 +114,7 @@ export namespace defs
 	{
 		if( typeof first == "object" )
 		{
-			if( ! ( "isElement" in first || first instanceof ToString || first instanceof ArrayParts ) )  // ! isPart
+			if( ! ( "isElement" in first || first instanceof StringSource || first instanceof ArrayParts ) )  // ! isPart
 			{
 				return {
 					isElement: true,

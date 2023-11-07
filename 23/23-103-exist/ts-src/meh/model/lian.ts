@@ -1,24 +1,21 @@
-// class Lian ( 連：リエン・れん ) Arrayをリアクティブにするクラス //
+/*
+	[ class Lian ]
 
-import { Leaf } from "./leaf.js";
+	要素の順序・構成の変更通知が得られるArray。
+	要素の型は、専用のLian.Itemクラスの継承クラスのみ。
+
+	DOMエレメントのchildNodesの動的な構成変更を実現するために、モデルとして使用。
+*/
+
+import { Leaf, setRoValue } from "./leaf.js";
 
 const log = console.log;
 
-export class Lian < V = any > extends Array < Item < V > >
+export class Lian < Item extends Lian.Item > extends Array < Item >
 {
-	static create < V > ( srcvalue : Array < V > = [] ) : Lian < V >
+	static create < Item extends Lian.Item > ( items : Item[] ) : Lian < Item >
 	{
-		const rt = new Lian();
-		rt.set( srcvalue );
-		return rt;
-	}
-
-	//  //
-
-	public set( array : Array < V > ) : void
-	{
-		this.clear();
-		array.forEach( ( value, order ) => this[ order ] = new Item( this, order, value ) );
+		return new Lian < Item > () .addItems( items );
 	}
 
 	protected refs = new Set < Lian.Ref > ();
@@ -29,26 +26,42 @@ export class Lian < V = any > extends Array < Item < V > >
 		ref.add?.( 0, this.length );
 	}
 
+	//  //
+
+	public addItems( items : Item[], start ? : number ) : this
+	{
+		const st = regnext( this, start );
+		this.splice( st, 0, ... items );
+
+		items.forEach( i => i[ lian ] = this );
+		this.reorder( st, this.length );
+		this.refs.forEach(  ref => ref.add?.( st, items.length )  );
+
+		return this;
+	}
+
 	// order operations //
 
-	public swap( orderA : number, orderB : number ) : void
-	{
-		;
-	}
-	
-	public add( itemValue : V, order ? : number ) : void
+	public add( item : Item, order ? : number ) : void
 	{
 		const ord = regnext( this, order );
-		this.splice( ord, 0, new Item( this, ord, itemValue ) );
+		this.splice( ord, 0, item );
+		item[ lian ] = this;
 
 		this.reorder( ord, this.length );
 		this.refs.forEach(  ref => ref.add?.( ord, 1 )  );
 	}
 
-	public removeItem( item : Item < V > ) : void
+	public remove( item : Item ) : void
 	{
-		const order = item.order.value;
-		if( order < 0 || this.length <= order ) return;
+		if( item[ lian ] != this )  return;
+
+		const order = item.order.v;
+
+		if( order < 0 || this.length <= order )  return;
+		if( item != this[ order ] )  return;
+
+		delete item[ lian ];
 		this.splice( order, 1 );
 
 		this.reorder( order, this.length );
@@ -68,7 +81,7 @@ export class Lian < V = any > extends Array < Item < V > >
 	{
 		for( let ord = start; ord < next; ord ++ )
 		{
-			this[ ord ].order.value = ord;
+			this[ ord ].order[ setRoValue ]( ord );
 		}
 	}
 }
@@ -79,31 +92,23 @@ const regnext = ( ar : Array < any >, order ? : number ) : number =>
 	return order;
 }
 
-class Item < V > extends Leaf < V >
-{
-	public readonly order;
-	public readonly isLast = new Leaf.Boolean( false );
-	protected lian : Lian < V > | null;
-
-	constructor( lian : Lian < V >, order : number, value : V )
-	{
-		super( value );
-		this.order = new Leaf.Number( order );
-		this.lian = lian;
-	}
-
-	remove()
-	{
-		this.lian?.removeItem( this );
-		this.lian = null;
-	}
-}
-
-export const LianItem = Item;
-
+const lian = Symbol();
 
 export namespace Lian
 {
+	export class Item
+	{
+		public readonly order = new Leaf.Ro.Number( 0 );
+		public [ lian ] ? : Lian < Item > ;
+	
+		remove()
+		{
+			this[ lian ]?.remove( this );
+			delete this[ lian ];
+		}
+	}
+	
+	
 	export interface Ref
 	{
 		bind ? () : void ;
@@ -113,3 +118,4 @@ export namespace Lian
 		remove ? ( order : number, count : number ) : void ;
 	}
 }
+

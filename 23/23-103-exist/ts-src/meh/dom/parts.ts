@@ -1,9 +1,9 @@
 /* 
 	DOMエレメント1層分のchildNodesを管理。
 	
-	「LitParts」は リテラルな定義データ( def : Element | Text )からDOMノードを生成。
+	「LitParts」は リテラルなDOMノード定義データ( def : defs.Element | defs.Text )からDOMノードを生成。
 	
-	「FuncParts」は ( def : { source: Array, create: ( item ) => Element | Text } ) として与えられた定義から、ノード定義を生成。
+	「FuncParts」は ( def : { source: Array, create: ( item ) => Element | Text } ) として与えられた定義から、DOMノード定義を生成。
 	さらにアレイモデルがLianであった場合は、挿入・削除・移動などその構造変化を動的に反映。
 
 	それぞれのPartsは正確には「PartsFragment 要素連の断片」で、next値で後方へ連結。
@@ -47,9 +47,9 @@ export const createParts = ( nodet : Nodette, def : defs.Parts, index : number )
 {
 	let parts : Parts;
 
-	//	partdef の内容により 動的フラグメント / 静的フラグメントのいずれかを作成し、 
+	//	partdef の内容により 即値フラグメント / 関数フラグメントのいずれかを作成し、 
 
-		//	動的フラグメント作成
+		//	関数フラグメント作成
 
 	const partdef = def[ index ];
 	if( partdef instanceof defs.ArrayParts )
@@ -58,12 +58,14 @@ export const createParts = ( nodet : Nodette, def : defs.Parts, index : number )
 		parts = new FuncParts( partdef, nodet );
 	}
 	
-		//	静的フラグメント作成
+		//	即値フラグメント作成
 
 	else
 	{
-		// 静的パート(Element|Text)定義の連続をflagdefとして分離。
+		// 即値パート(Element|Text)定義の連続をflagdefとして取り出す。
+
 		const flagdef : defs.Node[] = [];
+
 		while( index < def.length )
 		{
 			const partdef = def[ index ];
@@ -71,10 +73,12 @@ export const createParts = ( nodet : Nodette, def : defs.Parts, index : number )
 			flagdef.push( partdef );
 			index ++;
 		}
-		parts = new LitParts( nodet, flagdef, index );	
+
+		parts = new LitParts( nodet, flagdef, index );	// 
 	}
 
 	// .  後方フラグメントを作成。
+	
 	if( index < def.length ) {
 		parts.next = createParts( nodet, def, index );
 	}
@@ -114,7 +118,7 @@ class LitParts extends Parts
 
 class FuncParts extends Parts
 {
-	constructor( protected def : defs.ArrayParts, private nodet : Nodette )
+	constructor( protected def : defs.ArrayParts < any >, private nodet : Nodette )
 	{
 		super();
 		
