@@ -15,12 +15,14 @@ html
 	height: 100%; overflow: hidden;
 	border: 0px solid hsl( 203, 50%, 40% );
 	padding: 0px;
+	font-size: calc( 5px + clamp( 0px, 1.5vw, 12px ) );
+	color: hsl( 0, 0%, 16% );
 }
 
 body
 {
 	height: 100%; overflow: auto; border: 0px solid hsl( 23, 70%, 70% );
-	padding: 30px 120px;
+	padding: 30px 0;
 	display: flex;
 	flex-direction: column;
 	justify-content: stretch;
@@ -59,7 +61,7 @@ ul.item-list
 {
 	border: 0px solid hsl( 95, 30%, 80% );
 	overflow: auto;
-	font-size: 14px;
+	font-size: 1em;
 }
 
 .item-list li
@@ -91,7 +93,8 @@ td { padding: 0.1ex 1ex; line-height: 1.2em; }
 		<div class="path"><ul class="path-list"><a href="../z-index.html">Root</a></ul></div>
 		<h1><a href="./">Zenn</a></h1>
 		<ul class="item-list"><li><span class="title" >.git</span><a href="./.git/z-index.html">Alt</a><a href="./.git/">Dir</a></li>
-<li><span class="title" >23</span><a href="./23/z-index.html">Alt</a><a href="./23/">Dir</a></li></ul>
+<li><span class="title" >23</span><a href="./23/z-index.html">Alt</a><a href="./23/">Dir</a></li>
+<li><span class="title" >z-index.html</span><a style="color: #bba">Alt</a><a href="./z-index.html">File</a></li></ul>
 	</div>
 	<div class="monitor">
 		<table><tbody><tr><td>uReqPath</td><td>/Zenn/z-index.html</td></tr>
@@ -106,6 +109,7 @@ td { padding: 0.1ex 1ex; line-height: 1.2em; }
 <tr><td>htName</td><td>Zenn</td></tr></tbody></table>
 		
 		<table><tbody><tr><td></td><td>.git</td></tr>
-<tr><td></td><td>23</td></tr></tbody></table></div>	
+<tr><td></td><td>23</td></tr>
+<tr><td></td><td>z-index.html</td></tr></tbody></table></div>	
 </body>
 </html>

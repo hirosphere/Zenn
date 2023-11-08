@@ -1,3 +1,6 @@
+//	データソース
+//	API | HeartRails Express | 路線／駅名／最寄駅データサービス https://express.heartrails.com/api.html
+
 export const lines : Record < string, string > =
 {
 "京浜東北線":
