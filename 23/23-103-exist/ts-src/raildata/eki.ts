@@ -1,30 +1,29 @@
-import { Lian } from "../meh/model/index.js";
 import { lines as src1 } from "./data1.js";
 const log = console.log;
 type tsv = string;
 
 export class Line
 {
-	public readonly stations = new Lian < Station > ;
+	public readonly stations : Station[];
 
 	constructor( public readonly name : string )
 	{
-		const stationlist : Station[] = ( src1[ name ] ?? [] )
+		this.stations = ( src1[ name ] ?? [] )
 			.split( "\n" )
-			.map( stat_tsv => new Station( stat_tsv ) )
+			.map( ( stat_tsv, pos ) => new Station( name, pos, stat_tsv ) )
 		;
-
-		this.stations.addItems( stationlist );
 	}
 }
 
-export class Station extends Lian.Item
+export class Station
 {
 	private src;
 
-	constructor( protected tsv : string )
+	constructor(
+		public readonly line : string,
+		public readonly pos : number,
+		protected tsv : string )
 	{
-		super();
 		this.src = tsv.split( "\t" );
 	}
 

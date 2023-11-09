@@ -4,10 +4,12 @@ const log = console.log;
 
 type LeafArgs < T > =
 {
-	rel ?: () => void ;
+	rel ?: Leaf.Update < T > ;
+	owner ? : {}
 };
 
-type Update < T > = ( value : T, old ? :T ) => void;
+//  Leafから変更通知を受け取るRefの作成と、Leaf値のstringへの変換を受け持ち、  //
+//  NodetのAttr, Style, Part など、あらゆる値をリアクティブ化。  //
 
 export abstract class StringSource
 {
@@ -15,31 +17,31 @@ export abstract class StringSource
 	abstract toString() : string ;
 }
 
+//  LeafRo : 書き込み防止機能付き　プリミティブ値オブジェクト  //
+
 export const setRoValue = Symbol();
 
 class LeafRo < T > extends StringSource
 {
 	protected _value : T;
-	protected rel ? : () => void ;
 	protected refs = new Set < RefImpl < T > > ;
 
-	constructor( value : T, args ? : LeafArgs < T > )
+	constructor( value : T, protected args ? : LeafArgs < T > )
 	{
 		super();
 		this._value = value;
-		this.rel = args?.rel;
 	}
 
 	// ref //
 
-	public strconv( toref : ( value : T ) => string )
+	public cv( toref : ( value : T ) => string )
 	{
 		return new ConvStrSrc < T > ( this, toref );
 	}
 
 	public toString() { return String( this._value ); }
 
-	public ref( update : Update < T > )
+	public ref( update : Leaf.Update < T > )
 	{
 		const ref = new RefImpl < T > ( this, update );
 		this.refs.add( ref );
@@ -59,14 +61,19 @@ class LeafRo < T > extends StringSource
 
 	public get() : T { return this._value; }
 
-	public [ setRoValue ]( value : T, sender ? : Ref )
+	public [ setRoValue ]( owner : object, value : T, sender ? : Ref ) : void
+	{
+		if( owner == this.args?.owner ) this._set( value, sender );
+	}
+
+	protected _set( value : T, sender ? : Ref )
 	{
 		if( value === this._value ) return;
 
 		const old = this._value;
 		this._value = value;
 
-		this.rel?.();
+		this.args?.rel?.( value, old );
 		this.refs.forEach( ref => ref.update( value, old ) );
 	}
 
@@ -75,7 +82,7 @@ class LeafRo < T > extends StringSource
 	public delete()
 	{
 		this.refs.forEach( ref => ref.release() );
-		delete this.rel;
+		delete this.args;
 	}
 }
 
@@ -85,37 +92,31 @@ export class Leaf < T > extends LeafRo < T >
 	public get val() { return this._value ; }
 	public get value() { return this._value; }
 	
-	public set v( value : T ) { this[ setRoValue ]( value ); }
-	public set val( value : T ) { this[ setRoValue ]( value ); }
-	public set value( value : T ) { this[ setRoValue ]( value ); }
+	public set v( value : T ) { this._set( value ); }
+	public set val( value : T ) { this._set( value ); }
+	public set value( value : T ) { this.set( value ); }
 
-	public set( value : T, sender ? : Ref ) { this[ setRoValue ]( value, sender ); }
+	public set( value : T, sender ? : Ref ) { this._set( value, sender ); }
 }
 
-//
-
-export interface Ref
-{
-	release() : void ;
-}
+	// Readonly //
 
 export namespace Leaf
 {
+	export type Update < T > = ( value : T, old ? : T ) => void;
+
 	export class String extends Leaf < string > {};
 	export class Number extends Leaf < number > {};
 	export class Boolean extends Leaf < boolean > {};
 
-	// Readonly //
+	export class Ro < T > extends LeafRo < T > {}
 
 	export namespace Ro
 	{
-		export const Leaf = LeafRo;
-
 		export class String extends LeafRo < string > {};
 		export class Number extends LeafRo < number > {};
 		export class Boolean extends LeafRo < boolean > {};	
 	}
-
 }
 
 export namespace LoL
@@ -127,13 +128,19 @@ export namespace LoL
 }
 
 
-//  //
+// Ref //
+
+export interface Ref
+{
+	release() : void ;
+}
+
 
 class RefImpl < T > implements Ref
 {
 	constructor (
 		protected source : LeafRo < T > | null,
-		protected _update : Update < T > | null
+		protected _update : Leaf.Update < T > | null
 	)
 	{ this.source && this._update?.( this.source.value ); }
 
@@ -150,6 +157,8 @@ class RefImpl < T > implements Ref
 		this._update = null;
 	}
 }
+
+//  //
 
 class ConvStrSrc < T > extends StringSource
 {

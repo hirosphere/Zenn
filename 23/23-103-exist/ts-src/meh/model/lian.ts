@@ -2,7 +2,6 @@
 	[ class Lian ]
 
 	要素の順序・構成の変更通知が得られるArray。
-	要素の型は、専用のLian.Itemクラスの継承クラスのみ。
 
 	DOMエレメントのchildNodesの動的な構成変更を実現するために、モデルとして使用。
 */
@@ -11,11 +10,107 @@ import { Leaf, setRoValue } from "./leaf.js";
 
 const log = console.log;
 
-export class Lian < Item extends Lian.Item > extends Array < Item >
+export class LianBase < O extends OrderBase = OrderBase > extends Array < O >
 {
-	static create < Item extends Lian.Item > ( items : Item[] ) : Lian < Item >
+	protected refs = new Set < Lian.Ref > ();
+
+	public ref( ref : Lian.Ref ) : void
 	{
-		return new Lian < Item > () .addItems( items );
+		this.refs.add( ref );
+		ref.add?.( 0, this.length );
+	}
+
+	// order operations //
+
+	public addOrders( orders : O[], start ? : number )
+	{
+		const st = regnext( this, start );
+		this.splice( st, 0, ... orders );
+
+		this.reposit( st, this.length );
+		this.refs.forEach(  ref => ref.add?.( st, orders.length )  );
+
+		return this;
+	}
+
+	public addOrder( order : O, position ? : number ) : void
+	{
+		const pos = regnext( this, position );
+		this.splice( pos, 0, order );
+
+		this.reposit( pos, this.length );
+		this.refs.forEach(  ref => ref.add?.( pos, 1 )  );
+	}
+
+	public remove( order : O ) : void
+	{
+		if( order.owner != this )  return;
+
+		const pos = order.pos.v;
+
+		if( pos < 0 || this.length <= pos )  return;
+		if( order != this[ pos ] )  return;
+
+		this.splice( pos, 1 );
+
+		this.reposit( pos, this.length );
+		this.refs.forEach(  ref => ref.remove?.( pos, 1 )  );
+	}
+
+	public clear() : void
+	{
+		const len = this.length;
+		this.refs.forEach(  ( ref ) => ref.remove?.( 0, len )  );
+		this.length = 0;
+	}
+
+	//  //
+
+	protected reposit( start : number, next : number ) : void
+	{
+		for( let pos = start; pos < next; pos ++ )
+		{
+			this[ pos ].pos[ setRoValue ]( this, pos );
+		}
+	}
+
+	//  //
+
+	public terminate()
+	{
+		this.clear();
+		this.refs.clear();	
+	}
+}
+
+export class OrderBase
+{	
+	public readonly pos : Leaf.Ro.Number ;
+	constructor ( public readonly owner : LianBase )
+	{
+		this.pos = new Leaf.Ro.Number( -1, { owner } );
+	}
+
+	public remove() : void { this.owner.remove( this ); }
+
+	public terminate()
+	{
+	}
+}
+
+const regnext = ( ar : Array < any >, order ? : number ) : number =>
+{
+	if( order == undefined || order > ar.length || order < 0 ) return ar.length;
+	return order;
+}
+
+//   //
+
+export class Lian < V > extends LianBase < Order < V > >
+{
+	static create < V > ( items : V[] ) : Lian < V >
+	{
+		return new Lian < V > ().addValues( items );
 	}
 
 	protected refs = new Set < Lian.Ref > ();
@@ -28,44 +123,38 @@ export class Lian < Item extends Lian.Item > extends Array < Item >
 
 	//  //
 
-	public addItems( items : Item[], start ? : number ) : this
+	public addValues( values : V[], start ? : number ) : this
 	{
-		const st = regnext( this, start );
-		this.splice( st, 0, ... items );
-
-		items.forEach( i => i[ lian ] = this );
-		this.reorder( st, this.length );
-		this.refs.forEach(  ref => ref.add?.( st, items.length )  );
-
+		this.addOrders( values.map( val => this.createOrder( val ) ), start );
 		return this;
+	}
+
+	protected createOrder( value : V ) : Order < V >
+	{
+		return new Order( this, value );
 	}
 
 	// order operations //
 
-	public add( item : Item, order ? : number ) : void
+	public add( value : V, position ? : number ) : void
 	{
-		const ord = regnext( this, order );
-		this.splice( ord, 0, item );
-		item[ lian ] = this;
-
-		this.reorder( ord, this.length );
-		this.refs.forEach(  ref => ref.add?.( ord, 1 )  );
+		const o = new Order < V > ( this, value );
+		this.addOrder( o, position );
 	}
 
-	public remove( item : Item ) : void
+	public remove( order : OrderBase ) : void
 	{
-		if( item[ lian ] != this )  return;
+		if( order.owner != this )  return;
 
-		const order = item.order.v;
+		const pos = order.pos.v;
 
-		if( order < 0 || this.length <= order )  return;
-		if( item != this[ order ] )  return;
+		if( pos < 0 || this.length <= pos )  return;
+		if( order != this[ pos ] )  return;
 
-		delete item[ lian ];
-		this.splice( order, 1 );
+		this.splice( pos, 1 );
 
-		this.reorder( order, this.length );
-		this.refs.forEach(  ref => ref.remove?.( order, 1 )  );
+		this.reposit( pos, this.length );
+		this.refs.forEach(  ref => ref.remove?.( pos, 1 )  );
 	}
 
 	public clear() : void
@@ -77,38 +166,30 @@ export class Lian < Item extends Lian.Item > extends Array < Item >
 
 	//  //
 
-	protected reorder( start : number, next : number ) : void
+	protected reposit( start : number, next : number ) : void
 	{
 		for( let ord = start; ord < next; ord ++ )
 		{
-			this[ ord ].order[ setRoValue ]( ord );
+			this[ ord ].pos[ setRoValue ]( this, ord );
 		}
 	}
 }
 
-const regnext = ( ar : Array < any >, order ? : number ) : number =>
-{
-	if( order == undefined || order > ar.length || order < 0 ) return ar.length;
-	return order;
-}
+export class Order < V > extends OrderBase
+{	
+	constructor (
+		owner : Lian < V >,
+		public readonly value : V
+	) {
+		super( owner );
+	}
 
-const lian = Symbol();
+	get v() { return this.value }
+	get val() { return this.value }
+}
 
 export namespace Lian
 {
-	export class Item
-	{
-		public readonly order = new Leaf.Ro.Number( 0 );
-		public [ lian ] ? : Lian < Item > ;
-	
-		remove()
-		{
-			this[ lian ]?.remove( this );
-			delete this[ lian ];
-		}
-	}
-	
-	
 	export interface Ref
 	{
 		bind ? () : void ;

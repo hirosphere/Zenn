@@ -27,7 +27,7 @@ const { div, span, input } = ef;
 export const UI = ( uimsrc : Partial < UIM > ) =>
 {
 	const uim = new UIM( uimsrc );
-	const cv = uim.value.strconv( uim.conv );
+	const cv = uim.value.cv( uim.conv );
 
 	const inputact = ( ev : Event ) =>
 	{

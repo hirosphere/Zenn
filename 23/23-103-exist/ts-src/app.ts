@@ -3,6 +3,7 @@ import { Range } from "./gui/range.js";
 import { HSLApplet } from "./applets/hsl.js";
 import { Lian1 } from "./applets/lian1app.js";
 import { EachSample } from "./applets/ap-each-sample.js";
+import { TabSwitchApp } from "./applets/tabswitch.js";
 const log = console.log;
 
 //
@@ -45,7 +46,8 @@ const Applets = () =>
 		{ class: "applets" },
 		
 		h1( "23-103 Lian, Exist" ),
-		EachSample(),
+		TabSwitchApp(),
+		// EachSample(),
 		Lian1.UI(),
 		HSLApplet(),
 		CompoA(),

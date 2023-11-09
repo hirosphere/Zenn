@@ -1,5 +1,5 @@
 import { Leaf, StringSource } from "../model/leaf.js";
-import { Lian } from "../model/lian.js";
+import { LianBase } from "../model/lian.js";
 
 type gE = globalThis.Element;
 
@@ -92,6 +92,8 @@ export namespace defs
 		return new ArrayParts( source, create );
 	};
 
+	export const each = ap;
+
 	export class ArrayParts < ITEM >
 	{
 		constructor
@@ -134,6 +136,7 @@ export namespace defs
 }
 
 export const ap = defs.ap;
+export const each = defs.each;
 
 
 // questplace //

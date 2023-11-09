@@ -1,17 +1,14 @@
-import { Leaf, Lian, ef, ap, } from "../meh/index.js";
+import { Leaf, Lian, Order, ef, each, } from "../meh/index.js";
 import * as eki from "../raildata/eki.js";
 const log = console.log;
-const lp = ap;
 
 // Model //
-
-const lines = eki.lines;
 
 namespace Model
 {
 	export class App
 	{
-		lines = [ "埼京線", "京浜東北線", "総武線各駅停車", "中央線" ].map( name => new eki.Line( name ) );
+		lines = [ "埼京線", "山手線", "京浜東北線", "総武線各駅停車", "中央線" ].map( name => eki.lines[ name ] );
 		public readonly history = new Lian < eki.Station > ();
 	
 		evmon = new Leaf.String( "evmon" );
@@ -28,12 +25,10 @@ const arrnd = ( ar : Array < any > ) => Math.floor( Math.random() * ar.length );
 
 // UI //
 
-const { div, h2, h3, span, button, b } = ef;
+const { div, h2, h3, span, button, b, table, thead, tbody, tr, td, br } = ef;
 
 export const Lian1Applet = ( app : Model.App = new Model.App ) =>
 {
-	const lp = ap;
-
 	document.addEventListener( "mouseup", () => app.evmon.set( "mouseup" ) )
 
 	return div( { class: "applet lian-1" },
@@ -43,7 +38,7 @@ export const Lian1Applet = ( app : Model.App = new Model.App ) =>
 		div ( { class: "applet-body " },
 			div( { class: "cols-3", actActs: { dblclick( ev ) { app.evmon.set( "dblclk" ) } } },
 				div( { class: "stations" },
-					ap( app.lines, line => Line( app, line ) ),
+					each( app.lines, line => Line( app, line ) ),
 				),
 			),
 
@@ -62,28 +57,50 @@ export const Lian1Applet = ( app : Model.App = new Model.App ) =>
 
 const Line = ( app : Model.App, line : eki.Line ) =>
 {
-	const action = ( station : eki.Station ) => app.history.add( station, 0 )
+	const stations = Lian.create( line.stations );
+	const action = ( station : eki.Station ) => app.history.add( station, 0 );
 
 	return span( { class: "line" },
 		b( line.name ),
-		lp < eki.Station > ( line.stations,
-			item => button( { acts: { mouseover: () => action( item ) } }, item.name )
+		each( stations,
+			o => button( { acts: { mouseover: () => action( o.val ) } }, o.pos.cv( v => 1 + v + "" ), " ", o.val.name )
 		)
 	);
 };
 
 const History = ( mo : Model.App ) =>
 {
-	return span( { class: "line" },
-		lp( mo.history, 
-			item => {
-				const act = () => mo.history.remove( item );
-				return button( { acts: { mouseleave: act } },
-					item.name,
-				)
-			},
-		),
+	return div( { class: "line" },
+		table( tbody( each( mo.history, o => HistoryRow( o ) ) ) ),
 	);
 };
+
+const HistoryRow = ( o : Order < eki.Station > ) =>
+{
+	const st : eki.Station = o.v;
+	return tr(
+		td( o.pos ),
+		td( st.postal ),
+		td( st.name ),
+		td( st.line, "-", st.pos + 1 ),
+		td( st.lat ),
+		td( st.long ),
+		td( button( { acts: { mouseout: () => o.remove() } }, "R" ) )
+	);
+}
+
+const HistoryButton = ( o : Order< eki.Station > ) =>
+{
+	const act = () => o.remove();
+
+	return button( { acts: { mouseleave: act } },
+		o.pos, " ",
+		span( { style: { color: "red" } },
+			o.val.line, " ",
+			o.val.pos + 1, " ",
+			o.val.name
+		),
+	);
+}
 
 export const Lian1 = { UI: Lian1Applet };

@@ -21,7 +21,7 @@
 
 import { defs } from "./defs.js";
 import { Nodette } from "./nodette.js";
-import { Lian } from "../model/lian.js";
+import { LianBase } from "../model/lian.js";
 
 const log = console.log;
 
@@ -122,7 +122,7 @@ class FuncParts extends Parts
 	{
 		super();
 		
-		if( def.source instanceof Lian ) def.source.ref( this );
+		if( def.source instanceof LianBase ) def.source.ref( this );
 		else this.add( 0, def.source.length );
 	}
 
