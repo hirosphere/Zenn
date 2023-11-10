@@ -22,8 +22,6 @@ export class Select < V = any >
 
 	protected update( newitem : CurrVal < V >, olditem ? : CurrVal < V > )
 	{
-		log( "sel", newitem?.value, olditem?.value );
-		
 		olditem?.selected.set( false );
 		newitem?.selected.set( true );
 	}

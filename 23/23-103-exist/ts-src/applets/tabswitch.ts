@@ -9,12 +9,19 @@ namespace models
 {
 	export class Tabs
 	{
-		selector = new Select < string >;
+		public readonly selector = new Select < string >;
 
 		constructor( labels : string [] )
 		{
 			this.selector.options.addValues( labels );
 		}
+	}
+
+	export class Content
+	{
+		constructor (
+			public title : string ,
+		){}
 	}
 }
 
@@ -36,11 +43,16 @@ const Tabs = ( model : models.Tabs ) =>
 
 const Tab = ( opt : Option < string > ) =>
 {
-	opt.selected.ref( v => log( v ) )
-	return li
-	(
-		{ class: [ "tab", { selected: opt.selected } ], acts: { mousedown() { opt.select(); } } },
+	return li( {
+			class: [ "tab", { selected: opt.selected } ],
+			acts: { mousedown() { opt.select(); } }
+		},
 		opt.value
 	);
 };
+
+const Contents = () =>
+{
+	;
+}
 

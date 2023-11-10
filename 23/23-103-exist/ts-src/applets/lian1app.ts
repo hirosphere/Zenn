@@ -25,7 +25,7 @@ const arrnd = ( ar : Array < any > ) => Math.floor( Math.random() * ar.length );
 
 // UI //
 
-const { div, h2, h3, span, button, b, table, thead, tbody, tr, td, br } = ef;
+const { div, h2, h3, span, button, b, table, thead, tbody, tr, td, br, p } = ef;
 
 export const Lian1Applet = ( app : Model.App = new Model.App ) =>
 {
@@ -46,7 +46,9 @@ export const Lian1Applet = ( app : Model.App = new Model.App ) =>
 
 			div( { class: "cols-3" },
 				h3( "椅子取 history" ),
-				div( { acts: { click() { app.history.clear() ; } } }, button( "全消去" ) ),
+				div(
+					button( { acts: { click() { app.history.clear() ; } } }, "全消去" ), " ",
+					span( app.history.vlength, "駅" )),
 				div( { class: "stations" },
 					History( app ),
 				),

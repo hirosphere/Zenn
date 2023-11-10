@@ -12,6 +12,7 @@ const log = console.log;
 
 export class LianBase < O extends OrderBase = OrderBase > extends Array < O >
 {
+	public readonly vlength = new Leaf.Ro.Number( 0, { owner: this } );
 	protected refs = new Set < Lian.Ref > ();
 
 	public ref( ref : Lian.Ref ) : void
@@ -27,6 +28,7 @@ export class LianBase < O extends OrderBase = OrderBase > extends Array < O >
 		const st = regnext( this, start );
 		this.splice( st, 0, ... orders );
 
+		this.vlength[ setRoValue ]( this, this.length );
 		this.reposit( st, this.length );
 		this.refs.forEach(  ref => ref.add?.( st, orders.length )  );
 
@@ -38,6 +40,7 @@ export class LianBase < O extends OrderBase = OrderBase > extends Array < O >
 		const pos = regnext( this, position );
 		this.splice( pos, 0, order );
 
+		this.vlength[ setRoValue ]( this, this.length );
 		this.reposit( pos, this.length );
 		this.refs.forEach(  ref => ref.add?.( pos, 1 )  );
 	}
@@ -53,6 +56,7 @@ export class LianBase < O extends OrderBase = OrderBase > extends Array < O >
 
 		this.splice( pos, 1 );
 
+		this.vlength[ setRoValue ]( this, this.length );
 		this.reposit( pos, this.length );
 		this.refs.forEach(  ref => ref.remove?.( pos, 1 )  );
 	}
@@ -62,6 +66,7 @@ export class LianBase < O extends OrderBase = OrderBase > extends Array < O >
 		const len = this.length;
 		this.refs.forEach(  ( ref ) => ref.remove?.( 0, len )  );
 		this.length = 0;
+		this.vlength[ setRoValue ]( this, this.length );
 	}
 
 	//  //
@@ -134,44 +139,10 @@ export class Lian < V > extends LianBase < Order < V > >
 		return new Order( this, value );
 	}
 
-	// order operations //
-
 	public add( value : V, position ? : number ) : void
 	{
 		const o = new Order < V > ( this, value );
 		this.addOrder( o, position );
-	}
-
-	public remove( order : OrderBase ) : void
-	{
-		if( order.owner != this )  return;
-
-		const pos = order.pos.v;
-
-		if( pos < 0 || this.length <= pos )  return;
-		if( order != this[ pos ] )  return;
-
-		this.splice( pos, 1 );
-
-		this.reposit( pos, this.length );
-		this.refs.forEach(  ref => ref.remove?.( pos, 1 )  );
-	}
-
-	public clear() : void
-	{
-		const len = this.length;
-		this.refs.forEach(  ( ref ) => ref.remove?.( 0, len )  );
-		this.length = 0;
-	}
-
-	//  //
-
-	protected reposit( start : number, next : number ) : void
-	{
-		for( let ord = start; ord < next; ord ++ )
-		{
-			this[ ord ].pos[ setRoValue ]( this, ord );
-		}
 	}
 }
 
