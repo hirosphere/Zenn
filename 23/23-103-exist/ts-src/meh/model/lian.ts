@@ -10,7 +10,7 @@ import { Leaf, setRoValue } from "./leaf.js";
 
 const log = console.log;
 
-export class LianBase < O extends OrderBase = OrderBase > extends Array < O >
+export class Lian < O extends Order = Order > extends Array < O >
 {
 	public readonly vlength = new Leaf.Ro.Number( 0, { owner: this } );
 	protected refs = new Set < Lian.Ref > ();
@@ -88,15 +88,15 @@ export class LianBase < O extends OrderBase = OrderBase > extends Array < O >
 	}
 }
 
-export class OrderBase
+export class Order
 {	
 	public readonly pos : Leaf.Ro.Number ;
-	constructor ( public readonly owner : LianBase )
+	constructor ( public readonly owner ? : Lian )
 	{
 		this.pos = new Leaf.Ro.Number( -1, { owner } );
 	}
 
-	public remove() : void { this.owner.remove( this ); }
+	public remove() : void { this.owner?.remove( this ); }
 
 	public terminate()
 	{
@@ -111,11 +111,11 @@ const regnext = ( ar : Array < any >, order ? : number ) : number =>
 
 //   //
 
-export class Lian < V > extends LianBase < Order < V > >
+export class ValueLian < V > extends Lian < ValueOrder < V > >
 {
-	static create < V > ( items : V[] ) : Lian < V >
+	static create < V > ( items : V[] ) : ValueLian < V >
 	{
-		return new Lian < V > ().addValues( items );
+		return new ValueLian < V > ().addValues( items );
 	}
 
 	protected refs = new Set < Lian.Ref > ();
@@ -134,22 +134,22 @@ export class Lian < V > extends LianBase < Order < V > >
 		return this;
 	}
 
-	protected createOrder( value : V ) : Order < V >
+	protected createOrder( value : V ) : ValueOrder < V >
 	{
-		return new Order( this, value );
+		return new ValueOrder( this, value );
 	}
 
 	public add( value : V, position ? : number ) : void
 	{
-		const o = new Order < V > ( this, value );
+		const o = new ValueOrder < V > ( this, value );
 		this.addOrder( o, position );
 	}
 }
 
-export class Order < V > extends OrderBase
+export class ValueOrder < V > extends Order
 {	
 	constructor (
-		owner : Lian < V >,
+		owner : ValueLian < V >,
 		public readonly value : V
 	) {
 		super( owner );

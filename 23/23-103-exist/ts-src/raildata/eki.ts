@@ -27,10 +27,10 @@ export class Station
 		this.src = tsv.split( "\t" );
 	}
 
-	public get name() { return this.src[ 0 ] }
-	public get long() { return this.src[ 1 ] }
-	public get lat() { return this.src[ 2 ] }
-	public get postal() { return this.src[ 3 ] }
+	public get name() { return this.src[ 0 ]; }
+	public get long() { return this.src[ 1 ]; }
+	public get lat() { return this.src[ 2 ]; }
+	public get postal() { return this.src[ 3 ].slice( 0, 3 ) + "-" + this.src[ 3 ].slice( 3, 7 ); }
 }
 
 //  //

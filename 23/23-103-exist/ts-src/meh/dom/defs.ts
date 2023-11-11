@@ -1,5 +1,4 @@
 import { Leaf, StringSource } from "../model/leaf.js";
-import { LianBase } from "../model/lian.js";
 
 type gE = globalThis.Element;
 
@@ -85,7 +84,7 @@ export namespace defs
 	//  //
 
 	export type Parts = Part [];
-	export type Part = Element | Text | ArrayParts < any >;
+	export type Part = Element | Text | ArrayParts < any > | null | undefined;
 
 	export const ap = < ITEM > ( source : Array < ITEM >, create : ( item : ITEM ) => Element | Text ) =>
 	{
@@ -114,7 +113,7 @@ export namespace defs
 
 	export const createElement = ( type : string, first ? : ElementChar | Part, ... rest : Part [] ) : Element =>
 	{
-		if( typeof first == "object" )
+		if( first && typeof first == "object" )
 		{
 			if( ! ( "isElement" in first || first instanceof StringSource || first instanceof ArrayParts ) )  // ! isPart
 			{

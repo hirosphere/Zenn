@@ -1,19 +1,42 @@
-import { Leaf, setRoValue, LianBase, Order, OrderBase } from "./index.js";
+import { Leaf, setRoValue, Lian, Index } from "./index.js";
 const log = console.log;
+
+//  //
+
+namespace Defs
+{
+	export type Option < V > =
+	{
+		value : V ;
+		parts ? : Option < V > []
+	};
+}
 
 //  //
 
 export class Select < V = any >
 {
 	public readonly current : Leaf < CurrVal < V > > ;
-	public readonly options = new Options < V > ( this );
+	public get root() : Option < V > | null { return this._root; }
 
-	constructor( vals ? : V [] )
+	constructor( optdef ? : Defs.Option < V > )
 	{
 		this.current = new Leaf < Option < V > | null > ( null, { rel: this.update } );
-
-		vals && this.options.addValues( vals );
+		this._root = this.createOption( optdef );
 	}
+
+	protected _root : Option < V > | null = null ;
+
+	//
+
+	public createOption( def ? : Defs.Option < V > ) : Option < V > | null
+	{
+		if( ! def ) return null;
+
+		return new Option < V > ( this, undefined, def );
+	}
+
+	//
 
 	public setCurrent( option : Option < V > | null ) : void
 	{
@@ -29,42 +52,41 @@ export class Select < V = any >
 
 type CurrVal < V > = Option < V > | null;
 
-//  //
-
-class Options < V > extends LianBase < Option < V > >
+export namespace Select
 {
-	constructor( protected selector : Select < V > | null )
+	export const fromLabels = ( labels : string [] ) =>
 	{
-		super();
-	}
-
-	public addValues( vals : V [] )
-	{
-		this.addOrders( vals.map( val => new Option( this, this.selector, val ) ) );
-	}
-
-	public terminate() : void
-	{
-		this.selector = null;
-		super.terminate();
-	}
+		const def = { value: "", parts: labels.map( value => ({ value }) ) };
+		return new Select < string > ( def );
+	};
 }
 
 //  //
 
-export class Option < V > extends OrderBase
+export class Option < V = any > extends Index < Option >
 {
-	public readonly selected = new Leaf.Boolean( false );
+	public readonly value : V ;
+	public readonly selected = new Leaf.Boolean( false ) ;
 
 	constructor(
-		orderOwner : Options < V >,
 		protected selector : Select < V > | null,
-		public readonly value : V )
+		orderOwner : Lian | undefined,
+		public readonly def : Defs.Option < V > )
 	{
 		super( orderOwner );
+		
+		this.value = def.value;
+		def.parts && this.parts.addOrders( def.parts.map( def => this.createPart( def ) ) );
 	}
 
-	public select(  )
+	protected createPart( def : Defs.Option < V > ) : Option < V >
+	{
+		return new Option( this.selector, this.parts, def );
+	}
+
+	//
+
+	public select()
 	{
 		this.selector?.setCurrent( this );
 	}

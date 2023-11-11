@@ -39,6 +39,11 @@ h1, h2, h3, h4 { margin: 0; padding: 0; }
 h1 { padding: 0 1ex; }
 button { padding: 0.63ex 0.83ex; font-size: 1.00em; }
 
+thead td { text-align: center; font-weight: bold; }
+td { padding: 0 1ex; }
+
+select { width: 8em; font-size: 1.2rem; }
+
 /* 汎用部品 */
 
 .range
@@ -51,9 +56,10 @@ button { padding: 0.63ex 0.83ex; font-size: 1.00em; }
 }
 
 .tabs {
+	user-select: none;
 	display: flex; flex-wrap: wrap; gap: 1px 0px;
 	list-style: none;
-	cursor: default; font-size: 1.1em;
+	font-size: 1.1em;
 }
 .tab {
 	margin-right: -1px;
@@ -64,7 +70,7 @@ button { padding: 0.63ex 0.83ex; font-size: 1.00em; }
 	background: hsl( 45, 3%, 95% );
 }
 .tab.selected {
-	background: hsl( 45, 3%, 30% ); color: hsl( 0, 0%, 100% );
+	background: hsl( 45, 3%, 10% ); color: hsl( 0, 0%, 100% );
 }
 
 /* applet */
@@ -128,7 +134,7 @@ button { padding: 0.63ex 0.83ex; font-size: 1.00em; }
 <body>
 	<script type="module" src="js-app/js-app.js"></script>
 	<script type="module" src="./js-231108-0743/app.js"></script>
-	231108-0743 <span id="host"></span>
+	231108-0743 <span id="host" draggable="true" ondragstart="console.log( `drag` )"></span>
 
 <script>
 document.getElementById( "host" ).innerText = location.hostname;

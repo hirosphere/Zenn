@@ -21,7 +21,7 @@
 
 import { defs } from "./defs.js";
 import { Nodette } from "./nodette.js";
-import { LianBase } from "../model/lian.js";
+import { Lian } from "../model/lian.js";
 
 const log = console.log;
 
@@ -70,7 +70,7 @@ export const createParts = ( nodet : Nodette, def : defs.Parts, index : number )
 		{
 			const partdef = def[ index ];
 			if( partdef instanceof defs.ArrayParts ) break;
-			flagdef.push( partdef );
+			partdef != null && flagdef.push( partdef );
 			index ++;
 		}
 
@@ -122,7 +122,7 @@ class FuncParts extends Parts
 	{
 		super();
 		
-		if( def.source instanceof LianBase ) def.source.ref( this );
+		if( def.source instanceof Lian ) def.source.ref( this );
 		else this.add( 0, def.source.length );
 	}
 

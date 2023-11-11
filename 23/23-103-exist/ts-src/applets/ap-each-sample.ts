@@ -1,4 +1,4 @@
-import { Leaf, Lian, Order, ef, ap, } from "../meh/index.js";
+import { Leaf, ValueLian, ValueOrder, ef, ap, } from "../meh/index.js";
 import * as eki from "../raildata/eki.js";
 const log = console.log;
 const each = ap;
@@ -8,7 +8,7 @@ const { div, h2, h3, ul, li, span, button } = ef;
 export const EachSample = () =>
 {
 	const line = eki.lines[ "山手線" ];
-	const stations = Lian.create < eki.Station > ( line.stations );
+	const stations = ValueLian.create < eki.Station > ( line.stations );
 
 	return div ( { class: "applet" },
 
@@ -23,7 +23,7 @@ export const EachSample = () =>
 	);
 }
 
-const delbutton = ( station : Order < eki.Station > ) => button
+const delbutton = ( station : ValueOrder < eki.Station > ) => button
 (
 	{ acts: { click() { station.remove(); log( station.v.name, station.v.lat, station.v.long ) } } },
 	station.v.postal

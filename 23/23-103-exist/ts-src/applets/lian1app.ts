@@ -1,4 +1,4 @@
-import { Leaf, Lian, Order, ef, each, } from "../meh/index.js";
+import { Leaf, ValueLian, ValueOrder, ef, each, } from "../meh/index.js";
 import * as eki from "../raildata/eki.js";
 const log = console.log;
 
@@ -9,7 +9,7 @@ namespace Model
 	export class App
 	{
 		lines = [ "埼京線", "山手線", "京浜東北線", "総武線各駅停車", "中央線" ].map( name => eki.lines[ name ] );
-		public readonly history = new Lian < eki.Station > ();
+		public readonly history = new ValueLian < eki.Station > ();
 	
 		evmon = new Leaf.String( "evmon" );
 	
@@ -47,7 +47,13 @@ export const Lian1Applet = ( app : Model.App = new Model.App ) =>
 			div( { class: "cols-3" },
 				h3( "椅子取 history" ),
 				div(
-					button( { acts: { click() { app.history.clear() ; } } }, "全消去" ), " ",
+					button({
+						acts: {
+							click() { app.history.clear() ; },
+							dragstart( ev ) { log( ev ) },
+						},
+						attrs: { draggable: "true" }
+					}, "全消去" ), " ",
 					span( app.history.vlength, "駅" )),
 				div( { class: "stations" },
 					History( app ),
@@ -59,13 +65,13 @@ export const Lian1Applet = ( app : Model.App = new Model.App ) =>
 
 const Line = ( app : Model.App, line : eki.Line ) =>
 {
-	const stations = Lian.create( line.stations );
+	const stations = ValueLian.create( line.stations );
 	const action = ( station : eki.Station ) => app.history.add( station, 0 );
 
 	return span( { class: "line" },
-		b( line.name ),
+		ef.b( line.name ),
 		each( stations,
-			o => button( { acts: { mouseover: () => action( o.val ) } }, o.pos.cv( v => 1 + v + "" ), " ", o.val.name )
+			o => button( { acts: { click: () => action( o.val ) } }, o.pos.cv( v => 1 + v + "" ), " ", o.val.name )
 		)
 	);
 };
@@ -73,25 +79,28 @@ const Line = ( app : Model.App, line : eki.Line ) =>
 const History = ( mo : Model.App ) =>
 {
 	return div( { class: "line" },
-		table( tbody( each( mo.history, o => HistoryRow( o ) ) ) ),
+		table(
+			thead( tr( each( [ "", "郵便番号", "駅名", "路線名", "北緯", "東経" ], i => td( i ) ) ) ),
+			tbody( each( mo.history, o => HistoryRow( o ) ) ) ),
 	);
 };
 
-const HistoryRow = ( o : Order < eki.Station > ) =>
+const HistoryRow = ( order : ValueOrder < eki.Station > ) =>
 {
-	const st : eki.Station = o.v;
+	const st : eki.Station = order.v;
+	const act = () => order.remove();
 	return tr(
-		td( o.pos ),
+		td( order.pos ),
 		td( st.postal ),
 		td( st.name ),
-		td( st.line, "-", st.pos + 1 ),
+		td( st.line, " ", st.pos + 1 ),
 		td( st.lat ),
 		td( st.long ),
-		td( button( { acts: { mouseout: () => o.remove() } }, "R" ) )
+		td( button( { acts: { click: act } }, "D" ) )
 	);
 }
 
-const HistoryButton = ( o : Order< eki.Station > ) =>
+const HistoryButton = ( o : ValueOrder< eki.Station > ) =>
 {
 	const act = () => o.remove();
 

@@ -1,5 +1,5 @@
 
-export * as model from "./model/index.js";
+export * as models from "./model/index.js";
 export * as dom from "./dom/index.js";
 
 
