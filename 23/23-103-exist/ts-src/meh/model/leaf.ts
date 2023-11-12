@@ -13,7 +13,7 @@ type LeafArgs < T > =
 
 export abstract class StringSource
 {
-	abstract ref( update : () => void ) : Ref ;
+	abstract createRef( update : () => void ) : Ref ;
 	abstract toString() : string ;
 }
 
@@ -41,14 +41,14 @@ class LeafRo < T > extends StringSource
 
 	public toString() { return String( this._value ); }
 
-	public ref( update : Leaf.Update < T > )
+	public createRef( update : Leaf.Update < T > )
 	{
 		const ref = new RefImpl < T > ( this, update );
 		this.refs.add( ref );
 		return ref;
 	}
 
-	public removeref( ref : RefImpl < T > )
+	public removeRef( ref : RefImpl < T > )
 	{
 		this.refs.delete( ref );
 	}
@@ -152,7 +152,7 @@ class RefImpl < T > implements Ref
 	release() : void
 	{
 		if( this.source == null ) return;
-		this.source.removeref( this );
+		this.source.removeRef( this );
 		this.source = null;
 		this._update = null;
 	}
@@ -168,7 +168,7 @@ class ConvStrSrc < T > extends StringSource
 	)
 	{ super(); }
 
-	ref( update : () => void ) { return this.source.ref( update ); }
+	createRef( update : () => void ) { return this.source.createRef( update ); }
 	toString() { return this.toref( this.source.value ); }
 }
 

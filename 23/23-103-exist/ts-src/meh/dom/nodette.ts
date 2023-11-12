@@ -23,11 +23,14 @@ export class Nodette
 	public element : Element | null = null;
 	private parts ? : Parts;
 	private refs = new Refs;
+	private hook ? : Hook;
 
 	constructor( def : defs.Node, ce : Element | null, nextNode ? : Node )
 	{
 		if( typeof def == "object" && "isElement" in def )  this.createElement( def, ce, nextNode );
 		else  this.createText( def, ce, nextNode );
+
+		this.hook?.init();
 	}
 
 	private createElement( def : defs.Element, ce : Element | null, nextNode ? : Node ) : Element
@@ -36,12 +39,17 @@ export class Nodette
 		this.node = this.element = e;
 
 		if( def.class ) this.bindClass(  e, def.class );
-		if( def.props ) this.bindProps( e, def.props );
 		if( def.attrs ) this.bindAttrs( e, def.attrs );
+		if( def.props ) this.bindProps( e, def.props );
 		if( def.style ) this.bindStyle( e, def.style );
 		if( def.acts ) this.bindActs( e, def.acts );
 		if( def.actActs ) this.bindActs( e, def.actActs, { passive: false } );		
 		if( def.optActs ) this.bindOptActs( e, def.optActs );
+		if( def.hook )
+		{
+			def.hook[ hook_e ] = e;
+			this.hook = def.hook;
+		};
 		
 		if( def.parts ) this.parts = Parts.create( this, def.parts );
 
@@ -134,7 +142,7 @@ export class Nodette
 const bindClass = ( e : Element, name : string, value : LoL.Boolean, refs : Refs ) =>
 {
 	if( value instanceof Leaf ) {
-		refs.add( value.ref( ( value ) => e.classList.toggle( name, value ) ) );
+		refs.add( value.createRef( ( value ) => e.classList.toggle( name, value ) ) );
 	}
 	else  e.classList.toggle( name, value );
 }
@@ -143,10 +151,10 @@ const bindClass = ( e : Element, name : string, value : LoL.Boolean, refs : Refs
 const bindAttr = ( e : Element, name : string, value : defs.Text, refs : Refs ) =>
 {
 	if( value instanceof Leaf ) {
-		refs.add( value.ref( () => setAttr( e, name, value.get() ) ) );
+		refs.add( value.createRef( () => setAttr( e, name, value.get() ) ) );
 	}
 	else if( value instanceof StringSource ) {
-		refs.add( value.ref( () => setAttr( e, name, value.toString() ) ) );
+		refs.add( value.createRef( () => setAttr( e, name, value.toString() ) ) );
 	}
 	else setAttr( e, name, value );
 };
@@ -154,19 +162,34 @@ const bindAttr = ( e : Element, name : string, value : defs.Text, refs : Refs ) 
 const setAttr = ( e : Element, name : string, value : boolean | number | string ) =>
 {
 	if( typeof value == "boolean" ) {
-		value ? e.setAttribute( name, "" ) : e.removeAttribute( name );
+		value ? e.setAttribute( name, "true" ) : e.removeAttribute( name );
 	}
 	else{
 		e.setAttribute( name, String( value ) );
 	}
 }
 
-const bindText = ( target : any, name : string, text : defs.Text, refs : Refs ) =>
+const bindText = ( target: Record < string, any >, name: string, value: defs.Text, refs: Refs ) =>
 {
-	if( text instanceof StringSource )
-	{
-		refs.add( text.ref( () => { target[ name ] = text.toString() } ) );
+	if( value instanceof StringSource ) {
+		refs.add( value.createRef( () => { target[ name ] = value } ) );
 	}
-
-	else  target[ name ] = text;
+	else  target[ name ] = value;
 };
+
+
+/** hook */
+
+export const newhook = () : Hook =>
+{
+	return new Hook();
+};
+
+const hook_e = Symbol();
+
+export class Hook < E extends Element = Element >
+{
+	public get e() : Element | null { return this[ hook_e ]; };
+	public [ hook_e ] : Element | null = null;
+	public init() {}
+}

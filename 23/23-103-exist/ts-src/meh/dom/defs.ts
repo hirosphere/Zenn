@@ -1,10 +1,11 @@
 import { Leaf, StringSource } from "../model/leaf.js";
+import { Hook } from "./nodette.js";
 
 type gE = globalThis.Element;
 
 export namespace defs
 {
-	export type CreateElement < E > = ( first ? : ElementChar < E > | Part, ... rest : Part [] ) => Element ;
+	export type CreateElement < E extends gE > = ( first ? : ElementChar < E > | Part, ... rest : Part [] ) => Element ;
 
 	export type Node = Element | Text ;
 
@@ -19,12 +20,13 @@ export namespace defs
 		acts ? : Actions ;
 		actActs ? : Actions ;
 		optActs ? : OptActions ;
+		hook ? : Hook ;
 
 		parts ? : Parts ;		// "childNodes"
 		isElement : true ;	// ElementChar とのユニオンやその他の識別のため。
 	};
 
-	type ElementChar < E = gE > =
+	type ElementChar < E extends gE = gE > =
 	{
 		class ? : Class ;
 		props ? : Props < E > ;
@@ -33,6 +35,7 @@ export namespace defs
 		acts ? : Actions ;
 		actActs ? : Actions ;
 		optActs ? : OptActions ;
+		hook ? : Hook < E > ;
 	}
 
 	export type Class = Text | ClassSwitch | Class[];
@@ -136,28 +139,3 @@ export namespace defs
 
 export const ap = defs.ap;
 export const each = defs.each;
-
-
-// questplace //
-
-{
-	type sact = EventListener ;
-	type oact = [ sact, AddEventListenerOptions ];
-
-	type cact = sact | oact;
-	type acts = { [ name in "a" | "b" | "c" ] ? : cact };
-
-	const c1 : cact = () => {};
-	const c2 : cact = [ () => {}, {} ];
-
-	const as1 : acts = {};
-	as1.a = () => {};
-	as1.b = [ () => {}, { passive: false } ];
-
-	const ae = ( e : Element | null, n : string, a : EventListener ) =>
-	{
-		e?.addEventListener( n, a );
-	};
-
-	ae( null, "", ( ev : Event ) => { ev.target } );
-}

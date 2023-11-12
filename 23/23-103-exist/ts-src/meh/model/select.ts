@@ -17,22 +17,23 @@ namespace Defs
 export class Select < V = any >
 {
 	public readonly current : Leaf < CurrVal < V > > ;
-	public get root() : Option < V > | null { return this._root; }
+	public get root() : Option < V > { return this._root; }
+	public get default() : Option < V > { return this._default; }
 
-	constructor( optdef ? : Defs.Option < V > )
+	constructor( optdef : Defs.Option < V >, defaultDef : Defs.Option < V > )
 	{
 		this.current = new Leaf < Option < V > | null > ( null, { rel: this.update } );
 		this._root = this.createOption( optdef );
+		this._default = this.createOption( defaultDef );
 	}
 
-	protected _root : Option < V > | null = null ;
+	protected _root : Option < V > ;
+	protected _default : Option < V >;
 
 	//
 
-	public createOption( def ? : Defs.Option < V > ) : Option < V > | null
+	public createOption( def : Defs.Option < V > ) : Option < V >
 	{
-		if( ! def ) return null;
-
 		return new Option < V > ( this, undefined, def );
 	}
 
@@ -40,7 +41,7 @@ export class Select < V = any >
 
 	public setCurrent( option : Option < V > | null ) : void
 	{
-		this.current.val = option;
+		this.current.val = option || this._default;
 	}
 
 	protected update( newitem : CurrVal < V >, olditem ? : CurrVal < V > )
@@ -54,10 +55,10 @@ type CurrVal < V > = Option < V > | null;
 
 export namespace Select
 {
-	export const fromLabels = ( labels : string [] ) =>
+	export const fromLabels = ( labels : string [], deflab ? : string ) =>
 	{
 		const def = { value: "", parts: labels.map( value => ({ value }) ) };
-		return new Select < string > ( def );
+		return new Select < string > ( def, { value: deflab ?? "" } );
 	};
 }
 
@@ -65,6 +66,8 @@ export namespace Select
 
 export class Option < V = any > extends Index < Option >
 {
+	public get v() { return this.value; }
+	public get val() { return this.value; }
 	public readonly value : V ;
 	public readonly selected = new Leaf.Boolean( false ) ;
 
