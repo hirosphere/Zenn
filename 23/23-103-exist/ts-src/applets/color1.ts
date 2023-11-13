@@ -2,6 +2,56 @@ import { ef, sf, each, Leaf } from "../meh/index.js";
 import { Applet } from "./applet.js";
 const log = console.log;
 
+
+//  //
+
+export const ColorApp1 = () =>
+{
+	const svg = sf.svg( { attrs: { width: 400, height: 100 }, style: { transform: "scale( 100% )" } },
+		Colors(),
+	);
+
+	const c = Circle( { color: { h: 240, s: 0.7, l: 0.6 }, pos: { x: 200, y: 70 } } );
+
+	return ef.article( { class: "applet" },
+		ef.h2( "Color-1" ),
+		ef.div( { style: { display: "flex", flexDirection: "column", alignItems: "center" } },
+			svg,
+			sf.svg( c ),
+		),
+	);
+}
+
+
+const Colors = () =>
+{
+	const c = sf.circle( { attrs: { fill: "hsl( 95, 70%, 70% )", cx: 70, cy: 70, r: 5 } } );
+	const d = Circle( { color: { h: 240, s: 0.7, l: 0.6 }, pos: { x: 200, y: 70 } } );
+
+	const shapes = loop( 6, i =>
+		({
+			color: { h: 120 + i * 30, s: 0.7, l: 0.7 },
+			pos: { x: 50 + i * 60, y: 50 }
+		})
+	);
+
+	return sf.g( each( shapes, shape => Circle( shape ) ) );
+};
+
+const Circle = ( value : models.shape_t ) =>
+{
+	const model = new models.Shape( value );
+	log( "Circle", model.color.css.val )
+	return sf.circle( { attrs: { fill: model.color.css, cx: model.pos.x, cy: model.pos.y, r: 20 } } );
+}
+
+const Item = () =>
+{
+	;
+}
+
+//  //
+
 function loop < T > ( count : number, createItem : ( index : number ) => T ) : T[]
 {
 	const rt = new Array < T >;
@@ -60,39 +110,20 @@ namespace models
 	export type pos_t = { x : number; y : number };
 }
 
-export const ColorApp1 = () =>
-{
-	const svg = sf.svg( { attrs: { width: 800, height: 500 } },
-		Colors(),
-	);
+//  //
 
-	return Applet( { title: "Color 1", content: [ svg ] } );
+namespace Quest
+{
+	type HSL = { hue: number ; sat : number ; lig : number ; };
+
+	type x = { readonly x : string ; };
+
+	const createBranchClass =  < T > ( srcproto : T ) =>
+	{
+		const newproto : any = {};
+		return newproto;
+	}
+
+
+	type HSLBranch = typeof createBranchClass < HSL > ;
 }
-
-const Colors = () =>
-{
-	const c = sf.circle( { attrs: { fill: "hsl( 95, 70%, 70% )", cx: 70, cy: 70, r: 5 } } );
-	const d = Circle( { color: { h: 240, s: 0.7, l: 0.6 }, pos: { x: 200, y: 70 } } );
-
-	const shapes = loop( 6, i =>
-		({
-			color: { h: 120 + i * 30, s: 0.7, l: 0.7 },
-			pos: { x: 50 + i * 60, y: 50 }
-		})
-	);
-
-	return sf.g( each( shapes, shape => Circle( shape ) ) );
-};
-
-const Circle = ( value : models.shape_t ) =>
-{
-	const model = new models.Shape( value );
-	log( "Circle", model.color.css.val )
-	return sf.circle( { attrs: { fill: model.color.css, cx: model.pos.x, cy: model.pos.y, r: 20 } } );
-}
-
-const Item = () =>
-{
-	;
-}
-

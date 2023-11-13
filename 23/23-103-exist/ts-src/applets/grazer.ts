@@ -27,8 +27,10 @@ export class Grazer
 
 export class TouchToMouse
 {
-	constructor( container : HTMLElement, protected buttons : number )
+	constructor( protected buttons : number, container ? : HTMLElement )
 	{
+		if( ! container )  return;
+
 		container.addEventListener( "touchstart", this.start );
 		container.addEventListener( "touchmove", this.move );
 		container.addEventListener( "touchcancel", this.end );

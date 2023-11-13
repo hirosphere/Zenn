@@ -38,22 +38,16 @@ export const TabSwitchApp = () =>
 
 const Tabs = ( opts ? : Mehm.Option < string > [] ) =>
 {
+	const gr = new Grazer( { buttons: 1 } );
 	const hook = newhook();
-	hook.init = () =>
-	{
-		log( "Tabs init()", hook.e );
-	}
+	hook.init = () => hook.e && gr.initTouch( hook.e );
 
-	const gr = new Grazer( { buttons: 1, hook } );
 	return ul( {
 			class: "tabs",
 			actActs: {
-				touchstart( ev ) { gr.ctstart( ev )  },
-				touchmove( ev ) { gr.ctmove( ev ); },
-				touchcancel( ev ) { gr.ctend( ev ); },
-				touchend( ev ) { gr.ctend( ev ); }
+				mousedown( ev ) { gr.mousedown( ev ); }
 			},
-			hook,
+			hook
 		},
 		each( opts || [], opt => Tab( opt, gr ) ), );
 }
@@ -84,15 +78,15 @@ class Grazer
 {
 	public get isActive() { return this._isActive; }
 
-	constructor( protected args : { buttons: number, hook : Hook } )
+	constructor( protected args : { buttons: number } )
 	{
-		document.addEventListener( "mouseup", () => this._isActive = false );
+		document.addEventListener( "mouseup", () => this.end() );
 	}
 
 	protected _isActive = false;
 	protected current : Element | null = null;
 
-	//  //
+	// mouse イベント //
 
 	public mousedown( ev : MouseEvent ) : boolean
 	{
@@ -107,99 +101,124 @@ class Grazer
 	public mouseenter( ev : MouseEvent ) : boolean
 	{
 		if( ev.buttons != this.args.buttons )  this._isActive = false;
-		log( "mouse enter", ev.buttons , this.args.buttons, this.isActive )
+
+		log( "mouse enter", ev.buttons , this.args.buttons, this.isActive );
+
 		return this._isActive;
 	}
-
-	// container event handlers //
 	
-	public ctstart( ev : TouchEvent )
+	protected end()
 	{
-		const e = this.postoel( ev );
-		this._isActive = true;
-		ev.touches.length == 1 && ev.preventDefault();
-
-		log( "ct start", e?.innerHTML );
-		
-		if( ! e )  return;
-
-		this.current = e;		
-		this.dispatch( "mousedown", e, ev.touches[ 0 ] );
-	}
-
-	public ctmove( ev : TouchEvent ) : ""
-	{
-		const e = this.postoel( ev );
-		if( ! e )  return "";
-
-		this.current = e;
-		log( "ct move", e?.innerHTML.slice( 0, 12 ) );
-		this.dispatch( "mouseenter", e, ev.touches[ 0 ] );
-		
-		return "";
-	}
-
-	public ctend( ev : TouchEvent )
-	{
-		log( "ct end" );
-		this.current = null;
+		log( "end" );
 		this._isActive = false;
 	}
 
-	protected dispatch( type : string, e : Element, touch ? : Touch )
-	{
-		if( ! touch )  return;
+	// touch イベント => マウスイベント変換 //
 
-		e.dispatchEvent( new MouseEvent( type,
+	public initTouch( container : Element ) : void
+	{
+		if( container instanceof HTMLElement )
 		{
-			cancelable: true,
-			bubbles : true,
-			buttons: this.args.buttons,
-			... touch
-		}));
+			container.addEventListener( "touchstart", ( ev ) => this.touchstart( ev ), { passive: false } );
+			container.addEventListener( "touchmove", ( ev ) => this.touchmove( ev ), { passive: false } );
+			container.addEventListener( "touchcancel", ( ev ) => this.touchcancel( ev ), { passive: false } );
+			container.addEventListener( "touchend", ( ev ) => this.touchend( ev ), { passive: false } );
+		}
 	}
 
-	protected postoel( ev : TouchEvent ) : Element | null
+	protected touchstart( ev : TouchEvent ) : void
+	{
+		log( "touch start" );
+		ev.cancelable && ev.preventDefault();
+		this.dispatch( "mousedown", this.getTouch( ev ) );
+	}
+	
+	protected touchmove( ev : TouchEvent ) : void
+	{
+		log( "touch move" );
+
+		this.dispatchEnterLeave( this.getTouch( ev ) );
+	}
+	
+	protected touchcancel( ev : TouchEvent ) : void
+	{
+		log( "touch cancel" );
+		this.end();
+	}
+	
+	protected touchend( ev : TouchEvent ) : void
+	{
+		log( "touch end" );
+		this.end();
+	}
+
+	//
+
+	protected getTouch( ev : TouchEvent ) : Touch | null
 	{
 		if( ev.touches.length != 1 ) return null;
+		return ev.touches[ 0 ];
+	}
+	
+	protected dispatch( type : string, touch : Touch | null )
+	{
+		if( ! touch )  return;
+		const e = document.elementFromPoint( touch.clientX, touch.clientY );
+		e && this.dispatchTo( e, type, touch, true );
+	}
 
-		const t = ev.touches[ 0 ];		
-		const e = document.elementFromPoint( t.clientX, t.clientY );
-		
-		if( e == this.current ) return null;
+	/** touchmove イベントから mouseenter / mouseleave イベントを生成 */
 
-		return e;
-		
-		//if( e && e.parentNode == this.args.hook.e ) return e;
-		
-		//return null; 
+	protected dispatchEnterLeave( touch : Touch | null )
+	{
+		if( ! touch ) return;
+
+		const e = document.elementFromPoint( touch.clientX, touch.clientY );
+
+		if( ! ( e instanceof HTMLElement ) ) return;
+
+		/** moves の欠員を検出し mouseleave イベントを生成 */
+
+		const ps = getPathSet( e );
+		this.moves.forEach (
+			move => {
+				if( ! ps.has( move ) )
+				{
+					this.moves.delete( move );
+					this.dispatchTo( move, "mouseleave", touch, false );
+				}
+			}
+		);
+
+		/** moves の追加を検出し mouseenter イベントを生成 */
+
+		if( ! this.moves.has( e ) )
+		{
+			this.moves.add( e );
+			this.dispatchTo( e, "mouseenter", touch, false );	
+		}
+	}
+	protected moves = new Set < HTMLElement >;
+
+	protected dispatchTo( e : Element, type: string, touch : Touch, bubbles : boolean )
+	{
+		e?.dispatchEvent( new MouseEvent( type,
+			{
+				cancelable: true,
+				bubbles,
+				buttons: this.args.buttons,
+				... touch
+			})
+		);
 	}
 }
 
-class TouchToMouse
+/** Element の parentElement のパスセットを作成
+ * mouseenter / mouseleave の検出に使用
+*/
+const getPathSet = ( e : HTMLElement | null ) : Set < HTMLElement > =>
 {
-	public touchstart( ev : TouchEvent ) : void
-	{
-		;
-	}
-
-	public touchmove( ev : TouchEvent ) : void
-	{
-		;
-	}
-
-	public touchcancel( ev : TouchEvent ) : void
-	{
-		;
-	}
-
-	public touchend( ev : TouchEvent ) : void
-	{
-		;
-	}
-
-	protected dispatch( type: string, target : Element, touch : Touch ) : void
-	{
-		;
-	}
+	const set = new Set < HTMLElement >;
+	for( ; e; e = e.parentElement ) set.add( e );
+	return set;
 }
