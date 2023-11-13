@@ -33,6 +33,7 @@ html, button, textarea, input
 	color: hsl( 45, 0%, 25% );
 }
 
+.col-2 { display: flex; flex-direction: column; gap: 1em; }
 .cols-3 { display: flex; flex-direction: column; gap: 0.5rex; }
 
 h1, h2, h3, h4 { margin: 0; padding: 0; }
@@ -57,15 +58,16 @@ select { width: 8em; font-size: 1.2rem; }
 
 .tabs {
 	user-select: none;
-	display: flex; flex-wrap: wrap; gap: 1px 0px;
-	padding: 0 2em; border: 2px solid hsl( 0, 0%, 65% );
+	border: 1px solid hsl( 0, 0%, 65% );
+	display: flex; flex-wrap: wrap; gap: 1px 0px; justify-content: center;
+	padding: 1px 2em;
 	list-style: none;
 	font-size: 1.1em;
 }
 .tab {
 	margin-right: -1px;
-	border: 1px solid hsl( 0, 0%, 65% );
-	padding: 0.9ex 1.4ex;
+	border: 2px solid hsl( 0, 0%, 65% );
+	padding: 1.2ex 1.4ex;
 }
 .tab:hover {
 	background: hsl( 45, 3%, 95% );
@@ -106,6 +108,9 @@ select { width: 8em; font-size: 1.2rem; }
 }
 
 /**/
+
+.switch-content { display: none; border-radius: 1em; border: 2px solid hsl( 345, 15%, 75% ); padding: 2em; }
+.switch-content.active { display: block; }
 
 .lian-1 .stations
 {

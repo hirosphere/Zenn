@@ -17,7 +17,6 @@ export const ColorApp1 = () =>
 		ef.h2( "Color-1" ),
 		ef.div( { style: { display: "flex", flexDirection: "column", alignItems: "center" } },
 			svg,
-			sf.svg( c ),
 		),
 	);
 }
@@ -42,7 +41,11 @@ const Circle = ( value : models.shape_t ) =>
 {
 	const model = new models.Shape( value );
 	log( "Circle", model.color.css.val )
-	return sf.circle( { attrs: { fill: model.color.css, cx: model.pos.x, cy: model.pos.y, r: 20 } } );
+	return sf.circle( {
+			attrs: { fill: model.color.css, cx: model.pos.x, cy: model.pos.y, r: 20 },
+			acts: { click() { log( model.color.css.val ) } }
+		},
+	);
 }
 
 const Item = () =>
