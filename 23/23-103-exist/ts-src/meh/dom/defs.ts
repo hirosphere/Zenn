@@ -11,6 +11,7 @@ export namespace defs
 
 	export type Element < E extends gE = gE > =
 	{
+		ns : string ;
 		type : string ;
 
 		class ? : Class ;
@@ -114,7 +115,7 @@ export namespace defs
 	
 	//  //
 
-	export const createElement = ( type : string, first ? : ElementChar | Part, ... rest : Part [] ) : Element =>
+	export const createElement = ( ns : string, type : string, first ? : ElementChar | Part, ... rest : Part [] ) : Element =>
 	{
 		if( first && typeof first == "object" )
 		{
@@ -122,7 +123,7 @@ export namespace defs
 			{
 				return {
 					isElement: true,
-					type,
+					ns, type,
 					... first,
 					parts: rest
 				};
@@ -131,7 +132,7 @@ export namespace defs
 
 		return {
 			isElement: true,
-			type,
+			ns, type,
 			parts: first ? [ first, ...rest ] : undefined
 		};
 	}	

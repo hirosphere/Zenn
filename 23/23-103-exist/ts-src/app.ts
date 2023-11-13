@@ -4,6 +4,7 @@ import { HSLApplet } from "./applets/hsl.js";
 import { Lian1 } from "./applets/lian1app.js";
 import { EachSample } from "./applets/ap-each-sample.js";
 import { TabSwitchApp } from "./applets/tabswitch.js";
+import { ColorApp1 } from "./applets/color1.js";
 const log = console.log;
 
 //
@@ -46,6 +47,7 @@ const Applets = () =>
 		{ class: "applets" },
 		
 		h1( "23-103 Lian, Exist" ),
+		ColorApp1(),
 		TabSwitchApp(),
 		// EachSample(),
 		Lian1.UI(),

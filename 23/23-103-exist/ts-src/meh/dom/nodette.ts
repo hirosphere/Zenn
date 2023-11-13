@@ -35,7 +35,7 @@ export class Nodette
 
 	private createElement( def : defs.Element, ce : Element | null, nextNode ? : Node ) : Element
 	{
-		const e = document.createElement( def.type );
+		const e = ( def.ns ? document.createElementNS( def.ns, def.type ) : document.createElement( def.type ) );
 		this.node = this.element = e;
 
 		if( def.class ) this.bindClass(  e, def.class );
@@ -103,8 +103,10 @@ export class Nodette
 		}
 	}
 
-	private bindStyle ( e : HTMLElement, def : defs.Style ) :void
+	private bindStyle ( e : Element, def : defs.Style ) :void
 	{
+		if( ! ( e instanceof HTMLElement || e instanceof SVGElement ) )  return;
+
 		for( const [ name, value ] of Object.entries( def ) ) {
 			bindText( e.style, name, value || "", this.refs );
 		}

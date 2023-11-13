@@ -26,9 +26,9 @@ export const TabSwitchApp = () =>
 		title: "TabSwitch",
 		content: [
 			div( ef.button( { acts: { click() { sel.default.select(); } } }, "Null" ) ),
-			Tabs( sel.root?.parts ),
-			Tabs( sel.root?.parts ),
-			Tabs( sel.root?.parts ),
+			Tabs( sel.root.parts ),
+			Tabs( sel.root.parts ),
+			Tabs( sel.root.parts ),
 			ef.input( { attrs: { value: sel.current.cv( o => `${ o?.value }` ) } } )
 		]
 	});
@@ -133,7 +133,7 @@ class Grazer
 		if( ! e )  return "";
 
 		this.current = e;
-		log( "ct move", e?.innerHTML );
+		log( "ct move", e?.innerHTML.slice( 0, 12 ) );
 		this.dispatch( "mouseenter", e, ev.touches[ 0 ] );
 		
 		return "";
@@ -148,11 +148,7 @@ class Grazer
 
 	protected dispatch( type : string, e : Element, touch ? : Touch )
 	{
-		log( 1 );
-
 		if( ! touch )  return;
-
-		log( 2 )
 
 		e.dispatchEvent( new MouseEvent( type,
 		{
@@ -171,10 +167,39 @@ class Grazer
 		const e = document.elementFromPoint( t.clientX, t.clientY );
 		
 		if( e == this.current ) return null;
+
+		return e;
 		
-		if( e && e.parentNode == this.args.hook.e ) return e;
+		//if( e && e.parentNode == this.args.hook.e ) return e;
 		
-		return null; 
+		//return null; 
 	}
 }
 
+class TouchToMouse
+{
+	public touchstart( ev : TouchEvent ) : void
+	{
+		;
+	}
+
+	public touchmove( ev : TouchEvent ) : void
+	{
+		;
+	}
+
+	public touchcancel( ev : TouchEvent ) : void
+	{
+		;
+	}
+
+	public touchend( ev : TouchEvent ) : void
+	{
+		;
+	}
+
+	protected dispatch( type: string, target : Element, touch : Touch ) : void
+	{
+		;
+	}
+}

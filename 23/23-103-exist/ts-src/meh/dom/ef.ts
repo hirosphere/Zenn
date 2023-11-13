@@ -13,17 +13,22 @@ export const create = ( def : defs.Element, ceqsel : Element | string, rel ? : N
 	return { delete() { nodet.delete(); } };
 }
 
+//  //
+
 type HTMLElementFactory =
 {
 	[ type in keyof HTMLElementTagNameMap ] : defs.CreateElement < HTMLElementTagNameMap[ type ] > ;
 };
 
+type SVGElementFactory =
+{
+	[ type in keyof SVGElementTagNameMap ] : defs.CreateElement < SVGElementTagNameMap[ type ] > ;
+};
+
 class Handler < T extends object > implements ProxyHandler < T >
 {
 	constructor( private ns : string )
-	{
-		;
-	}
+	{}
 
 	public get( target : T, type : string )
 	{
@@ -38,7 +43,7 @@ class Handler < T extends object > implements ProxyHandler < T >
 
 		log( type );
 		
-		const fn = ( ... args : any ) => defs.createElement( type, ... args );
+		const fn = ( ... args : any ) => defs.createElement( this.ns, type, ... args );
 		this.fns.set( type, fn );
 		return fn;
 	}
@@ -50,3 +55,4 @@ const createElementFactory = < T extends object > ( ns : string ) =>
 }
 
 export const ef = createElementFactory < HTMLElementFactory > ( "" );
+export const sf = createElementFactory < SVGElementFactory > ( "http://www.w3.org/2000/svg" );
