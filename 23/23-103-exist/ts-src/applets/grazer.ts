@@ -150,7 +150,9 @@ const createPathSet = ( e : HTMLElement | null ) : Set < HTMLElement > =>
 	const set = new Set < HTMLElement >;
 	for( let p = e ; p; p = p.parentElement ) set.add( p );
 	const ar : HTMLElement[] = [];
-	for( let p = e ; p; p = p.parentElement ) ar.push( p );
-	log2( "pathSet\n" + ar.map( e => e.nodeName ).join( "\n" ) );
+	
+	// for( let p = e ; p; p = p.parentElement ) ar.push( p );
+	// log2( "pathSet\n" + ar.map( e => e.nodeName ).join( "\n" ) );
+	
 	return set;
 }
