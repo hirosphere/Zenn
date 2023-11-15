@@ -1,8 +1,8 @@
 import { models as Mehm, Leaf, ef, each, newhook, Hook } from "../meh/index.js";
 import { Grazer } from "./grazer.js";
 import { Applet } from "./applet.js";
-//const log = console.log;
-const log = ( ... any : any ) => {};
+const log = console.log;
+//const log = ( ... any : any ) => {};
 
 const { div, span, p, ul, li, select, option } = ef;
 
@@ -21,10 +21,10 @@ export const TabSwitchApp = () =>
 
 			div( ef.button( { acts: { click() { sel.default.select(); } } }, "Null" ) ),
 			
-			Tabs( sel.root.parts ),
-			
 			ContentSwitch( sel.root.parts ),
 
+			Tabs( sel.root.parts ),
+			
 			ef.section
 			(
 				ef.input( { attrs: { value: sel.current.cv( o => `${ o?.value }` ) } } )

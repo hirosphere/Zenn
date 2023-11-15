@@ -5,9 +5,11 @@ const log = console.log;
 
 //  //
 
-export const ColorApp1 = () =>
+export const SVG1App = () =>
 {
-	const svg = sf.svg( { attrs: { width: 400, height: 100 }, style: { transform: "scale( 100% )" } },
+	const svg = sf.svg( { attrs: { width: 400, height: 100, viewBox: "0 0 400 100" },
+			style: { width: "100%" },
+		},
 		Colors(),
 	);
 

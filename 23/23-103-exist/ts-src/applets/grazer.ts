@@ -1,4 +1,4 @@
-//const log = console.log;
+const log2 = console.log;
 const log = ( ... any : any ) => {};
 
 //  //
@@ -108,7 +108,7 @@ export class Grazer
 
 		/** moves の欠員を検出し mouseleave イベントを生成 */
 
-		const ps = getPathSet( e );
+		const ps = createPathSet( e );
 		this.moves.forEach (
 			move => {
 				if( ! ps.has( move ) )
@@ -145,9 +145,12 @@ export class Grazer
 /** Element の parentElement のパスセットを作成
  * mouseenter / mouseleave の検出に使用
 */
-const getPathSet = ( e : HTMLElement | null ) : Set < HTMLElement > =>
+const createPathSet = ( e : HTMLElement | null ) : Set < HTMLElement > =>
 {
 	const set = new Set < HTMLElement >;
-	for( ; e; e = e.parentElement ) set.add( e );
+	for( let p = e ; p; p = p.parentElement ) set.add( p );
+	const ar : HTMLElement[] = [];
+	for( let p = e ; p; p = p.parentElement ) ar.push( p );
+	log2( "pathSet\n" + ar.map( e => e.nodeName ).join( "\n" ) );
 	return set;
 }

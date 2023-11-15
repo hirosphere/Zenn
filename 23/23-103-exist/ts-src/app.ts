@@ -4,7 +4,7 @@ import { HSLApplet } from "./applets/hsl.js";
 import { Lian1 } from "./applets/lian1app.js";
 import { EachSample } from "./applets/ap-each-sample.js";
 import { TabSwitchApp } from "./applets/tabswitch.js";
-import { ColorApp1 } from "./applets/color1.js";
+import { SVG1App } from "./applets/svg1.js";
 const log = console.log;
 
 //
@@ -40,14 +40,14 @@ const CompoA = () =>
 
 const Applets = () =>
 {
-	const { div, h1 } = ef;
+	const { main, h1 } = ef;
 
-	return div
+	return main
 	(
 		{ class: "applets" },
 		
 		h1( "23-103 Lian, Exist" ),
-		ColorApp1(),
+		SVG1App(),
 		TabSwitchApp(),
 		// EachSample(),
 		Lian1.UI(),
