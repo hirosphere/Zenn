@@ -1,0 +1,113 @@
+const log2 = console.log;
+const log = (...any) => { };
+//  //
+export class Grazer {
+    args;
+    get isActive() { return this._isActive; }
+    constructor(args) {
+        this.args = args;
+        document.addEventListener("mouseup", () => this.end());
+    }
+    _isActive = false;
+    current = null;
+    // mouse イベント //
+    mousedown(ev) {
+        log("mouse down");
+        if (ev.buttons != this.args.buttons)
+            return false;
+        this._isActive = true;
+        ev.preventDefault();
+        return true;
+    }
+    mouseenter(ev) {
+        if (ev.buttons != this.args.buttons)
+            this._isActive = false;
+        log("mouse enter", ev.buttons, this.args.buttons, this.isActive);
+        return this._isActive;
+    }
+    end() {
+        log("end");
+        this._isActive = false;
+    }
+    // touch イベント => マウスイベント変換 //
+    initTouchContainer(container) {
+        if (container instanceof HTMLElement) {
+            container.addEventListener("touchstart", (ev) => this.touchstart(ev), { passive: false });
+            container.addEventListener("touchmove", (ev) => this.touchmove(ev), { passive: false });
+            container.addEventListener("touchcancel", (ev) => this.touchcancel(ev), { passive: false });
+            container.addEventListener("touchend", (ev) => this.touchend(ev), { passive: false });
+        }
+    }
+    touchstart(ev) {
+        log("touch start");
+        ev.cancelable && ev.preventDefault();
+        this.dispatch("mousedown", this.getTouch(ev));
+    }
+    touchmove(ev) {
+        log("touch move");
+        this.touchmove_(this.getTouch(ev));
+    }
+    touchcancel(ev) {
+        log("touch cancel");
+        this.end();
+    }
+    touchend(ev) {
+        log("touch end");
+        this.end();
+    }
+    //
+    getTouch(ev) {
+        if (ev.touches.length != 1)
+            return null;
+        return ev.touches[0];
+    }
+    dispatch(type, touch) {
+        if (!touch)
+            return;
+        const e = document.elementFromPoint(touch.clientX, touch.clientY);
+        e && this.dispatchTo(e, type, touch, true);
+    }
+    /** touchmove イベントから mouseenter / mouseleave イベントを生成 */
+    touchmove_(touch) {
+        if (!touch)
+            return;
+        const e = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (!(e instanceof HTMLElement))
+            return;
+        /** moves の欠員を検出し mouseleave イベントを生成 */
+        const ps = createPathSet(e);
+        this.moves.forEach(move => {
+            if (!ps.has(move)) {
+                this.moves.delete(move);
+                this.dispatchTo(move, "mouseleave", touch, false);
+            }
+        });
+        /** moves の追加を検出し mouseenter イベントを生成 */
+        if (!this.moves.has(e)) {
+            this.moves.add(e);
+            this.dispatchTo(e, "mouseenter", touch, false);
+        }
+    }
+    moves = new Set;
+    dispatchTo(e, type, touch, bubbles) {
+        e?.dispatchEvent(new MouseEvent(type, {
+            cancelable: true,
+            bubbles,
+            buttons: this.args.buttons,
+            ...touch
+        }));
+    }
+}
+/** Element の parentElement のパスセットを作成
+ * mouseenter / mouseleave の検出に使用
+*/
+const createPathSet = (e) => {
+    const set = new Set;
+    for (let p = e; p; p = p.parentElement)
+        set.add(p);
+    const ar = [];
+    // for( let p = e ; p; p = p.parentElement ) ar.push( p );
+    // log2( "pathSet\n" + ar.map( e => e.nodeName ).join( "\n" ) );
+    return set;
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZ3JhemVyLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vdHMtc3JjL2d1aS9ncmF6ZXIudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsTUFBTSxJQUFJLEdBQUcsT0FBTyxDQUFDLEdBQUcsQ0FBQztBQUN6QixNQUFNLEdBQUcsR0FBRyxDQUFFLEdBQUksR0FBUyxFQUFHLEVBQUUsR0FBRSxDQUFDLENBQUM7QUFFcEMsTUFBTTtBQUVOLE1BQU0sT0FBTyxNQUFNO0lBSUs7SUFGdkIsSUFBVyxRQUFRLEtBQUssT0FBTyxJQUFJLENBQUMsU0FBUyxDQUFDLENBQUMsQ0FBQztJQUVoRCxZQUF1QixJQUEwQjtRQUExQixTQUFJLEdBQUosSUFBSSxDQUFzQjtRQUVoRCxRQUFRLENBQUMsZ0JBQWdCLENBQUUsU0FBUyxFQUFFLEdBQUcsRUFBRSxDQUFDLElBQUksQ0FBQyxHQUFHLEVBQUUsQ0FBRSxDQUFDO0lBQzFELENBQUM7SUFFUyxTQUFTLEdBQUcsS0FBSyxDQUFDO0lBQ2xCLE9BQU8sR0FBb0IsSUFBSSxDQUFDO0lBRTFDLGdCQUFnQjtJQUVULFNBQVMsQ0FBRSxFQUFlO1FBRWhDLEdBQUcsQ0FBRSxZQUFZLENBQUUsQ0FBQTtRQUNuQixJQUFJLEVBQUUsQ0FBQyxPQUFPLElBQUksSUFBSSxDQUFDLElBQUksQ0FBQyxPQUFPO1lBQUcsT0FBTyxLQUFLLENBQUM7UUFFbkQsSUFBSSxDQUFDLFNBQVMsR0FBRyxJQUFJLENBQUM7UUFDdEIsRUFBRSxDQUFDLGNBQWMsRUFBRSxDQUFDO1FBQ3BCLE9BQU8sSUFBSSxDQUFDO0lBQ2IsQ0FBQztJQUVNLFVBQVUsQ0FBRSxFQUFlO1FBRWpDLElBQUksRUFBRSxDQUFDLE9BQU8sSUFBSSxJQUFJLENBQUMsSUFBSSxDQUFDLE9BQU87WUFBSSxJQUFJLENBQUMsU0FBUyxHQUFHLEtBQUssQ0FBQztRQUU5RCxHQUFHLENBQUUsYUFBYSxFQUFFLEVBQUUsQ0FBQyxPQUFPLEVBQUcsSUFBSSxDQUFD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

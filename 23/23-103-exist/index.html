@@ -42,7 +42,7 @@ h1 { padding: 0 1ex; }
 button { padding: 0.63ex 0.83ex; font-size: 1.00em; }
 
 thead td { text-align: center; font-weight: bold; }
-td { padding: 0 1ex; }
+td { padding: 0 1ex; word-wrap: normal; }
 
 select { width: 8em; font-size: 1.2rem; }
 
@@ -110,8 +110,21 @@ select { width: 8em; font-size: 1.2rem; }
 
 /**/
 
-.switch-content { display: none; border-radius: 1em; border: 2px solid hsl( 345, 15%, 75% ); padding: 2em; }
-.switch-content.active { display: block; }
+.switch
+{
+	height: auto; position: relative; overflow: auto;
+	border-radius: 1em; border: 2px solid hsl( 345, 15%, 75% ); padding: 2em;
+}
+.switch-item
+{
+	transition: opacity 0.8s, display 1s;
+	opacity: 0%; display: none;
+}
+.switch-item.active
+{
+	display: block;
+	opacity: 100%;
+}
 
 .lian-1 .stations
 {
@@ -140,9 +153,9 @@ select { width: 8em; font-size: 1.2rem; }
 </head>
 <body>
 	<script type="module" src="js-app/js-app.js"></script>
-	<script type="module" src="./js-231108-0743/app.js"></script>
+	<script type="module" src="./js-out/app.js"></script>
 
-	<p style="margin-bottom: 1rem;">231115- 1132 <span id="host" draggable="true" ondragstart="console.log( `drag` )"></span></p>
+	<p style="margin-bottom: 1rem;">231116- 1718 <span id="host" draggable="true" ondragstart="console.log( `drag` )"></span></p>
 
 <script>
 document.getElementById( "host" ).innerText = location.hostname;

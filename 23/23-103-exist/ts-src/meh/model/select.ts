@@ -1,38 +1,27 @@
-import { Leaf, setRoValue, Lian, Index } from "./index.js";
+import { Leaf, LoL, setRoValue, Lian, Index } from "./index.js";
 const log = console.log;
 
-//  //
-
-namespace Defs
-{
-	export type Option < V > =
-	{
-		value : V ;
-		parts ? : Option < V > []
-	};
-}
-
-//  //
+/** class Select */
 
 export class Select < V = any >
 {
 	public readonly current : Leaf < CurrVal < V > > ;
 	public get root() : Option < V > { return this._root; }
-	public get default() : Option < V > { return this._default; }
+	public get default() : Option < V > | null { return this._default; }
 
-	constructor( optdef : Defs.Option < V >, defaultDef : Defs.Option < V > )
+	constructor( optarg : Option.Args < V >, defaultDef ? : Option.Args < V > )
 	{
 		this.current = new Leaf < Option < V > | null > ( null, { rel: this.update } );
-		this._root = this.createOption( optdef );
-		this._default = this.createOption( defaultDef );
+		this._root = this.createOption( optarg );
+		this._default = defaultDef ? this.createOption( defaultDef ) : null;
 	}
 
 	protected _root : Option < V > ;
-	protected _default : Option < V >;
+	protected _default : Option < V > | null;
 
 	//
 
-	public createOption( def : Defs.Option < V > ) : Option < V >
+	public createOption( def : Option.Args < V > ) : Option < V >
 	{
 		return new Option < V > ( this, undefined, def );
 	}
@@ -57,14 +46,20 @@ export namespace Select
 {
 	export const fromLabels = ( labels : string [], deflab ? : string ) =>
 	{
-		const def = { value: "", parts: labels.map( value => ({ value }) ) };
-		return new Select < string > ( def, { value: deflab ?? "" } );
+		const def = { title: "", value: "", parts: labels.map( value => ( { title: value, value } ) ) };
+		return new Select < string > ( def, { title: deflab ?? "", value: "" } );
 	};
+
+	export const fromValues = < V > ( arg : Option.Args < V > ) : Select < V > =>
+	{
+		return new Select < V > ( arg );
+	}
 }
 
-//  //
 
-export class Option < V = any > extends Index < Option >
+/** class Option */
+
+export class Option < V = any > extends Index < Option < V > >
 {
 	public get v() { return this.value; }
 	public get val() { return this.value; }
@@ -74,15 +69,16 @@ export class Option < V = any > extends Index < Option >
 	constructor(
 		protected selector : Select < V > | null,
 		orderOwner : Lian | undefined,
-		public readonly def : Defs.Option < V > )
+		public readonly args : Option.Args < V > )
 	{
 		super( orderOwner );
 		
-		this.value = def.value;
-		def.parts && this.parts.addOrders( def.parts.map( def => this.createPart( def ) ) );
+		this._title = args.title;
+		this.value = args.value;
+		args.parts && this.parts.addOrders( args.parts.map( def => this.createPart( def ) ) );
 	}
 
-	protected createPart( def : Defs.Option < V > ) : Option < V >
+	protected createPart( def : Option.Args < V > ) : Option < V >
 	{
 		return new Option( this.selector, this.parts, def );
 	}
@@ -99,4 +95,14 @@ export class Option < V = any > extends Index < Option >
 		this.selector = null;
 		super.terminate();
 	}
+}
+
+export namespace Option
+{
+	export type Args < V > =
+	{
+		title : LoL.String;
+		value : V ;
+		parts ? : Args < V > []
+	};
 }

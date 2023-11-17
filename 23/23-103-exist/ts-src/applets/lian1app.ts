@@ -10,15 +10,28 @@ namespace Model
 	{
 		lines = [ "埼京線", "山手線", "京浜東北線", "総武線各駅停車", "中央線" ].map( name => eki.lines[ name ] );
 		public readonly history = new ValueLian < eki.Station > ();
+
+		constructor()
+		{
+			for( let i = 0; i < 109; i ++ ) this.history.add( this.randstat() );
+		}
 	
 		evmon = new Leaf.String( "evmon" );
 	
 		shuffle()
 		{
 		}
-	}
-}
 
+		protected randstat()
+		{
+			const line = arrnd( this.lines );
+			return arrnd( line.stations );
+		}
+	
+	}
+
+	const arrnd = < I = any > ( ar : Array < I > ) => ar[ Math.floor( ar.length * Math.random() ) ];
+}
 
 
 const arrnd = ( ar : Array < any > ) => Math.floor( Math.random() * ar.length );
@@ -80,7 +93,7 @@ const History = ( mo : Model.App ) =>
 {
 	return div( { class: "line" },
 		table(
-			thead( tr( each( [ "", "郵便番号", "駅名", "路線名", "北緯", "東経" ], i => td( i ) ) ) ),
+			thead( tr( each( [ "", "郵便番号", "駅名", "路線名", "北緯・東経" ], i => td( i ) ) ) ),
 			tbody( each( mo.history, o => HistoryRow( o ) ) ) ),
 	);
 };
@@ -92,11 +105,10 @@ const HistoryRow = ( order : ValueOrder < eki.Station > ) =>
 	return tr(
 		td( order.pos ),
 		td( st.postal ),
-		td( st.name ),
-		td( st.line, " ", st.pos + 1 ),
-		td( st.lat ),
-		td( st.long ),
-		td( button( { acts: { click: act } }, "D" ) )
+		td( { style: { minWidth: "5em" } }, st.name ),
+		td( { style: { minWidth: "9em" } }, st.line + " " + ( st.pos + 1 ) ),
+		td( st.lat, " ", st.long ),
+		td( button( { acts: { click: act } }, "消" ) ),
 	);
 }
 

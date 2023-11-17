@@ -1,4 +1,4 @@
-import { Leaf, setRoValue } from "./leaf.js";
+import { Leaf, LoL, setRoValue } from "./leaf.js";
 import { Lian, Order } from "./lian.js";
 const log = console.log;
 
@@ -8,6 +8,8 @@ const log = console.log;
 
 export class Index < Part extends Index = any > extends Order
 {
-	public readonly title = new Leaf.String( "" );
+	public get title() : LoL.String { return this._title; };
 	public readonly parts = new Lian < Part >;
+
+	protected _title : LoL.String = "";
 }

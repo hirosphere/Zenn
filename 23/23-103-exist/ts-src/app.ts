@@ -1,10 +1,11 @@
-import { Leaf, ef, dom } from "./meh/index.js";
+import { Leaf, Select, Option, ef, dom } from "./meh/index.js";
 import { Range } from "./gui/range.js";
 import { HSLApplet } from "./applets/hsl.js";
 import { Lian1 } from "./applets/lian1app.js";
 import { EachSample } from "./applets/ap-each-sample.js";
-import { TabSwitchApp } from "./applets/tabswitch.js";
+import { TabSwitchApp, SelectApp } from "./applets/tabswitch.js";
 import { SVG1App } from "./applets/svg1.js";
+import { Tabs, Switch } from "./gui/tabs.js";
 const log = console.log;
 
 //
@@ -42,17 +43,33 @@ const Applets = () =>
 {
 	const { main, h1 } = ef;
 
+	const contents : Option.Args < dom.defs.Node > [] =
+	[
+		{ title: "SVGApp", value: SVG1App() },
+		{ title: "SelectApp", value: SelectApp() },
+		{ title: "TabSwitchApp", value: TabSwitchApp() },
+		{ title: "Lian1", value: Lian1.UI() },
+		{ title: "HSL", value: HSLApplet() },
+		{ title: "CompoA", value: CompoA() },
+	];
+
+	const selector = Select.fromValues < dom.defs.Node | null > ( { title: "", value: null, parts: contents } );
+	selector.root.parts[ 3 ].select();
+
 	return main
 	(
 		{ class: "applets" },
 		
 		h1( "23-103 Lian, Exist" ),
-		SVG1App(),
-		TabSwitchApp(),
+		Tabs( selector.root.parts ),
+		Switch( selector.root.parts, option => option.value || "null" ),
+		// SVG1App(),
+		// SelectApp(),
+		// TabSwitchApp(),
 		// EachSample(),
-		Lian1.UI(),
-		HSLApplet(),
-		CompoA(),
+		// Lian1.UI(),
+		//HSLApplet(),
+		//CompoA(),
 	);
 };
 

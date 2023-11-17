@@ -1,6 +1,5 @@
-import { models as Mehm, Leaf, ef, each, newhook, Hook } from "../meh/index.js";
-import { Grazer } from "./grazer.js";
-import { Applet } from "./applet.js";
+import { models as Mehm, Option, Leaf, ef, } from "../meh/index.js";
+import { Tabs, Switch }  from "../gui/tabs.js";
 const log = console.log;
 //const log = ( ... any : any ) => {};
 
@@ -11,17 +10,17 @@ const { div, span, p, ul, li, select, option } = ef;
 export const TabSwitchApp = () =>
 {
 	const labels = [ "Eins", "Zwei", "Drei", "Vier", "Fünf", "Sechs", "Sieben", "Acht", "Neun", "Zehn" ];
-	const sel : Mehm.Select < string > = Mehm.Select.fromLabels( labels, "Nuuull" );
-	sel.root?.parts[ 3 ].select();
+	const sel : Mehm.Select < string > = Mehm.Select.fromLabels( labels, "Nuulll" );
+	sel.root?.parts[ 7 ].select();
 
 	return ef.article( { class: "applet"},
 
 		ef.h2( "TabSwitch" ),
 		ef.section( { class: "col-2" },
 
-			div( ef.button( { acts: { click() { sel.default.select(); } } }, "Null" ) ),
+			div( ef.button( { acts: { click() { sel.default?.select(); } } }, "Null" ) ),
 			
-			ContentSwitch( sel.root.parts ),
+			Switch( sel.root.parts, option => Content( option ) ),
 
 			Tabs( sel.root.parts ),
 			
@@ -31,60 +30,26 @@ export const TabSwitchApp = () =>
 			),
 		),
 	);
-}
+};
 
-// Tab|Tab|Tab //
+const Content = ( option : Option < string > ) => ef.section(
+	{},
+	ef.h2( option.title ),
+	ef.p( "ご存知、", option.title.toString(), " でございマス。" )
+);
 
-const Tabs = ( opts ? : Mehm.Option < string > [] ) =>
+export const SelectApp = () =>
 {
-	const gr = new Grazer( { buttons: 1 } );
-	const hook = newhook();
-	hook.init = () => hook.e && gr.initTouch( hook.e );
-
-	return ul( {
-			class: "tabs",
-			actActs: {
-				mousedown( ev ) { gr.mousedown( ev ); }
-			},
-			hook
-		},
-		each( opts || [], opt => Tab( opt, gr ) ), );
-}
-
-const Tab = ( opt : Mehm.Option < string >, gr : Grazer ) =>
-{
-	return li( {
-			class: [ "tab", { selected: opt.selected } ],
-			actActs: {
-				mousedown( ev ) { gr.mousedown( ev ) && opt.select(); },
-				mouseenter( ev ) { gr.mouseenter( ev ) && opt.select(); },
-			}
-		},
-		opt.value
+	return ef.article( { class: "applet" },
+		ef.h2( "SelectApp", ),
 	);
-};
-
-//  //
-
-const ContentSwitch = ( options : models.Option[] ) =>
-{
-	return ef.div( { class: "switch" }, each( options, option => Content( option ) ) );
-};
-
-const Content = ( option : models.Option ) =>
-{
-	return ef.section( { class: [ "switch-content", { active: option.selected } ] },
-		ef.h2( option.value ),
-		ef.p( option.value, " を知らないか？" )
-	);
-};
-
+}
 
 //  models  //
 
-namespace models
+namespace mo
 {
-	export class PageContent
+	export class Page
 	{
 		readonly name;
 		constructor( name : string )
@@ -93,6 +58,6 @@ namespace models
 		}
 	}
 	
-	export class Option extends Mehm.Option < string > {}
+	export class Option extends Mehm.Option < Page > {}
 }
 

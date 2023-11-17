@@ -36,7 +36,7 @@ export class Grazer
 		return this._isActive;
 	}
 	
-	protected end()
+	protected end() : void
 	{
 		log( "end" );
 		this._isActive = false;
@@ -44,7 +44,7 @@ export class Grazer
 
 	// touch イベント => マウスイベント変換 //
 
-	public initTouch( container : Element ) : void
+	public initTouchContainer( container : Element ) : void
 	{
 		if( container instanceof HTMLElement )
 		{
@@ -66,7 +66,7 @@ export class Grazer
 	{
 		log( "touch move" );
 
-		this.dispatchEnterLeave( this.getTouch( ev ) );
+		this.touchmove_( this.getTouch( ev ) );
 	}
 	
 	protected touchcancel( ev : TouchEvent ) : void
@@ -89,7 +89,7 @@ export class Grazer
 		return ev.touches[ 0 ];
 	}
 	
-	protected dispatch( type : string, touch : Touch | null )
+	protected dispatch( type : string, touch : Touch | null ) : void
 	{
 		if( ! touch )  return;
 		const e = document.elementFromPoint( touch.clientX, touch.clientY );
@@ -98,7 +98,7 @@ export class Grazer
 
 	/** touchmove イベントから mouseenter / mouseleave イベントを生成 */
 
-	protected dispatchEnterLeave( touch : Touch | null )
+	protected touchmove_( touch : Touch | null ) : void
 	{
 		if( ! touch ) return;
 
@@ -129,7 +129,7 @@ export class Grazer
 	}
 	protected moves = new Set < HTMLElement >;
 
-	protected dispatchTo( e : Element, type: string, touch : Touch, bubbles : boolean )
+	protected dispatchTo( e : Element, type: string, touch : Touch, bubbles : boolean ) : void
 	{
 		e?.dispatchEvent( new MouseEvent( type,
 			{
