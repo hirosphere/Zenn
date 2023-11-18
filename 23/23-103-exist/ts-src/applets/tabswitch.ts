@@ -33,8 +33,8 @@ export const TabSwitchApp = () =>
 };
 
 const Content = ( option : Option < string > ) => ef.section(
-	{},
-	ef.h2( option.title ),
+	{ style: { minHeight: "180px", border: "1px solid hsl( 45, 4%, 77% )", borderRadius: "1rex", padding: "1em" } },
+	ef.h2( option.title, "??" ),
 	ef.p( "ご存知、", option.title.toString(), " でございマス。" )
 );
 

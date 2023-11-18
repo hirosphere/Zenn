@@ -13,8 +13,8 @@ html
 {
 	background-color: hsl( 50, 7%, 94% );
 	margin: 0;
+	overflow-y: scroll;
 	padding: 0 max( 6% - 30px, 0px );
-	min-height: 100%;
 	overflow: auto;
 	font-size: clamp( 9px, 0.6vw + 9px, 16px );
 }
@@ -77,6 +77,21 @@ select { width: 8em; font-size: 1.2rem; }
 	background: hsl( 45, 3%, 10% ); color: hsl( 0, 0%, 100% );
 }
 
+.switch
+{
+	display: grid;
+	overflow: auto;
+}
+.switch-item
+{
+	grid-area: 1 / 1 / 2 / 2;
+	display: none;
+}
+.switch-item.active
+{
+	display: block;
+}
+
 /* applet */
 
 .applets
@@ -109,22 +124,6 @@ select { width: 8em; font-size: 1.2rem; }
 }
 
 /**/
-
-.switch
-{
-	height: auto; position: relative; overflow: auto;
-	border-radius: 1em; border: 2px solid hsl( 345, 15%, 75% ); padding: 2em;
-}
-.switch-item
-{
-	transition: opacity 0.8s, display 1s;
-	opacity: 0%; display: none;
-}
-.switch-item.active
-{
-	display: block;
-	opacity: 100%;
-}
 
 .lian-1 .stations
 {
