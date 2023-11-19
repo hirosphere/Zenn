@@ -71,7 +71,7 @@ export class Option < V = any > extends Index < Option < V > >
 		orderOwner : Lian | undefined,
 		public readonly args : Option.Args < V > )
 	{
-		super( orderOwner );
+		super();
 		
 		this._title = args.title;
 		this.value = args.value;

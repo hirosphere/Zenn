@@ -1,4 +1,4 @@
-import { Leaf, ValueLian, ValueOrder, ef, each, } from "../meh/index.js";
+import { Leaf, LianV, OrderV, ef, each, } from "../meh/index.js";
 import * as eki from "../raildata/eki.js";
 const log = console.log;
 
@@ -9,11 +9,11 @@ namespace Model
 	export class App
 	{
 		lines = [ "埼京線", "山手線", "京浜東北線", "総武線各駅停車", "中央線" ].map( name => eki.lines[ name ] );
-		public readonly history = new ValueLian < eki.Station > ();
+		public readonly history = new LianV < eki.Station > ();
 
 		constructor()
 		{
-			for( let i = 0; i < 109; i ++ ) this.history.add( this.randstat() );
+			for( let i = 0; i < 109; i ++ ) this.history.addValue( this.randstat() );
 		}
 	
 		evmon = new Leaf.String( "evmon" );
@@ -78,8 +78,8 @@ export const Lian1Applet = ( app : Model.App = new Model.App ) =>
 
 const Line = ( app : Model.App, line : eki.Line ) =>
 {
-	const stations = ValueLian.create( line.stations );
-	const action = ( station : eki.Station ) => app.history.add( station, 0 );
+	const stations = LianV.create( line.stations );
+	const action = ( station : eki.Station ) => app.history.addValue( station, 0 );
 
 	return span( { class: "line" },
 		ef.b( line.name ),
@@ -98,7 +98,7 @@ const History = ( mo : Model.App ) =>
 	);
 };
 
-const HistoryRow = ( order : ValueOrder < eki.Station > ) =>
+const HistoryRow = ( order : OrderV < eki.Station > ) =>
 {
 	const st : eki.Station = order.v;
 	const act = () => order.remove();
@@ -112,7 +112,7 @@ const HistoryRow = ( order : ValueOrder < eki.Station > ) =>
 	);
 }
 
-const HistoryButton = ( o : ValueOrder< eki.Station > ) =>
+const HistoryButton = ( o : OrderV< eki.Station > ) =>
 {
 	const act = () => o.remove();
 

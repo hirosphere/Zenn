@@ -1,10 +1,10 @@
 import { Leaf, Select, Option, ef, dom } from "./meh/index.js";
 import { Range } from "./gui/range.js";
 import { HSLApplet } from "./applets/hsl.js";
-import { Lian1 } from "./applets/lian1app.js";
+import { Lian1 } from "./applets/lian-1-app.js";
 import { EachSample } from "./applets/ap-each-sample.js";
 import { TabSwitchApp, SelectApp } from "./applets/tabswitch.js";
-import { SVG1App } from "./applets/svg1.js";
+import { SVG1App } from "./applets/svg-1-app.js";
 import { Tabs, Switch } from "./gui/tabs.js";
 const log = console.log;
 
@@ -54,7 +54,7 @@ const Applets = () =>
 	];
 
 	const selector = Select.fromValues < dom.defs.Node | null > ( { title: "", value: null, parts: contents } );
-	selector.root.parts[ 3 ].select();
+	selector.root.parts[ 0 ].select();
 
 	return main
 	(

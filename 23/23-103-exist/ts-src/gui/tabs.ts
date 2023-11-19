@@ -15,6 +15,7 @@ export const Tabs = < O extends Option > ( opts ? : O [] ) =>
 
 	return ul( {
 			class: "tabs",
+			attrs: { tabindex: 0 },
 			actActs: {
 				mousedown( ev ) { gr.mousedown( ev ); }
 			},
@@ -27,6 +28,7 @@ const Tab = < O extends Option > ( opt : O, gr : Grazer ) =>
 {
 	return li( {
 			class: [ "tab", { selected: opt.selected } ],
+			attrs: { tabIndex: 0, },
 			actActs: {
 				mousedown( ev ) { gr.mousedown( ev ) && opt.select(); },
 				mouseenter( ev ) { gr.mouseenter( ev ) && opt.select(); },

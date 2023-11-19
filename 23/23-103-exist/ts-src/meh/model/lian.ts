@@ -10,7 +10,13 @@ import { Leaf, setRoValue } from "./leaf.js";
 
 const log = console.log;
 
-export class Lian < O extends Order = Order > extends Array < O >
+/** owner : symbol  OederがLianを保持するために使用。 */
+
+const owner = Symbol();
+
+/** class Lian */
+
+export class Lian < O extends Order = any > extends Array < O >
 {
 	public readonly vlength = new Leaf.Ro.Number( 0, { owner: this } );
 	protected refs = new Set < Lian.Ref > ();
@@ -21,12 +27,34 @@ export class Lian < O extends Order = Order > extends Array < O >
 		ref.add?.( 0, this.length );
 	}
 
-	// order operations //
+	// order life methods //
 
-	public addOrders( orders : O[], start ? : number )
+	public insert( create : () => O, count : number ) :void
 	{
+		const ords = [];
+		for( let i = 0; i < count; i ++ )  ords.push( create() );
+		this.addOrders( ords, this.length );
+	}
+
+	public addOrder( order : O, pos ? : number ) : void
+	{
+		this.addOrders( [ order ], pos );
+	}
+
+	public removeOrder( order: O ) : void
+	{
+		if( order[ owner ] != this ) return;
+		this.removeOrders( order.pos.val, 1 );
+	}
+
+	public addOrders( orders : O[], start ? : number ) : this
+	{
+		if( orders.length == 0 ) return this;
+
 		const st = regnext( this, start );
 		this.splice( st, 0, ... orders );
+
+		orders.forEach( order => order[ owner ] = this );
 
 		this.vlength[ setRoValue ]( this, this.length );
 		this.reposit( st, this.length );
@@ -35,30 +63,17 @@ export class Lian < O extends Order = Order > extends Array < O >
 		return this;
 	}
 
-	public addOrder( order : O, position ? : number ) : void
+	public removeOrders( start : number, count ? : number ) : void
 	{
-		const pos = regnext( this, position );
-		this.splice( pos, 0, order );
+		if( start < 0 || this.length <= start )  return;
+
+		const rems = this.splice( start, count );
+
+		rems.forEach( rem => rem[ owner ] = null );
 
 		this.vlength[ setRoValue ]( this, this.length );
-		this.reposit( pos, this.length );
-		this.refs.forEach(  ref => ref.add?.( pos, 1 )  );
-	}
-
-	public remove( order : O ) : void
-	{
-		if( order.owner != this )  return;
-
-		const pos = order.pos.v;
-
-		if( pos < 0 || this.length <= pos )  return;
-		if( order != this[ pos ] )  return;
-
-		this.splice( pos, 1 );
-
-		this.vlength[ setRoValue ]( this, this.length );
-		this.reposit( pos, this.length );
-		this.refs.forEach(  ref => ref.remove?.( pos, 1 )  );
+		this.reposit( start, start + rems.length );
+		this.refs.forEach(  ref => ref.remove?.( start, rems.length )  );
 	}
 
 	public clear() : void
@@ -73,7 +88,7 @@ export class Lian < O extends Order = Order > extends Array < O >
 
 	protected reposit( start : number, next : number ) : void
 	{
-		for( let pos = start; pos < next; pos ++ )
+		for( let pos = start; pos < next && pos < this.length; pos ++ )
 		{
 			this[ pos ].pos[ setRoValue ]( this, pos );
 		}
@@ -89,33 +104,38 @@ export class Lian < O extends Order = Order > extends Array < O >
 }
 
 export class Order
-{	
+{
+	public [ owner ] : Lian | null = null;
 	public readonly pos : Leaf.Ro.Number ;
-	constructor ( public readonly owner ? : Lian )
+
+	constructor ()
 	{
 		this.pos = new Leaf.Ro.Number( -1, { owner } );
 	}
 
-	public remove() : void { this.owner?.remove( this ); }
+	public remove() : void { this[ owner ]?.removeOrder( this ); }
 
 	public terminate()
 	{
+		this.remove();
+		this[ owner ] = null;
 	}
 }
 
-const regnext = ( ar : Array < any >, order ? : number ) : number =>
+const regnext = ( ar : Array < any >, pos ? : number ) : number =>
 {
-	if( order == undefined || order > ar.length || order < 0 ) return ar.length;
-	return order;
+	if( pos == undefined || pos > ar.length  ) return ar.length;
+	if( pos < 0 ) return 0;
+	return pos;
 }
 
 //   //
 
-export class ValueLian < V > extends Lian < ValueOrder < V > >
+export class LianV < V > extends Lian < OrderV < V > >
 {
-	static create < V > ( items : V[] ) : ValueLian < V >
+	static create < V > ( values : V[] ) : LianV < V >
 	{
-		return new ValueLian < V > ().addValues( items );
+		return new LianV < V > ().addValues( values );
 	}
 
 	protected refs = new Set < Lian.Ref > ();
@@ -130,31 +150,21 @@ export class ValueLian < V > extends Lian < ValueOrder < V > >
 
 	public addValues( values : V[], start ? : number ) : this
 	{
-		this.addOrders( values.map( val => this.createOrder( val ) ), start );
+		const orders = values.map( value => new OrderV( value ) );
+		this.addOrders( orders, start );
 		return this;
 	}
 
-	protected createOrder( value : V ) : ValueOrder < V >
+	public addValue( value : V, position ? : number ) : void
 	{
-		return new ValueOrder( this, value );
-	}
-
-	public add( value : V, position ? : number ) : void
-	{
-		const o = new ValueOrder < V > ( this, value );
+		const o = new OrderV( value );
 		this.addOrder( o, position );
 	}
 }
 
-export class ValueOrder < V > extends Order
+export class OrderV < V > extends Order
 {	
-	constructor (
-		owner : ValueLian < V >,
-		public readonly value : V
-	) {
-		super( owner );
-	}
-
+	constructor ( public readonly value : V ) { super(); }
 	get v() { return this.value }
 	get val() { return this.value }
 }
