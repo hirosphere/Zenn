@@ -13,12 +13,14 @@ const log = console.log;
 /** owner : symbol  OederがLianを保持するために使用。 */
 
 const owner = Symbol();
+const readonlykey = {};
+
 
 /** class Lian */
 
 export class Lian < O extends Order = any > extends Array < O >
 {
-	public readonly vlength = new Leaf.Ro.Number( 0, { owner: this } );
+	public readonly vlength = new Leaf.Ro.Number( 0, { readonlykey } );
 	protected refs = new Set < Lian.Ref > ();
 
 	public ref( ref : Lian.Ref ) : void
@@ -56,7 +58,7 @@ export class Lian < O extends Order = any > extends Array < O >
 
 		orders.forEach( order => order[ owner ] = this );
 
-		this.vlength[ setRoValue ]( this, this.length );
+		this.vlength[ setRoValue ]( readonlykey, this.length );
 		this.reposit( st, this.length );
 		this.refs.forEach(  ref => ref.add?.( st, orders.length )  );
 
@@ -71,7 +73,7 @@ export class Lian < O extends Order = any > extends Array < O >
 
 		rems.forEach( rem => rem[ owner ] = null );
 
-		this.vlength[ setRoValue ]( this, this.length );
+		this.vlength[ setRoValue ]( readonlykey, this.length );
 		this.reposit( start, start + rems.length );
 		this.refs.forEach(  ref => ref.remove?.( start, rems.length )  );
 	}
@@ -81,16 +83,17 @@ export class Lian < O extends Order = any > extends Array < O >
 		const len = this.length;
 		this.refs.forEach(  ( ref ) => ref.remove?.( 0, len )  );
 		this.length = 0;
-		this.vlength[ setRoValue ]( this, this.length );
+		this.vlength[ setRoValue ]( readonlykey, this.length );
 	}
 
 	//  //
 
 	protected reposit( start : number, next : number ) : void
 	{
-		for( let pos = start; pos < next && pos < this.length; pos ++ )
+		next = Math.min( next, this.length );
+		for( let pos = start; pos < next ; pos ++ )
 		{
-			this[ pos ].pos[ setRoValue ]( this, pos );
+			this[ pos ].pos[ setRoValue ]( readonlykey, pos );
 		}
 	}
 
@@ -110,10 +113,10 @@ export class Order
 
 	constructor ()
 	{
-		this.pos = new Leaf.Ro.Number( -1, { owner } );
+		this.pos = new Leaf.Ro.Number( -1, { readonlykey } );
 	}
 
-	public remove() : void { this[ owner ]?.removeOrder( this ); }
+	public remove() : void { log( "remove", this.pos.v ); this[ owner ]?.removeOrder( this ); }
 
 	public terminate()
 	{

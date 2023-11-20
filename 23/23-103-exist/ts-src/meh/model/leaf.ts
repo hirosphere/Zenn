@@ -5,7 +5,7 @@ const log = console.log;
 type LeafArgs < T > =
 {
 	rel ?: Leaf.Update < T > ;
-	owner ? : {}
+	readonlykey ? : {}
 };
 
 //  Leafから変更通知を受け取るRefの作成と、Leaf値のstringへの変換を受け持ち、  //
@@ -61,9 +61,9 @@ class LeafRo < T > extends StringSource
 
 	public get() : T { return this._value; }
 
-	public [ setRoValue ]( owner : object, value : T, sender ? : Ref ) : void
+	public [ setRoValue ]( readonlykey : object, value : T, sender ? : Ref ) : void
 	{
-		if( owner == this.args?.owner ) this._set( value, sender );
+		if( readonlykey == this.args?.readonlykey ) this._set( value, sender );
 	}
 
 	protected _set( value : T, sender ? : Ref )

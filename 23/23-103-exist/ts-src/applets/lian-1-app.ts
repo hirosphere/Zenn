@@ -13,7 +13,7 @@ namespace Model
 
 		constructor()
 		{
-			for( let i = 0; i < 109; i ++ ) this.history.addValue( this.randstat() );
+			for( let i = 0; i < 50; i ++ ) this.history.addValue( this.randstat() );
 		}
 	
 		evmon = new Leaf.String( "evmon" );
@@ -63,7 +63,6 @@ export const Lian1Applet = ( app : Model.App = new Model.App ) =>
 					button({
 						acts: {
 							click() { app.history.clear() ; },
-							dragstart( ev ) { log( ev ) },
 						},
 						attrs: { draggable: "true" }
 					}, "全消去" ), " ",
@@ -108,7 +107,7 @@ const HistoryRow = ( order : OrderV < eki.Station > ) =>
 		td( { style: { minWidth: "5em" } }, st.name ),
 		td( { style: { minWidth: "9em" } }, st.line + " " + ( st.pos + 1 ) ),
 		td( st.lat, " ", st.long ),
-		td( button( { acts: { click: act } }, "消" ) ),
+		td( button( { acts: { click: act, mousedown() { log( order.v.name ) } } }, "消" ) ),
 	);
 }
 

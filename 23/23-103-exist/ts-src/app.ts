@@ -43,7 +43,7 @@ const Applets = () =>
 {
 	const { main, h1 } = ef;
 
-	const contents : Option.Args < dom.defs.Node > [] =
+	const contents =
 	[
 		{ title: "SVGApp", value: SVG1App() },
 		{ title: "SelectApp", value: SelectApp() },
@@ -53,7 +53,7 @@ const Applets = () =>
 		{ title: "CompoA", value: CompoA() },
 	];
 
-	const selector = Select.fromValues < dom.defs.Node | null > ( { title: "", value: null, parts: contents } );
+	const selector = Select.fromValues( { title: "", value: null, parts: contents } );
 	selector.root.parts[ 0 ].select();
 
 	return main
@@ -63,13 +63,6 @@ const Applets = () =>
 		h1( "23-103 Lian, Exist" ),
 		Tabs( selector.root.parts ),
 		Switch( selector.root.parts, option => option.value || "null" ),
-		// SVG1App(),
-		// SelectApp(),
-		// TabSwitchApp(),
-		// EachSample(),
-		// Lian1.UI(),
-		//HSLApplet(),
-		//CompoA(),
 	);
 };
 

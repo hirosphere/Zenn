@@ -1,0 +1,35 @@
+@startuml
+
+skinparam DefaultFontName "sans-serif"
+
+class Lian {
+	+ add( order )
+	+ remove( order )
+	--
+	+ addOrders( order[], start )
+	+ addByPos( create, start, count ? )
+	+ removeByPos( start, count ? )
+ }
+
+class Order {
+	+ [owner] : Lian
+	+ position : Leaf.Number
+}
+
+class OrderV {
+	+ value : V
+}
+
+class Index {
+	+ title : LoL.String
+	+ parts : Index[]
+}
+
+Lian "1" *- "0..*" Order
+
+Order <|-- OrderV
+Order <|-- Index
+Index *- Index
+Index <|-- Option
+
+@enduml

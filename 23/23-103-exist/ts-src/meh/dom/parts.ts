@@ -74,7 +74,7 @@ export const createParts = ( nodet : Nodette, def : defs.Parts, index : number )
 			index ++;
 		}
 
-		parts = new LitParts( nodet, flagdef, index );	// 
+		parts = new LiteralParts( nodet, flagdef, index );	// 
 	}
 
 	// .  後方フラグメントを作成。
@@ -87,7 +87,7 @@ export const createParts = ( nodet : Nodette, def : defs.Parts, index : number )
 };
 
 
-class LitParts extends Parts
+class LiteralParts extends Parts
 {
 	constructor( private nodet : Nodette, def : defs.Node [], index : number )
 	{

@@ -10,7 +10,7 @@ export const SVG1App = () =>
 	const app = new models.App();
 
 	const svg = sf.svg({
-			attrs: { width: 400, height: 100, viewBox: "-200 -50 400 100" },
+			attrs: { width: 500, height: 300, viewBox: "-250 -150 500 300" },
 			style: { width: "100%", border: "3px solid hsl( 45, 4%, 94% )" },
 		},
 		Colors( app.phase ),
@@ -72,9 +72,9 @@ namespace models
 
 	export class Phase
 	{
-		public readonly arc = new Leaf.Number( 6, { rel: () => this.update() } );
-		public readonly start = new Leaf.Number( 120, { rel: () => this.update() } );
-		public readonly span = new Leaf.Number( 60, { rel: () => this.update() } );
+		public readonly arc = new Leaf.Number( 9, { rel: () => this.update() } );
+		public readonly start = new Leaf.Number( 90, { rel: () => this.update() } );
+		public readonly span = new Leaf.Number( 120, { rel: () => this.update() } );
 
 		public readonly shapes = new Lian < Shape > ();
 
@@ -91,15 +91,12 @@ namespace models
 			else this.shapes.removeOrders( nodect, - diffct );
 
 
-			log( "diffct", diffct, this.shapes.length );
-
 			for( let i = 0; i <= this.arc.val; i ++ )
 			{
 				const arc = this.arc.v;
 				const pos = arc ? ( 400 * i / arc ) - 200 : 0;
 				const hue = this.start.v + this.span.v * ( arc ? i / arc : 0 );
 				
-				log( i, hue );
 				const shape = this.shapes[ i ];
 				shape.color.h.v = hue;
 				shape.posit.x.v = pos;

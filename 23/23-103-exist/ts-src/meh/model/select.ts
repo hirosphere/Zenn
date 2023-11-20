@@ -23,7 +23,7 @@ export class Select < V = any >
 
 	public createOption( def : Option.Args < V > ) : Option < V >
 	{
-		return new Option < V > ( this, undefined, def );
+		return new Option < V > ( this, def );
 	}
 
 	//
@@ -66,11 +66,11 @@ export class Option < V = any > extends Index < Option < V > >
 	public readonly value : V ;
 	public readonly selected = new Leaf.Boolean( false ) ;
 
-	constructor(
+	constructor
+	(
 		protected selector : Select < V > | null,
-		orderOwner : Lian | undefined,
-		public readonly args : Option.Args < V > )
-	{
+		public readonly args : Option.Args < V >
+	){
 		super();
 		
 		this._title = args.title;
@@ -80,7 +80,7 @@ export class Option < V = any > extends Index < Option < V > >
 
 	protected createPart( def : Option.Args < V > ) : Option < V >
 	{
-		return new Option( this.selector, this.parts, def );
+		return new Option( this.selector, def );
 	}
 
 	//
