@@ -1,35 +1,59 @@
 @startuml
 
-skinparam DefaultFontName "sans-serif"
+skinparam DefaultFontName "arial"
 
 class Lian {
+	+ addByPos( create, count = 1, start = next )
+	..
 	+ add( order )
 	+ remove( order )
-	--
+	..
 	+ addOrders( order[], start )
-	+ addByPos( create, start, count ? )
-	+ removeByPos( start, count ? )
+	+ removeOrders( start, count ? )
+	..
+	+ clear()
+	--
+	+ source : Array
+	+ length : Leaf.Number
+	- refs : Set < Lian.Ref >
+ }
+
+ class Array {
+	+ splice()
+	+ length
  }
 
 class Order {
 	+ [owner] : Lian
 	+ position : Leaf.Number
+	+ source : V
 }
 
-class OrderV {
-	+ value : V
-}
 
 class Index {
 	+ title : LoL.String
-	+ parts : Index[]
+	+ parts : Lian < Index >
 }
 
-Lian "1" *- "0..*" Order
+class Selector {
+	+ root : Option
+	+ setCurrent( name, option )
+	--
+	- currents : Map < string, Option >
+}
 
-Order <|-- OrderV
+class Option {
+	+ getState( name ) : Leaf.Boolean
+	- state : Map < string, Leaf.Boolean >
+}
+
+Lian *- Array
+Array "1" *- "0..*" Order
+
 Order <|-- Index
-Index *- Index
+Index "1" *-"0..*" Index
+
+Selector *- Option
 Index <|-- Option
 
 @enduml

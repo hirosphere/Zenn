@@ -41,13 +41,18 @@ const Colors = ( mo : models.Phase ) =>
 
 const Circle = ( model : models.Shape ) =>
 {
-	log( "Circle", model.color.css.val, model.posit.x.val )
 	return sf.circle( {
 			attrs: { fill: model.color.css, cx: model.posit.x, cy: model.posit.y, r: 20 },
 			acts: { click() { log( model.color.css.val ) } }
 		},
 	);
 }
+
+type names = [ "selected", "hovered" ] ;
+
+let n : names;
+n[ 0 ] = "selected";
+n[ 1 ] = "hovered";
 
 const Item = () =>
 {

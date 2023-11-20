@@ -22,11 +22,14 @@ export class Lian < O extends Order = any > extends Array < O >
 {
 	public readonly vlength = new Leaf.Ro.Number( 0, { readonlykey } );
 	protected refs = new Set < Lian.Ref > ();
+	protected _array = this;
+
+	//  //
 
 	public ref( ref : Lian.Ref ) : void
 	{
 		this.refs.add( ref );
-		ref.add?.( 0, this.length );
+		ref.add?.( 0, this._array.length );
 	}
 
 	// order life methods //
@@ -35,7 +38,7 @@ export class Lian < O extends Order = any > extends Array < O >
 	{
 		const ords = [];
 		for( let i = 0; i < count; i ++ )  ords.push( create() );
-		this.addOrders( ords, this.length );
+		this.addOrders( ords, this._array.length );
 	}
 
 	public addOrder( order : O, pos ? : number ) : void
@@ -54,12 +57,12 @@ export class Lian < O extends Order = any > extends Array < O >
 		if( orders.length == 0 ) return this;
 
 		const st = regnext( this, start );
-		this.splice( st, 0, ... orders );
+		this._array.splice( st, 0, ... orders );
 
 		orders.forEach( order => order[ owner ] = this );
 
 		this.vlength[ setRoValue ]( readonlykey, this.length );
-		this.reposit( st, this.length );
+		this.reposit( st, this._array.length );
 		this.refs.forEach(  ref => ref.add?.( st, orders.length )  );
 
 		return this;
@@ -67,33 +70,33 @@ export class Lian < O extends Order = any > extends Array < O >
 
 	public removeOrders( start : number, count ? : number ) : void
 	{
-		if( start < 0 || this.length <= start )  return;
+		if( start < 0 || this._array.length <= start )  return;
 
-		const rems = this.splice( start, count );
+		const rems = this._array.splice( start, count );
 
 		rems.forEach( rem => rem[ owner ] = null );
 
-		this.vlength[ setRoValue ]( readonlykey, this.length );
-		this.reposit( start, start + rems.length );
+		this.vlength[ setRoValue ]( readonlykey, this._array.length );
+		this.reposit( start );
 		this.refs.forEach(  ref => ref.remove?.( start, rems.length )  );
 	}
 
 	public clear() : void
 	{
-		const len = this.length;
+		const len = this._array.length;
 		this.refs.forEach(  ( ref ) => ref.remove?.( 0, len )  );
-		this.length = 0;
-		this.vlength[ setRoValue ]( readonlykey, this.length );
+		this._array.length = 0;
+		this.vlength[ setRoValue ]( readonlykey, this._array.length );
 	}
 
 	//  //
 
-	protected reposit( start : number, next : number ) : void
+	protected reposit( start : number, next : number = this._array.length ) : void
 	{
-		next = Math.min( next, this.length );
+		next = Math.min( next, this._array.length );
 		for( let pos = start; pos < next ; pos ++ )
 		{
-			this[ pos ].pos[ setRoValue ]( readonlykey, pos );
+			this._array[ pos ].pos[ setRoValue ]( readonlykey, pos );
 		}
 	}
 
