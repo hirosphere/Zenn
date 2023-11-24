@@ -1,0 +1,88 @@
+import { Exist } from "./exist.js";
+import { Branch } from "./branch.js";
+const log = console.log;
+/**  */
+export class Leaf extends Exist {
+    _value;
+    constructor(owner, _value) {
+        super(owner);
+        this._value = _value;
+    }
+    /**  */
+    set v(newv) { this.set(newv); }
+    set val(newv) { this.set(newv); }
+    set vlaue(newv) { this.set(newv); }
+    get v() { return this._value; }
+    get val() { return this._value; }
+    get value() { return this._value; }
+    set(newv, changer) {
+        if (newv === this._value)
+            return;
+        const oldv = this._value;
+        this._value = newv;
+        // log( this.lf( "set" ), newv, oldv, [...this.refs].length );
+        if (changer != this.owner && this.owner instanceof Branch) {
+            this.owner.update();
+        }
+        this.refs.forEach(ref => {
+            (ref instanceof Leaf.Ref) &&
+                ref != changer &&
+                ref.onValueChange(newv, oldv);
+        });
+    }
+    get() { return this._value; }
+    /** Branch 向けメソッド */
+    setStatic(owner, newv) { if (owner == this.owner)
+        this._value = newv; }
+    noteChange(owner) {
+        if (owner != this.owner)
+            return;
+    }
+    /**  */
+    lf(event, info = "") { return `Leaf[${this.ru}] ${event}`; }
+}
+/**  */
+(function (Leaf) {
+    /** class Ref < V > */
+    class Ref extends Exist.Ref {
+        /** value */
+        set v(newv) { this.value = newv; }
+        set val(newv) { this.value = newv; }
+        get v() { return this.value; }
+        get val() { return this.value; }
+        get value() { return this.source?.get(); }
+        set value(newv) {
+            if (!this.source) {
+                console.error(this.lf("set value"), "source の無きに 値をセット。");
+                return;
+            }
+            // log( this.lf( "set value" ), newv );
+            newv !== undefined && this.source?.set(newv, this);
+        }
+        /** source */
+        setSource(newsource) {
+            super.setSource(newsource);
+        }
+        set source(newSource) { super.setSource(newSource); }
+        get source() {
+            return (this._source instanceof Leaf) && this._source || undefined;
+        }
+        onValueChange(newv, oldv) {
+            log(this.lf("onValueChange"), newv, oldv);
+        }
+        /**  */
+        lf(event) { return `Leaf.Ref[${this.id}-${this.source?.ru ?? "?"}] ${event}`; }
+    }
+    Leaf.Ref = Ref;
+    /** プリミティブ型 */
+    class String extends Leaf {
+    }
+    Leaf.String = String;
+    class Number extends Leaf {
+    }
+    Leaf.Number = Number;
+    class Boolean extends Leaf {
+    }
+    Leaf.Boolean = Boolean;
+})(Leaf || (Leaf = {}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibGVhZi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3RzLXNyYy9tZWgvbW9kZWwvbGVhZi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsS0FBSyxFQUFTLE1BQU0sWUFBWSxDQUFDO0FBQzFDLE9BQU8sRUFBRSxNQUFNLEVBQUUsTUFBTSxhQUFhLENBQUM7QUFDckMsTUFBTSxHQUFHLEdBQUcsT0FBTyxDQUFDLEdBQUcsQ0FBQztBQUV4QixPQUFPO0FBRVAsTUFBTSxPQUFPLElBQVcsU0FBUSxLQUFLO0lBRUU7SUFBdEMsWUFBYSxLQUFhLEVBQVksTUFBVTtRQUUvQyxLQUFLLENBQUUsS0FBSyxDQUFFLENBQUM7UUFGc0IsV0FBTSxHQUFOLE1BQU0sQ0FBSTtJQUdoRCxDQUFDO0lBRUQsT0FBTztJQUVQLElBQVcsQ0FBQyxDQUFFLElBQVEsSUFBSyxJQUFJLENBQUMsR0FBRyxDQUFFLElBQUksQ0FBRSxDQUFDLENBQUMsQ0FBQztJQUM5QyxJQUFXLEdBQUcsQ0FBRSxJQUFRLElBQUssSUFBSSxDQUFDLEdBQUcsQ0FBRSxJQUFJLENBQUUsQ0FBQyxDQUFDLENBQUM7SUFDaEQsSUFBVyxLQUFLLENBQUUsSUFBUSxJQUFLLElBQUksQ0FBQyxHQUFHLENBQUUsSUFBSSxDQUFFLENBQUMsQ0FBQyxDQUFDO0lBRWxELElBQVcsQ0FBQyxLQUFTLE9BQU8sSUFBSSxDQUFDLE1BQU0sQ0FBQyxDQUFDLENBQUM7SUFDMUMsSUFBVyxHQUFHLEtBQVMsT0FBTyxJQUFJLENBQUMsTUFBTSxDQUFDLENBQUMsQ0FBQztJQUM1QyxJQUFXLEtBQUssS0FBUyxPQUFPLElBQUksQ0FBQyxNQUFNLENBQUMsQ0FBQyxDQUFDO0lBRXZDLEdBQUcsQ0FBRSxJQUFRLEVBQUUsT0FBbUM7UUFFeEQsSUFBSSxJQUFJLEtBQUssSUFBSSxDQUFDLE1BQU07WUFBSSxPQUFPO1FBRW5DLE1BQU0sSUFBSSxHQUFHLElBQUksQ0FBQyxNQUFNLENBQUM7UUFDekIsSUFBSSxDQUFDLE1BQU0sR0FBRyxJQUFJLENBQUM7UUFFbkIsOERBQThEO1FBRTlELElBQUksT0FBTyxJQUFJLElBQUksQ0FBQyxLQUFLLElBQUksSUFBSSxDQUFDLEtBQUssWUFBWSxNQUFNLEVBQ3pEO1lBQ0MsSUFBSSxDQUFDLEtBQUssQ0FBQyxNQUFNLEVBQUUsQ0FBQztTQUNwQjtRQUVELElBQUksQ0FBQyxJQUFJLENBQUMsT0FBTyxDQUFFLEdBQUcsQ0FBQyxFQUFFO1lBRXhCLENBQUUsR0FBRyxZQUFZLElBQUksQ0FBQyxHQUFHLENBQUU7Z0JBQzNCLEdBQUcsSUFBSSxPQUFPO2dCQUNkLEdBQUcsQ0FBQyxhQUFhLENBQUUsSUFBSSxFQUFFLElBQUksQ0FBRSxDQUFDO1FBQ2pDLENBQUMsQ0FBQyxDQUFDO0lBQ0osQ0FBQztJQUVNLEdBQUcsS0FBUyxPQUFPLElBQUksQ0FBQyxNQUFNLENBQUMsQ0FBQyxDQUFDO0lBRXhDLG9CQUFvQjtJQUViLFNBQVMsQ0FBRSxLQUFjLEVBQUUsSUFBUSxJQUFLLElBQUksS0FBSyxJQUFJLElBQUksQ0FBQyxLQUFLO1FBQUcsSUFBSSxDQUFDLE1BQU0sR0FBRyxJQUFJLENBQUMsQ0FBQyxDQUFDO0lBQ3ZGLFVBQVUsQ0FBRSxLQUFjO1FBRWhDLElBQUksS0FBSyxJQUFJLElBQUksQ0FBQyxLQUFLO1lBQUcsT0FBTztJQUNsQyxDQUFDO0lBRUQsT0FBTztJQUVHLEVBQUUsQ0FBRSxLQUFjLEVBQUUsT0FBZ0IsRUFBRSxJQUFLLE9BQU8sUUFBUSxJQUFJLENBQUMsRUFBRSxLQUFNLEtBQU0sRUFBRSxDQUFDLENBQUMsQ0FBQztDQUM1RjtBQUVELE9BQU87QUFFUCxXQUFpQixJQUFJO0lBRXBCLHNCQUFzQjtJQUV0QixNQUFhLEdBQVUsU0FBUSxLQUFLLENBQUMsR0FBRztRQUV2QyxZQUFZO1FBRVosSUFBVyxDQUFDLENBQUUsSUFBb0IsSUFBSyxJQUFJLENBQUMsS0FBSyxHQUFHLElBQUksQ0FBQyxDQUFDLENBQUM7UUFDM0QsSUFBVyxHQUFHLENBQUUsSUFBb0IsSUFBSyxJQUFJLENBQUMsS0FBSyxHQUFHLElBQUksQ0FBQyxDQUFDLENBQUM7UUFDN0QsSUFBVyxDQUFDLEtBQXFCLE9BQU8sSUFBSSxDQUFDLEtBQUssQ0FBQyxDQUFDLENBQUM7UUFDckQsSUFBVyxHQUFHLEtBQXFCLE9BQU8sSUFBSSxDQUFDLEtBQUssQ0FBQyxDQUFDLENBQUM7UUFFdkQsSUFBVyxLQUFLLEtBQXFCLE9BQU8sSUFBSSxDQUFDLE1BQU0sRUFBRSxHQUFHLEVBQUUsQ0FBQyxDQUFDLENBQUM7UUFDakUsSUFBVyxLQUFLLENBQUUsSUFBb0I7WUFFckMsSUFBSSxDQUFFLElBQUksQ0FBQyxNQUFNLEVBQ2pCO2dCQUNDLE9BQU8sQ0FBQyxLQUFLLENBQUUsSUFBSSxDQUFDLEVBQUUsQ0FBRSxXQUFXLENBQUUsRUFBRSxvQkFBb0IsQ0FBRSxDQUFDO2dCQUM5RCxPQUFPO2FBQ1A7WUFFRCx1Q0FBdUM7WUFDdkMsSUFBSSxLQUFLLFNBQVMsSUFBSSxJQUFJLENBQUMsTUFBTSxFQUFFLEdBQUcsQ0FBRSxJQUFJLEVBQUUsSUFBSSxDQUFFLENBQUM7UUFDdEQsQ0FBQztRQUVELGFBQWE7UUFFTixTQUFTLENBQUUsU0FBa0M7WUFFbkQsS0FBSyxDQUFDLFNBQVMsQ0FBRSxTQUFTLENBQUUsQ0FBQztRQUM5QixDQUFDO1FBRUQsSUFBVyxNQUFNLENBQUUsU0FBa0MsSUFBSyxLQUFLLENBQUMsU0FBUyxDQUFFLFNBQVMsQ0FBRSxDQUFDLENBQUMsQ0FBQztRQUN6RixJQUFXLE1BQU07WUFFaEIsT0FBTyxDQUFFLElBQUksQ0FBQyxPQUFPLFlBQVksSUFBSSxDQUFFLElBQUksSUFBSSxDQUFDLE9BQU8sSUFBSSxTQUFTLENBQUM7UUFDdEUsQ0FBQztRQUVNLGFBQWEsQ0FBRSxJQUFRLEVBQUUsSUFBVTtZQUV6QyxHQUFHLENBQUUsSUFBSSxDQUFDLEVBQUUsQ0FBRSxlQUFlLENBQUUsRUFBRSxJQUFJLEVBQUUsSUFBSSxDQUFFLENBQUE7UUFDOUMsQ0FBQztRQUVELE9BQU87UUFFRyxFQUFFLENBQUUsS0FBYyxJQUFLLE9BQU8sWUFBYSxJQUFJLENBQUMsRUFBRyxJQUFLLElBQUksQ0FBQyxNQUFNLEVBQUUsRUFBRSxJQUFJLEdBQUksS0FBTSxLQUFNLEVBQUUsQ0FBQyxDQUFDLENBQUM7S0FDMUc7SUEzQ1ksUUFBRyxNQTJDZixDQUFBO0lBSUQsY0FBYztJQUVkLE1BQWEsTUFBTyxTQUFRLElBQWU7S0FBRztJQUFqQyxXQUFNLFNBQTJCLENBQUE7SUFDOUMsTUFBYSxNQUFPLFNBQVEsSUFBZTtLQUFHO0lBQWpDLFdBQU0sU0FBMkIsQ0FBQTtJQUM5QyxNQUFhLE9BQVEsU0FBUSxJQUFnQjtLQUFHO0lBQW5DLFlBQU8sVUFBNEIsQ0FBQTtBQUVqRCxDQUFDLEVBekRnQixJQUFJLEtBQUosSUFBSSxRQXlEcEIifQ==

@@ -1,0 +1,44 @@
+@startuml
+
+skinparam DefaultFontName "arial"
+
+class Owner {
+	# parts : Set < Exist >
+	+ terminate()
+}
+
+class Exist {
+	# refs : Set< Ref >
+	+ removeRef( ref )
+	+ terminate()
+}
+
+class Ref {
+	# source : Exist
+	+ connect()
+	+ terminate()
+	..
+	+ release()
+}
+
+Owner *-- Exist
+Owner <|-- Exist
+
+Ref o-o Exist
+
+
+class "Leaf < V >" as Leaf {
+	# value : V
+	+ set( value : V )
+	+ get() : V
+}
+
+class "Leaf.Ref < V >" as LeafRef {
+	+ value : V
+	+ change( newv :V, oldv : V )
+}
+
+Exist <|-- Leaf
+Ref <|-- LeafRef
+
+@enduml

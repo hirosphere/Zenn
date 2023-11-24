@@ -1,0 +1,32 @@
+@startuml
+
+title "Hue Phase"
+
+object PG {
+	phase
+}
+
+object Hue {
+	swing
+	offset
+	waveform
+}
+
+object PosX {
+	swing
+	offset
+	waveform
+}
+
+object PosY {
+	swing
+	offset
+	waveform
+}
+
+PG -- Hue
+PG -- PosX
+PG -- PosY
+
+
+@enduml

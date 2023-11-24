@@ -47,8 +47,8 @@ class Option {
 	- state : Map < string, Leaf.Boolean >
 }
 
-Lian *- Array
-Array "1" *- "0..*" Order
+Array <|-- Lian
+Lian "1" *- "0..*" Order
 
 Order <|-- Index
 Index "1" *-"0..*" Index

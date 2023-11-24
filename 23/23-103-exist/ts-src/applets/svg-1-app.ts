@@ -48,16 +48,6 @@ const Circle = ( model : models.Shape ) =>
 	);
 }
 
-type names = [ "selected", "hovered" ] ;
-
-let n : names;
-n[ 0 ] = "selected";
-n[ 1 ] = "hovered";
-
-const Item = () =>
-{
-	;
-}
 
 //  //
 

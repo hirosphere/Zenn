@@ -1,0 +1,89 @@
+const log = console.log;
+/** class Exist
+ * Mehクラスの存在の元締め。　メモリリーク防止に有効と思え。
+*/
+const parts = Symbol();
+class OwnerImpl {
+    runiq = nextru++;
+    toString() { return "Owner ru " + String(this.runiq); }
+    [parts] = new Set;
+    terminate() {
+        this[parts].forEach(part => part.terminate());
+        this[parts].clear();
+    }
+}
+let nextru = 0;
+export const root = new OwnerImpl();
+export class Exist extends OwnerImpl {
+    constructor(owner) {
+        super();
+        this.owner = owner;
+        owner[parts].add(this);
+        log(this.lf("construct"));
+    }
+    /** owner */
+    owner;
+    /** refs */
+    refs = new Set;
+    addRef(ref) {
+        if (this.refs.has(ref))
+            return;
+        this.refs.add(ref);
+    }
+    removeRef(ref) {
+        if (!this.refs.has(ref))
+            return;
+        this.refs.delete(ref);
+    }
+    /** life */
+    terminate() {
+        super.terminate();
+        this.refs.forEach(ref => ref.release());
+        this.refs.clear();
+        delete this.owner;
+        log(this.lf("terminate"));
+    }
+    get ru() { return this.runiq; }
+    /**  */
+    lf(event, info = "") { return `Exist[${this.ru}] ${event}`; }
+}
+(function (Exist) {
+    /**  class Ref
+     * モデルとビュー(SourceとRef)を分かつ根源。
+     * 。
+    */
+    class Ref {
+        /** */
+        constructor() {
+            log(this.lf("construct"));
+        }
+        static nextid = 1;
+        id = Ref.nextid++;
+        /** source アクセサ */
+        set source(newSource) { this.setSource(newSource); }
+        get source() { return this._source; }
+        setSource(newSource) {
+            if (newSource == this._source)
+                return;
+            //log( "Exist.Ref setSource", "ru " + newSource?.ru )
+            this._source?.removeRef(this);
+            this._source = newSource;
+            this._source?.addRef(this);
+            this.onSourceChange();
+        }
+        _source;
+        /** source イベントハンドラ */
+        onSourceChange() {
+            log(this.lf("onSourceChange"));
+        }
+        /** 操作 */
+        release() {
+            log(this.lf("release"));
+            this._source?.removeRef(this);
+        }
+        /**  */
+        lf(event) { return `Exist.Ref[${this.id}-${this.source?.ru ?? "?"}] ${event}`; }
+    }
+    Exist.Ref = Ref;
+})(Exist || (Exist = {}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhpc3QuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi90cy1zcmMvbWVoL21vZGVsL2V4aXN0LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE1BQU0sR0FBRyxHQUFHLE9BQU8sQ0FBQyxHQUFHLENBQUM7QUFFeEI7O0VBRUU7QUFFRixNQUFNLEtBQUssR0FBRyxNQUFNLEVBQUUsQ0FBQztBQVN2QixNQUFNLFNBQVM7SUFFTCxLQUFLLEdBQUcsTUFBTSxFQUFHLENBQUM7SUFDcEIsUUFBUSxLQUFjLE9BQU8sV0FBVyxHQUFHLE1BQU0sQ0FBRSxJQUFJLENBQUMsS0FBSyxDQUFFLENBQUMsQ0FBQyxDQUFDO0lBRXpFLENBQUUsS0FBSyxDQUFFLEdBQUcsSUFBSSxHQUFhLENBQUU7SUFFeEIsU0FBUztRQUVmLElBQUksQ0FBRSxLQUFLLENBQUUsQ0FBQyxPQUFPLENBQUUsSUFBSSxDQUFDLEVBQUUsQ0FBQyxJQUFJLENBQUMsU0FBUyxFQUFFLENBQUUsQ0FBQztRQUNsRCxJQUFJLENBQUUsS0FBSyxDQUFFLENBQUMsS0FBSyxFQUFFLENBQUM7SUFDdkIsQ0FBQztDQUNEO0FBRUQsSUFBSSxNQUFNLEdBQUcsQ0FBQyxDQUFDO0FBRWYsTUFBTSxDQUFDLE1BQU0sSUFBSSxHQUFHLElBQUksU0FBUyxFQUFFLENBQUM7QUFFcEMsTUFBTSxPQUFPLEtBQU0sU0FBUSxTQUFTO0lBRW5DLFlBQWEsS0FBYTtRQUV6QixLQUFLLEVBQUUsQ0FBQztRQUNSLElBQUksQ0FBQyxLQUFLLEdBQUcsS0FBSyxDQUFDO1FBQ25CLEtBQUssQ0FBRSxLQUFLLENBQUUsQ0FBQyxHQUFHLENBQUUsSUFBSSxDQUFFLENBQUM7UUFFM0IsR0FBRyxDQUFFLElBQUksQ0FBQyxFQUFFLENBQUUsV0FBVyxDQUFFLENBQUUsQ0FBQztJQUMvQixDQUFDO0lBRUQsWUFBWTtJQUVGLEtBQUssQ0FBVztJQUUxQixXQUFXO0lBRUQsSUFBSSxHQUFHLElBQUksR0FBaUIs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

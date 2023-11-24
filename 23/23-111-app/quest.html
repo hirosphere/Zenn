@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>23-111-app</title>
+
+<style>
+
+* {
+	margin: 0; padding: 0; box-sizing: border-box;
+	color: hsl( 60, 0%, 27% );
+	font-family: 'Courier New', Courier, monospace;
+}
+
+
+body {
+	display: grid;
+	grid-template-columns: 220px 1fr;
+	gap: 0rem;
+}
+
+body>nav
+{
+	height: 100vh;
+	padding-bottom: 30vh;
+
+	background-color: hsl( 50, 8%, 96% );
+
+	display: grid;
+	grid-template-rows: auto;
+	align-items: center;
+	justify-content: center;
+	overflow: auto;
+}
+
+main {
+	padding: 1.25rem 2rem;
+}
+
+/* */
+
+.applet h2 { border-bottom: 2px solid hsl( 50, 3%, 50% ); }
+
+	
+</style>
+
+</head>
+
+<script type="module">
+
+//import { main } from "./js-out/quests/quest1.js";
+import { main } from "./js-out/quests/quest2.js";
+
+main();
+
+</script>
+
+
+<body style="display:none;">
+
+<nav class="main-nav">
+	<ul>
+		<li>Content 1</li>
+		<li>Content 2</li>
+		<li>Content 3</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+	</ul>
+</nav>
+<main>
+	<article class="applet">
+		<h2>Applet</h2>
+		<section class="applet-body">
+			<h3>本文</h3>
+			<div><textarea></textarea></div>
+		</section>
+		<section>
+			<h3>制御</h3>
+			<div>
+				<button>保存</button>
+				<label><input type="radio" >下書き</label>
+				<label><input type="radio" >公開</label>
+			</div>
+		</section>
+
+	</article>
+</main>
+
+</body>
+</html>
