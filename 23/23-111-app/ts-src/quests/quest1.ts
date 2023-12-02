@@ -1,14 +1,30 @@
-import { Owner, Exist, root, Leaf, Branch, toLeaf } from "../meh/index.js";
+import { Owner, Exist, root, Leaf, LeafRo, Branch, toLeaf } from "../meh/index.js";
 import { dom } from "../meh/index.js";
 
 const log = console.log;
 
-export const main = () =>
+export const quest1 = () =>
 {
-	branch2.quest();
-
+	vaccess1();
+	// branch2.quest();
 	// leaf1();
 	// exist1();
+};
+
+const vaccess1 = () =>
+{
+	let leaf : Leaf.LoL.String = new Leaf.String( root, "高田馬場" );
+	const ref = new Leaf.String.Ref();
+	
+	ref.source = leaf;
+	ref.value = "目白";
+	leaf.val = "新大久保";
+	leaf.val = "代々木";
+
+	//leaf = "代々木";
+
+	if(typeof leaf == "string" ) log( leaf );
+	if( leaf instanceof LeafRo ) log( leaf.v );
 };
 
 namespace branch2
@@ -18,17 +34,18 @@ namespace branch2
 		const hsl = new HSLBranch( root );
 
 		hsl.value = { hue: 90, sat: 0.5, light: 0.1 };
+		hsl.value = { hue: 170, sat: 0.7, light: 0.7 };
 	};
 
 	type HSL = { hue : number ;  sat : number ;  light : number ; };
 
-	class HSLBranch extends Branch implements toLeaf < HSL >
+	class HSLBranch extends Branch
 	{
 		public hue;
 		public sat;
 		public light;
 
-		public css = new Leaf.String( this, "" );
+		public css = new LeafRo.String( this, "" );
 
 		constructor( owner : Owner, initv : HSL = { hue: 9, sat: 0.8, light: 0.9 } )
 		{
@@ -42,17 +59,20 @@ namespace branch2
 
 		public set value( newv : HSL )
 		{
-			this.hue.set( newv.hue, this );
-			this.sat.set( newv.sat, this );
-			this.light.set( newv.light, this );
-			this.update();
+			(
+				this.hue.set( newv.hue, this ) || 
+				this.sat.set( newv.sat, this ) ||
+				this.light.set( newv.light, this )
+			)
+			&& this.update();
 		}
 
-		public update()
+		public update() : true
 		{
 			const css = `hsl( ${ this.hue.v }, ${ this.sat.v * 100 }%, ${ this.light.v * 100 }% )`;
-			this.css.v = css;
+			this.css.setreadonlyvalue( css, this );
 			log( "HSL update", css );
+			return true;
 		}
 	}
 }

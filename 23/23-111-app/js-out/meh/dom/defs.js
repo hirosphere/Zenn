@@ -1,37 +1,30 @@
-/*
-    Node
-    Element
-    Attrs
-    Props
-    Style
-    Acts
-    Actacts
-
-    Parts
-    Part
-    Text
-    StringSrouce
-
-    CreateElement
-    createElement
-*/
 export var defs;
 (function (defs) {
     /** Text */
-    /** エレメント属性定義 */
-    class ElementCharactoristics {
-        attrs;
+    /**  Part */
+    class Each {
+        source;
+        create;
+        constructor(source, create) {
+            this.source = source;
+            this.create = create;
+        }
     }
-    defs.ElementCharactoristics = ElementCharactoristics;
+    defs.Each = Each;
     /** エレメント定義 */
     class Element {
+        ns;
         type;
         chars;
-        constructor(type, chars) {
+        parts;
+        constructor(ns, type, chars, parts) {
+            this.ns = ns;
             this.type = type;
             this.chars = chars;
+            this.parts = parts;
         }
     }
     defs.Element = Element;
 })(defs || (defs = {}));
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZGVmcy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3RzLXNyYy9tZWgvZG9tL2RlZnMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7Ozs7Ozs7Ozs7Ozs7RUFnQkU7QUFJRixNQUFNLEtBQVcsSUFBSSxDQW9DcEI7QUFwQ0QsV0FBaUIsSUFBSTtJQUVwQixXQUFXO0lBYVgsZ0JBQWdCO0lBRWhCLE1BQWEsc0JBQXNCO1FBRWxDLEtBQUssQ0FBaUI7S0FDdEI7SUFIWSwyQkFBc0IseUJBR2xDLENBQUE7SUFFRCxjQUFjO0lBRWQsTUFBYSxPQUFPO1FBSVg7UUFDQTtRQUhSLFlBRVEsSUFBYSxFQUNiLEtBQW9DO1lBRHBDLFNBQUksR0FBSixJQUFJLENBQVM7WUFDYixVQUFLLEdBQUwsS0FBSyxDQUErQjtRQUMxQyxDQUFDO0tBQ0g7SUFQWSxZQUFPLFVBT25CLENBQUE7QUFLRixDQUFDLEVBcENnQixJQUFJLEtBQUosSUFBSSxRQW9DcEIifQ==
+export const each = (source, create) => new defs.Each(source, create);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZGVmcy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3RzLXNyYy9tZWgvZG9tL2RlZnMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBc0JBLE1BQU0sS0FBVyxJQUFJLENBc0VwQjtBQXRFRCxXQUFpQixJQUFJO0lBRXBCLFdBQVc7SUFJWCxZQUFZO0lBRVosTUFBYSxJQUFJO1FBSVI7UUFDQTtRQUhSLFlBRVEsTUFBb0IsRUFDcEIsTUFBOEI7WUFEOUIsV0FBTSxHQUFOLE1BQU0sQ0FBYztZQUNwQixXQUFNLEdBQU4sTUFBTSxDQUF3QjtRQUNwQyxDQUFDO0tBQ0g7SUFQWSxTQUFJLE9BT2hCLENBQUE7SUF1Q0QsY0FBYztJQUVkLE1BQWEsT0FBTztRQUlYO1FBQ0E7UUFDQTtRQUNBO1FBTFIsWUFFUSxFQUFXLEVBQ1gsSUFBYSxFQUNiLEtBQXFCLEVBQ3JCLEtBQWlCO1lBSGpCLE9BQUUsR0FBRixFQUFFLENBQVM7WUFDWCxTQUFJLEdBQUosSUFBSSxDQUFTO1lBQ2IsVUFBSyxHQUFMLEtBQUssQ0FBZ0I7WUFDckIsVUFBSyxHQUFMLEtBQUssQ0FBWTtRQUN0QixDQUFDO0tBQ0o7SUFUWSxZQUFPLFVBU25CLENBQUE7QUFLRixDQUFDLEVBdEVnQixJQUFJLEtBQUosSUFBSSxRQXNFcEI7QUFFRCxNQUFNLENBQUMsTUFBTSxJQUFJLEdBQUcsQ0FFbkIsTUFBb0IsRUFDcEIsTUFBbUMsRUFFbEMsRUFBRSxDQUFDLElBQUksSUFBSSxDQUFDLElBQUksQ0FBUyxNQUFNLEVBQUUsTUFBTSxDQUFFLENBQUMifQ==

@@ -1,31 +1,123 @@
-import { Owner, Exist, root, Leaf, Branch, toLeaf } from "../meh/index.js";
-import { dom, defs } from "../meh/index.js";
+import { Owner, Exist, root, Leaf, Branch, toLeaf, each } from "../meh/index.js";
+import { dom, defs, ef } from "../meh/index.js";
 
 const log = console.log;
 
-export const main = () =>
+export const quest2 = ( ce : Element ) =>
 {
 	// dom1();
-	dom2();
+	// dom2( ce );
+
+	const self = new Exist( root );
+
+	ef1( self, ce );
 };
 
-
-
-const dom2 = () =>
+const ef1 = ( owner : Owner, ce : Element ) =>
 {
-	const def : dom.defs.ElementCharactoristics =
+	const x : defs.Text = new Leaf.Boolean( owner, false );
+
+	const def = ef.p( { attrs: { "eoria": "" } }, "First Factory", 1, 2, 3, true, false );
+
+	const a = ef.ul
+	(	
+		{ style: { display: "flex", flexDirection: "column", gap: "0px" } },
+
+		ef.li( ef.button( { acts: { click() { owner.terminate(); } } }, "terminate()" ) ),
+		ef.li( "一本でも" ),
+		each( [ "苺", "人参", "サンダル", "ヨット" ], v => ef.li( v ) ),
+		... Phases( owner, 10, 3 ),
+	);
+
+	dom.create( owner, ef.section( def, a, ef.p( {}, "一本でも" ) ), ce );
+}
+
+const Phase = ( owner : Owner, step : number, framerate : number ) =>
+{
+	const phase = new Leaf.Number( owner, 0 );
+	const color = new Leaf.String( owner, "" );
+	setInterval( () => { phase.v = ( phase.v + ( step / framerate ) ) % 360; update(); }, 1000 / framerate );
+
+	const update = () =>
 	{
+		color.v = `hsl( ${ fr( phase.v, 2 ) }, 65%, 65% )`;
 	};
 
-	dom.create( new dom.defs.Element( "p", def ), document.body );
-	dom.create( "", document.body );
+	update();
+
+	return ef.li(
+		{ style: {
+		"display": "grid", "gridTemplateColumns": "12ex 30ex 50ex",
+			"fontSize": "16px", backgroundColor: color, padding: "4ex"
+			}
+		},
+		ef.b( "色相" ), " ",
+		// ef.span( phase.sc( v => fr( v, 2 ) ) ), " ",
+		// ef.span( phase.sc( v => "" ) ), " ",
+		ef.span( { style: { fontSize: "13px", color: "white" } }, color )
+	);
+}
+
+const Phases = ( owner : Owner, count : number, step : number ) =>
+{
+	return loop( count, i => Phase( owner, 8 + i * 0.3, 5 ) );
+};
+
+const loop = < I = any > ( count : number, fn : ( i : number ) => I ) : I[] =>
+{
+	const rt : I[] = [];
+	for( let i = 0; i < count; i ++ ) rt[ i ] = fn( i );
+	return rt;
+};
+
+class Timer extends Exist
+{
+	constructor( owner : Owner, update : () => void, rate : number )
+	{
+		super( owner );
+		this.iid = setInterval( update, 1000 / rate );
+		update();
+	}
+
+	protected iid ? : number;
+
+	public terminate(): void
+	{
+		this.iid && clearInterval( this.iid );
+		super.terminate();
+	}
+}
+
+const fr = ( n : number, f : number ) =>
+{
+	const s = Math.round( n * 10 ** f ).toString();
+	return s.slice( 0, -f ) + "." + s.slice( -f );
+};
+
+const dom2 = ( ce : Element ) =>
+{
+	const char : dom.defs.EChar < HTMLParagraphElement > =
+	{
+		attrs: {  },
+	};
+	const parts =
+	[
+		"Paragraph Element", new defs.Element( "", "br", {}, [] ),
+		each < string > ( [ "One", "Deux", "Tri", "Vier", "O", "Liu", "Nana" ], v => v + "です。" ),
+		" --- ",
+		"12345678"
+	];
+
+
+	// dom.createNodet( new dom.defs.Element( "", "p", char, parts ), ce );
+	// dom.createNodet( "WoW Wow", ce );
 };
 
 
 
 const dom1 = () =>
 {
-	const def : dom.defs.ElementCharactoristics < HTMLDivElement > =
+	const def : dom.defs.EChar < HTMLDivElement > =
 	{
 		attrs:
 		{
@@ -36,7 +128,7 @@ const dom1 = () =>
 		},
 	};
 
-	const ec : dom.defs.ElementCharactoristics < HTMLTextAreaElement > =
+	const ec : dom.defs.EChar < HTMLTextAreaElement > =
 	{
 		"attrs":
 		{

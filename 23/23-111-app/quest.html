@@ -13,10 +13,12 @@
 	font-family: 'Courier New', Courier, monospace;
 }
 
+button { padding: 1ex 1em; }
+
 
 body {
 	display: grid;
-	grid-template-columns: 220px 1fr;
+	grid-template-columns: 230px 1fr;
 	gap: 0rem;
 }
 
@@ -35,29 +37,53 @@ body>nav
 }
 
 main {
-	padding: 1.25rem 2rem;
+	padding: 2rem 3rem;
 }
 
 /* */
 
+.applet
+{
+	display: flex; flex-direction: column;
+	gap: 1rem;
+}
 .applet h2 { border-bottom: 2px solid hsl( 50, 3%, 50% ); }
+.applet-body
+{
+	padding: 0.0rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.6rem;
+}
 
-	
+.applet-body>section>h3
+{
+	border-left: 0.0ex solid hsl( 205, 77%, 66% );
+	padding: 0.5ex 0.0ex;
+}
+
+.applet-body>section
+{
+	display: flex;
+	flex-direction: column;
+	gap: 1rex;
+}
+
 </style>
 
 </head>
 
 <script type="module">
 
-//import { main } from "./js-out/quests/quest1.js";
-import { main } from "./js-out/quests/quest2.js";
+import { quest1 } from "./js-out/quests/quest1.js";
+import { quest2 } from "./js-out/quests/quest2.js";
 
-main();
+quest2( document.getElementById( "quest" ) );
 
 </script>
 
 
-<body style="display:none;">
+<body>
 
 <nav class="main-nav">
 	<ul>
@@ -75,55 +101,38 @@ main();
 		<li>Content ..</li>
 		<li>Content ..</li>
 		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
-		<li>Content ..</li>
 	</ul>
 </nav>
 <main>
 	<article class="applet">
 		<h2>Applet</h2>
-		<section class="applet-body">
-			<h3>本文</h3>
-			<div><textarea></textarea></div>
-		</section>
-		<section>
-			<h3>制御</h3>
-			<div>
-				<button>保存</button>
-				<label><input type="radio" >下書き</label>
-				<label><input type="radio" >公開</label>
-			</div>
-		</section>
+		<div class="applet-body">
+			<section>
+				<h3>TextArea</h3>
+				<textarea></textarea>
+			</section>
+	
+			<section>
+				<h3>制御</h3>
+				<div>
+					<button>保存</button>
+					<label><input type="radio" name="1">下書き</label>
+					<label><input type="radio" name="1">公開</label>
+				</div>
+			</section>
+	
+			<section>
+				<h3>制御</h3>
+				<div>
+					<button>保存</button>
+					<label><input type="radio" name="2">下書き</label>
+					<label><input type="radio" name="2">公開</label>
+				</div>
+			</section>
+	
+			<section id="quest"></section>
+	
+		</div>
 
 	</article>
 </main>
