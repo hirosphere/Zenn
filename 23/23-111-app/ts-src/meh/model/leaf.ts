@@ -17,14 +17,14 @@ export class StrSrc < V >
 {
 	constructor
 	(
-		public source : LeafRo < V >,
+		public source : Leafr < V >,
 		public tostr : ( value : V ) => string
 	){}
 }
 
 /** Leaf Readonly */
 
-export class LeafRo < V > extends StrSrcFactory
+export class Leafr < V > extends StrSrcFactory
 {
 	constructor( owner : Owner, protected _value : V )
 	{
@@ -49,7 +49,7 @@ export class LeafRo < V > extends StrSrcFactory
 	public get value() : V { return this._value; }
 	public get() : V { return this._value; }
 
-	public setreadonlyvalue( newv : V, changer ? : LeafRo.Ref < V > | Branch ) : boolean
+	public setreadonlyvalue( newv : V, changer ? : Leafr.Ref < V > | Branch ) : boolean
 	{
 		if( newv === this._value )  return false;
 
@@ -63,7 +63,7 @@ export class LeafRo < V > extends StrSrcFactory
 
 		this.refs.forEach( ref =>
 		{
-			( ref instanceof LeafRo.Ref ) &&
+			( ref instanceof Leafr.Ref ) &&
 			ref != changer &&
 			ref.onValueChange( newv, oldv );
 		});
@@ -76,17 +76,17 @@ export class LeafRo < V > extends StrSrcFactory
 	// protected lf( event : string, info : string = "" ) { return `LeafRo[${this.ru}] ${ event }`; }
 }
 
-export namespace LeafRo
+export namespace Leafr
 {
 	/** プリミティブ型シュガー */
 
-	export class String extends LeafRo < string > {}
-	export class Number extends LeafRo < number > {}
-	export class Boolean extends LeafRo < boolean > {}
+	export class String extends Leafr < string > {}
+	export class Number extends Leafr < number > {}
+	export class Boolean extends Leafr < boolean > {}
 
 	export namespace LoL
 	{
-		type lol < T > = T | LeafRo < T > ; 
+		type lol < T > = T | Leafr < T > ; 
 		export type String = lol < string > ;
 		export type Bigint = lol < bigint > ;
 		export type Number = lol < number > ;
@@ -107,15 +107,15 @@ export namespace LeafRo
 
 		/** source */
 
-		public set s( newSource : LeafRo < V > | undefined ) { super.setSource( newSource ); }
-		public set src( newSource : LeafRo < V > | undefined ) { super.setSource( newSource ); }
-		public set source( newSource : LeafRo < V > | undefined ) { super.setSource( newSource ); }
+		public set s( newSource : Leafr < V > | undefined ) { super.setSource( newSource ); }
+		public set src( newSource : Leafr < V > | undefined ) { super.setSource( newSource ); }
+		public set source( newSource : Leafr < V > | undefined ) { super.setSource( newSource ); }
 
-		public get s() : LeafRo < V > | undefined { return this.source; }
-		public get src() : LeafRo < V > | undefined { return this.source; }
-		public get source() : LeafRo < V > | undefined
+		public get s() : Leafr < V > | undefined { return this.source; }
+		public get src() : Leafr < V > | undefined { return this.source; }
+		public get source() : Leafr < V > | undefined
 		{
-			return ( this._source instanceof LeafRo ) && this._source || undefined;
+			return ( this._source instanceof Leafr ) && this._source || undefined;
 		}
 
 		public onValueChange( newv : V, oldv ? : V ) : void { log( this.lf( "onValueChange" ), newv, oldv ) }
@@ -129,9 +129,9 @@ export namespace LeafRo
 
 /** Leaf RW  */
 
-export class Leaf < V > extends LeafRo < V >
+export class Leaf < V > extends Leafr < V >
 {
-	public set( newv : V, changer ? : LeafRo.Ref < V > | Branch ) : boolean
+	public set( newv : V, changer ? : Leafr.Ref < V > | Branch ) : boolean
 	{
 		return this.setreadonlyvalue( newv, changer );
 	}
@@ -167,7 +167,7 @@ export namespace Leaf
 
 	/** class Ref < V > */
 
-	export class Ref < V = any > extends LeafRo.Ref < V >
+	export class Ref < V = any > extends Leafr.Ref < V >
 	{
 		/** value */
 

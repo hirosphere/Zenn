@@ -3,6 +3,10 @@ import { dom, defs, ef } from "../meh/index.js";
 
 const log = console.log;
 
+const m = { a: Symbol() };
+const o = { [ m.a ]: "aa" };
+o[ m.a ] = "bb";
+
 export const quest2 = ( ce : Element ) =>
 {
 	// dom1();
@@ -40,7 +44,7 @@ const Phase = ( owner : Owner, step : number, framerate : number ) =>
 
 	const update = () =>
 	{
-		color.v = `hsl( ${ fr( phase.v, 2 ) }, 65%, 65% )`;
+		color.v = `hsl( ${ fr( phase.v, 3 ) }, 65%, 65% )`;
 	};
 
 	update();
@@ -60,7 +64,7 @@ const Phase = ( owner : Owner, step : number, framerate : number ) =>
 
 const Phases = ( owner : Owner, count : number, step : number ) =>
 {
-	return loop( count, i => Phase( owner, 8 + i * 0.3, 5 ) );
+	return loop( count, i => Phase( owner, 8 + i * 0.3, 20 ) );
 };
 
 const loop = < I = any > ( count : number, fn : ( i : number ) => I ) : I[] =>

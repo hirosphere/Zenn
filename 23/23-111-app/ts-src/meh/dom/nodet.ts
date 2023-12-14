@@ -1,12 +1,10 @@
-import { Owner, Exist, LeafRo, StrSrcFactory } from "../model/index.js";
+import { Owner, Exist, Leafr, StrSrcFactory } from "../model/index.js";
 import { defs } from "./defs.js";
 import { PartsFragment, createParts } from "./parts.js";
 const log = console.log;
 
 
 /** class Nodet */
-
-type Style = Omit< CSSStyleDeclaration, "length" | "parentRule" >;
 
 export class Nodet extends Exist
 {
@@ -24,7 +22,7 @@ export class Nodet extends Exist
 
 	protected node ? : Node;
 	protected parts ? : PartsFragment;
-	protected sources = new Set < Ref > ;
+	protected srcs = new Set < Ref > ;
 
 
 	/** 値リアクティブなテキストノードを生成 */
@@ -35,14 +33,14 @@ export class Nodet extends Exist
 
 		if( value instanceof StrSrcFactory )
 		{
-			this.sources.add( new Ref( value, str => n.nodeValue = str ) );
+			new Ref( this.srcs, value, str => n.nodeValue = str );
 		}
 		else  n.nodeValue = "" + value;
 
 		return n;
 	}
 
-	/** 値・構造リアクティブなエレメントを生成 */
+	/** DOMエレメントを生成し、リアクティブな値モデルと構造モデルをエレメントに結合。 */
 
 	protected createElement( def : defs.Element ) : Element
 	{
@@ -68,7 +66,7 @@ export class Nodet extends Exist
 	{
 		if( value instanceof StrSrcFactory )
 		{
-			this.sources.add( new Ref( value, str => { s[ name ] = str; } ) );
+			new Ref( this.srcs, value, str => { s[ name ] = str; } );
 		}
 		else s[ name ] = "" + value;
 	}
@@ -84,8 +82,8 @@ export class Nodet extends Exist
 	public terminate(): void
 	{
 		this.node?.parentNode?.removeChild( this.node );
-		this.sources.forEach( source => source.release() );
-		this.sources.clear();
+		this.srcs.forEach( source => source.release() );
+		this.srcs.clear();
 		delete this.node;
 		super.terminate();
 	}
@@ -93,14 +91,15 @@ export class Nodet extends Exist
 
 /** Ref */
 
-class Ref extends LeafRo.Ref
+class Ref extends Leafr.Ref
 {
-	constructor( fac : StrSrcFactory, private update : ( str : string ) => void )
+	constructor( coll : Set < Ref >, fac : StrSrcFactory, private update : ( str : string ) => void )
 	{
 		super();
+		coll.add( this );
 
 		const src = fac.createStrSrc();
-		
+
 		this.tostr = src.tostr;
 		this.source = src.source;
 	}

@@ -1,4 +1,4 @@
-import { Owner, Exist, root, Leaf, LeafRo, Branch, toLeaf } from "../meh/index.js";
+import { Owner, Exist, root, Leaf, Leafr, Branch, toLeaf } from "../meh/index.js";
 import { dom } from "../meh/index.js";
 
 const log = console.log;
@@ -24,7 +24,7 @@ const vaccess1 = () =>
 	//leaf = "代々木";
 
 	if(typeof leaf == "string" ) log( leaf );
-	if( leaf instanceof LeafRo ) log( leaf.v );
+	if( leaf instanceof Leafr ) log( leaf.v );
 };
 
 namespace branch2
@@ -45,7 +45,7 @@ namespace branch2
 		public sat;
 		public light;
 
-		public css = new LeafRo.String( this, "" );
+		public css = new Leafr.String( this, "" );
 
 		constructor( owner : Owner, initv : HSL = { hue: 9, sat: 0.8, light: 0.9 } )
 		{

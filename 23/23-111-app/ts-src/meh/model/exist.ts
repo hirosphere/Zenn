@@ -52,7 +52,7 @@ export class Exist extends OwnerImpl
 
 	public addRef( ref : Exist.Ref ) : void
 	{
-		if( this.refs.has( ref) ) return;		
+		if( this.refs.has( ref ) ) return;		
 		this.refs.add( ref );
 	}
 
