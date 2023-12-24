@@ -52,13 +52,11 @@ export class Exist extends OwnerImpl
 
 	public addRef( ref : Exist.Ref ) : void
 	{
-		if( this.refs.has( ref ) ) return;		
 		this.refs.add( ref );
 	}
 
 	public removeRef( ref : Exist.Ref ) : void
 	{
-		if( ! this.refs.has( ref ) ) return;
 		this.refs.delete( ref );
 	}
 

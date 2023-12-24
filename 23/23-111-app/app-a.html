@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>23-111-app</title>
+	<title>23-111 app-a</title>
 
 <style>
 
@@ -37,8 +37,10 @@ body>nav
 }
 
 main {
-	padding: 2rem 3rem;
+	padding: 1.3rem 3rem;
 }
+
+h1 { text-align: center; }
 
 /* */
 
@@ -76,10 +78,9 @@ main {
 
 <script type="module">
 
-import { quest1 } from "./js-out/quests/quest1.js";
-import { quest2 } from "./js-out/quests/quest2.js";
+import { createApp } from "./js-out/app-a/app-a.js";
 
-quest2( document.getElementById( "quest" ) );
+createApp( document.documentElement );
 
 </script>
 
@@ -87,6 +88,7 @@ quest2( document.getElementById( "quest" ) );
 <body>
 
 <nav class="main-nav">
+	<h2>app-a</h2>
 	<ul>
 		<li>Content 1</li>
 		<li>Content 2</li>

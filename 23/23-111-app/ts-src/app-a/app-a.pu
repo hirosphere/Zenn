@@ -1,0 +1,54 @@
+@startuml
+
+class App {
+	Trains : Train[]
+	Sections : Section[]
+	Sensors : Sensor[]
+
+}
+
+class Train {
+	name : string
+	..
+	automation : Automaion
+	..
+	dir : direction
+	act : number
+	env : number
+	speed : number
+	..
+	bias : number
+	max : number
+	idle : number
+	--
+	dostep()
+}
+
+class Section {
+	source : Train
+}
+
+class Sensor {
+	sensed : bool
+}
+
+class Automation {
+	app : App
+}
+
+class CommandReceiver {
+	app : App
+	putChars()
+
+}
+
+App *-- Train
+App *--o CommandReceiver
+App *--o Automation
+
+Train o--o Section
+Train *--o Automation
+Automation o-- Section
+Automation o-- Sensor
+
+@enduml

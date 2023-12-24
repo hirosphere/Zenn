@@ -19,9 +19,10 @@ export const quest2 = ( ce : Element ) =>
 
 const ef1 = ( owner : Owner, ce : Element ) =>
 {
+	const ex = new Exist( owner );
 	const x : defs.Text = new Leaf.Boolean( owner, false );
 
-	const def = ef.p( { attrs: { "eoria": "" } }, "First Factory", 1, 2, 3, true, false );
+	const def = ef.p( { attrs: { "eoria": "" } }, ... [ "First Factory", 1, 2, 3, true, false ].join( " - " ) );
 
 	const a = ef.ul
 	(	
@@ -30,15 +31,32 @@ const ef1 = ( owner : Owner, ce : Element ) =>
 		ef.li( ef.button( { acts: { click() { owner.terminate(); } } }, "terminate()" ) ),
 		ef.li( "一本でも" ),
 		each( [ "苺", "人参", "サンダル", "ヨット" ], v => ef.li( v ) ),
-		... Phases( owner, 10, 3 ),
+		... Phases( owner, 30, 3 ),
 	);
 
-	dom.create( owner, ef.section( def, a, ef.p( {}, "一本でも" ) ), ce );
+	dom.create( owner, ef.section( def, a, ef.p( {}, "一本でも", PhaseApp( ex ), ) ), ce );
+};
+
+class PhaseAppState extends Branch
+{
+	public update(): void {
+		;
+	}
+
+	public readonly mode = new Leaf < "Hue" | "Light" > ( this, "Hue" );
 }
+
+const PhaseApp = ( com : Owner ) =>
+{
+
+	return ef.section(
+		ef.h2( "PhaseApp" ),
+	);
+};
 
 const Phase = ( owner : Owner, step : number, framerate : number ) =>
 {
-	const phase = new Leaf.Number( owner, 0 );
+	const phase = new Leaf.Number( owner, 90 );
 	const color = new Leaf.String( owner, "" );
 	setInterval( () => { phase.v = ( phase.v + ( step / framerate ) ) % 360; update(); }, 1000 / framerate );
 
@@ -51,20 +69,20 @@ const Phase = ( owner : Owner, step : number, framerate : number ) =>
 
 	return ef.li(
 		{ style: {
-		"display": "grid", "gridTemplateColumns": "12ex 30ex 50ex",
-			"fontSize": "16px", backgroundColor: color, padding: "4ex"
+		"display": "grid", "gridTemplateColumns": "12ex 60ex 0ex",
+			"fontSize": "14px", backgroundColor: color, padding: "1.0ex"
 			}
 		},
-		ef.b( "色相" ), " ",
+		ef.b( { style: { color: "hsl( 0, 0%, 96% )" } }, "Phase" ), " ",
 		// ef.span( phase.sc( v => fr( v, 2 ) ) ), " ",
 		// ef.span( phase.sc( v => "" ) ), " ",
-		ef.span( { style: { fontSize: "13px", color: "white" } }, color )
+		ef.span( { style: { fontSize: "14px", color: "white" } }, color )
 	);
-}
+};
 
 const Phases = ( owner : Owner, count : number, step : number ) =>
 {
-	return loop( count, i => Phase( owner, 8 + i * 0.3, 20 ) );
+	return loop( count, i => Phase( owner, 8 + i * 0.3, 50 ) );
 };
 
 const loop = < I = any > ( count : number, fn : ( i : number ) => I ) : I[] =>
