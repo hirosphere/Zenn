@@ -1,0 +1,65 @@
+import { defs } from "./defs.js";
+import { Nodet } from "./nodet.js";
+const log = console.log;
+/** createParts */
+export const createParts = (nodet, def) => {
+    return new Reader(nodet, def).next();
+};
+/** Reader  */
+class Reader {
+    nodet;
+    def;
+    pos = 0;
+    constructor(nodet, def) {
+        this.nodet = nodet;
+        this.def = def;
+    }
+    next() {
+        const begin = this.pos;
+        let literal = [];
+        for (; this.pos < this.def.length; this.pos++) {
+            let part = this.def[this.pos];
+            if (part instanceof defs.Each) {
+                if (this.pos > begin)
+                    break;
+                return new Each(part, this);
+            }
+            else {
+                literal.push(part);
+            }
+        }
+        if (literal.length) {
+            return new Literal(literal, this);
+        }
+    }
+    terminate() {
+    }
+}
+/** class PartFragment */
+export class PartFragment {
+    next;
+    get firstNode() { return; }
+    terminate() {
+        this.next?.terminate();
+    }
+}
+class Literal extends PartFragment {
+    def;
+    constructor(def, reader) {
+        super();
+        this.def = def;
+        this.next = reader.next();
+        def.forEach(partdef => new Nodet(reader.nodet, partdef, reader.nodet.e || null));
+        log("Literal PF", def);
+    }
+}
+class Each extends PartFragment {
+    def;
+    constructor(def, reader) {
+        super();
+        this.def = def;
+        this.next = reader.next();
+        log("Each PF");
+    }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGFydHMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi90cy1zcmMvbWVoL2RvbS9wYXJ0cy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsSUFBSSxFQUFFLE1BQU0sV0FBVyxDQUFDO0FBQ2pDLE9BQU8sRUFBRSxLQUFLLEVBQUUsTUFBTSxZQUFZLENBQUM7QUFDbkMsTUFBTSxHQUFHLEdBQUcsT0FBTyxDQUFDLEdBQUcsQ0FBQztBQUd4QixrQkFBa0I7QUFFbEIsTUFBTSxDQUFDLE1BQU0sV0FBVyxHQUFHLENBQUUsS0FBYSxFQUFFLEdBQWtCLEVBQThCLEVBQUU7SUFFN0YsT0FBTyxJQUFJLE1BQU0sQ0FBRSxLQUFLLEVBQUUsR0FBRyxDQUFFLENBQUMsSUFBSSxFQUFFLENBQUM7QUFDeEMsQ0FBQyxDQUFDO0FBR0YsY0FBYztBQUVkLE1BQU0sTUFBTTtJQUlTO0lBQXlCO0lBRm5DLEdBQUcsR0FBWSxDQUFDLENBQUE7SUFFMUIsWUFBb0IsS0FBYSxFQUFZLEdBQWlCO1FBQTFDLFVBQUssR0FBTCxLQUFLLENBQVE7UUFBWSxRQUFHLEdBQUgsR0FBRyxDQUFjO0lBQUksQ0FBQztJQUU1RCxJQUFJO1FBRVYsTUFBTSxLQUFLLEdBQUcsSUFBSSxDQUFDLEdBQUcsQ0FBQztRQUN2QixJQUFJLE9BQU8sR0FBa0IsRUFBRSxDQUFDO1FBRWhDLE9BQU8sSUFBSSxDQUFDLEdBQUcsR0FBRyxJQUFJLENBQUMsR0FBRyxDQUFDLE1BQU0sRUFBRyxJQUFJLENBQUMsR0FBRyxFQUFHLEVBQy9DO1lBQ0MsSUFBSSxJQUFJLEdBQUcsSUFBSSxDQUFDLEdBQUcsQ0FBRSxJQUFJLENBQUMsR0FBRyxDQUFFLENBQUM7WUFDaEMsSUFBSSxJQUFJLFlBQVksSUFBSSxDQUFDLElBQUksRUFDN0I7Z0JBQ0MsSUFBSSxJQUFJLENBQUMsR0FBRyxHQUFHLEtBQUs7b0JBQUcsTUFBTTtnQkFDN0IsT0FBTyxJQUFJLElBQUksQ0FBRSxJQUFJLEVBQUUsSUFBSSxDQUFFLENBQUM7YUFDOUI7aUJBR0Q7Z0JBQ0MsT0FBTyxDQUFDLElBQUksQ0FBRSxJQUFJLENBQUUsQ0FBQzthQUNyQjtTQUNEO1FBRUQsSUFBSSxPQUFPLENBQUMsTUFBTSxFQUNsQjtZQUNDLE9BQU8sSUFBSSxPQUFPLENBQUUsT0FBTyxFQUFFLElBQUksQ0FBRSxDQUFDO1NBQ3BDO0lBQ0YsQ0FBQztJQUVNLFNBQVM7SUFFaEIsQ0FBQztDQUNEO0FBR0QseUJBQXlCO0FBRXpCLE1BQU0sT0FBTyxZQUFZO0lBRWpCLElBQUksQ0FBbUI7SUFFOUIsSUFBVyxTQUFTLEtBQXlCLE9BQVEsQ0FBQyxDQUFDO0lBRWhELFNBQVM7UUFFZixJQUFJLENBQUMsSUFBSSxFQUFFLFNBQVMsRUFBRSxDQUFDO0lBQ3hCLENBQUM7Q0FDRDtBQUVELE1BQU0sT0FBUSxTQUFRLFlBQVk7SUFFVjtJQUF2QixZQUF1QixHQUFrQixFQUFFLE1BQWU7UUFFekQsS0FBSyxFQUFFLENBQUM7UUFGYyxRQUFHLEdBQUgsR0FBRyxDQUFlO1FBR3hDLElBQUksQ0FBQyxJQUFJLEdBQUcsTUFBTSxDQUFDLElBQUksRUFBRSxDQUFDO1FBRTFCLEdBQUcsQ0FBQyxPQUFPLENBQUUsT0FBTyxDQUFDLEVBQUUsQ0FBQyxJQUFJLEtBQUssQ0FBRSxNQUFNLENBQUMsS0FBSyxFQUFFLE9BQU8sRUFBRSxNQUFNLENBQUMsS0FBSyxDQUFDLENBQUMsSUFBSSxJQUFJLENBQUUsQ0FBRSxDQUFDO1FBRXJGLEdBQUcsQ0FBRSxZQUFZLEVBQUUsR0FBRyxDQUFFLENBQUE7SUFDekIsQ0FBQztDQUNEO0FBRUQsTUFBTSxJQUFLLFNBQVEsWUFBWTtJQUVQO0lBQXZCLFlBQXVCLEdBQXVCLEVBQUUsTUFBZTtRQUU5RCxLQUFLLEVBQUUsQ0FBQztRQUZjLFFBQUcsR0FBSCxHQUFHLENBQW9CO1FBRzdDLElBQUksQ0FBQyxJQUFJLEdBQUcsTUFBTSxDQUFDLElBQUksRUFBRSxDQUFDO1FBRTFCLEdBQUcsQ0FBRSxTQUFTLENBQUUsQ0FBQztJQUNsQixDQUFDO0NBQ0QifQ==

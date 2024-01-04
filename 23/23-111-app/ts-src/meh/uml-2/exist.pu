@@ -1,0 +1,15 @@
+@startuml
+
+title Exist
+
+class Exist {
+	+ terminate()
+}
+
+class Ref {
+	+ src
+}
+
+Exist o-o Ref
+
+@enduml

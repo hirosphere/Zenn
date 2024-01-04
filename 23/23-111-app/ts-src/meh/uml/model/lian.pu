@@ -1,0 +1,32 @@
+@startuml
+
+!include exist.pu
+
+title Lian
+
+class Lian < V > {
+	# orders : Order < V > []
+	..
+	+ add( values : V[], start ? )
+	+ remove( start | items, count ? )
+}
+
+class LianRef {
+	+ _add( range )
+	+ _remove( range )
+	+ _move( src, dest )
+}
+
+class Order < V > {
+	source : V
+}
+
+
+Exist <|-- Lian
+ExistRef <|--- LianRef
+
+Lian *- Order
+Leaf <|-- Order
+Order o- V
+
+@enduml

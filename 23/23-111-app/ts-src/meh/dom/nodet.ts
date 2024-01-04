@@ -79,7 +79,7 @@ export class Nodet extends Exist
 
 	/**  */
 
-	public terminate(): void
+	public override terminate(): void
 	{
 		this.node?.parentNode?.removeChild( this.node );
 		this.srcs.forEach( source => source.release() );
@@ -112,6 +112,6 @@ class Ref extends Leafr.Ref
 
 	/**  */
 
-	public onSourceChange(): void { this.update( this.getstring() ); }
-	public onValueChange( newv: any, oldv?: any ): void { this.update( this.getstring() ); }
+	public override onSourceChange(): void { this.update( this.getstring() ); }
+	public override onValueChange( newv: any, oldv?: any ): void { this.update( this.getstring() ); }
 }

@@ -103,7 +103,7 @@ class Timer extends Exist
 
 	protected iid ? : number;
 
-	public terminate(): void
+	public override terminate(): void
 	{
 		this.iid && clearInterval( this.iid );
 		super.terminate();

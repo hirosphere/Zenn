@@ -31,11 +31,10 @@ let nextru = 0;
 
 export const root = new OwnerImpl();
 
-export class Exist extends OwnerImpl
+export class Exist
 {
 	constructor( owner : Owner )
 	{
-		super();
 		this.owner = owner;
 		owner[ parts ].add( this );
 
@@ -62,14 +61,14 @@ export class Exist extends OwnerImpl
 
 	/** life */
 
-	public terminate() : void
+	public override terminate() : void
 	{
-		super.terminate();
 		this.refs.forEach( ref => ref.release() );
 		this.refs.clear();
 
 		delete this.owner;
 
+		super.terminate();
 		log( this.lf( "terminate" ) );
 	}
 

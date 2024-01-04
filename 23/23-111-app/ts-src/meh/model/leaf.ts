@@ -109,11 +109,11 @@ export namespace Leafr
 
 		public set s( newSource : Leafr < V > | undefined ) { super.setSource( newSource ); }
 		public set src( newSource : Leafr < V > | undefined ) { super.setSource( newSource ); }
-		public set source( newSource : Leafr < V > | undefined ) { super.setSource( newSource ); }
+		public override set source( newSource : Leafr < V > | undefined ) { super.setSource( newSource ); }
 
 		public get s() : Leafr < V > | undefined { return this.source; }
 		public get src() : Leafr < V > | undefined { return this.source; }
-		public get source() : Leafr < V > | undefined
+		public override get source() : Leafr < V > | undefined
 		{
 			return ( this._source instanceof Leafr ) && this._source || undefined;
 		}
@@ -122,7 +122,7 @@ export namespace Leafr
 
 		/**  */
 
-		protected lf( event : string ) { return `LeafRo.Ref[${ this.id }-${ this.source?.ru ?? "?" }] ${ event }`; }
+		protected override lf( event : string ) { return `LeafRo.Ref[${ this.id }-${ this.source?.ru ?? "?" }] ${ event }`; }
 	}
 }
 
@@ -136,13 +136,13 @@ export class Leaf < V > extends Leafr < V >
 		return this.setreadonlyvalue( newv, changer );
 	}
 
-	public set v( newv : V ) { this.setreadonlyvalue( newv ); }
-	public set val( newv : V ) { this.setreadonlyvalue( newv ); }
-	public set value( newv : V ) { this.setreadonlyvalue( newv ); }
+	public override set v( newv : V ) { this.setreadonlyvalue( newv ); }
+	public override set val( newv : V ) { this.setreadonlyvalue( newv ); }
+	public override set value( newv : V ) { this.setreadonlyvalue( newv ); }
 
-	public get v() : V { return this._value; }
-	public get val() : V { return this._value; }
-	public get value() : V { return this._value; }
+	public override get v() : V { return this._value; }
+	public override get val() : V { return this._value; }
+	public override get value() : V { return this._value; }
 }
 
 export namespace Leaf
@@ -171,13 +171,13 @@ export namespace Leaf
 	{
 		/** value */
 
-		public get v() : V | undefined { return this.value; }
-		public get val() : V | undefined { return this.value; }
-		public get value() : V | undefined { return this.source?.get(); }
+		public override get v() : V | undefined { return this.value; }
+		public override get val() : V | undefined { return this.value; }
+		public override get value() : V | undefined { return this.source?.get(); }
 
-		public set v( newv : V | undefined ) { this.value = newv; }
-		public set val( newv : V | undefined ) { this.value = newv; }
-		public set value( newv : V | undefined )
+		public override set v( newv : V | undefined ) { this.value = newv; }
+		public override set val( newv : V | undefined ) { this.value = newv; }
+		public override set value( newv : V | undefined )
 		{
 			if( ! this.source )
 			{
@@ -190,23 +190,23 @@ export namespace Leaf
 
 		/** source */
 
-		public set s( newSource : Leaf < V > | undefined ) { super.setSource( newSource ); }
-		public set src( newSource : Leaf < V > | undefined ) { super.setSource( newSource ); }
-		public set source( newSource : Leaf < V > | undefined ) { super.setSource( newSource ); }
+		public override set s( newSource : Leaf < V > | undefined ) { super.setSource( newSource ); }
+		public override set src( newSource : Leaf < V > | undefined ) { super.setSource( newSource ); }
+		public override set source( newSource : Leaf < V > | undefined ) { super.setSource( newSource ); }
 
-		public get s() : Leaf < V > | undefined { return this.source; }
-		public get src() : Leaf < V > | undefined { return this.source; }
-		public get source() : Leaf < V > | undefined
+		public override get s() : Leaf < V > | undefined { return this.source; }
+		public override get src() : Leaf < V > | undefined { return this.source; }
+		public override get source() : Leaf < V > | undefined
 		{
 			return ( this._source instanceof Leaf ) && this._source || undefined;
 		}
 
 		/** イベントハンドラ */
 
-		public onValueChange( newv : V, oldv ? : V ) : void { log( this.lf( "onValueChange" ), newv, oldv ) }
+		public override onValueChange( newv : V, oldv ? : V ) : void { log( this.lf( "onValueChange" ), newv, oldv ) }
 
 		/**  */
 
-		protected lf( event : string ) { return `Leaf.Ref[${ this.id }-${ this.source?.ru ?? "?" }] ${ event }`; }
+		protected override lf( event : string ) { return `Leaf.Ref[${ this.id }-${ this.source?.ru ?? "?" }] ${ event }`; }
 	}
 }

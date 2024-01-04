@@ -1,0 +1,32 @@
+@startuml
+
+!include exist.pu
+
+title Leaf
+
+class RefFactory {
+	+ createRef( container, update )
+}
+
+class "Leaf < V >" as Leaf {
+	+ addRef( ref : Leaf.Ref )
+	+ createConverter( f )
+	# convs : Set < RefFactory >
+	..
+	# value : V
+	+ set( value : V )
+	+ get() : V
+}
+
+class "Leaf.Ref < V >" as LeafRef {
+	+ value : V
+	+ string : string
+	..
+	+ _new_value( newval :V, oldval : V )
+}
+
+Exist <|-- RefFactory
+RefFactory <|-- Leaf
+ExistRef <|--- LeafRef
+
+@enduml

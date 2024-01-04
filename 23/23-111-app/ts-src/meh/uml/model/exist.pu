@@ -1,0 +1,39 @@
+@startuml
+
+skinparam DefaultFontName "arial"
+
+title Exist
+
+class RootExist {
+	+ [ _parts ] : Set < Exist >
+	..
+	+ terminate()
+
+}
+
+class Exist {
+	+ container : Container
+	..
+	- refs : Set< Ref >
+	+ addRef( ref : Exist.Ref )
+	+ removeRef( ref )
+	..
+	+ terminate()
+}
+
+class "Exist.Ref" as ExistRef {
+	+ source : Exist
+	..
+	# _update : ()=>void
+	..
+	+# _new_source( newsrc, oldsrc )
+}
+
+RootExist <|-- Exist
+ExistRef o-o Exist
+
+Set <|-- Refs
+Refs *- ExistRef
+
+
+@enduml

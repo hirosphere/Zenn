@@ -1,0 +1,51 @@
+@startuml
+
+object Application {
+
+}
+
+object Document {
+
+}
+
+object URLManager {
+
+}
+
+object MelodyPlayer {
+	run
+}
+
+object PartPlayer {
+
+}
+
+object Part {
+
+}
+
+object Voice {
+
+}
+
+object Melody {
+
+}
+
+Application *-- Document
+Application *-- MelodyPlayer
+Application *-- URLManager
+
+URLManager o- Document
+MelodyPlayer o- Document
+
+MelodyPlayer *-- Melody
+MelodyPlayer *-- PartPlayer
+PartPlayer *-- Part
+Part *-- Voice
+
+
+
+
+
+@enduml
