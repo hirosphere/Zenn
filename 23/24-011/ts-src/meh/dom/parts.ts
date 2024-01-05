@@ -5,9 +5,15 @@ const log = console.log;
 
 /** createParts */
 
-export const createParts = ( nodet : Nodet, def : defs.Part [] ) : PartFragment | undefined =>
+export const createParts =
+(
+	nodet : Nodet,
+	ce : Element,
+	def : defs.Part []
+
+) : PartFragment | undefined =>
 {
-	return new Reader( nodet, def ).next();
+	return new Reader( nodet, ce, def ).next();
 };
 
 
@@ -17,7 +23,12 @@ class Reader
 {
 	protected pos : number = 0
 
-	constructor( public nodet : Nodet, protected def : defs.Part[] ) {}
+	constructor
+	(
+		public nodet : Nodet,
+		public ce : Element,
+		protected def : defs.Part[]
+	) {}
 
 	public next() : PartFragment | undefined
 	{
@@ -72,9 +83,22 @@ class Literal extends PartFragment
 		super();
 		this.next = reader.next();
 
-		def.forEach( partdef => new Nodet( reader.nodet, partdef, reader.nodet.e || null ) );
+		def.forEach
+		(
+			partdef => new Nodet
+			(
+				reader.nodet,
+				partdef,
+				reader.ce || null
+			)
+		);
 
-		log( "Literal PF", def )
+		def.forEach
+		(
+			partdef => log( partdef )
+		)
+
+		log( "Literal PF" ) ;
 	}
 }
 

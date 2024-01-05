@@ -14,18 +14,21 @@ export class Nodet extends Exist
 {
 	protected parts ? : PartFragment;
 	protected refs = new Exist.Refs;
-	protected _e ? : Element;
 
-	public get e() : Element | undefined { return this._e ; }
-
-	constructor( container : Container, def : defs.Node, ce : Element | null, rel ? : Node )
+	constructor
+	(
+		container :  Container,
+		def       :  defs.Node,
+		ce        :  Element | null,
+		rel ?     :  Node
+	)
 	{
 		super( container );
 
 		const node = ( def instanceof defs.Element ) ?
-			( this._e = this.createElement( def ) ) :
+			this.createElement( def ) :
 			this.createText( def )
-		;
+		;	
 
 		log( ce, node )
 
@@ -46,7 +49,7 @@ export class Nodet extends Exist
 			}
 		}
 
-		if( def.parts ) this.parts = createParts( this, def.parts );
+		if( def.parts ) this.parts = createParts( this, e, def.parts );
 
 		
 		attrs = undefined;

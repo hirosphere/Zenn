@@ -16,8 +16,8 @@ const existquest = () =>
 
 const domquest = () =>
 {
-	const { div } = ef;
-	const nodet : Nodet = dom.create( root, div( "新橋", " ", "有楽町" ), "body" );
+	const { div, p } = ef;
+	const nodet : Nodet = dom.create( root, div( "新橋", " ", "有楽町" ), "#quest" );
 	log( nodet );
 };
 

@@ -1,4 +1,5 @@
 import { LeafrRefFactory } from "../model/index.js";
+const log = console.log;
 
 type gE = globalThis.Element;
 
@@ -75,30 +76,31 @@ export namespace defs
 		(
 			public ns : string,
 			public type : string,
-			first_part ? : EChar < E > | Part,
-			remain_parts ? : Part []
+			first ? : EChar < E > | Part,
+			remain ? : Part []
 		)
 		{
-			if( first_part === undefined )  return;
+			if( first === undefined )  return;
 
 			if
 			(
-					first_part instanceof Object
+					first instanceof Object
 				&&
 					!
 					(
-						( first_part instanceof Element ) ||
-						( first_part instanceof Each ) ||
-						( first_part instanceof LeafrRefFactory )
+						( first instanceof Element ) ||
+						( first instanceof Each ) ||
+						( first instanceof LeafrRefFactory )
 					)				
 			)
 			{
-				this.echar = first_part;
-				this.parts = remain_parts;
+				this.echar = first;
+				this.parts = remain;
 			}
 			else
 			{
-				this.parts = remain_parts ? [ first_part, ... remain_parts ] : [ first_part ];
+				first && remain && log( "defs.Element", [ first, ... remain ] );
+				this.parts = first && ( remain && [ first, ... remain ] || [ first ] ) || undefined;
 			}
 		}
 
@@ -107,7 +109,6 @@ export namespace defs
 
 		public terminate()
 		{
-			this.ns = "";
 			this.parts = undefined;
 		}
 	}

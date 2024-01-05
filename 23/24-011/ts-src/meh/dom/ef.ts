@@ -22,7 +22,7 @@ export const create =
 /** factory types */
 
 
-type create_element < E extends Element > =
+type create_element_t < E extends Element > =
 (
 	first ? : defs.EChar < E > | defs.Part,
 	... remain : defs.Part []
@@ -31,12 +31,12 @@ type create_element < E extends Element > =
 
 type HTMLElementFactory =
 {
-	[ type in keyof HTMLElementTagNameMap ] : create_element < HTMLElementTagNameMap[ type ] > ;
+	[ type in keyof HTMLElementTagNameMap ] : create_element_t < HTMLElementTagNameMap[ type ] > ;
 };
 
 type SVGElementFactory =
 {
-	[ type in keyof SVGElementTagNameMap ] : create_element < SVGElementTagNameMap[ type ] > ;
+	[ type in keyof SVGElementTagNameMap ] : create_element_t < SVGElementTagNameMap[ type ] > ;
 };
 
 
@@ -47,10 +47,10 @@ type SVGElementFactory =
 
 const createElement =
 (
-	ns : string,
-	type : string,
-	first_part ? : defs.EChar | defs.Part,
-	... remain_parts : defs.Part[]
+	ns               : string,
+	type             : string,
+	first_part ?     : defs.EChar | defs.Part,
+	remain_parts ?   : defs.Part[]
 
 ) : defs.Element =>
 {
@@ -69,7 +69,7 @@ class Handler < T extends object > implements ProxyHandler < T >
 		return this.makefn( type );
 	}
 
-	fns = new Map < string, create_element < any > > ;
+	fns = new Map < string, create_element_t < any > > ;
 
 	makefn( type : string )
 	{
@@ -77,7 +77,7 @@ class Handler < T extends object > implements ProxyHandler < T >
 
 		log( type );
 		
-		const fn : create_element < any > = ( first, ... remain ) => createElement( this.ns, type, first, remain );
+		const fn : create_element_t < any > = ( first, ... remain ) => createElement( this.ns, type, first, remain );
 		this.fns.set( type, fn );
 		return fn;
 	}
