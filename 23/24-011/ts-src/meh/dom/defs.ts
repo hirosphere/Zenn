@@ -1,4 +1,4 @@
-import { LeafrRefFactory } from "../model/index.js";
+import { StringSource } from "../model/index.js";
 const log = console.log;
 
 type gE = globalThis.Element;
@@ -20,7 +20,7 @@ export namespace defs
 
 	/** type Text */
 
-	export type Text = string | number | boolean | bigint | LeafrRefFactory < any > ;
+	export type Text = string | number | boolean | bigint | null | undefined | StringSource < any > ;
 
 	/** class Each */
 
@@ -34,14 +34,17 @@ export namespace defs
 
 	export type Part = Node | Each < any > ;
 
-	export const isechar = ( part : Part | EChar ) => !
-	(
-		( part instanceof Element ) ||
-		( part instanceof Each ) ||
-		( part instanceof LeafrRefFactory )		
-	);
+
 
 	/** type Acts */
+
+
+	export type Acts =
+	{
+		[ name in keyof GlobalEventHandlersEventMap ] ? : Act < GlobalEventHandlersEventMap [ name ] > ;
+	}	
+
+	export type Act < Ev extends Event = any > = ( ev : Ev ) => void ;
 
 	
 	/** type Style */
@@ -49,11 +52,11 @@ export namespace defs
 	
 	/** type Attrs */
 
-	export type Attrs < E extends gE = any > =
-	{
-
-	}
-	| { [ name : string ] : Text };
+	export type Attrs <  E extends gE = gE  > =
+	(
+		{ [ name in keyof E ] ? : Text; } |
+		{ [ name : string ] : Text }
+	);
 
 	/** type Class */
 
@@ -66,6 +69,8 @@ export namespace defs
 	{
 		class ? : Class ;
 		attrs ? : Attrs < E > ;
+		props ? : Attrs < E > ;
+		acts ? : Acts ;
 	};
 	
 	/** class Element */
@@ -90,7 +95,7 @@ export namespace defs
 					(
 						( first instanceof Element ) ||
 						( first instanceof Each ) ||
-						( first instanceof LeafrRefFactory )
+						( first instanceof StringSource )
 					)				
 			)
 			{
@@ -99,7 +104,6 @@ export namespace defs
 			}
 			else
 			{
-				first && remain && log( "defs.Element", [ first, ... remain ] );
 				this.parts = first && ( remain && [ first, ... remain ] || [ first ] ) || undefined;
 			}
 		}

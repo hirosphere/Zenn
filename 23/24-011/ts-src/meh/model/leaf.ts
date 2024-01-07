@@ -1,4 +1,4 @@
-import { Exist, _container } from "./exist.js";
+import { Container, Exist, _container } from "./exist.js";
 import { Branch } from "./branch.js";
 const log = console.log;
 
@@ -10,7 +10,7 @@ const log = console.log;
 
 const default_tostr = < V > ( value : V ) : string => String( value ); 
 
-export abstract class LeafrRefFactory < V > extends Exist
+export abstract class StringSource < V > extends Exist
 {
 	public abstract createRef
 	(
@@ -21,7 +21,7 @@ export abstract class LeafrRefFactory < V > extends Exist
 	public tostr : Leafr.tostr < V > | null = default_tostr;
 }
 
-export class Conv < V > extends LeafrRefFactory < V >
+export class Conv < V > extends StringSource < V >
 {
 	protected source : Leafr < V > | null ;
 
@@ -59,9 +59,9 @@ export class Conv < V > extends LeafrRefFactory < V >
 
 /** Leaf Readonly */
 
-export class Leafr < V > extends LeafrRefFactory < V >
+export class Leafr < V > extends StringSource < V >
 {
-	constructor( container : Exist, protected _value : V )
+	constructor( container : Container, protected _value : V )
 	{
 		super( container );
 	}
@@ -78,7 +78,7 @@ export class Leafr < V > extends LeafrRefFactory < V >
 		return new LeafrRef < V > ( refs, update, this );
 	}
 
-	public sc( conv : ( value : V ) => string ) : LeafrRefFactory < V > { return new Conv < V > ( this, conv ); }
+	public conv( conv : ( value : V ) => string ) : StringSource < V > { return new Conv < V > ( this, conv ); }
 
 	/** value */
 
@@ -98,6 +98,8 @@ export class Leafr < V > extends LeafrRefFactory < V >
 		{
 			this[ _container ].update();
 		}
+
+		log( "SET VALUE" )
 
 		this._refs.forEach( ref =>
 		{
@@ -135,7 +137,10 @@ class LeafrRef < V = any > extends Exist.Ref
 
 	/** source */
 
-	public override set source( news : Leafr < V > | null ) { super._source = news; }
+	public override set source( news : Leafr < V > | null )
+	{
+		super.source = news;
+	}
 
 	public override get source() : Leafr < V > | null
 	{
@@ -144,12 +149,19 @@ class LeafrRef < V = any > extends Exist.Ref
 
 	public override _new_source( news : Exist | null, olds : Exist | null ) : void
 	{
-		this.update( this.value );
+		super._new_source( news, olds );
+		this._new_value( this.source?.value );
 	}
 
-	public _new_value( newv : V, oldv ? : V ) : void
+	public _new_value( newv ? : V, oldv ? : V ) : void
 	{
-		this.update( newv, oldv );
+		log( "NEW VALUE" )
+		this.source && this.update( { newv, oldv, newstr: this.tostr( newv ), oldstr: this.tostr( oldv ) } );
+	}
+
+	protected tostr( value ? : V ) : string
+	{
+		return this.source && value !== undefined && this.source.tostr?.( value ) || "";
 	}
 
 	/**  */
@@ -174,7 +186,8 @@ export namespace Leafr
 		export type Symbol = lol < symbol > ;
 	};
 
-	export type update < V > = ( newv ? : V, oldv ? : V ) => void;
+	export type update_note_t < V > = { newv ? : V, oldv ? : V, newstr ? : string, oldstr ? : string };
+	export type update < V > = ( node : update_note_t < V > ) => void;
 	export type tostr < V > = ( value : V ) => string ;
 }
 

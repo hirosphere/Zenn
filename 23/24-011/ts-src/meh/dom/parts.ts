@@ -92,13 +92,6 @@ class Literal extends PartFragment
 				reader.ce || null
 			)
 		);
-
-		def.forEach
-		(
-			partdef => log( partdef )
-		)
-
-		log( "Literal PF" ) ;
 	}
 }
 

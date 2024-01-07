@@ -127,7 +127,7 @@ export namespace Exist
 	{
 		public terminate()
 		{
-			this.forEach( ref => { ref.source = null ; } );
+			this.forEach( ref => ref.terminate() );
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import { Container, Exist } from "../model/exist.js";
-import { Leafr, LeafrRefFactory } from "../model/leaf.js";
+import { Leafr, StringSource } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import { PartFragment, createParts } from "./parts.js"
 const log = console.log; 
@@ -13,7 +13,9 @@ const log = console.log;
 export class Nodet extends Exist
 {
 	protected parts ? : PartFragment;
-	protected refs = new Exist.Refs;
+	protected refs ? : Exist.Refs;
+	protected acts ? : Map < string, EventListener [] > ;
+	protected _e ? : Element ;
 
 	constructor
 	(
@@ -30,22 +32,43 @@ export class Nodet extends Exist
 			this.createText( def )
 		;	
 
-		log( ce, node )
-
 		ce?.insertBefore( node, rel || null );
 	}
 
+	/** element */
+
 	protected createElement( def : defs.Element ) : Element
 	{
-		const e = document.createElement( def.type );
+		const e = this._e = document.createElement( def.type );
 		
-		let { attrs,  } = def.echar || {};
+		let { attrs, props, acts } = def.echar || {};
+
+		if( def.echar?.class )
+		{
+			this.bindClass( e, def.echar.class );
+		}
 
 		if( attrs )
 		{
 			for( let [ name, value ] of Object.entries( attrs ) )
 			{
 				this.bindAttr( e, name, value );
+			}
+		}
+
+		if( props )
+		{
+			for( let [ name, value ] of Object.entries( props ) )
+			{
+				this.bindProp( e, name, value );
+			}
+		}
+
+		if( acts )
+		{
+			for( let [ name, act ] of Object.entries( acts ) )
+			{
+				this.bindAct( e, name, act );
 			}
 		}
 
@@ -56,38 +79,91 @@ export class Nodet extends Exist
 		return e;
 	}
 
+	protected bindClass( e : Element, def : defs.Class )
+	{
+		if( typeof def == "string" )  e.className = def;
+	}
+
 	protected bindAttr( e : Element, name :string, value : defs.Text ) : void
 	{
-		if( value instanceof LeafrRefFactory )
+		this.refs = this.refs || new Exist.Refs;
+
+		if( value instanceof StringSource )
 		{
 			value.createRef
 			(
 				this.refs,
-				newv => setAttr( e, name, newv, value.tostr )
+				note => setAttr( e, name, note.newstr, value.tostr )
 			);
 		}
 		else setAttr( e, name, String( value ) );
 	}
 
-	protected createText( def : defs.Text ) : Text
+	protected bindProp( e : any, name :string, value : defs.Text ) : void
 	{
-		const node = document.createTextNode( "" );
-		if( def instanceof LeafrRefFactory )
+		this.refs = this.refs || new Exist.Refs;
+
+		if( value instanceof StringSource )
 		{
-			def.createRef
+			value.createRef
 			(
 				this.refs,
-				newv => node.nodeValue =  String( newv ) || ""
+				note => e[ name ] = note.newstr
 			);
 		}
-		else node.nodeValue = String( def );
+		else e[ name ] = value;
+	}
+	
+	protected bindAct( e : Element, name : string, act : defs.Act )
+	{
+		this.acts = this.acts || new Map < string, EventListener [] > ;
+
+		if( this.acts.has( name ) )  this.acts.get( name )?.push( act );
+		else this.acts.set( name, [ act ] );
+
+		e.addEventListener( name, act );
+	}
+
+	/** text */
+
+	protected createText( text : defs.Text ) : Text
+	{
+		this.refs = this.refs || new Exist.Refs;
+
+		const node = document.createTextNode( "" );
+		if( text instanceof StringSource )
+		{
+			log( "createText", text );
+
+			text.createRef
+			(
+				this.refs,
+				note =>
+				{
+					log( ` ** ${ note.newstr } ${ note.oldstr } ** ` )
+					node.nodeValue = note.newstr || "";
+				}
+			);
+		}
+		else node.nodeValue = String( text );
 		return node;
 	}
 
+	/** life */
+
 	public override terminate() : void
 	{
+		if( this._e && this.acts )
+		{
+			for( let [ name, acts ] of this.acts )
+			{
+				log( name );
+				acts.forEach( act => this._e?.removeEventListener( name, act ) );
+			}
+		}
+
 		this.parts?.terminate();
-		this.refs.terminate();
+		this.refs?.terminate();
 		super.terminate();
 	}
 }

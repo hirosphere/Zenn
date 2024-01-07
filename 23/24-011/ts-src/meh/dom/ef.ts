@@ -3,46 +3,36 @@ import { defs } from "./defs.js";
 import { Nodet } from "./nodet.js";
 const log = console.log;
 
+
+/**  create()  ファクトリー等で組み立てた「構造定義」から実DOMNodeを作成。  */
+
 export const create =
 (
 	container : Container,
 	def : defs.Node,
-	ceqsel : Element | string,
-	rel ? : Node
+	com_qe ? : Element | string,
+	rel_qe ? : Node | string
 
 ) : Nodet =>
 {
-	const ce : Element | null = typeof ceqsel == "string" ? document.querySelector( ceqsel ) : ceqsel;
+	const com_e : Element | null = typeof com_qe == "string" ? document.querySelector( com_qe ) : com_qe || null;
+	const rel_e : Node | null = typeof rel_qe == "string" ? document.querySelector( rel_qe ) : rel_qe || null;
 
-	return new Nodet( container, def, ce, rel );
+	return new Nodet
+	(
+		container,
+		def,
+		com_e,
+		(
+			rel_e && rel_e.parentElement == com_e
+		
+		) ? rel_e : undefined
+	);
 }
 
 
 
-/** factory types */
-
-
-type create_element_t < E extends Element > =
-(
-	first ? : defs.EChar < E > | defs.Part,
-	... remain : defs.Part []
-
-) => defs.Element < E > ;
-
-type HTMLElementFactory =
-{
-	[ type in keyof HTMLElementTagNameMap ] : create_element_t < HTMLElementTagNameMap[ type ] > ;
-};
-
-type SVGElementFactory =
-{
-	[ type in keyof SVGElementTagNameMap ] : create_element_t < SVGElementTagNameMap[ type ] > ;
-};
-
-
-
-
-/** factory proxy handler */
+/** エレメントファクトリーのプロキシにあたえる「ハンドラー」の型定義。 */
 
 
 const createElement =
@@ -75,7 +65,7 @@ class Handler < T extends object > implements ProxyHandler < T >
 	{
 		if( this.fns.has( type ) )  return this.fns.get( type );
 
-		log( type );
+		// log( type );
 		
 		const fn : create_element_t < any > = ( first, ... remain ) => createElement( this.ns, type, first, remain );
 		this.fns.set( type, fn );
@@ -87,6 +77,31 @@ const createElementFactory = < T extends object > ( ns : string ) =>
 {
 	return new Proxy ( {} as T, new Handler( ns ) );
 }
+
+
+
+/** HTML / SVG ファクトリー型定義 */
+
+type create_element_t < E extends Element > =
+(
+	first ? : defs.EChar < E > | defs.Part,
+	... remain : defs.Part []
+
+) => defs.Element < E > ;
+
+type HTMLElementFactory =
+{
+	[ type in keyof HTMLElementTagNameMap ] : create_element_t < HTMLElementTagNameMap[ type ] > ;
+};
+
+type SVGElementFactory =
+{
+	[ type in keyof SVGElementTagNameMap ] : create_element_t < SVGElementTagNameMap[ type ] > ;
+};
+
+
+
+/** HTML / SVG エレメントファクトリー */
 
 export const ef = createElementFactory < HTMLElementFactory > ( "" );
 export const sf = createElementFactory < SVGElementFactory > ( "http://www.w3.org/2000/svg" );
