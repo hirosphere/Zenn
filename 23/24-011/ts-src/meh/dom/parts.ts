@@ -1,6 +1,8 @@
 import { defs } from "./defs.js";
 import { Nodet } from "./nodet.js";
 const log = console.log;
+const ltrue = true;
+const ls = { rdr: ltrue, base: ltrue, each: ltrue };
 
 
 /** createParts */
@@ -32,33 +34,38 @@ class Reader
 
 	public next() : PartFragment | undefined
 	{
-		const begin = this.pos;
-		let literal : defs.Node [] = [];
+		const start_pos = this.pos;
+		return this.next_literal() || this.next_each();
+	}
+
+	protected next_literal() : PartFragment | undefined
+	{
+		const def : defs.Node[] = [];
 
 		for( ; this.pos < this.def.length ; this.pos ++ )
 		{
-			let part = this.def[ this.pos ];
-			if( part instanceof defs.Each )
-			{
-				if( this.pos > begin ) break;
-				return new Each( part, this );
-			}
-			
-			else
-			{
-				literal.push( part );
-			}
+			if( this.cur instanceof defs.Each )  break;
+			def.push( this.cur );
 		}
 
-		if( literal.length )
-		{
-			return new Literal( literal, this );
-		}
+		ls.rdr && def.length && log( `pf.reader ${ this.nodet.runiq } next_literal` );
+
+		return def.length && new LiteralPF( def, this ) || undefined;
 	}
 
-	public terminate() : void
+	protected next_each() : PartFragment | undefined
 	{
+		const cur = this.cur;
+		if( cur instanceof defs.Each )
+		{
+			ls.rdr && log( `pf.reader ${ this.nodet.runiq } next_each` );
+
+			this.pos ++;
+			return new EachPF( cur, this )
+		};
 	}
+
+	protected get cur() : defs.Part | undefined { return this.def[ this.pos ]; }
 }
 
 
@@ -66,42 +73,58 @@ class Reader
 
 export class PartFragment
 {
+	constructor
+	(
+		protected reader : Reader,
+	)
+	{}	
+
 	public next ? : PartFragment ;
 
-	public get firstNode () : Node | undefined { return ; }
+	public get firstnode () : Node | undefined { return ; }
 
-	public terminate()
+	protected create_part( def : defs.Node )
 	{
-		this.next?.terminate();
+		new Nodet
+		(
+			this.reader.nodet,
+			def,
+			this.reader.ce || null
+		);
+	}
+
+	public pf_term()
+	{
+		this.next?.pf_term();
 	}
 }
 
-class Literal extends PartFragment
+class LiteralPF extends PartFragment
 {
 	constructor( protected def : defs.Node [], reader : Reader )
 	{
-		super();
+		super( reader );
+		def.forEach( pdef => this.create_part( pdef ) );
 		this.next = reader.next();
-
-		def.forEach
-		(
-			partdef => new Nodet
-			(
-				reader.nodet,
-				partdef,
-				reader.ce || null
-			)
-		);
 	}
 }
 
-class Each extends PartFragment
+class EachPF extends PartFragment
 {
 	constructor( protected def : defs.Each < any >, reader : Reader )
 	{
-		super();
-		this.next = reader.next();
+		super( reader );
+		
+		ls.each && log( "Each PF" );
 
-		log( "Each PF" );
+		def.force = ( value ) =>
+		{
+			ls.each && log( "force", def?.create );
+			const pdef = def.create?.( value );
+			pdef && this.create_part( pdef );
+			log( "each" );
+		};
+
+		this.next = reader.next();
 	}
 }

@@ -1,4 +1,4 @@
-import { StringSource } from "../model/index.js";
+import { Exist, Leafr } from "../model/index.js";
 const log = console.log;
 
 type gE = globalThis.Element;
@@ -20,20 +20,23 @@ export namespace defs
 
 	/** type Text */
 
-	export type Text = string | number | boolean | bigint | null | undefined | StringSource < any > ;
+	export type Text = string | number | boolean | bigint | null | undefined | Leafr < any > ;
 
 	/** class Each */
 
 	export class Each < V >
 	{
-		constructor( create : CreateNode < V > )
+		constructor
+		(
+			public create ? : ( value : V ) => Node,
+			public source ? : Array < V >	
+		)
 		{}
+
+		public force ? ( value : V ) : void ;
 	}
 
-	type CreateNode < V > = ( value : V ) => Node;
-
 	export type Part = Node | Each < any > ;
-
 
 
 	/** type Acts */
@@ -67,12 +70,13 @@ export namespace defs
 
 	export type EChar < E extends gE = any > =
 	{
+		exist ? : Exist,
 		class ? : Class ;
 		attrs ? : Attrs < E > ;
 		props ? : Attrs < E > ;
 		acts ? : Acts ;
 	};
-	
+
 	/** class Element */
 
 	export class Element < E extends gE = any >
@@ -95,7 +99,7 @@ export namespace defs
 					(
 						( first instanceof Element ) ||
 						( first instanceof Each ) ||
-						( first instanceof StringSource )
+						( first instanceof Leafr )
 					)				
 			)
 			{

@@ -1,16 +1,18 @@
 const dbg = true;
 const log = dbg ? console.log : ( ... args : any[] ) => void( 0 );
 
-/** class Container */
+const ltrue = false;
+const ls = { life: ltrue, ref: ltrue };
+
+/** class Owner */
 
 const _parts = Symbol();
 
-export class Container
+export class Owner
 {
 	/** parts */
 
-	public [ _parts ] = new Set < Exist > ;
-	public _update() {}
+	public readonly [ _parts ] = new Set < Exist > ;
 
 	public terminate() : void
 	{
@@ -21,52 +23,53 @@ export class Container
 
 /** class Exist */
 
-export const _container = Symbol();
+export const _owner = Symbol();
+export const _addref = Symbol();
+export const _removeref = Symbol();
+export const _refs = Symbol();
 
-let nextru = 1;
+let nextru = { exist: 1, ref: 1 };
 
-export class Exist extends Container
+export class Exist extends Owner
 {
-	constructor( container : Container )
+	constructor( owner : Owner )
 	{
 		super();
-		this[ _container ] = container;
-		this[ _container ][ _parts ].add( this );
+		this[ _owner ] = owner;
+		this[ _owner ][ _parts ].add( this );
 
-		log( this.logform( "new" ) );
+		ls.life && log( this.logform( "new" ) );
 	}
 
-	protected [ _container ] : Container | null = null ;
-	public readonly runiq : string = String( nextru ++ ) ;
+	public readonly runiq : string = "E" + String( nextru.exist ++ ) ;
+	protected [ _owner ] : Owner | null = null ;
+	protected [ _refs ] = new Exist.RefCon();
 
 	/** refs */
 
-	public addRef( ref : Exist.Ref )
+	public [ _addref ]( ref : Exist.Ref )
 	{
-		log( this.logform( "addref", `${ ref.runiq }` ) );
-		this._refs.add( ref );
+		// log( this.logform( "addref", `${ ref.runiq }` ) );
+		this[ _refs ].add( ref );
 	}
 
-	public removeRef( ref : Exist.Ref )
+	public [ _removeref ]( ref : Exist.Ref )
 	{
-		this._refs.delete( ref );
-		log( this.logform( "removeref", `${ ref.runiq }` ) );
+		this[ _refs ].remove( ref );
+		ls.ref && log( this.logform( "removeref", `${ ref.runiq }` ) );
 	}
-
-	protected _refs = new Exist.Refs();
 
 	/** life */
 
 	public override terminate() : void
 	{
-		this._refs.forEach( ref => ref.source = null );
-
-		this[ _container ]?.[ _parts ].delete( this );
-		this[ _container ] = null;
+		this[ _refs ].refs_term();
+		this[ _owner ]?.[ _parts ].delete( this );
+		this[ _owner ] = null;
 
 		super.terminate();
 
-		log( this.logform( "term" ) );
+		ls.life && log( this.logform( "old" ) );
 	}
 
 	/** log */
@@ -78,61 +81,107 @@ export class Exist extends Container
 
 export namespace Exist
 {
+	const ls = { life: ltrue, src: ltrue };
+	const _new_source = Symbol();
+
 	export class Ref
 	{
-		protected _source : Exist | null = null;
+		protected rcon ? : RefCon ;
+		protected _source ? : Exist;
 
-		constructor( refs : Refs )
+		constructor( rcon : RefCon, protected acts ? : Ref.Acts )
 		{
-			log( this.logform( "new" ) );
-			refs.add( this );
+			ls.life && log( this.logform( "new" ) );
+			( this.rcon = rcon ).add( this );
 		}
 
-		public readonly runiq : string = String( nextru ++ ) ;
-
-		public set source( news : Exist | null )
+		public readonly runiq : string = "R" + String( nextru.ref ++ ) ;
+		
+		public set source( news : Exist | undefined )
 		{
 			if( news == this._source )  return;
 
 			let olds = this._source;
-			olds?.removeRef( this );
+			olds?.[ _removeref ]( this );
+
 			this._source = news;
-			news?.addRef( this );
+			news?.[ _addref ]( this );
+
+			ls.src && log( this.runiq, "set source", news?.runiq ?? "..", olds?.runiq ?? ".." );
 
 			this._new_source( news, olds );
-			news = olds = null;
+			news = olds = undefined;
 		}
 
 		/** event */
 
-		public _new_source( news : Exist | null, olds : Exist | null )
+		public _new_source( news : Exist | undefined, olds : Exist | undefined )
 		{
-			log( this.logform( "new_src", `${ news?.runiq || "x" } ${ olds?.runiq || "x" }` ) );
+			// log( this.logform( "new_src", `${ news?.runiq || "x" } ${ olds?.runiq || "x" }` ) );
+			
+			olds && this.acts?.old_source?.();
+			news && this.acts?.new_source?.( news );
 		}
 
 		/** life */
 
-		public terminate()
+		public ref_term()
 		{
-			this.source = null;
-			log( this.logform( "term" ) );
+			this.source = undefined;
+			this.rcon?.remove( this );
+			this.rcon = undefined;
+			
+			ls.life && log( this.logform( "old" ) );
 		}
 
 		/** log form */
 
-		protected logform( event :string, msg : string = "" ) : string { return `Ref ${ this.runiq } ${ event } ${ msg }`; }
+		protected logform( event :string, msg : string = "" ) : string { return `${ this.runiq } ${ event } ${ msg }`; }
 	}
 
-	export class Refs extends Set < Ref >
+	export namespace Ref
 	{
-		public terminate()
+		export interface Acts
 		{
-			this.forEach( ref => ref.terminate() );
+			new_source?( news : Exist ) : void ;
+			old_source?() : void ;
 		}
 	}
 }
 
+export namespace Exist
+{
+	export class RefCon
+	{
+		protected items = new Set < Ref > ;
+
+		public add( ref : Ref ) : void { this.items.add( ref ); }
+		public remove( ref : Ref ) : void { this.items.delete( ref ); }
+
+		public forEach( fn : ( ref : Ref ) => void )
+		{
+			this.items.forEach( ref => fn( ref ) );
+		}
+
+		public refs_term()
+		{
+			this.items.forEach( ref => ref.ref_term() );
+		}
+
+		public get size() { return this.items.size; }
+	}
+}
+
+
 /**  */
 
-export const root = new Container();
+export abstract class Container extends Exist
+{
+	public update() : void {};
+}
+
+
+/**  */
+
+export const root = new Owner();
 

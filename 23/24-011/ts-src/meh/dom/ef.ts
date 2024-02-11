@@ -1,4 +1,4 @@
-import { Container } from "../model/index.js";
+import { Owner } from "../model/index.js";
 import { defs } from "./defs.js";
 import { Nodet } from "./nodet.js";
 const log = console.log;
@@ -8,7 +8,7 @@ const log = console.log;
 
 export const create =
 (
-	container : Container,
+	container : Owner,
 	def : defs.Node,
 	com_qe ? : Element | string,
 	rel_qe ? : Node | string
@@ -30,6 +30,12 @@ export const create =
 	);
 }
 
+export const each = < V = any >
+(
+	create : ( value : V ) => defs.Node,
+	source : Array < V >
+
+) => new defs.Each( create, source ); 
 
 
 /** エレメントファクトリーのプロキシにあたえる「ハンドラー」の型定義。 */

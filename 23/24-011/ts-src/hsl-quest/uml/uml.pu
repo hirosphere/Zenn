@@ -1,0 +1,93 @@
+@startuml
+
+skinparam DefaultFontName "arial"
+
+package Data <<rectangle>> {
+
+	object AppData {
+		colors : Colors
+	}
+
+	object ColorsData
+
+	object ColorData {
+		hue : number
+		sat : number
+		light : number
+	}
+
+
+	AppData *-- ColorsData
+	ColorsData "1" *-- "0..*" ColorData
+
+}
+
+package Model <<rectangle>> {
+
+	object AppModel {
+		colors : Colors
+	}
+
+	object ColorsModel {
+		add( item : ColorModel )
+		remove( item : ColorModel )
+	}
+
+	object ColorModel {
+		hue : Leaf < number >
+		sat : Leaf < number >
+		light : Leaf < number >
+		"css" : Leafr < string >
+	}
+
+	AppModel *-- ColorsModel
+	ColorsModel "1" *-- "0..*" ColorModel
+}
+
+package ViewModel <<rectangle>> {
+
+	object AppVM {
+		list
+		selector
+		display
+		editor
+	}
+
+	object ColorListVM {
+		source : ColorsModel
+	}
+
+	object ColorSelectorVM {
+		value : Leaf < ColorModel >
+	}
+
+	object DisplayVM {
+		source : ColorModel
+	}
+
+	object ColorEditorVM {
+		source : ColorModel
+	}
+
+	AppVM *-- ColorListVM
+	AppVM *--- ColorSelectorVM
+	AppVM *---- DisplayVM
+	AppVM *----- ColorEditorVM
+
+	ColorsModel o.o ColorListVM
+	ColorModel o.o ColorSelectorVM
+
+	ColorListVM *-- ColorSelectorVM
+	ColorSelectorVM o.o DisplayVM
+	ColorSelectorVM o.o ColorEditorVM
+}
+
+object App {
+	data : Data
+}
+
+App *-- AppData
+App *-- AppModel
+App *-- AppVM
+
+@enduml

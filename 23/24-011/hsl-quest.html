@@ -76,21 +76,21 @@ h1 { text-align: center; }
 
 #literal-main { display: none; }
 
+.range
+{
+	height: 1.6em;
+	display: grid;
+	grid-template-columns: 10ex 250px 4ex 4ex 4ex;
+	gap: 1.2ex;
+}
+
 </style>
 
 </head>
-
-<script type="module">
-
-import {  } from "./js-out/quest-a/app.js";
-
-</script>
-
-
 <body>
 
 <nav class="main-nav">
-	<h2>app-a</h2>
+	<h2>hsl-quest</h2>
 	<ul>
 		<li>Content 1</li>
 		<li>Content 2</li>
@@ -120,6 +120,17 @@ import {  } from "./js-out/quest-a/app.js";
 
 	</article>
 </main>
+
+<main id="main"></main>
+
+<script type="module">
+
+import { create } from "./js-out/hsl-quest/hsl-quest-app.js";
+
+create( "#main" );
+
+</script>
+
 
 </body>
 </html>
