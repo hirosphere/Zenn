@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>24-011 q2</title>
+
+<style>
+
+* {
+	margin: 0; padding: 0; box-sizing: border-box;
+	color: hsl( 60, 0%, 27% );
+	font-family: 'Courier New', Courier, monospace;
+}
+
+button { border-radius: 0.4ex; padding: 1ex 1em; }
+
+
+body {
+	display: grid;
+	grid-template-columns: 260px 1fr;
+	gap: 0rem;
+}
+
+body > nav
+{
+	height: 100vh;
+	padding-bottom: 30vh;
+
+	background-color: hsl( 50, 8%, 96% );
+
+	display: grid;
+	grid-template-rows: auto;
+	align-items: center;
+	justify-content: center;
+	overflow: auto;
+}
+
+#literal-main { display: block; }
+
+h1 {
+	padding: 1em;
+	text-align: center;
+}
+
+.applets {
+	padding: 1.25rem 3rem;
+	display: flex;  flex-direction: column;
+	gap: 1rem;
+}
+
+.applet
+{
+	display: flex; flex-direction: column;
+	gap: 0rex;
+}
+.applet h2 { border-bottom: 2px solid hsl( 50, 3%, 50% ); }
+.applet > section.bar
+{
+	display: flex;
+	padding: 1.0rem 1.0rex;
+	gap: 1.0rem;
+}
+
+#ex1-items { display: flex; gap: 1ex; flex-wrap: wrap; }
+
+.ex1-item
+{
+	cursor: default;
+	border-radius: 0.5ex;
+	border: 2px solid hsl( 50, 3%, 65% );
+	padding: 5px;
+
+	display: grid;
+	grid-template-columns: 1em auto 1em auto;
+	gap: 1ex;
+}
+.ex1-item button { border-radius: 0; border: 1px; padding: 0ex; }
+.ex1-item ._items { display: flex; flex-direction: column; gap: 0.2ex; }
+
+.range
+{
+	display: grid;
+	grid-template-columns: 10ex 250px 4ex 4ex 4ex;
+	gap: 1.2ex;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav class="main-nav">
+	<h2>24-011 q1</h2>
+	<ul>
+		<li>Content 1</li>
+		<li>Content 2</li>
+		<li>Content 3</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+	</ul>
+</nav>
+<main id="literal-main">
+
+	<h1>24-011 quest-1</h1>
+
+	<section class="applets">
+
+		<article class="applet" id="ex1">
+			<h2>Exist</h2>
+			<section class="bar">
+				<select id="ex1-scale">
+					<option value="0">0</option>
+					<option value="100000">100k</option>
+					<option value="10000000">10M</option>
+				</select>
+				<button id="ex1-c1">生成</button>
+				<button id="ex1-c2">全消去</button>
+				<button onclick="console.clear()">ログ消去</button>
+			</section>
+			<section id="ex1-items">
+			</section>
+		</article>
+
+	</section>
+
+</main>
+
+
+<script type="module">
+
+import { model, Exist, root, dom, each, ef } from "./js-out/meh/index.js";
+
+const log = console.log;
+const eid = id => document.getElementById( id );
+
+/* ex1 */
+
+const ex1 = new function()
+{
+	const ui = {};
+	const itemroot = new Exist( root );
+
+	ui.scalesel = eid( "ex1-scale" );
+	eid( "ex1-c1" ).onclick = () => cri();
+	eid( "ex1-c2" ).onclick = () => log( itemroot.terminate() );
+
+	ui.Exist = ( ex_con ) =>
+	{
+		const size = getsize();
+		const exist = new Bigex( ex_con, size );
+		const parts = each( v => ui.Exist( exist ), [] );
+
+		return ef.span
+		(
+			{ class: "ex1-item", exist },
+			ef.button( { class: "_del", acts: { click(){ exist.terminate() } } }, "x" ),
+			ef.span
+			(
+				{ attrs: { title: exist.runiq } },
+				nextser ++,
+				"(", size ,")"
+			),
+			ef.button( { acts: { click(){ parts.force?.() } } }, "p" ),
+			ef.span( { class: "_items" }, parts )
+		);
+	};
+
+	const getsize = () => Number( ui.scalesel.options[ ui.scalesel.selectedIndex ]?.value ?? 0 );
+	let nextser = 1;
+
+	class Bigex extends Exist
+	{
+		constructor( excon, size )
+		{
+			super( excon );
+			this.memory = new Array( size ).fill( "." );
+		}
+
+		terminate()
+		{
+			// log( "Bigex terminate", this.runiq );
+			// this.memory = null;
+			super.terminate();
+		}
+	}
+
+	const cri = () => dom.create( root, ui.Exist( itemroot ), "#ex1-items" );
+	cri();
+}
+
+</script>
+	
+	
+</body>
+</html>

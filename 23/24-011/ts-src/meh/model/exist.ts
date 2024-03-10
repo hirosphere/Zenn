@@ -1,14 +1,14 @@
 const dbg = true;
 const log = dbg ? console.log : ( ... args : any[] ) => void( 0 );
 
-const ltrue = false;
-const ls = { life: ltrue, ref: ltrue };
+import { _ls } from "../_ls.js";
+const ls = _ls.model.exist;
 
 /** class Owner */
 
 const _parts = Symbol();
 
-export class Owner
+export class ExistContainer
 {
 	/** parts */
 
@@ -30,20 +30,20 @@ export const _refs = Symbol();
 
 let nextru = { exist: 1, ref: 1 };
 
-export class Exist extends Owner
+export class Exist extends ExistContainer
 {
-	constructor( owner : Owner )
+	constructor( owner : ExistContainer )
 	{
 		super();
 		this[ _owner ] = owner;
 		this[ _owner ][ _parts ].add( this );
 
-		ls.life && log( this.logform( "new" ) );
+		ls.life.s && log( this.logform( "new" ) );
 	}
 
 	public readonly runiq : string = "E" + String( nextru.exist ++ ) ;
-	protected [ _owner ] : Owner | null = null ;
-	protected [ _refs ] = new Exist.RefCon();
+	protected [ _owner ] : ExistContainer | null = null ;
+	protected [ _refs ] = new Set < Exist.Ref >;
 
 	/** refs */
 
@@ -55,21 +55,21 @@ export class Exist extends Owner
 
 	public [ _removeref ]( ref : Exist.Ref )
 	{
-		this[ _refs ].remove( ref );
-		ls.ref && log( this.logform( "removeref", `${ ref.runiq }` ) );
+		this[ _refs ].delete( ref );
+		ls.ref.s && log( this.logform( "removeref", `${ ref.runiq }` ) );
 	}
 
 	/** life */
 
 	public override terminate() : void
 	{
-		this[ _refs ].refs_term();
+		this[ _refs ].forEach( ref => ref.ref_term() );
 		this[ _owner ]?.[ _parts ].delete( this );
 		this[ _owner ] = null;
 
 		super.terminate();
 
-		ls.life && log( this.logform( "old" ) );
+		ls.life.s && log( this.logform( "old" ) );
 	}
 
 	/** log */
@@ -77,29 +77,39 @@ export class Exist extends Owner
 	protected logform( event : string, msg  : string = "" ) { return `Exist ${ this.runiq } ${ event } ${ msg }`; }
 }
 
+export namespace Exist
+{
+	export type Container = ExistContainer ;
+}
+
 /** namespace Exist */
 
 export namespace Exist
 {
-	const ls = { life: ltrue, src: ltrue };
 	const _new_source = Symbol();
 
 	export class Ref
 	{
-		protected rcon ? : RefCon ;
+		protected refcon ? : RefContainer ;
 		protected _source ? : Exist;
 
-		constructor( rcon : RefCon, protected acts ? : Ref.Acts )
+		constructor
+		(
+			refcon : RefContainer,
+			protected acts : Acts,
+			source ? : Exist
+		)
 		{
-			ls.life && log( this.logform( "new" ) );
-			( this.rcon = rcon ).add( this );
+			ls.life.s && log( this.logform( "new" ) );
+			( this.refcon = refcon ).add( this );
+			this.source = source;
 		}
 
 		public readonly runiq : string = "R" + String( nextru.ref ++ ) ;
 		
 		public set source( news : Exist | undefined )
 		{
-			if( news == this._source )  return;
+			if( news === this._source )  return;
 
 			let olds = this._source;
 			olds?.[ _removeref ]( this );
@@ -107,7 +117,7 @@ export namespace Exist
 			this._source = news;
 			news?.[ _addref ]( this );
 
-			ls.src && log( this.runiq, "set source", news?.runiq ?? "..", olds?.runiq ?? ".." );
+			ls.src.s && log( this.runiq, "set source", news?.runiq ?? "..", olds?.runiq ?? ".." );
 
 			this._new_source( news, olds );
 			news = olds = undefined;
@@ -115,7 +125,7 @@ export namespace Exist
 
 		/** event */
 
-		public _new_source( news : Exist | undefined, olds : Exist | undefined )
+		public _new_source( news ? : Exist, olds ? : Exist )
 		{
 			// log( this.logform( "new_src", `${ news?.runiq || "x" } ${ olds?.runiq || "x" }` ) );
 			
@@ -123,15 +133,15 @@ export namespace Exist
 			news && this.acts?.new_source?.( news );
 		}
 
-		/** life */
+		/** life.s */
 
 		public ref_term()
 		{
 			this.source = undefined;
-			this.rcon?.remove( this );
-			this.rcon = undefined;
+			this.refcon?.remove( this );
+			this.refcon = undefined;
 			
-			ls.life && log( this.logform( "old" ) );
+			ls.life.s && log( this.logform( "old" ) );
 		}
 
 		/** log form */
@@ -139,19 +149,16 @@ export namespace Exist
 		protected logform( event :string, msg : string = "" ) : string { return `${ this.runiq } ${ event } ${ msg }`; }
 	}
 
-	export namespace Ref
+	export interface Acts
 	{
-		export interface Acts
-		{
-			new_source?( news : Exist ) : void ;
-			old_source?() : void ;
-		}
+		new_source?( news : Exist ) : void ;
+		old_source?() : void ;
 	}
 }
 
 export namespace Exist
 {
-	export class RefCon
+	export class RefContainer
 	{
 		protected items = new Set < Ref > ;
 
@@ -175,13 +182,6 @@ export namespace Exist
 
 /**  */
 
-export abstract class Container extends Exist
-{
-	public update() : void {};
-}
+export const root = new ExistContainer();
 
-
-/**  */
-
-export const root = new Owner();
 

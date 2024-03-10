@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>24-011 q91-bosai</title>
+
+<style>
+
+* {
+	margin: 0; padding: 0; box-sizing: border-box;
+	color: hsl( 60, 0%, 27% );
+	font-family: 'Courier New', Courier, monospace;
+}
+
+button { border-radius: 0.4ex; padding: 1ex 1em; }
+
+
+body {
+	display: grid;
+	grid-template-columns: 260px 1fr;
+	gap: 0rem;
+}
+
+body > nav
+{
+	height: 100vh;
+	padding-bottom: 30vh;
+
+	background-color: hsl( 50, 8%, 96% );
+
+	display: grid;
+	grid-template-rows: auto;
+	align-items: center;
+	justify-content: center;
+	overflow: auto;
+}
+
+#literal-main { display: block; }
+
+h1 {
+	padding: 1em;
+	text-align: center;
+}
+
+.applets {
+	padding: 1.25rem 3rem;
+	display: flex;  flex-direction: column;
+	gap: 1rem;
+}
+
+.applet
+{
+	display: flex; flex-direction: column;
+	gap: 0.0ex;
+}
+.applet h2 { border-bottom: 2px solid hsl( 50, 3%, 50% ); }
+.applet > section.bar
+{
+	display: flex;
+	padding: 1.0rem 1.0rex;
+	gap: 1.0rem;
+}
+
+.applet th { padding: 0.1ex 1ex; background: hsl( 228, 60%, 50% ); color: hsl( 50, 8%, 96% ); }
+.applet td { padding: 0.1ex 1ex; background: hsl( 225, 0%, 95% ); color: hsl( 50, 8%, 4% ); }
+
+#ex1-items { display: flex; gap: 1ex; flex-wrap: wrap; }
+
+.ex1-item
+{
+	cursor: default;
+	border-radius: 0.5ex;
+	border: 2px solid hsl( 50, 3%, 65% );
+	padding: 5px;
+
+	display: grid;
+	grid-template-columns: 1em auto 1em auto;
+	gap: 1ex;
+}
+.ex1-item button { border-radius: 0; border: 1px; padding: 0ex; }
+.ex1-item ._items { display: flex; flex-direction: column; gap: 0.2ex; }
+
+.range
+{
+	display: grid;
+	grid-template-columns: 10ex 250px 4ex 4ex 4ex;
+	gap: 1.2ex;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav class="main-nav">
+	<h2>q91-bosai</h2>
+	<ul>
+		<li>Content 1</li>
+		<li>Content 2</li>
+		<li>Content 3</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+	</ul>
+</nav>
+<main id="literal-main">
+
+	<h1>24-011 q91-bosai</h1>
+
+	<section class="applets" id="applets">
+
+		<article class="applet" id="range-1-appl">
+			<h2>Leaf</h2>
+			<section class="bar">
+				<button id="lf1-c1">生成</button>
+				<button id="lf1-c2">全消去</button>
+				<button onclick="console.clear()">ログ消去</button>
+			</section>
+			<section id="lf1-items">
+		</article>
+	
+	</section>
+
+</main>
+
+
+<script type="module">
+
+import { model, Exist, Leaf, root, dom, each, ef } from "./js-out/meh/index.js";
+
+const log = console.log;
+const eid = id => document.getElementById( id );
+
+/* bosai 1 */
+
+const bousai1 = new function()
+{
+	const models = {};
+
+	() =>
+	{
+		const paths =
+		[
+			"",
+			"2024",
+			"2024/02",
+			"2024/02/20240215152900/",
+			"2024/02/20240215152900/TYMH072402151529.kwin",
+		];
+
+		const f = async () => await ( await fetch( `/API/EQ/?action=list&path=${ paths[ 0 ] }` ) ).json();
+
+
+		f().then( o => JSON.stringify( o, null, "      " ) )
+	};
+
+	models.App = class extends Exist
+	{
+		text1 = new Leaf.String( this, "text1" );
+
+		nodes =
+		[
+			"",
+			"2024",
+			"2024/02",
+			"2024/02/20240215152900/",
+			"2024/02/20240215152900/TYMH072402151529.kwin",
+			"2024/02/20240215152900/ISK0052402151529.kwin",
+		]
+		.map( path => new models.Node( this, path ) );
+
+		async act1()
+		{
+			alert( "act1 !" );
+		}
+	};
+
+	models.Node = class extends Exist
+	{
+		constructor( con, path )
+		{
+			super( con );
+
+			this.path = path;
+			this.knet_src = new Leaf( this, "" );
+			this.kik_src = new Leaf( this, "" );
+			this.file_src = new Leaf( this, "" );
+			this.cache = new Leaf( this, "" );
+
+			this.isdir = ! path.match( /\..+$/ )
+
+			this.load_path();
+		}
+
+		async load_path()
+		{
+			const res = await fetch( `/API/EQ/?action=test-get-node&path=${ this.path }` );
+			const v = await res.json();
+			this.knet_src.val = v?.src?.knet ?? "";
+			this.kik_src.val = v?.src?.kik ?? "";
+			this.file_src.val = v?.src?.file ?? "";
+			this.cache.val = v?.cache_file ?? "";
+		}
+	}
+
+	const ui = this.ui = {};
+
+	ui.App = () =>
+	{
+		const model = new models.App( root );
+
+		return ef.article
+		(
+			{ class: "applet" },
+
+			ef.h2( "bosai" ),
+			ef.section
+			(
+				{ class: "bar", acts: { click(){ model.act1() } } },
+				ef.button( "act1" ),
+			),
+			ui.Nodes( model.nodes ),
+			ef.section
+			(
+				ef.textarea
+				(
+					{
+						style: { width: "950px", height: "8em", padding: "1ex" },
+						props: { value: "..." },
+					}
+				),
+			),
+		);
+	};
+
+	ui.Nodes = ( d ) =>
+	{
+		return ef.ul
+		(
+			ef.h3( "paths" ),
+			each( node => ui.Node( node ), d )
+		);
+	}
+
+	ui.Node = ( node ) =>
+	{
+		const isdir = node.isdir;
+
+		return ef.li
+		(
+			ef.h4( node.path || "root" ),
+			ef.table
+			(
+				ef.tr( ef.th( "knet src" ), ef.td( node.knet_src ) ),
+				ef.tr( ef.th( "kik src" ), ef.td( node.kik_src ) ),
+				ef.tr( ef.th( "file src" ), ef.td( node.file_src ) ),
+				ef.tr( ef.th( "cache" ), ef.td( node.cache ) ),
+			),
+		);
+	};
+};
+
+bousai1.models = {};
+
+bousai1.models.Node = class extends Leaf
+{}
+
+dom.create( root, bousai1.ui.App(), "#applets" );
+
+
+
+
+/* range-1-appl */
+
+new function()
+{
+	const Appl = () =>
+	{
+		class X extends Exist
+		{
+			a = new Leaf.Number( this, 30 );
+			b = new Leaf.Number( this, 50 );
+			c = new Leaf.Number( this, 90 );
+		};
+
+		const ex = new X( root );
+
+		return ef.article
+		(
+			{
+				class: "applet",
+				style: { display: "flex", flexDirection: "column", gap: "1ex" },
+			},
+			ef.h2( "q91-bosai" ),
+			ef.section
+			(
+				{
+					style: { padding: "1ex", display: "flex", flexDirection: "column", gap: "1px" },
+				},
+				Range( { title: "Attack", value: ex.a, max: 100 } ),
+				Range( { title: "Decay", value: ex.b, max: 100 } ),
+				Range( { title: "Release", value: ex.c, max: 100 } ),
+			),
+		);
+	}
+
+	const Range = ( model ) =>
+	{
+		return ef.section
+		(
+			{
+				style:
+				{
+					width: "500px",
+					padding: "1ex",
+					display: "grid",
+					gridTemplateColumns: "12ex 280px 12ex",
+					gap: "1ex",
+				},
+			},
+
+			ef.span( model.title ),
+			
+			ef.input
+			({
+				attrs:
+				{
+					type: "range",
+					value: model.value,
+					max: model.max
+				},
+				acts:
+				{
+					input( ev )
+					{
+						model.value.set( Number( ev.target.value ) );
+					}
+				}
+			}),
+
+			ef.span
+			(
+				ef.span( { style: { textAlign: "right" } }, model.value ),
+			)
+		);
+	};
+
+	dom.create( root, Appl(), "#applets" );
+};
+
+</script>
+	
+	
+</body>
+</html>

@@ -1,8 +1,10 @@
 import { defs } from "./defs.js";
 import { Nodet } from "./nodet.js";
+import { _ls } from "../_ls.js";
+const ls = _ls.dom.parts;
 const log = console.log;
-const ltrue = true;
-const ls = { rdr: ltrue, base: ltrue, each: ltrue };
+
+
 
 
 /** createParts */
@@ -19,7 +21,7 @@ export const createParts =
 };
 
 
-/** Reader  */
+/** 定義リーダー defs.Part[]型の定義からPartFragmentを作成  */
 
 class Reader
 {
@@ -45,10 +47,8 @@ class Reader
 		for( ; this.pos < this.def.length ; this.pos ++ )
 		{
 			if( this.cur instanceof defs.Each )  break;
-			def.push( this.cur );
+			if( this.cur != null ) def.push( this.cur );
 		}
-
-		ls.rdr && def.length && log( `pf.reader ${ this.nodet.runiq } next_literal` );
 
 		return def.length && new LiteralPF( def, this ) || undefined;
 	}
@@ -58,7 +58,7 @@ class Reader
 		const cur = this.cur;
 		if( cur instanceof defs.Each )
 		{
-			ls.rdr && log( `pf.reader ${ this.nodet.runiq } next_each` );
+			ls.reader.s && log( `pf.reader ${ this.nodet.runiq } next_each` );
 
 			this.pos ++;
 			return new EachPF( cur, this )
@@ -115,15 +115,19 @@ class EachPF extends PartFragment
 	{
 		super( reader );
 		
-		ls.each && log( "Each PF" );
+		ls.each.s && log( "Each PF" );
 
 		def.force = ( value ) =>
 		{
-			ls.each && log( "force", def?.create );
+			ls.each.s && log( "force", def?.create );
 			const pdef = def.create?.( value );
 			pdef && this.create_part( pdef );
-			log( "each" );
 		};
+
+		if( def.source instanceof Array )
+		{
+			def.source.forEach( value => this.create_part( def.create?.( value ) ?? value ) );
+		}
 
 		this.next = reader.next();
 	}

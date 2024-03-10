@@ -20,7 +20,9 @@ export namespace defs
 
 	/** type Text */
 
-	export type Text = string | number | boolean | bigint | null | undefined | Leafr < any > ;
+	export type primitive = string | number | boolean | bigint ;
+
+	export type Text = primitive | Leafr < primitive > ;
 
 	/** class Each */
 
@@ -36,7 +38,7 @@ export namespace defs
 		public force ? ( value : V ) : void ;
 	}
 
-	export type Part = Node | Each < any > ;
+	export type Part = Node | Each < any > | undefined ;
 
 
 	/** type Acts */
@@ -52,13 +54,17 @@ export namespace defs
 	
 	/** type Style */
 
+	export type Style =
+	{
+		[ name in keyof CSSStyleDeclaration ] : Text ;
+	};
 	
 	/** type Attrs */
 
 	export type Attrs <  E extends gE = gE  > =
 	(
-		{ [ name in keyof E ] ? : Text; } |
-		{ [ name : string ] : Text }
+		{ [ name in keyof E ] ? : Text ; } |
+		{ [ name : string ] : Text ; }
 	);
 
 	/** type Class */
@@ -75,6 +81,7 @@ export namespace defs
 		attrs ? : Attrs < E > ;
 		props ? : Attrs < E > ;
 		acts ? : Acts ;
+		style ? : Style ;
 	};
 
 	/** class Element */

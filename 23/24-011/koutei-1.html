@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>工程管理 [ 4886-1 ]</title>
+
+<style>
+
+* {
+	margin: 0; padding: 0; box-sizing: border-box;
+	color: hsl( 60, 0%, 5% );
+	font-family: 'Courier New', Courier, monospace;
+}
+
+button { border-radius: 0.4ex; padding: 1ex 1em; }
+
+
+body {
+	display: grid;
+	grid-template-columns: 260px 1fr;
+	gap: 0rem;
+}
+
+body > nav
+{
+	height: 100vh;
+	padding-bottom: 30vh;
+
+	background-color: hsl( 50, 8%, 96% );
+
+	display: grid;
+	grid-template-rows: auto;
+	align-items: center;
+	justify-content: center;
+	overflow: auto;
+}
+
+#literal-main { display: block; }
+
+main
+{
+	padding: 1.0em;
+	display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+main h1 { padding: 0.5ex; }
+main h2 { padding: 0.2ex; font-size: 3.0em }
+
+
+</style>
+
+</head>
+
+<body>
+
+<nav class="main-nav">
+	<h2>メニュー</h2>
+	<ul>
+		<li>Content 1</li>
+		<li>Content 2</li>
+		<li>Content 3</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+		<li>Content ..</li>
+	</ul>
+</nav>
+<main id="main">
+</main>
+
+
+<script type="module">
+
+import { root, dom } from "./js-out/meh/index.js";
+import { KouteiMain } from "./js-out/seisann-app/koutei-app.js";
+
+dom.create( root, KouteiMain(), "#main" );
+
+/**  */
+
+</script>
+	
+	
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { Owner } from "../model/index.js";
+import { ExistContainer } from "../model/index.js";
 import { defs } from "./defs.js";
 import { Nodet } from "./nodet.js";
 const log = console.log;
@@ -8,7 +8,7 @@ const log = console.log;
 
 export const create =
 (
-	container : Owner,
+	container : ExistContainer,
 	def : defs.Node,
 	com_qe ? : Element | string,
 	rel_qe ? : Node | string

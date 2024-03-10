@@ -1,4 +1,4 @@
-import { Owner, Exist, _owner, _refs } from "./exist.js";
+import { ExistContainer, Exist, _owner, _refs } from "./exist.js";
 import { Branch } from "./branch.js";
 const log = console.log;
 
@@ -9,14 +9,14 @@ export const _setvalue = Symbol();
 
 export class Leafr < V > extends Exist
 {
-	static make < V > ( owner : Owner, lol : Leafr.LoL < V > ) : Leafr < V >
+	static make < V > ( owner : ExistContainer, lol : Leafr.LoL < V > ) : Leafr < V >
 	{
 		return lol instanceof Leafr ? lol : new Leafr < V > ( owner, lol );
 	};
 
 	/**  */
 
-	constructor( container : Owner, protected _value : V )
+	constructor( container : ExistContainer, protected _value : V )
 	{
 		super( container );
 	}
@@ -40,77 +40,40 @@ export class Leafr < V > extends Exist
 			this[ _owner ].update();
 		}
 
-		log( this.runiq, "_setvalue", newv, this[ _refs ].size );
-
 		this[ _refs ].forEach( ref =>
 		{
-			( ref instanceof Leafr.Ref ) &&
-			ref._new_value( newv, oldv );
+			( ref instanceof Leafr.Ref )
+			 && ref._new_value( newv, oldv );
 		});
 
 		return true;
 	}
 }
 
-const default_tostr = < V > ( value : V | undefined ) => String( value || ".." );
-
 export namespace Leafr
 {
 	export class Ref < V > extends Exist.Ref
 	{
-		constructor( refs : Exist.RefCon, protected leafr_acts ? : Ref.Acts < V > )
+		constructor( refcon : Exist.RefContainer, protected leafr_acts  : Acts < V >, source ? : Leafr < V > )
 		{
-			super( refs );
+			super( refcon, leafr_acts );
+			this.source = source;
 		}
 
-		/** source */
-
-		public override set source( news : Leafr < V > | undefined )
+		public override _new_source( news? : Exist | undefined, olds? : Exist | undefined ) : void
 		{
-			super.source = news;
-		}
-	
-		public override get source() : Leafr < V > | undefined
-		{
-			return ( this._source instanceof Leafr ) && this._source || undefined;
-		}
-	
-		public override _new_source( news : Exist | undefined, olds : Exist | undefined ) : void
-		{
-			super._new_source( news, olds );
-			this._new_value( this.source?.value );
-		}
-	
-		/** value */
-	
-		public get v() : V | undefined { return this.value; }
-		public get val() : V | undefined { return this.value; }
-		public get value() : V | undefined { return this.source?.get(); }
-	
-		public get letter() : string { return this.tostr( this.source?.get() ); } 
-		public tostr : ( value : V | undefined ) => string = default_tostr;
-	
-		/** event */
-	
-		public _new_value( newv ? : V, oldv ? : V ) : void
-		{
-			this.leafr_acts?.new_value?.( newv, oldv );
+			if( news instanceof Leafr ) this._new_value( news.value );
 		}
 
-		/** life */
-		
-		public override ref_term() : void
+		public _new_value( newv ? : V, oldv ? : V )
 		{
-			super.ref_term();
+			this.leafr_acts.new_value?.( newv, oldv );
 		}
 	}
 
-	export namespace Ref
+	export interface Acts < V > extends Exist.Acts
 	{
-		export interface Acts < V > extends Exist.Ref.Acts
-		{
-			new_value?( newv ? : V, oldv ? : V ) : void ;
-		}
+		new_value?( newv ? : V, oldv ? : V ) : void ;
 	}
 }
 
@@ -141,7 +104,7 @@ export namespace Leafr
 
 export class Leaf < V > extends Leafr < V >
 {
-	static override make < V > ( owner : Owner, lol : Leaf.LoL < V > ) : Leaf < V >
+	static override make < V > ( owner : ExistContainer, lol : Leaf.LoL < V > ) : Leaf < V >
 	{
 		return lol instanceof Leaf ? lol : new Leaf < V > ( owner, lol );
 	};
@@ -168,27 +131,6 @@ export namespace Leaf
 
 	export class Ref < V = any > extends Leafr.Ref < V >
 	{
-		/** source */
-
-		public override set source( news : Leaf < V > | undefined ) { super._source = news; }
-
-		public override get source() : Leaf < V > | undefined
-		{
-			return ( this._source instanceof Leaf ) && this._source || undefined;
-		}
-		
-		/** value */
-
-		public override get v() : V | undefined { return this.value; }
-		public override get val() : V | undefined { return this.value; }
-		public override get value() : V | undefined { return this.source?.get(); }
-
-		public override set v( newv : V | undefined ) { this.value = newv; }
-		public override set val( newv : V | undefined ) { this.value = newv; }
-		public override set value( newv : V | undefined )
-		{
-			this.source && newv !== undefined && this.source.set( newv, this );
-		}
 	}
 }
 
@@ -211,5 +153,4 @@ export namespace Leaf
 		export type Object = LoL < object > ;
 		export type Symbol = LoL < symbol > ;
 	};
-
 }
