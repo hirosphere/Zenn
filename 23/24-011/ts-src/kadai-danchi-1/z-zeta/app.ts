@@ -1,6 +1,6 @@
-import * as meh from "../meh/index.js";
-import { model, root, Exist, ExistContainer, Leafr, Leaf, Branch } from "../meh/index.js";
-import { defs, dom, Nodet, ef, sf } from "../meh/index.js";
+import * as meh from "../../meh/index.js";
+import { model, root, Exist, ExistContainer, Leafr, Leaf, Branch } from "../../meh/index.js";
+import { defs, dom, Nodet, ef, sf } from "../../meh/index.js";
 const log = console.log;
 
 const existquest = () =>
