@@ -13,6 +13,7 @@ class Item < P extends { [ partname : string ] : Item < any > } >
 	public get s() : boolean { return true; }
 }
 
+
 export const _ls =
 {
 	s: true,
