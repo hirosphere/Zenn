@@ -12,6 +12,13 @@
 
     "strict": true,                                      /* Enable all strict type-checking options. */
     "skipLibCheck": true,                                 /* Skip type checking all .d.ts files. */
-    "noImplicitOverride": true
+    "noImplicitOverride": true,
+
+    "lib":
+    [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ]
   }
 }

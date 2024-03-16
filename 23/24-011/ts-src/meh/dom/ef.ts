@@ -30,12 +30,16 @@ export const create =
 	);
 }
 
-export const each = < V = any >
+export const each = < I = any >
 (
-	create : ( value : V ) => defs.Node,
-	source : Array < V >
+	source : Array < I >,
+	create : ( value : I ) => defs.Node,
 
-) => new defs.Each( create, source ); 
+) => new defs.Each
+(
+	source,
+	create,
+); 
 
 
 /** エレメントファクトリーのプロキシにあたえる「ハンドラー」の型定義。 */

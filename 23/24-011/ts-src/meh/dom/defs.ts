@@ -26,16 +26,16 @@ export namespace defs
 
 	/** class Each */
 
-	export class Each < V >
+	export class Each < I >
 	{
 		constructor
 		(
-			public create ? : ( value : V ) => Node,
-			public source ? : Array < V >	
+			public source ? : Array < I >,
+			public create ? : ( value : I ) => Node,
 		)
 		{}
 
-		public force ? ( value : V ) : void ;
+		public force ? ( value : I ) : void ;
 	}
 
 	export type Part = Node | Each < any > | undefined ;

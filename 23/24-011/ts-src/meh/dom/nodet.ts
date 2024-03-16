@@ -2,7 +2,7 @@ import { ExistContainer, Exist, root } from "../model/exist.js";
 import { Leafr } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import { PartFragment, createParts } from "./parts.js"
-import { _ls } from "../_ls.js";
+import { _ls } from "../ls.js";
 const ls = _ls.dom.nodet;
 const log = console.log; 
 

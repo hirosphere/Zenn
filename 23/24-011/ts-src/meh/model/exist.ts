@@ -1,7 +1,7 @@
 const dbg = true;
 const log = dbg ? console.log : ( ... args : any[] ) => void( 0 );
 
-import { _ls } from "../_ls.js";
+import { _ls } from "../ls.js";
 const ls = _ls.model.exist;
 
 /** class Owner */

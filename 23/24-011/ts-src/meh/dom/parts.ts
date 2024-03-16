@@ -1,6 +1,6 @@
 import { defs } from "./defs.js";
 import { Nodet } from "./nodet.js";
-import { _ls } from "../_ls.js";
+import { _ls } from "../ls.js";
 const ls = _ls.dom.parts;
 const log = console.log;
 

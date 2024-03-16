@@ -148,9 +148,9 @@ new function()
 	const App = () =>
 	{
 		// const a = [ 1, 2, 3, 4, 5, 6, 7 ];
-		const a = [ 1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31 ];
+		const a = [ 1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43 ];
 
-		const b =
+		const nomiorder =
 		[
 			{ 品名: "ホッピーセット 白", 数量: 1, 単価: 420, 金額: 420 },
 			{ 品名: "そら豆", 数量: 1, 単価: 220, 金額: 220 },
@@ -172,11 +172,10 @@ new function()
 			),
 			ef.section
 			(
-				ef.section( each( v => `${ v * 1 }; `, a ) ),
-				ef.section( each( v => `${ v * 10 }; `, a ) ),
-				ef.section( each( v => `${ 10 ** v }; `, a ) ),
-				ef.section( each( v => `${ v / 7 }; `, a ) ),
-				ef.section( each( v => `${ v / 13 }; `, a ) ),
+				{ style: { display: "flex", flexDirection: "column", gap: "1ex" } },
+
+				ef.h3( "v" ), ef.ul( each( a, v => ef.li( `${ v * 1 }` ) ) ),
+				ef.h3( "2 ** v" ), ef.ul( each( a, v => ef.li( `${ 2 ** v }` ) ) ),
 			),
 			ef.section
 			(
@@ -186,8 +185,8 @@ new function()
 					{ style: { maxWidth: "550px" } },
 					each
 					(
+						nomiorder,
 						data => Order( data ),
-						b
 					)
 				),
 			),
