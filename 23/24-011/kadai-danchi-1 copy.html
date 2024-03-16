@@ -25,7 +25,7 @@ main
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	background-image: linear-gradient( hsl( 199, 60%, 80% ) 0%,hsl( 180, 0%, 100% ) 30% 80%, hsl( 85, 69%, 73% ) 100% );
+	background-image: linear-gradient( hsl( 20, 80%, 80% ) 0%,hsl( 180, 0%, 100% ) 30% 80%, hsl( 90, 69%, 73% ) 100% );
 }
 
 
@@ -39,74 +39,7 @@ main
 <body>
 
 
-
-<script type="module">
-
-import { log, dom, ef, root } from "./js-out/meh/index.js";
-import { Page } from "./js-out/kadai-danchi-1/page.js";
-
-const page_list = {};
-
-const heya = ( tou, heya, def ) =>
-{
-	const name = [ tou, heya ].join( "-" );
-	log( name, def.title );
-
-	page_list[ name ] = def;
-};
-
-
-
-heya( "1", "101", { title: "101-exist", file: "1-101.js" } );
-heya( "1", "102", { title: "102-exist", content: ef.article( ef.h1( "102-exist-2" ) ) } )
-
-
-
-
-const Map =
-{
-	title: "課題団地",
-	content: ef.main
-	(
-		ef.h1( "課題団地" ),
-	)
-};
-
-const create_page = async () =>
-{
-	const qs = new URLSearchParams( location.search );
-	const page = qs.get( "page" );
-
-	log( "create", page )
-
-	const def = page_list[ page ] || Map;
-
-	document.title = def.title;
-
-	let content = await get_content( def );
-
-	dom.create
-	(
-		root,
-		content,
-		document.body
-	);	
-};
-
-const get_content = async ( def ) =>
-{
-	if( def.content ) return def.content;
-	const file = def.file;
-
-	const { page } = await import( "./js-out/kadai-danchi-1/" + file );
-	log( page() );
-	return page();
-}
-
-create_page();
-
-</script>
-
+<main><h1>Nazo</h1></main>
 
 
 </body>
