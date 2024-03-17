@@ -24,7 +24,14 @@ export namespace defs
 
 	export type Text = primitive | Leafr < primitive > ;
 
-	/** class Each */
+	/** Part */
+
+	export class PartsFragment
+	{
+		constructor( public items : Array < Part > ){}
+		
+		public add ? ( def : Node ) : void ;
+	}
 
 	export class Each < I >
 	{

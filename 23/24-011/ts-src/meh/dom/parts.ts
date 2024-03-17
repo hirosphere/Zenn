@@ -61,7 +61,7 @@ class Reader
 			ls.reader.s && log( `pf.reader ${ this.nodet.runiq } next_each` );
 
 			this.pos ++;
-			return new EachPF( cur, this )
+			return new EachPF( cur, this );
 		};
 	}
 

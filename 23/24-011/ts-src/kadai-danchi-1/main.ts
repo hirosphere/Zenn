@@ -4,23 +4,23 @@ const ents = Object.entries;
 
 log( "kadai-danchi-1 main" );
 
-type Page = ( label : string ) => dom.defs.Node;
+type Page = ( roomindex : string ) => dom.defs.Node;
 
 const App = async () =>
 {
 	const params = new URLSearchParams( location.search );
 
-	const roomlabel = params.get( "page" ) ?? "";
-	const room = danchimap.get( roomlabel );
+	const roomindex = params.get( "page" ) ?? "";
+	const room = danchimap.rooms[ roomindex ];
 
-	log( "room", roomlabel, room );
+	log( "room", roomindex, room );
 
 	if( room )
 	{
-		const module = await import( room.url );
+		const module = await import( room.module_url );
 		const Page = module.default;
 		log( "dymport", Page );
-		if( Page ) return Page( room.label );
+		if( Page ) return Page( room.index );
 	}
 
 	return DanchiMap( params );
@@ -56,8 +56,18 @@ const DanchiMap = ( ps : URLSearchParams ) =>
 			)
 		),
 
+		ef.section
+		(
+			Link( danchimap.rooms[ "1-1-101" ] ),
+		),
+
 		ef.section( ef.textarea( { props: { value: "Danchi" } } ) ),
 	);
+};
+
+const Link = ( room ? : room ) =>
+{
+	return ef.a( { attrs: { href: room?.link ?? "" } }, room?.index ?? "---" );
 };
 
 const unavailable = true;
@@ -69,11 +79,12 @@ const danchimapsrc =
 		"1":
 		{
 			"101": {},
+			"102": {},
 		},
 	},
 };
 
-type room = { label: string, url: string };
+type room = { index: string, link : string, module_url: string };
 
 class Building // 棟
 {
@@ -109,15 +120,19 @@ const danchimap = new class
 				for( const [ room_i, room_src ] of ents( buil_src ) )
 				{
 					const path = [ block_i, building_i, room_i ];
+					const roomindex = path.join( "-" );
 
-					const label = path.join( "-" );
-					const room = { label, url: `./${ path.join( "/" ) }.js` };
+					const room =
+					{
+						index: roomindex,
+						link: `?page=${ roomindex }`,
+						module_url: `./${ path.join( "/" ) }.js`
+					};
 					
 					building.rooms[ room_i ] = room;
-					
-					this.rooms[ label ] = room;
+					this.rooms[ roomindex ] = room;
 
-					log( "団地部屋", label, room.url );
+					log( "団地部屋", roomindex, room.module_url );
 
 				}
 			}

@@ -155,7 +155,7 @@ const ex1 = new function()
 	{
 		const size = getsize();
 		const exist = new Bigex( ex_con, size );
-		const parts = each( v => ui.Exist( exist ), [] );
+		const parts = each( [], v => ui.Exist( exist ) );
 
 		return ef.span
 		(
