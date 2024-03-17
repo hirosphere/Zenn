@@ -1,4 +1,4 @@
-import { ExistContainer, Branch, ef, Leafr, Leaf, _setvalue } from "../meh/index.js";
+import { Exist, Branch, ef, Leafr, Leaf, _setvalue } from "../meh/index.js";
 
 type toargs < M > =
 {
@@ -10,7 +10,7 @@ type toleaf < M > =
 	[ name in keyof M ] : Leaf < M [ name ] > ;
 };
 
-const mkleaf = < T > ( lol : Leaf.LoL < T >, owner : ExistContainer ) =>
+const mkleaf = < T > ( lol : Leaf.LoL < T >, owner : Exist.Container ) =>
 {
 	return lol instanceof Leaf ? lol : new Leaf < T > ( owner, lol );
 };
@@ -39,7 +39,7 @@ export class VM extends Branch implements toleaf < Model >
 
 	labelvalue = new  Leafr.String( this, "lvvvv" );
 
-	constructor( owner : ExistContainer, a : toargs < Model > )
+	constructor( owner : Exist.Container, a : toargs < Model > )
 	{
 		super( owner );
 

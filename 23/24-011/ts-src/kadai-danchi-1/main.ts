@@ -10,17 +10,24 @@ const App = async () =>
 {
 	const params = new URLSearchParams( location.search );
 
-	const roomindex = params.get( "page" ) ?? "";
-	const room = danchimap.rooms[ roomindex ];
+	const roomindex = params.get( "room" ) ?? "";
+	const room = danchi.rooms[ roomindex ];
 
 	log( "room", roomindex, room );
 
 	if( room )
 	{
-		const module = await import( room.module_url );
-		const Page = module.default;
-		log( "dymport", Page );
-		if( Page ) return Page( room.index );
+		try
+		{
+			const module = await import( room.mod_path );
+			const Page = module.default;
+			
+			log( "dymport", Page );
+			
+			if( Page ) return Page( room.index );
+		}
+		catch( err ) { log( err); }
+
 	}
 
 	return DanchiMap( params );
@@ -28,10 +35,6 @@ const App = async () =>
 
 const DanchiMap = ( ps : URLSearchParams ) =>
 {
-	// const ps = new URLSearchParams( "?a=111&b=2222" );
-
-	log( ps, ps.entries() );
-
 	Object.entries( ps ).forEach( e => log( "forEach", e ) );
 
 	return ef.main
@@ -56,23 +59,30 @@ const DanchiMap = ( ps : URLSearchParams ) =>
 			)
 		),
 
+
 		ef.section
 		(
-			Link( danchimap.rooms[ "1-1-101" ] ),
+			{ props: {}, attrs: {}, style: { display: "flex", gap: "1ex" } },
+
+			each
+			(
+				Object.keys( danchi.rooms ).map( path => danchi.rooms[ path ] ),
+				room => Link( room )
+			)
 		),
 
 		ef.section( ef.textarea( { props: { value: "Danchi" } } ) ),
 	);
 };
 
-const Link = ( room ? : room ) =>
+const Link = ( room ? : Room ) =>
 {
-	return ef.a( { attrs: { href: room?.link ?? "" } }, room?.index ?? "---" );
+	return ef.a( { attrs: { href: room?.link ?? "" }, style: {} }, room?.index ?? "---" );
 };
 
 const unavailable = true;
 
-const danchimapsrc =
+const danchimapsrc : types.danchi =
 {
 	"1":
 	{
@@ -80,70 +90,103 @@ const danchimapsrc =
 		{
 			"101": {},
 			"102": {},
+			"103": {},
+			"104": {},
+			"105": {},
 		},
 	},
 };
 
-type room = { index: string, link : string, module_url: string };
-
-class Building // 棟
+namespace types
 {
-	rooms : Record < string, room > = {};
+	export type index = string ;
+	export type path = string ;
+
+	export type danchi = Record < index, block > ;
+	export type block = Record < index, building > ;
+	export type building = Record < index, room >;
+	export type room = {};
+	export type rooms = Record < path, Room > ;
 }
 
-class Block // 街区
+class Node
 {
-	buildings : Record< string, Building > = {};
-}
+	path : string;
 
-const danchimap = new class
-{
-	constructor()
+	constructor( public index : types.index, con ? : Node )
 	{
-		for( const [ block_i, block_src ] of ents( danchimapsrc ) )
+		this.path = ( con ? con.path + "-" : "" ) + index;
+	}
+}
+
+class Room extends Node
+{
+	constructor( index : types.index, src : types.room, con : Node, rooms : types.rooms )
+	{
+		super( index, con );
+
+		// log( this.path, "部屋" );
+
+		this.link = `?room=${ this.path }`;
+		this.mod_path = `./${ this.path.replace( /-/g, "/" ) }.js`;
+
+		rooms[ this.path ] = this;
+	}
+
+	link : string ;
+	mod_path : string ;
+}
+
+class Building extends Node
+{
+	constructor( index : types.index, src : types.block, con : Node, rooms : types.rooms )
+	{
+		super( index, con );
+
+		// log( this.path, "棟" );
+
+		for( const [ pindex, psrc ] of ents( src ) )
 		{
-			const label = block_i;
-			
-			log( "街区", label );
-
-			const block = new Block();
-			this.blocks[ block_i ] = block;
-
-			for( const [ building_i, buil_src ] of ents( block_src ) )
-			{
-				const label = [ block_i, building_i ].join( "-" );
-				
-				log( "団地棟", label );
-
-				const building = new Building();
-
-				for( const [ room_i, room_src ] of ents( buil_src ) )
-				{
-					const path = [ block_i, building_i, room_i ];
-					const roomindex = path.join( "-" );
-
-					const room =
-					{
-						index: roomindex,
-						link: `?page=${ roomindex }`,
-						module_url: `./${ path.join( "/" ) }.js`
-					};
-					
-					building.rooms[ room_i ] = room;
-					this.rooms[ roomindex ] = room;
-
-					log( "団地部屋", roomindex, room.module_url );
-
-				}
-			}
+			this.parts[ pindex ] = new Room( pindex, psrc, this, rooms );
 		}
 	}
 
-	blocks : Record < string, Block > = {};
-	rooms : Record < string, room > = {};
+	parts : Record < types.index, Room > = {};
+}
 
-	get( index : string ) : room | undefined { return this.rooms[ index ] }
-};
+class Block extends Node
+{
+	constructor( index : types.index, src : types.block, rooms : types.rooms )
+	{
+		super( index );
+
+		// log( this.path, "街区" );
+
+		for( const [ pindex, psrc ] of ents( src ) )
+		{
+			this.parts[ pindex ] = new Building( pindex, psrc, this, rooms );
+		}
+	}
+
+	parts : Record < types.index, Building > = {};
+}
+
+class Danchi
+{
+	parts : Record < types.index, Block > = {};
+
+	constructor( src : types.danchi )
+	{
+		for( const [ pindex, psrc ] of ents( src ) )
+		{
+			this.parts[ pindex ] = new Block( pindex, psrc, this.rooms );
+		}  
+	}
+
+	rooms : types.rooms = {}
+}
+
+const danchi = new Danchi( danchimapsrc );
 
 dom.create( root, await App(), "body" );
 

@@ -4,11 +4,11 @@ const log = dbg ? console.log : ( ... args : any[] ) => void( 0 );
 import { _ls } from "../ls.js";
 const ls = _ls.model.exist;
 
-/** class Owner */
+/** class ExistContainer */
 
 const _parts = Symbol();
 
-export class ExistContainer
+class ExistContainer
 {
 	/** parts */
 
@@ -23,7 +23,7 @@ export class ExistContainer
 
 /** class Exist */
 
-export const _owner = Symbol();
+export const _container = Symbol();
 export const _addref = Symbol();
 export const _removeref = Symbol();
 export const _refs = Symbol();
@@ -32,17 +32,17 @@ let nextru = { exist: 1, ref: 1 };
 
 export class Exist extends ExistContainer
 {
-	constructor( owner : ExistContainer )
+	constructor( container : ExistContainer )
 	{
 		super();
-		this[ _owner ] = owner;
-		this[ _owner ][ _parts ].add( this );
+		this[ _container ] = container;
+		this[ _container ][ _parts ].add( this );
 
 		ls.life.s && log( this.logform( "new" ) );
 	}
 
 	public readonly runiq : string = "E" + String( nextru.exist ++ ) ;
-	protected [ _owner ] : ExistContainer | null = null ;
+	protected [ _container ] : ExistContainer | null = null ;
 	protected [ _refs ] = new Set < Exist.Ref >;
 
 	/** refs */
@@ -64,8 +64,8 @@ export class Exist extends ExistContainer
 	public override terminate() : void
 	{
 		this[ _refs ].forEach( ref => ref.ref_term() );
-		this[ _owner ]?.[ _parts ].delete( this );
-		this[ _owner ] = null;
+		this[ _container ]?.[ _parts ].delete( this );
+		this[ _container ] = null;
 
 		super.terminate();
 
@@ -90,12 +90,12 @@ export namespace Exist
 
 	export class Ref
 	{
-		protected refcon ? : RefContainer ;
+		protected refcon ? : Ref.Container ;
 		protected _source ? : Exist;
 
 		constructor
 		(
-			refcon : RefContainer,
+			refcon : Ref.Container,
 			protected acts : Acts,
 			source ? : Exist
 		)
@@ -156,9 +156,9 @@ export namespace Exist
 	}
 }
 
-export namespace Exist
+export namespace Exist.Ref
 {
-	export class RefContainer
+	export class Container
 	{
 		protected items = new Set < Ref > ;
 

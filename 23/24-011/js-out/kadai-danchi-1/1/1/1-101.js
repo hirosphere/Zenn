@@ -1,6 +1,0 @@
-import { ef } from "../../meh/index.js";
-const Page = (roomlabel) => {
-    return ef.article(ef.h1(roomlabel + "Exist !!!"));
-};
-export default Page;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiMS0xMDEuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi90cy1zcmMva2FkYWktZGFuY2hpLTEvMS8xLzEtMTAxLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBK0MsRUFBRSxFQUFFLE1BQU0sb0JBQW9CLENBQUM7QUFFckYsTUFBTSxJQUFJLEdBQUcsQ0FBRSxTQUFrQixFQUFHLEVBQUU7SUFFckMsT0FBTyxFQUFFLENBQUMsT0FBTyxDQUVoQixFQUFFLENBQUMsRUFBRSxDQUFFLFNBQVMsR0FBRyxXQUFXLENBQUUsQ0FDaEMsQ0FBQztBQUNILENBQUMsQ0FBQztBQUVGLGVBQWUsSUFBSSxDQUFDIn0=

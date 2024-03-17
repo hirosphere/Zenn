@@ -29,7 +29,7 @@ export namespace Renn
 {
 	export class Ref < S > extends Exist.Ref
 	{
-		constructor( refcon : Exist.RefContainer, acts : Acts < S >, source ? : Renn < S > )
+		constructor( refcon : Exist.Ref.Container, acts : Acts < S >, source ? : Renn < S > )
 		{
 			super( refcon, acts );
 			this.source = source;

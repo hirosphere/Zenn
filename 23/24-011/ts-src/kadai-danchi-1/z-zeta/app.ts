@@ -1,5 +1,5 @@
 import * as meh from "../../meh/index.js";
-import { model, root, Exist, ExistContainer, Leafr, Leaf, Branch } from "../../meh/index.js";
+import { model, root, Exist, Leafr, Leaf, Branch } from "../../meh/index.js";
 import { defs, dom, Nodet, ef, sf } from "../../meh/index.js";
 const log = console.log;
 
@@ -7,7 +7,7 @@ const existquest = () =>
 {
 	const ex1 = new Exist( root );
 	const ex2 = new Exist( ex1 );
-	const refs = new Exist.RefContainer();
+	const refs = new Exist.Ref.Container();
 	const ref = new Exist.Ref( refs, {} );
 	ref.source = ex1;
 	ref.source = ex2;
@@ -20,7 +20,7 @@ const leafrefquest = () =>
 	log( "Ref Quest" );
 
 	const leafr = new Leafr.Boolean( root, false );
-	const refs = new Exist.RefContainer();
+	const refs = new Exist.Ref.Container();
 	const ref = new meh.Leafr.Ref < boolean > ( refs, {} );
 
 	ref.source = new Leafr.Boolean( root, true );
@@ -124,7 +124,7 @@ namespace HSL
 
 abstract class VMBase < M > extends Exist
 {
-	protected refs = new Exist.RefContainer();
+	protected refs = new Exist.Ref.Container();
 
 	public abstract set model( model : M | undefined );
 }

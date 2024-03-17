@@ -1,5 +1,0 @@
-import { ef } from "../../meh/index.js";
-export const page = () => {
-    return ef.article(ef.h1("1-101 Exist !!!"));
-};
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiMS0xMDEuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi90cy1zcmMva2FkYWktZGFuY2hpLTEvYjEvMS0xMDEudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUErQyxFQUFFLEVBQUUsTUFBTSxvQkFBb0IsQ0FBQztBQUVyRixNQUFNLENBQUMsTUFBTSxJQUFJLEdBQUcsR0FBRyxFQUFFO0lBRXhCLE9BQU8sRUFBRSxDQUFDLE9BQU8sQ0FFaEIsRUFBRSxDQUFDLEVBQUUsQ0FBRSxpQkFBaUIsQ0FBRSxDQUMxQixDQUFDO0FBQ0gsQ0FBQyxDQUFDIn0=

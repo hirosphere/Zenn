@@ -1,4 +1,4 @@
-import { ExistContainer, Exist, Branch, Leafr, _setvalue, Leaf, ef } from "../meh/index.js";
+import { Exist, Branch, Leafr, _setvalue, Leaf, ef } from "../meh/index.js";
 import * as Range from "./ui-range.js";
 
 type toargs < VS > = { [ name in keyof VS ] : VS [ name ] };
@@ -14,7 +14,7 @@ export class Model extends Branch
 {
 	hue ; sat ; light ;
 
-	constructor( owner : ExistContainer, a : toargs < Values > )
+	constructor( owner : Exist.Container, a : toargs < Values > )
 	{
 		super( owner );
 
@@ -42,7 +42,7 @@ export class VM extends Exist
 	readonly sat ;
 	readonly light ;
 
-	constructor( owner : ExistContainer, m : Model )
+	constructor( owner : Exist.Container, m : Model )
 	{
 		super( owner );
 

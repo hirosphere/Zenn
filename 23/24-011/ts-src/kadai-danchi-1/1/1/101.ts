@@ -1,14 +1,12 @@
-import { Exist, Leafr, Leaf, Renn, Branch, dom, log, root, ef } from "../../../meh/index.js";
+import { Exist, Leafr, Leaf, Renn, Branch, log, root, dom, ef, each } from "../../../meh/index.js";
 
 namespace models
 {
 	export class App extends Exist
 	{
-		create() : Exist
-		{
-			return new Exist( this );
-		}
+		public readonly items = new Renn < string > ( this );
 	}
+
 }
 
 namespace gui
@@ -37,7 +35,7 @@ export default ( roomlabel : string ) =>
 		),
 		ef.section
 		(
-			
+			each( model.items, order => order )
 		)
 	);
 };

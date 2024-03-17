@@ -1,5 +1,0 @@
-export const ls = {
-    set enable(value) { enable = value; }
-};
-let enable = true;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiX2xvZ3N3LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vdHMtc3JjL21laC9fbG9nc3cudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsTUFBTSxDQUFDLE1BQU0sRUFBRSxHQUNmO0lBQ0MsSUFBSSxNQUFNLENBQUUsS0FBZSxJQUFLLE1BQU0sR0FBRyxLQUFLLENBQUMsQ0FBQyxDQUFDO0NBQ2pELENBQUM7QUFFRixJQUFJLE1BQU0sR0FBRyxJQUFJLENBQUMifQ==

@@ -1,4 +1,4 @@
-import { ExistContainer, Exist, root } from "../model/exist.js";
+import { Exist, root } from "../model/exist.js";
 import { Leafr } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import { PartFragment, createParts } from "./parts.js"
@@ -20,11 +20,11 @@ export class Nodet extends Exist
 	protected e ? : Element ;
 	protected acts ? : Map < string, EventListener [] > ;
 	protected parts ? : PartFragment ;
-	protected refcon ? : Exist.RefContainer ;
+	protected sources ? : Exist.Ref.Container ;
 
 	constructor
 	(
-		container :  ExistContainer,
+		container :  Exist.Container,
 		def       :  defs.Node,
 		ce        :  Element | null,
 		rel ?     :  Node
@@ -90,16 +90,17 @@ export class Nodet extends Exist
 
 		if( exist )
 		{
-			this.refcon ??= new Exist.RefContainer();
+			this.sources ??= new Exist.Ref.Container();
 			new Exist.Ref
 			(
-				this.refcon,
-				{ old_source: () => this.terminate() }
-			
-			).source = exist;
+				this.sources,
+				{ old_source: () => this.terminate() },
+				exist
+			);
 		}
 		
-		attrs = undefined;
+		exist = attrs = props = acts = style = undefined;
+
 		return e;
 	}
 
@@ -133,11 +134,11 @@ export class Nodet extends Exist
 	{
 		if( text instanceof Leafr )
 		{
-			this.refcon ??= new Exist.RefContainer();
+			this.sources ??= new Exist.Ref.Container();
 
 			new Leafr.Ref < any >
 			(
-				this.refcon,
+				this.sources,
 				{ new_value: update },
 				text
 			);
@@ -169,7 +170,7 @@ export class Nodet extends Exist
 		this.node = undefined;
 
 		this.parts?.pf_term();
-		this.refcon?.refs_term();
+		this.sources?.refs_term();
 
 		super.terminate();
 	}

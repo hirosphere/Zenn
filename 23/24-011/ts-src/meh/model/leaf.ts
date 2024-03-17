@@ -1,4 +1,4 @@
-import { ExistContainer, Exist, _owner, _refs } from "./exist.js";
+import { Exist, _container, _refs } from "./exist.js";
 import { Branch } from "./branch.js";
 const log = console.log;
 
@@ -9,14 +9,14 @@ export const _setvalue = Symbol();
 
 export class Leafr < V > extends Exist
 {
-	static make < V > ( owner : ExistContainer, lol : Leafr.LoL < V > ) : Leafr < V >
+	static make < V > ( container : Exist.Container, lol : Leafr.LoL < V > ) : Leafr < V >
 	{
-		return lol instanceof Leafr ? lol : new Leafr < V > ( owner, lol );
+		return lol instanceof Leafr ? lol : new Leafr < V > ( container, lol );
 	};
 
 	/**  */
 
-	constructor( container : ExistContainer, protected _value : V )
+	constructor( container : Exist.Container, protected _value : V )
 	{
 		super( container );
 	}
@@ -35,9 +35,9 @@ export class Leafr < V > extends Exist
 		const oldv = this._value;
 		this._value = newv;
 
-		if( changer != this[ _owner ] && this[ _owner ] instanceof Branch )
+		if( changer != this[ _container ] && this[ _container ] instanceof Branch )
 		{
-			this[ _owner ].update();
+			this[ _container ].update();
 		}
 
 		this[ _refs ].forEach( ref =>
@@ -54,7 +54,7 @@ export namespace Leafr
 {
 	export class Ref < V > extends Exist.Ref
 	{
-		constructor( refcon : Exist.RefContainer, protected leafr_acts  : Acts < V >, source ? : Leafr < V > )
+		constructor( refcon : Exist.Ref.Container, protected leafr_acts  : Acts < V >, source ? : Leafr < V > )
 		{
 			super( refcon, leafr_acts );
 			this.source = source;
@@ -104,9 +104,9 @@ export namespace Leafr
 
 export class Leaf < V > extends Leafr < V >
 {
-	static override make < V > ( owner : ExistContainer, lol : Leaf.LoL < V > ) : Leaf < V >
+	static override make < V > ( container : Exist.Container, lol : Leaf.LoL < V > ) : Leaf < V >
 	{
-		return lol instanceof Leaf ? lol : new Leaf < V > ( owner, lol );
+		return lol instanceof Leaf ? lol : new Leaf < V > ( container, lol );
 	};
 
 	/**  */

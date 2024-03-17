@@ -1,4 +1,4 @@
-import { ExistContainer } from "../model/index.js";
+import { Exist, Renn } from "../model/index.js";
 import { defs } from "./defs.js";
 import { Nodet } from "./nodet.js";
 const log = console.log;
@@ -8,7 +8,7 @@ const log = console.log;
 
 export const create =
 (
-	container : ExistContainer,
+	container : Exist.Container,
 	def : defs.Node,
 	com_qe ? : Element | string,
 	rel_qe ? : Node | string
@@ -32,7 +32,7 @@ export const create =
 
 export const each = < I = any >
 (
-	source : Array < I >,
+	source : Array < I > | Renn < I >,
 	create : ( value : I ) => defs.Node,
 
 ) => new defs.Each

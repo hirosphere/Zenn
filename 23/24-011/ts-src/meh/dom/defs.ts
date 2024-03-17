@@ -1,4 +1,4 @@
-import { Exist, Leafr } from "../model/index.js";
+import { Exist, Leafr, Renn } from "../model/index.js";
 const log = console.log;
 
 type gE = globalThis.Element;
@@ -37,7 +37,7 @@ export namespace defs
 	{
 		constructor
 		(
-			public source ? : Array < I >,
+			public source ? : Array < I > | Renn < I >,
 			public create ? : ( value : I ) => Node,
 		)
 		{}
@@ -63,7 +63,8 @@ export namespace defs
 
 	export type Style =
 	{
-		[ name in keyof CSSStyleDeclaration ] : Text ;
+		// [ name in keyof CSSStyleDeclaration ] : Text ;
+		[ name : string ] : Text ;
 	};
 	
 	/** type Attrs */
