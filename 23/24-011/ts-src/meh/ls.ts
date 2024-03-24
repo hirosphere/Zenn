@@ -1,18 +1,23 @@
+const log = console.log;
 
-type ls  = Item <
-	{
-		dom : Item <
-		{
-
-		}>
-	}
->;
-
-class Item < P extends { [ partname : string ] : Item < any > } >
+function Item( name : string )
 {
-	public get s() : boolean { return true; }
+	function X() {}
+
+	return ( msg : string, fn : ( s : string [] ) => void ) =>
+	{
+		fn( [ name, msg, "**************" ] );
+	};
 }
 
+const item = Item( "ls-quest" );
+
+item( "new", s => log( ... s ) );
+
+
+
+
+/* */
 
 export const _ls =
 {

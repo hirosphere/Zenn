@@ -1,0 +1,4 @@
+export const Building = () => {
+    ;
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidWkuYnVpbGRpbmcuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi90cy1zcmMva2FkYWktZGFuY2hpLTEvdWkuYnVpbGRpbmcudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR0EsTUFBTSxDQUFDLE1BQU0sUUFBUSxHQUFHLEdBQUcsRUFBRTtJQUU1QixDQUFDO0FBQ0YsQ0FBQyxDQUFDIn0=

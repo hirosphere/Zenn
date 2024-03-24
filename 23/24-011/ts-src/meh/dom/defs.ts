@@ -63,8 +63,7 @@ export namespace defs
 
 	export type Style =
 	{
-		// [ name in keyof CSSStyleDeclaration ] : Text ;
-		[ name : string ] : Text ;
+		[ name in keyof CSSStyleDeclaration ] ? : Text ;
 	};
 	
 	/** type Attrs */

@@ -69,20 +69,20 @@ export class Nodet extends Exist
 			}
 		}
 
-		if( acts )
-		{
-			for( const [ name, act ] of Object.entries( acts ) )
-			{
-				this.act_bind( e, name, act );
-			}
-		}
-
 		if( style )
 		{
 			for( const [ name, lol ] of Object.entries( style ) )
 			{
 				// log( name, lol );
 				this.bind_leafr( lol, value => ( e.style as any ) [ name ] = value );
+			}
+		}
+
+		if( acts )
+		{
+			for( const [ name, act ] of Object.entries( acts ) )
+			{
+				this.act_bind( e, name, act );
 			}
 		}
 

@@ -28,10 +28,11 @@ export default ( roomlabel : string ) =>
 
 	return ef.main
 	(
-		ef.h1( roomlabel + " - Exist !!!" ),
+		ef.h1( "Exist" ),
 		ef.section
 		(
 			ef.button( "生成" ),
+			ef.button( "消去" ),
 		),
 		ef.section
 		(

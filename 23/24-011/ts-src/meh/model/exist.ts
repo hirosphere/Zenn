@@ -1,5 +1,4 @@
-const dbg = true;
-const log = dbg ? console.log : ( ... args : any[] ) => void( 0 );
+const log = console.log;
 
 import { _ls } from "../ls.js";
 const ls = _ls.model.exist;
