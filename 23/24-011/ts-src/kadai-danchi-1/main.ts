@@ -1,8 +1,9 @@
 import { Exist, Leaf, dom, ef, each, root, log } from "../meh/index.js";
 import * as models from "./models.js";
 import { map as mapsrc } from "./danchi-map.js";
+import { Building } from "./ui.building.js";
 
-log( "kadai-danchi-1 main" );
+const vals = Object.values;
 
 const App = async () =>
 {
@@ -30,16 +31,61 @@ const App = async () =>
 
 	}
 
-	return DanchiMap( params );
+	return ef.main
+	(
+		ef.h1( "課題団地" ),
+		Map.Danchi( danchi ),
+		SearchMonitor( params )
+	);
 };
 
-const DanchiMap = ( ps : URLSearchParams ) =>
+namespace Map
 {
-	return ef.main
+	export const Danchi = ( model : models.Danchi ) =>
+	{
+		return ef.section
+		(
+			ef.h2( "Map" ),
+			ef.section
+			(
+				each( vals( model.parts ), block => Block( block ) )
+			)
+		);
+	};
+	
+	export const Block = ( model : models.Block ) =>
+	{
+		return ef.section
+		(
+			ef.h3( model.index, "街区" ),
+			ef.section
+			(
+				each
+				(
+					vals( model.parts),
+					part => Building( part )
+				)
+			),
+		);
+	};
+
+	const Building = ( model : models.Building ) =>
+	{
+		return ef.section
+		(
+			ef.h4( model.index, "棟" )
+		);
+	};
+}
+
+
+const SearchMonitor = ( ps : URLSearchParams ) =>
+{
+	return ef.article
 	(
 		{},
 
-		ef.h1( "課題団地" ),
+		ef.h2( "URL Search" ),
 
 		ef.table
 		(

@@ -81,8 +81,6 @@ export namespace Exist
 	export type Container = ExistContainer ;
 }
 
-/** namespace Exist */
-
 export namespace Exist
 {
 	const _new_source = Symbol();

@@ -1,4 +1,5 @@
-export const Building = () => {
-    ;
+import { ef } from "../meh/index.js";
+export const Building = (model) => {
+    return ef.section(ef.h2(model.path));
 };
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidWkuYnVpbGRpbmcuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi90cy1zcmMva2FkYWktZGFuY2hpLTEvdWkuYnVpbGRpbmcudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBR0EsTUFBTSxDQUFDLE1BQU0sUUFBUSxHQUFHLEdBQUcsRUFBRTtJQUU1QixDQUFDO0FBQ0YsQ0FBQyxDQUFDIn0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidWkuYnVpbGRpbmcuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi90cy1zcmMva2FkYWktZGFuY2hpLTEvdWkuYnVpbGRpbmcudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUFFLEVBQUUsRUFBRSxNQUFNLGlCQUFpQixDQUFDO0FBR3JDLE1BQU0sQ0FBQyxNQUFNLFFBQVEsR0FBRyxDQUFFLEtBQXVCLEVBQUcsRUFBRTtJQUVyRCxPQUFPLEVBQUUsQ0FBQyxPQUFPLENBRWhCLEVBQUUsQ0FBQyxFQUFFLENBQUUsS0FBSyxDQUFDLElBQUksQ0FBRSxDQUNuQixDQUFDO0FBQ0gsQ0FBQyxDQUFDIn0=

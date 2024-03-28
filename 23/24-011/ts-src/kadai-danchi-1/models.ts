@@ -50,7 +50,7 @@ export class Room extends Node
 	{
 		super( index, con );
 
-		// log( this.path, "部屋" );
+		log( this.path, src.title );
 
 		this.link = `?room=${ this.path }`;
 		this.mod_path = `./${ this.path.replace( /-/g, "/" ) }.js`;
@@ -68,7 +68,7 @@ export class Building extends Node
 	{
 		super( index, con );
 
-		// log( this.path, "棟" );
+		log( this.path, src.caption );
 
 		for( const [ pindex, psrc ] of ents( src.rooms ) )
 		{
