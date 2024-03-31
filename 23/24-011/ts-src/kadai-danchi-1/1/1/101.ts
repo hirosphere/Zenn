@@ -1,4 +1,5 @@
-import { Exist, Leafr, Leaf, Renn, Branch, log, root, dom, ef, each } from "../../../meh/index.js";
+import { Exist, Leafr, Leaf, Renn, Branch, root, dom, ef, each, log } from "../../../meh/index.js";
+import { create_page, PageA, navi } from "../../models/index.js";
 
 namespace models
 {
@@ -22,7 +23,7 @@ namespace gui
 	};
 }
 
-export default ( roomlabel : string ) =>
+( roomlabel : string ) =>
 {
 	const model = new models.App( root );
 
@@ -40,3 +41,13 @@ export default ( roomlabel : string ) =>
 		)
 	);
 };
+
+const Content = ( room : navi.Room ) : dom.defs.Node =>
+{
+	return ef.section
+	(
+		ef.button( "生成" )
+	)
+}
+
+export const Page : create_page = ( room ) => PageA( room, Content( room ) );

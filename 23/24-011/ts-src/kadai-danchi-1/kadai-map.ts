@@ -13,6 +13,7 @@ export const kadaimap : item [] =
 	{ title: "ぴよこ隊リズムアニメ" },
 	{ title: "プロフェット-5 モデリング" },
 	{ title: "Notata 音符を伝える" },
+	{ title: "電源周波音Notata" },
 	{ title: "地震発生リスト音モニター", ca:[ "地震", "オーディオ" ] },
 	{ title: "製造業モデリングViews", ca: [ "工程管理", "資材管理", "業務支援", "業務知識蓄積" ] },
 	{ title: "Nonex Excelに代わる万能アプリケーション" },

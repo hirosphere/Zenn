@@ -1,51 +1,86 @@
-import { Exist, Leaf, dom, ef, each, root, log } from "../meh/index.js";
-import * as models from "./models.js";
-import { map as mapsrc } from "./danchi-map.js";
+import { Exist, Leaf, navi, dom, ef, each, root, log } from "../meh/index.js";
+import * as models from "./models/navi.js";
+import { PageA } from "./models/page.js";
+import mapsrc from "./map/danchi.js";
 import { Building } from "./ui.building.js";
 
 const vals = Object.values;
 
-const App = async () =>
+class App extends Exist
 {
-	const params = new URLSearchParams( location.search );
-
-	const danchi = new models.Danchi( mapsrc );
-
-	const roompath = params.get( "room" ) ?? "";
-	const room = danchi.rooms[ roompath ];
-
-	log( "room", roompath, room );
-
-	if( room )
+	set_index()
 	{
-		try
-		{
-			const module = await import( room.mod_path );
-			const Page = module.default;
-			
-			log( "dymport", Page );
-			
-			if( Page ) return Page( room.index );
-		}
-		catch( err ) { log( err); }
-
+		;
 	}
 
-	return ef.main
-	(
-		ef.h1( "課題団地" ),
-		Map.Danchi( danchi ),
-		SearchMonitor( params )
-	);
-};
+	async make() : Promise< dom.defs.Node >
+	{
+		const params = new URLSearchParams( location.search );
+	
+		const danchi = new models.Danchi( root, mapsrc );
+	
+		const roompath = params.get( "room" ) ?? "";
+		const room = danchi.rooms[ roompath ];
+	
+		log( "room", roompath, room?.title.v );
+	
+		if( room )
+		{
+			try
+			{
+				const module = await import( room.mod_path );
+				const { Page } = module;
+				
+				log( "dymport", Page );
+				
+				if( Page )
+				{
+					return Page( room );
+				};
+			}
+			catch( err )
+			{
+				log( err );
+				return ui.page.Deafault( room );
+			}
+	
+		}
+	
+		return ef.main
+		(
+			ef.h1( "課題団地" ),
+			ui.map.Danchi( danchi ),
+			SearchMonitor( params )
+		);
+	};
+	
+}
 
-namespace Map
+
+
+namespace ui.page
+{
+	export const Deafault = ( room : models.Room ) =>
+	{
+		return PageA
+		(
+			room,
+			ef.section
+			(
+				ef.p( "入居の準備中です" ),
+			)
+		);
+	};
+}
+
+namespace ui.map
 {
 	export const Danchi = ( model : models.Danchi ) =>
 	{
 		return ef.section
 		(
-			ef.h2( "Map" ),
+			{ class: "danchi-map" },
+
 			ef.section
 			(
 				each( vals( model.parts ), block => Block( block ) )
@@ -57,11 +92,10 @@ namespace Map
 	{
 		return ef.section
 		(
-			ef.h3( model.index, "街区" ),
-			ef.section
-			(
-				each
-				(
+			ef.h2( model.index, "街区" ),
+			ef.section(
+				{ class: "buildings" },
+				each(
 					vals( model.parts),
 					part => Building( part )
 				)
@@ -73,7 +107,26 @@ namespace Map
 	{
 		return ef.section
 		(
-			ef.h4( model.index, "棟" )
+			{ class: "building" },
+			ef.h3( model.path ),
+			ef.section
+			(
+				{ class: "rooms" },
+				each ( vals( model.parts ), part => Room( part ) )
+			)
+		);
+	};
+
+	const Room = ( model : models.Room ) =>
+	{
+		return ef.a
+		(
+			{
+				class: "room",
+				attrs: { href: model.link }
+			},
+			model.index,
+			ef.span( model.title ),
 		);
 	};
 }
@@ -105,22 +158,12 @@ const SearchMonitor = ( ps : URLSearchParams ) =>
 		ef.section
 		(
 			{ props: {}, attrs: {}, style: { display: "flex", gap: "1ex",  } },
-
-			// each( vals( danchi.rooms ), room => Link( room ) ),
 		),
 
 		ef.section( ef.textarea( { props: { value: "Danchi" } } ) ),
 	);
 };
 
-const Link = ( room ? : models.Room ) =>
-{
-	return ef.a
-	(
-		{ attrs: { href: room?.link ?? "" }, style: {} }, room?.index ?? "---"
-	);
-};
-
-dom.create( root, await App(), "body" );
+dom.create( root, await new App( root ).make(), "body" );
 
 export const dummy = {};

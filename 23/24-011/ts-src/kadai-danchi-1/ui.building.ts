@@ -1,5 +1,5 @@
 import { ef } from "../meh/index.js";
-import * as models from "./models.js";
+import * as models from "./models/navi.js";
 
 export const Building = ( model : models.Building ) =>
 {

@@ -7,7 +7,7 @@ const ls = _ls.model.exist;
 
 const _parts = Symbol();
 
-class ExistContainer
+export class Con
 {
 	/** parts */
 
@@ -29,9 +29,9 @@ export const _refs = Symbol();
 
 let nextru = { exist: 1, ref: 1 };
 
-export class Exist extends ExistContainer
+export class Exist extends Con
 {
-	constructor( container : ExistContainer )
+	constructor( container : Con )
 	{
 		super();
 		this[ _container ] = container;
@@ -41,7 +41,7 @@ export class Exist extends ExistContainer
 	}
 
 	public readonly runiq : string = "E" + String( nextru.exist ++ ) ;
-	protected [ _container ] : ExistContainer | null = null ;
+	protected [ _container ] : Con | null = null ;
 	protected [ _refs ] = new Set < Exist.Ref >;
 
 	/** refs */
@@ -78,7 +78,7 @@ export class Exist extends ExistContainer
 
 export namespace Exist
 {
-	export type Container = ExistContainer ;
+	export type Container = Con ;
 }
 
 export namespace Exist
@@ -179,6 +179,6 @@ export namespace Exist.Ref
 
 /**  */
 
-export const root = new ExistContainer();
+export const root = new Con();
 
 

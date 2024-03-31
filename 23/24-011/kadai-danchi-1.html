@@ -13,10 +13,11 @@ html { height: 100%; margin: 0; padding: 0px; }
 body
 {
 	height: 100%;
-	margin: 0; padding: 0px;
+	margin: 0; padding: 1em;
 	display: grid;
 	grid-template-columns: auto;
-	align-items:center;
+	align-items: stretch;
+	text-align: center;
 }
 
 main
@@ -24,11 +25,60 @@ main
 	height: 100%;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	background-image: linear-gradient( hsl( 205, 60%, 85% ) 0%,hsl( 180, 0%, 100% ) 35% 85%, hsl( 95, 60%, 70% ) 100% );
+	align-items: stretch;
+	background-image: linear-gradient( hsl( 200, 70%, 90% ) 0%,hsl( 180, 0%, 100% ) 13% 87%, hsl( 90, 70%, 80% ) 100% );
 }
 
 a { text-decoration: none; }
+
+
+/*  */
+
+.sec-3
+{
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+.danchi-map
+{
+}
+
+.danchi-map .buildings
+{
+	display: flex; flex-direction: column; gap: 1em; align-items: center;
+}
+
+.danchi-map .building
+{
+	border: 0px solid hsl( 45, 0%, 45% );
+	border-radius: 0.5ex;
+	background: hsl( 50, 65%, 97% );
+	padding: 0.2ex;
+}
+
+.danchi-map .building h3
+{
+	margin: 0; padding: 0;
+	background: hsl( 45, 4%, 90% );
+	color:hsl( 180, 0%, 10% );
+	font-size: 96%;
+}
+
+.danchi-map .rooms
+{
+	display: inline-flex; gap: 0em;
+	flex-direction: column;
+	padding: 0em;
+	text-align: center;
+}
+
+.danchi-map .room
+{
+	display: grid; grid-template-columns: 4ex 20em;
+}
+
 
 </style>
 
@@ -37,7 +87,7 @@ a { text-decoration: none; }
 
 
 
-<script type="module" src="./js-out-1/kadai-danchi-1/main.js"></script>
+<script type="module" src="./js-out/kadai-danchi-1/main.js"></script>
 
 
 

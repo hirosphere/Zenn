@@ -1,8 +1,0 @@
-const log = console.log;
-const ltrue = true;
-const ls = {};
-/**  */
-alert("工程");
-export {};
-/**  */
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoia291dGVpLTEuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi90cy1zcmMvc2Vpc2Fubi1hcHAva291dGVpLTEudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0EsTUFBTSxHQUFHLEdBQUcsT0FBTyxDQUFDLEdBQUcsQ0FBQztBQUN4QixNQUFNLEtBQUssR0FBRyxJQUFJLENBQUM7QUFDbkIsTUFBTSxFQUFFLEdBQUcsRUFBSSxDQUFDO0FBRWhCLE9BQU87QUFHUCxLQUFLLENBQUUsSUFBSSxDQUFFLENBQUE7O0FBa0RiLE9BQU8ifQ==

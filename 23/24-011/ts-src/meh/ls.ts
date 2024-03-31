@@ -30,6 +30,7 @@ export const _ls =
 			src: { s: false },
 			ref: { s: false },
 		},
+		navi: {}
 	},
 	dom: {
 		s: true,

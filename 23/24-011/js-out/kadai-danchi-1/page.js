@@ -1,4 +1,0 @@
-export const Page = (create) => {
-    const def = create();
-};
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGFnZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3RzLXNyYy9rYWRhaS1kYW5jaGktMS9wYWdlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUlBLE1BQU0sQ0FBQyxNQUFNLElBQUksR0FBRyxDQUFFLE1BQWUsRUFBRyxFQUFFO0lBRXpDLE1BQU0sR0FBRyxHQUFHLE1BQU0sRUFBRSxDQUFDO0FBQ3RCLENBQUMsQ0FBQSJ9
