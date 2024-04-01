@@ -15,23 +15,30 @@ const create_model = ( room : navi.Room ) =>
 			{
 				const data = await res.json();
 
-				const ex = data.map( ( i : any, n : number ) =>
+				const list = data.map( ( i : any, n : number ) =>
 				[
 					String( n + 1 ),
 					i.at.slice( 0, 19 ).replace( "T", " " ),
 					i.anm,
 					i.mag,
-					i.maxi
+					i.maxi,
+					i.cod
 				]
 				.join( "\t" ) ).join( "\n" );
 				
-				model.list.value = ex;
+				model.list.value = list;
 				model.json.value = JSON.stringify( data, null, "   " );
 			}
 		},
 
-		clear_json: () => model.json.value = "",
+		clear_json: () =>
+		{
+			model.json.value = "";
+			model.list.value = "";
+		}
 	}
+
+	model.load();
 
 	return model;
 }
