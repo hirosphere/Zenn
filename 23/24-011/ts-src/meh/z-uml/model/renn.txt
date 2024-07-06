@@ -1,0 +1,9 @@
+
+class Renn
+
+[ Source : Exist ] なオブジェクト達に順序を与える [ Order 修飾子 コレクション ] 。
+
+☑ 一つの Source は複数の Order その他の修飾子を持てます。
+☑ Source へのライフリンク。 Source の消滅にともない Order も消滅します。
+☑ Order の消滅は Renn に通知され、Renn の順序リストから Order が削除され、以後の Order の値を更新します。
+☑ 複数の Order の更新は Renn.Ref にそのつど通知せず、ある程度まとめることが望ましいです。

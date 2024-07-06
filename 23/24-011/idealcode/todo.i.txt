@@ -1,0 +1,41 @@
+
+
+@ns models
+{
+	class Todo ()
+	{
+		title : string = ""
+		text : string = ""
+		done : boolean = false
+	}
+}
+
+@ns ui
+{
+	fn App( model : models.App )
+	{
+		@rt =
+		<article
+			<h "Ideal Todo">
+			<Items>
+		>
+	}
+
+	Todo( mo ) =>
+	<article
+		class: "todo"
+		<h mo.title>
+		<p mo.text>
+		<section
+			<checkbox
+				attrs: { checked: mo.done }
+			>
+			<button
+				acts: { click: model.delete() }
+			>
+		>
+	>
+
+
+}
+

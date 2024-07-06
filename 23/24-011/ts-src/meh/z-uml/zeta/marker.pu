@@ -1,0 +1,23 @@
+@startuml
+
+skinparam DefaultFontName "arial"
+
+title Marker
+
+class Marker < Source, State > {
+	+ make_mark( source, initv )
+	- marks : Map < Source, Leaf < State > >
+	# [ _removepart ]( part : Mark )
+}
+
+class Mark < Source, State > {
+	source : Source
+	value : State
+}
+
+Marker *--o Mark
+
+Mark -|> Leaf
+Mark o--o Source :  Mark の消滅は source の消滅に同期し Markerに通知。
+
+@enduml

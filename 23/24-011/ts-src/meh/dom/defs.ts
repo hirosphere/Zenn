@@ -1,4 +1,4 @@
-import { Exist, Leafr, Renn } from "../model/index.js";
+import { Exist, Leafr, Renn, Order } from "../model/index.js";
 const log = console.log;
 
 type gE = globalThis.Element;
@@ -20,9 +20,9 @@ export namespace defs
 
 	/** type Text */
 
-	export type primitive = string | number | boolean | bigint ;
+	type ll < t > = t | Leafr < t > ;
 
-	export type Text = primitive | Leafr < primitive > ;
+	export type Text = ll < string > | ll < bigint > | ll < number > | ll < boolean > ;
 
 	/** Part */
 
@@ -33,19 +33,19 @@ export namespace defs
 		public add ? ( def : Node ) : void ;
 	}
 
-	export class Each < I >
+	export class RennEach < S extends Exist >
 	{
 		constructor
 		(
-			public source ? : Array < I > | Renn < I >,
-			public create ? : ( value : I ) => Node,
+			public source : Renn < S >,
+			public create : ( order : Order < S > ) => Node,
 		)
 		{}
 
-		public force ? ( value : I ) : void ;
+		public force ? ( value : S ) : void ;
 	}
 
-	export type Part = Node | Each < any > | undefined ;
+	export type Part = Node | RennEach < any > | undefined ;
 
 
 	/** type Acts */
@@ -76,7 +76,9 @@ export namespace defs
 
 	/** type Class */
 
-	export type Class = string;
+	export type ClassSwitch = Record < string, Leafr.LoL.Boolean > ;
+
+	export type Class = string | ClassSwitch | Class [] ;
 
 	
 	/** type EChar */
@@ -112,7 +114,7 @@ export namespace defs
 					!
 					(
 						( first instanceof Element ) ||
-						( first instanceof Each ) ||
+						( first instanceof RennEach ) ||
 						( first instanceof Leafr )
 					)				
 			)
@@ -137,5 +139,5 @@ export namespace defs
 	
 	/** type Node */
 
-	export type Node = Element | Text ;
+	export type Node = Element | Text;
 }

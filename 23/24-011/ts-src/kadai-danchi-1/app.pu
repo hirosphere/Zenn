@@ -1,0 +1,60 @@
+@startuml
+
+skinparam DefaultFontName "arial"
+
+folder ViewModel {
+	class AppVM {
+		+ browser
+	}
+
+	class Map {
+		root : Index
+	}
+
+	class Browser {
+		+ make_title( index : Index )
+		+ make_path( index : Index )
+		..
+		+ current : Leafr < Index | null >
+		+ select( index : Index )
+	}
+
+	class Index {
+		+ title : Leaf
+		+ name : Leaf
+		..
+		+ selected
+		+ hovered
+		+ highlighted
+	}
+
+	AppVM *-- Browser
+	Browser o-- Index
+}
+
+folder UI {
+	class AppUI
+	class PageSwitch {
+		createPage( index )
+		loadPageClass( index )
+	}
+	class "Page" as PageUI {
+		- index : Index
+	}
+	class NaviPage
+}
+
+AppVM *-- Map
+Map *-- Index
+
+AppUI o-o AppVM
+AppUI *-- PageSwitch
+
+PageSwitch -o Browser
+PageSwitch *-- PageUI
+
+PageUI o-o Index
+
+NaviPage -|> PageUI
+
+@enduml

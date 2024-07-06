@@ -1,4 +1,4 @@
-import { Exist, Renn } from "../model/index.js";
+import { Exist, Renn, Order } from "../model/index.js";
 import { defs } from "./defs.js";
 import { Nodet } from "./nodet.js";
 const log = console.log;
@@ -30,16 +30,12 @@ export const create =
 	);
 }
 
-export const each = < I = any >
+export const each = < S extends Exist = any >
 (
-	source : Array < I > | Renn < I >,
-	create : ( value : I ) => defs.Node,
+	source : Renn < S >,
+	create : ( order : Order < S > ) => defs.Node,
 
-) => new defs.Each
-(
-	source,
-	create,
-); 
+) => new defs.RennEach( source, create ); 
 
 
 /** エレメントファクトリーのプロキシにあたえる「ハンドラー」の型定義。 */

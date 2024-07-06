@@ -1,5 +1,5 @@
 import { Leaf, dom, ef } from "../../../meh/index.js";
-import { create_page, PageA, navi } from "../../models/index.js";
+import { create_page, PageA, navi } from "../../um/index.js";
 
 const create_model = ( room : navi.Room ) =>
 {
@@ -10,6 +10,8 @@ const create_model = ( room : navi.Room ) =>
 
 		load: async () =>
 		{
+			model.clear();
+
 			const res = await fetch( "https://www.jma.go.jp/bosai/quake/data/list.json" );
 			if( res.status == 200 )
 			{
@@ -31,11 +33,13 @@ const create_model = ( room : navi.Room ) =>
 			}
 		},
 
-		clear_json: () =>
+		clear: () =>
 		{
 			model.json.value = "";
 			model.list.value = "";
-		}
+		},
+
+		clear_json: () => model.json.value = "",
 	}
 
 	model.load();
@@ -43,34 +47,48 @@ const create_model = ( room : navi.Room ) =>
 	return model;
 }
 
-const Content = ( room : navi.Room ) : dom.defs.Node =>
+namespace ui
 {
-	const model = create_model( room );
-
-	return ef.section
-	(
-		{ class: "" },
-		ef.section
+	export const Content = ( room : navi.Room ) : dom.defs.Node =>
+	{
+		const model = create_model( room );
+	
+		return ef.section
 		(
-			ef.button( { acts: { click: model.load } }, "Load" ),
-			ef.button( { acts: { click: model.clear_json } }, "CJ" ),
-		),
-		ef.section
-		(
-			{ class: "sec-3" },
-			ta( model.list ),
-			ta( model.json ),
+			{ class: "v-flex" },
+			ef.section
+			(
+				ef.button( { acts: { click: model.load } }, "Load" ),
+				ef.button( { acts: { click: model.clear } }, "Clear" ),
+				ef.button( { acts: { click: model.clear_json } }, "Clear JSON" ),
+			),
+			ef.section
+			(
+				{ class: "v-flex" },
+				ta( model.list ),
+				ta( model.json ),
+				ef.p(  ),
+			),
 		)
-	)
+	}
+
+	const Item = () =>
+	{
+		;
+	};
+	
+	const ta = ( model : Leaf.String ) => ef.textarea
+	({
+		style:
+		{
+			height: "250px",
+		},
+		props: { value: model },
+	});	
 }
 
-const ta = ( model : Leaf.String ) => ef.textarea
+export const Page : create_page = ( room ) => PageA
 ({
-	style:
-	{
-		height: "250px",
-	},
-	props: { value: model },
+	index: room,
+	content: ui.Content( room )
 });
-
-export const Page : create_page = ( room ) => PageA( room, Content( room ) );

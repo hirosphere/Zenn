@@ -1,11 +1,11 @@
 import { Exist, Leafr, Leaf, Renn, Branch, root, dom, ef, each, log } from "../../../meh/index.js";
-import { create_page, PageA, navi } from "../../models/index.js";
+import { create_page, PageA, navi } from "../../um/index.js";
 
 namespace models
 {
 	export class App extends Exist
 	{
-		public readonly items = new Renn < string > ( this );
+		public readonly items = new Renn < Leaf.String > ( this );
 	}
 
 }
@@ -50,4 +50,4 @@ const Content = ( room : navi.Room ) : dom.defs.Node =>
 	)
 }
 
-export const Page : create_page = ( room ) => PageA( room, Content( room ) );
+export const Page : create_page = ( room ) => PageA( { index: room, content: Content( room ) } );

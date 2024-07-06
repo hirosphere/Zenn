@@ -23,4 +23,5 @@ export type building =
 export type room =
 {
 	title ? : string ;
+	available ? : boolean ;
 };

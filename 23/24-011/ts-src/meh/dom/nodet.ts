@@ -1,8 +1,8 @@
 import { Exist, root } from "../model/exist.js";
 import { Leafr } from "../model/leaf.js";
 import { defs } from "./defs.js";
-import { PartFragment, createParts } from "./parts.js"
-import { _ls } from "../ls.js";
+import { Parts, PartFragment } from "./parts.js"
+import _ls from "../ls.js";
 const ls = _ls.dom.nodet;
 const log = console.log; 
 
@@ -16,85 +16,96 @@ const log = console.log;
 
 export class Nodet extends Exist
 {
-	protected node ? : Node ;
-	protected e ? : Element ;
+	protected p_node ? : Node ;
+	protected p_element ? : Element ;
 	protected acts ? : Map < string, EventListener [] > ;
-	protected parts ? : PartFragment ;
-	protected sources ? : Exist.Ref.Container ;
+	protected pf ? : PartFragment ;
+	protected p_parts ? : Parts ;
 
 	constructor
 	(
-		container :  Exist.Container,
+		composition :  Exist,
 		def       :  defs.Node,
 		ce        :  Element | null,
 		rel ?     :  Node
 	)
 	{
-		super( container );
+		super( composition );
 
-		this.node = ( def instanceof defs.Element ) ?
+		this.p_node = ( def instanceof defs.Element ) ?
 			this.createElement( def ) :
 			this.createText( def )
 		;
 
-		ce?.insertBefore( this.node, rel || null );
+		ce?.insertBefore( this.p_node, rel || null );
 	}
 
-	/** element */
+	/* accessor */
+
+	public get node() : Node | undefined
+	{
+		return this.p_node;
+	}
+
+	public get e() : Element | undefined
+	{
+		return this.p_element;
+	}
+
+
+	/* element */
 
 	protected createElement( def : defs.Element ) : Element
 	{
-		const e = this.e = document.createElement( def.type );
+		const e = this.p_element = document.createElement( def.type );
 		
 		let { exist, attrs, props, acts, style } = def.echar || {};
 
 		if( def.echar?.class )
 		{
-			this.class_bind( e, def.echar.class );
+			this.bind_class( e, def.echar.class );
 		}
 
-		if( attrs )
+		if( attrs ) for( const [ name, lol ] of Object.entries( attrs ) )
 		{
-			for( const [ name, lol ] of Object.entries( attrs ) )
-			{
-				this.bind_leafr( lol, value => setattr( e, name, value ) );
-			}
+			this.bind_leafr
+			(
+				lol,
+				value => setattr( e, name, value )
+			);
 		}
 
-		if( props )
+		if( props ) for( const [ name, lol ] of Object.entries( props ) )
 		{
-			for( const [ name, lol ] of Object.entries( props ) )
-			{
-				this.bind_leafr( lol, value => ( e as any ) [ name ] = value );
-			}
+			this.bind_leafr
+			(
+				lol,
+				value => ( e as any ) [ name ] = value
+			);
 		}
 
-		if( style )
+		if( style ) for( const [ name, lol ] of Object.entries( style ) )
 		{
-			for( const [ name, lol ] of Object.entries( style ) )
-			{
-				// log( name, lol );
-				this.bind_leafr( lol, value => ( e.style as any ) [ name ] = value );
-			}
+			this.bind_leafr
+			(
+				lol,
+				value => ( e.style as any ) [ name ] = value
+			);
 		}
 
-		if( acts )
+		if( acts ) for( const [ name, act ] of Object.entries( acts ) )
 		{
-			for( const [ name, act ] of Object.entries( acts ) )
-			{
-				this.act_bind( e, name, act );
-			}
+			this.bind_act( e, name, act );
 		}
 
-		if( def.parts ) this.parts = createParts( this, e, def.parts );
+		if( def.parts ) this.p_parts = new Parts( this, def.parts );
 
 		if( exist )
 		{
-			this.sources ??= new Exist.Ref.Container();
 			new Exist.Ref
 			(
-				this.sources,
-				{ old_source: () => this.terminate() },
+				this,
+				{ terminate: () => this.terminate() },
 				exist
 			);
 		}
@@ -104,14 +115,24 @@ export class Nodet extends Exist
 		return e;
 	}
 
-	protected class_bind( e : Element, def : defs.Class )
+	protected bind_class( e : Element, def : defs.Class )
 	{
-		if( typeof def == "string" )  e.className = def;
+		if( def instanceof Array )  def.forEach( item => this.bind_class( e, item ) );
+
+		else if( typeof def == "string" )  e.className = def;
+		
+		else if( typeof def == "object" )
+		{
+			for( const [ name, value ] of Object.entries( def ) )
+			{
+				this.bind_leafr( value, value => e.classList.toggle( name, value ) );
+			}
+		}
 	}
 
-	protected act_bind( e : Element, name : string, act : defs.Act )
+	protected bind_act( e : Element, name : string, act : defs.Act )
 	{
-		this.acts = this.acts || new Map < string, EventListener [] > ;
+		this.acts ??= new Map < string, EventListener [] > ;
 
 		if( this.acts.has( name ) )  this.acts.get( name )?.push( act );
 		else this.acts.set( name, [ act ] );
@@ -124,21 +145,25 @@ export class Nodet extends Exist
 	protected createText( text : defs.Text ) : Text
 	{
 		const node = document.createTextNode( "" );
-		this.bind_leafr( text, ( lettr : string ) => { node.nodeValue = lettr; } );
+		
+		this.bind_leafr
+		(
+			text,
+			( lettr : string ) => { node.nodeValue = lettr; }
+		);
+
 		return node;
 	}
 
 	/** リアクティブ核心 */
 
-	protected bind_leafr( text : any, update : ( letter : any ) => void, ) : void
+	protected bind_leafr( text : any, update : ( text : any ) => void, ) : void
 	{
 		if( text instanceof Leafr )
 		{
-			this.sources ??= new Exist.Ref.Container();
-
 			new Leafr.Ref < any >
 			(
-				this.sources,
+				this,
 				{ new_value: update },
 				text
 			);
@@ -152,25 +177,20 @@ export class Nodet extends Exist
 
 	public override terminate() : void
 	{
-		if( this.e && this.acts )
+		if( this.p_element && this.acts )
 		{
 			for( let [ name, acts ] of this.acts )
 			{
-				ls.evh.s && log( name );
-				acts.forEach( act => this.e?.removeEventListener( name, act ) );
+				ls.$( "event hdr", ( ...a ) => log( ... a, name ) );
+				acts.forEach( act => this.p_element?.removeEventListener( name, act ) );
 			}
 		}
 
-		if( this.e )
-		{
-			this.e.remove();
-			this.e = undefined;
-		}
+		this.p_node?.parentElement?.removeChild( this.p_node );
+		this.p_node = undefined;
+		this.p_element = undefined;
 
-		this.node = undefined;
-
-		this.parts?.pf_term();
-		this.sources?.refs_term();
+		this.pf?.pf_term();
 
 		super.terminate();
 	}

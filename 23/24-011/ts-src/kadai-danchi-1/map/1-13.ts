@@ -7,7 +7,8 @@ export const buil : building =
 	{
 		"101": { title: "ToDo" },
 		"201": { title: "日高屋メモ" },
-		"301": { title: "気象庁地震リスト" },
+		"301": { title: "気象庁地震リスト", available: true },
+		"302": { title: "気象庁地震リスト 2", available: true },
 		"401": { title: "URONラボ" },
 		"501": { title: "ツリーメモ" },
 		

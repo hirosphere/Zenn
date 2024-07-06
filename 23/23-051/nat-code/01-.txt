@@ -1,0 +1,31 @@
+
+export class Model
+{
+	list = new Array();
+	f1 = new Array( { src: this.list.filter( i => i.line_code == "sobu_local" ) } )
+}
+
+
+export const List = ( list ) =>
+{
+	return null ||
+
+	<section
+		<h1 "リストのデモ">
+		<section
+			<button actions: { click: list.insert( "本八幡" ) } "押す">
+			<button "押す" acts: { click: () => list.reverse() }>
+			<button "押す" acts: { click: () => list.clear() }>
+		>
+		<section
+			<each
+				model: list
+
+				<li
+					model.h_name " " model.r_name
+				>
+			>
+		>
+	>;
+};
+

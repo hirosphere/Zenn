@@ -1,0 +1,14 @@
+@startuml
+
+title "Renn 利用例 シーケンス図"
+
+User --> Renn : new
+User -> RennRef : new
+
+== インサート ==
+User -> Renn : insert( src )
+Renn -> Order : new( src )
+RennRef <- Renn : new_order
+OrderRef <- RennRef : new
+
+@enduml
