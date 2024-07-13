@@ -1,4 +1,4 @@
-import { Exist, Leafr, Leaf, ef, root } from "../../meh/index.js";
+import { Exist, Leafr, Leaf, ef, root } from "../index.js";
 
 const log = console.log;
 
