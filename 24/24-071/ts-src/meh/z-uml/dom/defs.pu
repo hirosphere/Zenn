@@ -1,0 +1,72 @@
+@startuml
+
+title dom.defs
+
+class Element < E > {
+	+ ns : string
+	+ type : 
+	+ echar : EChar
+	+ parts : [ FirstPart, Part ]
+}
+
+class Class {
+	| string
+	| { name : string | StrSrc }
+}
+
+class EChar {
+	+ class : Class
+	+ attrs < E > : Attrs
+	+ props < E > : Props
+	+ style : Style
+}
+
+class Attrs < E > {
+
+}
+
+class Style {
+	[ name:string ] : Text
+}
+
+class FirstPart {
+	| Part
+	| EChar
+}
+
+class Part {
+	| Node
+	| Each
+}
+
+class Each < I > {
+	source : Array | Lian
+	create : ( item : I ) => Node
+}
+
+class Text {
+	| StrSrc < any >
+	| any
+}
+
+class Node {
+	| Element
+	| Text
+}
+
+EChar *-- Class
+EChar *-- Attrs
+EChar *-- Props
+EChar *-- Style
+EChar *-- Acts
+
+Element *-- EChar
+Element *-- Parts
+Parts *-- FirstPart
+Parts *-- Part
+Part --|> Node
+Part --|> Each
+Node --|> Text
+Node --|> Element
+
+@enduml

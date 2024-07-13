@@ -1,0 +1,49 @@
+@startuml
+
+skinparam DefaultFontName "arial"
+
+title Renn
+
+class Renn < Source > {
+	+ orders
+	..
+	+ insert( sources, pos ? )
+	+ delete( start, count )
+	+ move_to( start, count, dest )
+	..
+	# add( start, orders )
+	# remove( start, count )
+	..
+	+ move( start, count, to )
+}
+
+class Order < Source > {
+	# renn
+	+ value
+	+ source : Source
+	+ delete()
+}
+
+class Ref {
+	# source : Renn
+	# notes : Notes
+	+# _insert( start, orders )
+	+# _delete( start, count )
+	+# _move()
+}
+
+class Notes {
+	+ insert ( start, orders )
+	+ delete ( start, count )
+	+ remove ( start, orders )
+}
+
+Renn *--o Order
+Ref o-o Renn
+
+Order -|> Leafr.Number
+Leafr.Ref o-o Order
+
+Notes -* Ref
+
+@enduml

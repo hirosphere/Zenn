@@ -1,0 +1,47 @@
+@startuml
+
+skinparam DefaultFontName "arial"
+
+title Exist
+
+class Exist {
+	+ composition ? : Exist
+	..
+	+ [ _parts ] : Set < Exist >
+	+ [ _addpart ]( part : Exist )
+	+ [ _removepart ]( part : Exist )
+	..
+	# [ refs ] : Set< Ref >
+	+ [ addRef ]( ref : Exist.Ref )
+	+ [ removeRef ]( ref )
+	..
+	+ link : Exist.Ref
+	..
+	+ terminate()
+}
+
+class "Exist.Ref" as ExistRef {
+	+ source : Exist
+	+ acts : Acts
+	+ _terminate()
+	..
+	+ terminate()
+}
+
+interface "Exist.Ref.Acts" as ExistRefActs {
+	terminate()
+}
+
+class "Exist.Link" as ExistLink {
+
+}
+
+Exist -|> Exist
+Exist *-- Exist
+
+ExistRef o-o Exist
+ExistRef *-- ExistRefActs
+
+ExistLink -|> ExistRef
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml
+
+
+
+class Nodet {
+	# element ?
+	# node
+	..
+	createText( def )
+	createElement( def )
+	..
+	refs : Exist.Refs
+	parts : PF
+	..
+	terminate()
+}
+
+class PF {
+	next : PF
+	..
+	items : Set < Nodet >
+	..
+	terminate()
+}
+
+Exist <|-- Nodet
+Nodet *- DomNode
+Nodet *- Refs
+Nodet *- PF
+
+Container <|-- PF
+PF *- PF
+PF *- Nodet
+
+Refs *- Ref
+Ref o-o Leaf
+
+@enduml

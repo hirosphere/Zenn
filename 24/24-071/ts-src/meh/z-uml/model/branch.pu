@@ -1,0 +1,13 @@
+@startuml
+
+!include exist.pu
+
+title Branch
+
+class Branch {
+	+ _update()
+}
+
+Exist <|-- Branch
+
+@enduml

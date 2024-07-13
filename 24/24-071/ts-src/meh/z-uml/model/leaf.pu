@@ -1,0 +1,26 @@
+@startuml
+
+!include exist.pu
+
+title Leaf
+
+class Leaf< V > {
+	+ [ _addref ]( ref : Leaf.Ref )
+	..
+	# value : V
+	+ set( value : V )
+	..
+	terminate()
+}
+
+class "Leaf.Ref" as LeafRef< V > {
+	+ value : V
+	..
+	+ _new_value( newval :V, oldval : V )
+}
+
+Exist <|-- Leaf
+ExistRef <|--- LeafRef
+LeafRef <.> Leaf
+
+@enduml
