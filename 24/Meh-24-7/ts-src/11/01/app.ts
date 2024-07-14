@@ -52,6 +52,12 @@ class Clock extends Exist
 		
 		// log( "Clock", this.timeout, msec, next );
 	}
+
+	public override terminate(): void
+	{
+		if( this.timeout ) clearTimeout( this.timeout );
+		super.terminate();
+	}
 }
 
 dom.create( root, ClockView( root ), "body" );
