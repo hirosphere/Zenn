@@ -1,12 +1,17 @@
-import { Exist, Leaf, dom, ef, root, log } from "../../meh/index.js";
+import { Exist, Leaf, dom, ef, Browser, root, log } from "../../meh/index.js";
+import { Eval } from "./eval.js";
+
+const browser = new Browser( root, { title: "24-11-01 ." } );
 
 const ClockView = ( com : Exist ) =>
 {
+	const self = new Exist( com );
+
 	const label = new Leaf.String( com, "---" );
 
 	new Clock
 	(
-		com,
+		self,
 		( now ) =>
 		{
 			label.value = now.toLocaleString();
@@ -15,7 +20,17 @@ const ClockView = ( com : Exist ) =>
 
 	return ef.main
 	(
-		ef.h1( { style: { fontSize:"2.3rem" } },label )
+		{
+			style:
+			{
+				display: "flex",
+				flexFlow: "column",
+				alignItems: "center",
+			}
+		},
+
+		ef.h1( { style: {  } },label ),
+		Eval( self ),
 	);
 };
 
