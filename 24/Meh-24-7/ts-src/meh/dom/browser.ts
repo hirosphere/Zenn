@@ -1,4 +1,5 @@
-import { Exist, Leaf } from "../model/index.js";
+import { Exist, } from "../model/exist.js";
+import { Leaf } from "../model/leaf.js";
 
 type InitV =
 {

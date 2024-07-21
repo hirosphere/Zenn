@@ -1,13 +1,15 @@
-import { Exist, Leaf, ef, root, log } from "../../meh/index.js";
+import { Exist, Leaf, ef, root, log, util } from "../../meh/index.js";
 
 export const Eval = ( com : Exist ) =>
 {
 	const self = new Exist( com );
 
+	log( util.dateformat( "{hh}" ) )
+
 	const doc =
 	{
-		code: new Leaf.String( self, "new Date()" ),
-		output: new Leaf.String( self, "Output" ),
+		code: new Leaf.String( self, "util.dateformat( '{YYYY}/{MM}/{DD} {hh}:{mm}:{ss}' )" ),
+		output: new Leaf.String( self, "Output " ),
 		input: new Leaf.String( self, "Input" ),
 	};
 
@@ -35,7 +37,7 @@ export const Eval = ( com : Exist ) =>
 						click: ( ev ) =>
 						{
 							try { doc.output.value = eval( doc.code.value ) }
-							catch( err ) { doc.output.value = String( err as Error ); }
+							catch( err ) { doc.output.value = String( err as object ); }
 							log( ev.clientX )
 						},
 					}
