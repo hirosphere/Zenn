@@ -4,11 +4,15 @@ export const Eval = ( com : Exist ) =>
 {
 	const self = new Exist( com );
 
-	log( util.dateformat( "{hh}" ) )
+	// log( util.df1( "{hh}" ) );
+	util.df2;
+
+	// const code = "util.df1( '{YYYY}/{MM}/{DD} {hh}:{mm}:{ss}' )";
+	const code = "const d = util.df2();\n`${ d.YYYY }/${ d.MM }/${ d.DD } ${ d.B } ${ d.hh }:${ d.mm}: ${ d.ss }`";
 
 	const doc =
 	{
-		code: new Leaf.String( self, "util.dateformat( '{YYYY}/{MM}/{DD} {hh}:{mm}:{ss}' )" ),
+		code: new Leaf.String( self, code ),
 		output: new Leaf.String( self, "Output " ),
 		input: new Leaf.String( self, "Input" ),
 	};

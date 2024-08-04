@@ -1,4 +1,4 @@
-import { Exist, Leaf, dom, ef, Browser, root, log } from "../../meh/index.js";
+import { Exist, Leaf, dom, ef, Browser, root, util, log } from "../../meh/index.js";
 import { Eval } from "./eval.js";
 
 const browser = new Browser( root, { title: "24-11-01 ." } );
@@ -14,7 +14,7 @@ const ClockView = ( com : Exist ) =>
 		self,
 		( now ) =>
 		{
-			label.value = now.toLocaleString();
+			label.value = util.df1( "{YYYY}-{MM}-{DD} ({B}) {hh}:{mm}:{ss}", now );
 		}
 	);
 
