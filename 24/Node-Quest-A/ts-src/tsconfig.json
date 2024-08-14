@@ -1,0 +1,12 @@
+{
+	"compilerOptions":
+	{
+		"target": "ESNext",
+		"lib": [ "ES2023", "ES2023.Array" ],
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"typeRoots": [ "../node_modules/@types" ],
+		"outDir": "../js-out",
+		"strict": true,
+	}
+}
