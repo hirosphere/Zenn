@@ -1,18 +1,51 @@
 import Express from "express";
+import ip from "ip";
+type rh = Express.RequestHandler;
 
-const HTTPServer = ( i : { port : number } ) =>
+namespace HTTPServer
 {
-	const app : Express.Express = Express();
+	type Initv =
+	{
+		doc_root : string ;
+		port : number ;
+	};
+	
+	const app = Express();
 
-	app.get( "*", ( req, res ) => res.send( "なにもsend" ) );
+	//import( "./zz-index/zz-index.js" ).then( mo => app.use( "", mo.zindex ) );
 
-	app.listen( i.port, () => console.log( `${ i.port }番でHTTPサーバーを開始。` ) );
+	export const init = ( i : Initv ) =>
+	{
+		app.get( "/welcome/*", ( req, res ) => res.send
+		(
+			`${ req.ip } から ${ decodeURIComponent( req.url ) } へ、ようこそ。\n${ ip.address() }` )
+		);
+
+		app.use ( Express.static ( i.doc_root ) );
+		app.use( "/api/v", api_v );
+		// app.get( "", zindex );
+		app.use( "", mw1 );
+	
+		app.listen( i.port, () => console.log( `アドレス ${ ip.address() }\nポート ${ i.port }\nにてHTTPサービス開始。` ) );	
+	}
+
+	const api_v : Express.RequestHandler = ( req, res ) =>
+	{
+		res.json( process.versions );
+	};
+
+	const mw1 : Express.RequestHandler = ( req, res ) =>
+	{
+		res.send( decodeURIComponent( req.url ) + " なにもsend" );
+	};
 }
-
 
 /**  **/
 
+console.log( "Node", process.versions.node );
+
 process.stdin.setEncoding( "utf-8" );
+process.stdin.setRawMode( true );
 
 const ondata = ( data : string ) =>
 {
@@ -25,4 +58,5 @@ const ondata = ( data : string ) =>
 
 process.stdin.on( "data", ondata );
 
-HTTPServer( { port: 31111 } );
+HTTPServer.init( {  doc_root: "C:\\W", port: 31111 } );
+
