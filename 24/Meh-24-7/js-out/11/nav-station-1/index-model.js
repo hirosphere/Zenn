@@ -1,0 +1,22 @@
+import { navi, log } from "../../meh/index.js";
+export class Index extends navi.Index {
+    async fetch() { }
+}
+export class Root extends Index {
+    constructor(com, br) {
+        super(com, br, { title: "Heart Rails !" });
+        // this.parts.new_orders( [ "青砥", "高砂" ].map( title => new Index( this, br, { title } ) ) );
+        this.fetch();
+    }
+    async fetch() {
+        const res = await fetch("./data/rails/area.json");
+        if (res.ok) {
+            const s = (await res.json());
+            log(s.response.area);
+            const parts = s.response.area.map(title => new Index(this, this.browser, { title }));
+            this.parts.new_orders(parts);
+        }
+        log(res);
+    }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXgtbW9kZWwuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi90cy1zcmMvMTEvbmF2LXN0YXRpb24tMS9pbmRleC1tb2RlbC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQWUsSUFBSSxFQUFFLEdBQUcsRUFBRSxNQUFNLG9CQUFvQixDQUFDO0FBRTVELE1BQU0sT0FBTyxLQUFNLFNBQVEsSUFBSSxDQUFDLEtBQUs7SUFFMUIsS0FBSyxDQUFDLEtBQUssS0FBSSxDQUFDO0NBQzFCO0FBUUQsTUFBTSxPQUFPLElBQUssU0FBUSxLQUFLO0lBRTlCLFlBQWEsR0FBVyxFQUFFLEVBQWlCO1FBRTFDLEtBQUssQ0FBRSxHQUFHLEVBQUUsRUFBRSxFQUFFLEVBQUUsS0FBSyxFQUFFLGVBQWUsRUFBRSxDQUFFLENBQUM7UUFFN0MsNEZBQTRGO1FBRTVGLElBQUksQ0FBQyxLQUFLLEVBQUUsQ0FBQztJQUNkLENBQUM7SUFFa0IsS0FBSyxDQUFDLEtBQUs7UUFFN0IsTUFBTSxHQUFHLEdBQUcsTUFBTSxLQUFLLENBQUUsd0JBQXdCLENBQUUsQ0FBQztRQUNwRCxJQUFJLEdBQUcsQ0FBQyxFQUFFLEVBQ1Y7WUFDQyxNQUFNLENBQUMsR0FBRyxDQUFFLE1BQU0sR0FBRyxDQUFDLElBQUksRUFBRSxDQUFnQixDQUFDO1lBRTdDLEdBQUcsQ0FBRSxDQUFDLENBQUMsUUFBUSxDQUFDLElBQUksQ0FBRSxDQUFDO1lBRXZCLE1BQU0sS0FBSyxHQUFHLENBQUMsQ0FBQyxRQUFRLENBQUMsSUFBSSxDQUFDLEdBQUcsQ0FFaEMsS0FBSyxDQUFDLEVBQUUsQ0FBQyxJQUFJLEtBQUssQ0FBRSxJQUFJLEVBQUUsSUFBSSxDQUFDLE9BQU8sRUFBRSxFQUFFLEtBQUssRUFBRSxDQUFFLENBQ25ELENBQUM7WUFFRixJQUFJLENBQUMsS0FBSyxDQUFDLFVBQVUsQ0FBRSxLQUFLLENBQUUsQ0FBQztTQUMvQjtRQUVELEdBQUcsQ0FBRSxHQUFHLENBQUUsQ0FBQztJQUNaLENBQUM7Q0FDRCJ9

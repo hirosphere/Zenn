@@ -1,0 +1,14 @@
+import { navi, log } from "../../meh/index.js";
+export class Index extends navi.Index {
+    async fetch() { }
+}
+export class Root extends Index {
+    constructor(com, br) {
+        super(com, br, { title: "Heart Rails !" });
+    }
+    async fetch() {
+        const res = await fetch("./data/rails/area.json");
+        log(res);
+    }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibW9kZWwuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi90cy1zcmMvMTEvbmF2LXN0YXRpb24tMS9tb2RlbC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQWUsSUFBSSxFQUFFLEdBQUcsRUFBRSxNQUFNLG9CQUFvQixDQUFDO0FBRTVELE1BQU0sT0FBTyxLQUFNLFNBQVEsSUFBSSxDQUFDLEtBQUs7SUFFMUIsS0FBSyxDQUFDLEtBQUssS0FBSSxDQUFDO0NBQzFCO0FBSUQsTUFBTSxPQUFPLElBQUssU0FBUSxLQUFLO0lBRTlCLFlBQWEsR0FBVyxFQUFFLEVBQWlCO1FBRTFDLEtBQUssQ0FBRSxHQUFHLEVBQUUsRUFBRSxFQUFFLEVBQUUsS0FBSyxFQUFFLGVBQWUsRUFBRSxDQUFFLENBQUM7SUFDOUMsQ0FBQztJQUVrQixLQUFLLENBQUMsS0FBSztRQUU3QixNQUFNLEdBQUcsR0FBRyxNQUFNLEtBQUssQ0FBRSx3QkFBd0IsQ0FBRSxDQUFDO1FBRXBELEdBQUcsQ0FBRSxHQUFHLENBQUUsQ0FBQztJQUNaLENBQUM7Q0FDRCJ9

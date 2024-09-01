@@ -1,0 +1,6 @@
+
+namespace i
+{
+	class Selector
+	{}
+}

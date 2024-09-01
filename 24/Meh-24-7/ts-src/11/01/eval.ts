@@ -8,7 +8,7 @@ export const Eval = ( com : Exist ) =>
 	util.df2;
 
 	// const code = "util.df1( '{YYYY}/{MM}/{DD} {hh}:{mm}:{ss}' )";
-	const code = "const d = util.df2();\n`${ d.YYYY }/${ d.MM }/${ d.DD } ${ d.B } ${ d.hh }:${ d.mm}: ${ d.ss }`";
+	const code = "const d = util.df2();\n`${ d.YYYY }/${ d.MM }/${ d.DD } ${ d.B } ${ d.hh }:${ d.mm}:${ d.ss }`";
 
 	const doc =
 	{

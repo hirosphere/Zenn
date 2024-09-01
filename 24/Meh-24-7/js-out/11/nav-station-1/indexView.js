@@ -1,0 +1,5 @@
+import { ef } from "../../meh/index.js";
+export const RootIndex = (model) => {
+    return ef.li(model.title);
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXhWaWV3LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vdHMtc3JjLzExL25hdi1zdGF0aW9uLTEvaW5kZXhWaWV3LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBUyxFQUFFLEVBQU8sTUFBTSxvQkFBb0IsQ0FBQztBQUdwRCxNQUFNLENBQUMsTUFBTSxTQUFTLEdBQUcsQ0FBRSxLQUFlLEVBQUcsRUFBRTtJQUU5QyxPQUFPLEVBQUUsQ0FBQyxFQUFFLENBRVgsS0FBSyxDQUFDLEtBQUssQ0FDWCxDQUFDO0FBQ0gsQ0FBQyxDQUFDIn0=

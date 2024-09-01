@@ -1,4 +1,4 @@
-import { Exist, Branch, Leafr, Leaf, root } from "./index.js";
+import { Exist, Branch, Leafr, Leaf, Renn, root } from "./index.js";
 import _ls from "../ls.js";
 //const { ls } = _ls.model
 const log = console.log;
@@ -11,13 +11,11 @@ export class Browser extends Branch
 	constructor( con : Exist, protected acts ? : Browser.Acts )
 	{
 		super( con );
-
-		this.update();
 	}
 
 	public override update(): void
 	{
-		console.log( "browser", this.index.val?.title.val );
+		console.log( "Browser update()", this.index.val?.title.val );
 		
 		document.title = this.make_title( this.index.value );
 	}
@@ -29,6 +27,8 @@ export class Browser extends Branch
 
 	protected make_title( index : Index | null ) : string
 	{
+		log( "make_title", index?.title.value ?? "!!!" )
+
 		return index?.title.value ?? "..."
 	}
 };
@@ -45,6 +45,7 @@ export class Index extends Exist
 {
 	public readonly title : Leaf.String ;
 	public readonly path;
+	public readonly parts = new Renn < Index > ( this );
 
 	constructor( con : Exist.Container, protected browser : Browser, initv : Index.initv )
 	{

@@ -1,0 +1,5 @@
+"use strict";
+const 実績ビュー = () => {
+    return;
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibW9jay1hcHBsZXRzLTEuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi90cy1zcmMvMTEvc3BhLTEvc3F0L21vY2stYXBwbGV0cy0xLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7QUFDQSxNQUFNLEtBQUssR0FBRyxHQUFHLEVBQUU7SUFFbEIsT0FBUTtBQUNULENBQUMsQ0FBQyJ9
