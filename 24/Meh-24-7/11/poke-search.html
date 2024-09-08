@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meh - Poke Search</title>
+    <style>
+
+*
+{
+  box-sizing: border-box;
+}
+
+html
+{
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  background-color: var(--bg-color);
+  color: var(--text-color);
+
+  color-scheme: light dark;
+
+  --bg-color: white;
+  --text-color: black;
+  --bg-sub-color: #fafafa;
+  --text-sub-color: #666666;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    --bg-color: #1a1a1a;
+    --text-color: white;
+    --bg-sub-color: #333333;
+    --text-sub-color: #999999;
+  }
+}
+
+.pokemonList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-gap: 20px;
+  margin: 20px;
+}
+
+.searchBox {
+  position: fixed;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+}
+
+.footer {
+  text-align: center;
+}
+
+.searchbox .wrapper {
+  display: grid;
+  grid-template-columns: 3rem auto 3rem;
+  grid-template-rows: 3rem auto 3rem;
+
+  border: 1px solid var(--text-color);
+  background-color: var(--bg-sub-color);
+  background-repeat: repeat;
+}
+
+.searchbox .input {
+  grid-area: 2 / 2;
+  font-size: 2.5rem;
+  padding: 0.5rem;
+}
+
+.item
+{
+}
+
+.item .wrapper {
+  background-color: var(--bg-sub-color);
+}
+
+.id {
+  color: var(--text-sub-color);
+  background-color: hsl( 0, 50%, 88%);
+}
+
+.item .name > mark {
+  font-weight: bold;
+}
+
+.item .unmatchedName {
+  color: var(--text-sub-color);
+}
+
+
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="../js-out/11/poke-search/main.js"></script>
+  </body>
+</html>
