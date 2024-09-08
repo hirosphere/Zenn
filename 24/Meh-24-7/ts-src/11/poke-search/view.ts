@@ -1,4 +1,4 @@
-import { ef, each, root, log } from "../../meh/index.js";
+import { Leaf, ef, each, root, log } from "../../meh/index.js";
 // import * as data from "./data/items.js";
 import * as m from "./modes.js";
 
@@ -7,12 +7,12 @@ export const App = ( model : m.App ) =>
 	return ef.main
 	(
 		ef.h1( "Poke Search V-1.1" ),
-		InputBox(),
-		Items( model ),
+		InputBox( model.search ),
+		PokeList( model ),
 	);
 }
 
-const InputBox = () =>
+const InputBox = ( search : Leaf.String) =>
 {
 	return ef.div
 	(
@@ -21,12 +21,26 @@ const InputBox = () =>
 		},
 		ef.input
 		(
-			{ class: "input" },
+			{
+				class: "input",
+				props:
+				{
+					value: search
+				},
+				acts:
+				{
+					async input( ev : Event )
+					{
+						if( ! ( ev.target instanceof HTMLInputElement ) ) return;
+						search.value = ev.target.value;
+					}
+				}
+			},
 		),
 	);
 };
 
-const Items = ( app : m.App ) =>
+const PokeList = ( app : m.App ) =>
 {
 	return ef.div
 	(
