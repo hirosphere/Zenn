@@ -66,5 +66,6 @@ const Item = ( model : m.Item ) =>
 			),
 		),
 		ef.div( model.ja ),
+		
 	)
 };
