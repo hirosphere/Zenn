@@ -40,9 +40,10 @@ export class Item extends Exist
 		this.一致後 = new Leaf.String( this, "" );
 	}
 
-	public setSearch( word : string )
+	public setSearch( search : string )
 	{
-		this.一致.value = ( this.en.search( word ) ).toString();
+		const name = this.en;
+		this.一致.value = ( this.en.search( search ) ).toString();
 	}
 
 	public readonly id;
