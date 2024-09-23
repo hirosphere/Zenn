@@ -2,7 +2,7 @@ import { Leaf, ef, each, root, log } from "../../meh/index.js";
 // import * as data from "./data/items.js";
 import * as m from "./modes.js";
 
-export const App = ( model : m.App ) =>
+export const App = ( model : m.PokeList ) =>
 {
 	return ef.main
 	(
@@ -29,7 +29,7 @@ const InputBox = ( search : Leaf.String) =>
 				},
 				acts:
 				{
-					async input( ev : Event )
+					input( ev : Event )
 					{
 						if( ! ( ev.target instanceof HTMLInputElement ) ) return;
 						search.value = ev.target.value;
@@ -40,7 +40,7 @@ const InputBox = ( search : Leaf.String) =>
 	);
 };
 
-const PokeList = ( app : m.App ) =>
+const PokeList = ( app : m.PokeList ) =>
 {
 	return ef.div
 	(
@@ -49,7 +49,7 @@ const PokeList = ( app : m.App ) =>
 	);
 };
 
-const Item = ( model : m.Item ) =>
+const Item = ( model : m.PokeItem ) =>
 {
 	return ef.div
 	(

@@ -1,53 +1,58 @@
 import { Exist, Branch, Leafr, Leaf, Renn, root } from "./index.js";
-import _ls from "../ls.js";
-//const { ls } = _ls.model
+import { _setvalue } from "../shadow-props.js";
 const log = console.log;
 
-export class Browser extends Branch
+export class Browser extends Exist
 {
-	public root = location.pathname;
-	public readonly index = new Leaf < Index | null > ( this, null );
-
-	constructor( con : Exist, protected acts ? : Browser.Acts )
+	constructor( com : Exist, protected args ? : Browser.args )
 	{
-		super( con );
+		super( com );
 	}
 
-	public override update(): void
-	{
-		console.log( "Browser update()", this.index.val?.title.val );
-		
-		document.title = this.make_title( this.index.value );
-	}
+	public readonly current = new Leafr < Index | undefined > ( this, undefined );
 
-	public make_link( index : Index ) : string
+	public set_current( index : Index | undefined, tohistory : boolean = false ) : void
 	{
-		return this.root;
-	}
+		this.current[ _setvalue ]( index );
 
-	protected make_title( index : Index | null ) : string
-	{
-		log( "make_title", index?.title.value ?? "!!!" )
-
-		return index?.title.value ?? "..."
-	}
-};
-
-export namespace Browser
-{
-	export type Acts =
-	{
-		
+		document.title =
+			this.current ?. val ?. title.val ??
+			this.args ?. default_title ??
+			""
+		;
 	}
 }
 
-export class Index extends Exist
+export namespace Browser
+{
+	export type args =
+	{
+		default_title ? : string ;
+	};
+
+	export class Item
+	{
+		constructor
+		(
+			protected browser : Browser,
+			public readonly index : Index | undefined
+		)
+		{}
+
+		public select( to_history : boolean = false ) : void
+		{
+			this.browser.set_current( this.index, to_history );
+		}
+	}
+}
+
+export class Index < P extends Index = any > extends Exist
 {
 	public readonly title : Leaf.String ;
 	public readonly path;
-	public readonly parts = new Renn < Index > ( this );
+	public readonly parts = new Renn < P > ( this );
 
-	constructor( con : Exist.Container, protected browser : Browser, initv : Index.initv )
+	constructor( con : Exist.Container, initv : Index.initv )
 	{
 		super( con );
 
@@ -57,8 +62,8 @@ export class Index extends Exist
 
 	public get link() : string
 	{
-		log( this.title.value )
-		return this.browser.make_link( this );
+		log( this.title.value );
+		return "";
 	}
 }
 

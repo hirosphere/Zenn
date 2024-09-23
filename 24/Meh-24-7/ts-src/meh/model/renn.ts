@@ -1,6 +1,6 @@
 import { Exist } from "./exist.js";
 import { Leafr } from "./leaf.js";
-import { _composition, _setvalue, _addpart, _removepart, _refs } from "./shadow-props.js";
+import { _composition, _setvalue, _addpart, _removepart, _refs } from "../shadow-props.js";
 const log = console.log;
 
 
@@ -19,7 +19,6 @@ export class Renn < S extends Exist = any > extends Exist
 	{
 		return new Renn < S > ( composition, sources );
 	}
-
 
 
 	/* constructor */

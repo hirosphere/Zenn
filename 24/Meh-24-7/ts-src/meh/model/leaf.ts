@@ -1,5 +1,5 @@
 import { Exist } from "./exist.js";
-import { _composition, _refs, _setvalue } from "./shadow-props.js";
+import { _composition, _refs, _setvalue } from "../shadow-props.js";
 import { Branch } from "./branch.js";
 const log = console.log;
 

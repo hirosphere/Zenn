@@ -73,7 +73,7 @@ class Reader
 		const cur = this.cur;
 		if( cur instanceof defs.RennEach )
 		{
-			ls.reader.$( "", a => log( `pf.reader ${ this.parts.nodet.runiq } next_each` ) );
+			// ls.reader.$( "", a => log( `pf.reader ${ this.parts.nodet.runiq } next_each` ) );
 
 			this.pos ++;
 			return new EachPF( cur, this );
@@ -133,7 +133,7 @@ class EachPF extends PartFragment
 	{
 		super( reader );
 		
-		ls.each.$( "", a => log( "Each PF" ) );
+		// ls.each.$( "", a => log( "Each PF" ) );
 
 		def.force = ( value ) =>
 		{

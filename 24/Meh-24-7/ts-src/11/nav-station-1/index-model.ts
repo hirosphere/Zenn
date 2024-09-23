@@ -1,4 +1,18 @@
-import { Exist, Leaf, navi, log } from "../../meh/index.js";
+import { Exist, Leaf, navi, root, log } from "../../meh/index.js";
+
+const br = new navi.Browser( root, { default_title: "Wow Wow Wow !!" } );
+
+export class App extends Exist
+{
+	constructor( com : Exist )
+	{
+		super( com );
+
+		br.set_current( this.root );
+	}
+
+	public readonly root = new Root( this );
+}
 
 export class Index extends navi.Index
 {
@@ -13,12 +27,10 @@ namespace types
 
 export class Root extends Index
 {
-	constructor( com : Exist, br : navi.Browser )
+	constructor( com : Exist )
 	{
-		super( com, br, { title: "Heart Rails !" } );
+		super( com, { title: "Heart Rails !" } );
 
-		// this.parts.new_orders( [ "青砥", "高砂" ].map( title => new Index( this, br, { title } ) ) );
-		
 		this.fetch();
 	}
 
@@ -29,11 +41,9 @@ export class Root extends Index
 		{
 			const s = ( await res.json() ) as types.root;
 			
-			log( s.response.area );
-
 			const parts = s.response.area.map
 			(
-				title => new Index( this, this.browser, { title } )
+				title => new Index( this, { title } )
 			);
 
 			this.parts.new_orders( parts );

@@ -1,17 +1,19 @@
 import { Exist, Leaf, log } from "../../meh/index.js";
 import * as data from "./data/items.js";
 
-export class App extends Exist
+export class PokeList extends Exist
 {
-	public readonly search = new Leaf.String( this, "poke", () => this.search_changed() );
+	public readonly search = new Leaf.String( this, "poke", () => this.start_search() );
 
 	public readonly items = Array.from
 	(
 		data.itemMap.values(),
-		( value ) => new Item( this, value )
+		( value ) => new PokeItem( this, value )
 	);
 
-	search_changed()
+	protected iid = 0;
+
+	protected start_search()
 	{
 		log( "changed", this.search.value );
 
@@ -23,9 +25,16 @@ export class App extends Exist
 		);
 	}
 
+	protected search_current = 0;
+
+	protected search_step()
+	{
+		;
+	}
+
 }
 
-export class Item extends Exist
+export class PokeItem extends Exist
 {
 	constructor( com : Exist, data : data.Item )
 	{
@@ -40,10 +49,16 @@ export class Item extends Exist
 		this.一致後 = new Leaf.String( this, "" );
 	}
 
-	public setSearch( search : string )
+	public setSearch( query : string )
 	{
 		const name = this.en;
-		this.一致.value = ( this.en.search( search ) ).toString();
+		let start = name.toLowerCase().indexOf( query.toLowerCase() );
+		if( start < 0 ) start = name.length;
+		const end = start + query.length;
+
+		this.一致前.value = name.substring( 0, start );
+		this.一致.value = name.substring( start, end );
+		this.一致後.value = name.substring( end, name.length );
 	}
 
 	public readonly id;

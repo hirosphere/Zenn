@@ -1,0 +1,95 @@
+import { Leaf } from "../model/leaf.js";
+import { defs } from "./defs.js";
+import { Nodet } from "./nodet.js";
+
+export const add =
+(
+	part : defs.part,
+	com_qe : Element | string,
+	rel_qe ? : Node | string
+)
+ : void =>
+{
+	const com_e : Element | null = typeof com_qe == "string" ? document.querySelector( com_qe ) : com_qe || null;
+	const rel_e : Node | null = typeof rel_qe == "string" ? document.querySelector( rel_qe ) : rel_qe || null;
+
+	if( part instanceof Nodet )
+	{
+		com_e && part.node && com_e.insertBefore( part.node, rel_e )
+	}
+}
+
+type create_nodet_t < E extends Element > =
+(
+	first ? : defs.ec < E > | defs.part,
+	... remain : defs.part []
+)
+=> Nodet ;
+
+function create_nodet
+(
+	ns : string,
+	type : string,
+	first ? : defs.ec < any > | defs.part,
+	... remain : defs.part []
+) : Nodet
+{
+	const ec =
+	(
+		( first instanceof Object ) && !
+		(
+			first instanceof Nodet ||
+			first instanceof Leaf ||
+			first instanceof Node
+		)
+		&& first
+		|| undefined
+	);
+
+	const parts = ec ? remain : first !== undefined ? [ first, ... remain ] : undefined;
+
+	return new Nodet( { ns, type, ... ec, parts } )
+}
+
+
+class Handler < T extends object > implements ProxyHandler < T >
+{
+	constructor( private ns : string )
+	{}
+
+	public get( target : T, type : string )
+	{
+		return this.makefn( type );
+	}
+
+	private fns = new Map < string, create_nodet_t < any > > ;
+
+	private makefn( type : string )
+	{
+		if( this.fns.has( type ) )  return this.fns.get( type );
+
+		// log( type );
+		
+		const fn : create_nodet_t < any > = ( first, ... remain ) => create_nodet( this.ns, type, first, ... remain );
+		this.fns.set( type, fn );
+		return fn;
+	}
+}
+
+
+type EF < Map extends { [ key : string ] : any } > =
+{
+	[ e in keyof Map ] : create_nodet_t < Map[ e ] > ;
+};
+
+export const ef = new Proxy
+(
+	{} as EF < HTMLElementTagNameMap >,
+	new Handler( "" )
+);
+
+export const sf = new Proxy
+(
+	{} as EF < SVGElementTagNameMap >,
+	new Handler( "http://www.w3.org/2000/svg" )
+);

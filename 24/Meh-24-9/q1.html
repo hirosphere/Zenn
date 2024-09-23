@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>q1</title>
+
+<style>
+
+* { box-sizing: border-box; }
+
+html
+{
+	text-align: center;
+}
+
+body
+{
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+article
+{
+	display: flex;
+	flex-direction: column;
+	gap: 1ex;
+}
+
+.gapp
+{
+	display: flex;
+	gap: 1ex;
+	justify-content: center;
+}
+
+.selected
+{
+	color: hsl( 0, 80%, 100% );
+	background-color: hsl( 0, 80%, 55% );
+}
+
+.selected.green
+{
+	color:hsl( 0, 80%, 100% );
+	background-color: hsl( 90, 70%, 35% );
+}
+
+</style>
+
+
+</head>
+<body>
+	<article id="sec-1" class=""></article>
+	<script type="module" src="./js-out/q1/main.js"></script>
+
+
+	<article>
+		<section>
+			<input type="checkbox" id="check" />
+		</section>
+
+<script>
+
+const log = console.log;
+const ch = document.querySelector( "#check" );
+
+// ch.setAttribute( "checked", "" );
+// ch.removeAttribute( "checked" );
+ch.checked = true;
+ch.checked = ".";
+
+</script>
+
+	</article>
+
+</body>
+</html>

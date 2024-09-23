@@ -1,18 +1,52 @@
-import { Exist, ef, each, log } from "../../meh/index.js";
+import { Exist, dom, ef, each, log } from "../../meh/index.js";
 import * as m from "./index-model.js";
 
-export const RootIndex = ( model : m.Index ) =>
+export const App = ( model : m.App ) =>
+{
+	return ef.body
+	(
+		ef.main
+		(
+			ef.h1( "Station-1" ),
+			ef.p( "モバイル指向ナビゲーションサンプル" ),
+			Tree( model.root ),
+		),
+	);
+};
+
+const Tree = ( index : m.Index ) =>
+{
+	return ef.ul
+	(
+		Index( index ),
+	);
+}
+
+export const Index = ( model : m.Index ) : dom.defs.Node =>
 {
 	return ef.li
 	(
-		model.title,
+		ef.a
+		(
+			{
+				attrs: { href: "" },
+				acts:
+				{
+					click( ev )
+					{
+						ev.preventDefault();
+					}
+				},
+			},
+			model.title,
+		),
 
 		ef.ul
 		(
 			each
 			(
 				model.parts,
-				order => ef.li( order.source.title )
+				order => Index( order.source )
 			)
 		),
 	);

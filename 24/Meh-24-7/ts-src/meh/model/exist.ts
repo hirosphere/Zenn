@@ -1,4 +1,4 @@
-import { _composition, composition, _parts, _addpart, _removepart, _refs, _addref, _removeref, _setlink, } from "./shadow-props.js";
+import { _composition, composition, _parts, _addpart, _removepart, _refs, _addref, _removeref, _setlink, } from "../shadow-props.js";
 const log = console.log;
 
 import _ls from "../ls.js";

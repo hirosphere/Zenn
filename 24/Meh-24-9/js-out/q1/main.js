@@ -1,0 +1,5 @@
+import * as ql from "./q-leaf.js";
+import * as qn from "./q-nodet.js";
+ql.main();
+qn.main();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibWFpbi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3RzLXNyYy9xMS9tYWluLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sS0FBSyxFQUFFLE1BQU8sYUFBYSxDQUFDO0FBQ25DLE9BQU8sS0FBSyxFQUFFLE1BQU0sY0FBYyxDQUFDO0FBRW5DLEVBQUUsQ0FBQyxJQUFJLEVBQUUsQ0FBQztBQUNWLEVBQUUsQ0FBQyxJQUFJLEVBQUUsQ0FBQyJ9

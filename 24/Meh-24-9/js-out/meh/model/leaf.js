@@ -1,0 +1,57 @@
+import { _value_, _set_, _refs_ } from "../common.js";
+export class Leaf {
+    rel;
+    constructor(value, rel) {
+        this.rel = rel;
+        this[_value_] = value;
+    }
+    [_refs_] = new Set;
+    [_value_];
+    get value() {
+        return this[_value_];
+    }
+    set value(new_value) {
+        this[_set_](new_value);
+    }
+    [_set_](new_value) {
+        if (new_value === this[_value_])
+            return;
+        const old_value = this[_value_];
+        this[_value_] = new_value;
+        this.rel?.update();
+        this[_refs_].forEach(ref => ref.on_value_change(new_value, old_value));
+    }
+}
+(function (Leaf) {
+    class Ref {
+        set src(new_src) {
+            if (new_src == this._src_)
+                return;
+            const old_src = this._src_;
+            old_src?.[_refs_].delete(this);
+            this._src_ = new_src;
+            new_src?.[_refs_].add(this);
+            this.on_value_change(new_src?.[_value_], old_src?.[_value_]);
+        }
+        _src_;
+        on_value_change(new_value, old_value) { }
+        term() { }
+    }
+    Leaf.Ref = Ref;
+    class str extends Leaf {
+    }
+    Leaf.str = str;
+    class num extends Leaf {
+    }
+    Leaf.num = num;
+    class bool extends Leaf {
+    }
+    Leaf.bool = bool;
+})(Leaf || (Leaf = {}));
+Leaf.str;
+export class Leafr extends Leaf {
+    get value() {
+        return this[_value_];
+    }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibGVhZi5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3RzLXNyYy9tZWgvbW9kZWwvbGVhZi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsT0FBTyxFQUFFLEtBQUssRUFBRSxNQUFNLEVBQU8sTUFBTSxjQUFjLENBQUM7QUFHM0QsTUFBTSxPQUFPLElBQUk7SUFLTDtJQUhYLFlBRUMsS0FBUyxFQUNDLEdBQWdCO1FBQWhCLFFBQUcsR0FBSCxHQUFHLENBQWE7UUFHMUIsSUFBSSxDQUFFLE9BQU8sQ0FBRSxHQUFHLEtBQUssQ0FBQztJQUN6QixDQUFDO0lBRU0sQ0FBRSxNQUFNLENBQUUsR0FBRyxJQUFJLEdBQXNCLENBQUM7SUFFeEMsQ0FBRSxPQUFPLENBQUUsQ0FBTTtJQUV4QixJQUFXLEtBQUs7UUFFZixPQUFPLElBQUksQ0FBRSxPQUFPLENBQUUsQ0FBQztJQUN4QixDQUFDO0lBRUQsSUFBVyxLQUFLLENBQUUsU0FBYTtRQUU5QixJQUFJLENBQUUsS0FBSyxDQUFFLENBQUcsU0FBUyxDQUFFLENBQUM7SUFDN0IsQ0FBQztJQUVNLENBQUUsS0FBSyxDQUFFLENBQUcsU0FBYTtRQUUvQixJQUFJLFNBQVMsS0FBSyxJQUFJLENBQUUsT0FBTyxDQUFFO1lBQUksT0FBTztRQUU1QyxNQUFNLFNBQVMsR0FBRyxJQUFJLENBQUUsT0FBTyxDQUFFLENBQUM7UUFDbEMsSUFBSSxDQUFFLE9BQU8sQ0FBRSxHQUFHLFNBQVMsQ0FBQztRQUU1QixJQUFJLENBQUMsR0FBRyxFQUFFLE1BQU0sRUFBRSxDQUFDO1FBRW5CLElBQUksQ0FBRSxNQUFNLENBQUUsQ0FBQyxPQUFPLENBRXJCLEdBQUcsQ0FBQyxFQUFFLENBQUMsR0FBRyxDQUFDLGVBQWUsQ0FFekIsU0FBUyxFQUNULFNBQVMsQ0FDVCxDQUNELENBQUM7SUFDSCxDQUFDO0NBQ0Q7QUFFRCxXQUFpQixJQUFJO0lBRXBCLE1BQWEsR0FBRztRQUVmLElBQVcsR0FBRyxDQUFFLE9BQWdDO1lBRS9DLElBQUksT0FBTyxJQUFJLElBQUksQ0FBQyxLQUFLO2dCQUFJLE9BQU87WUFFcEMsTUFBTSxPQUFPLEdBQUcsSUFBSSxDQUFDLEtBQUssQ0FBQztZQUMzQixPQUFPLEVBQUUsQ0FBRSxNQUFNLENBQUUsQ0FBQyxNQUFNLENBQUUsSUFBSSxDQUFFLENBQUM7WUFFbkMsSUFBSSxDQUFDLEtBQUssR0FBRyxPQUFPLENBQUM7WUFDckIsT0FBTyxFQUFFLENBQUUsTUFBTSxDQUFFLENBQUMsR0FBRyxDQUFFLElBQUksQ0FBRSxDQUFDO1lBRWhDLElBQUksQ0FBQyxlQUFlLENBQUUsT0FBTyxFQUFFLENBQUUsT0FBTyxDQUFFLEVBQUcsT0FBTyxFQUFFLENBQUUsT0FBTyxDQUFFLENBQUUsQ0FBQztRQUNyRSxDQUFDO1FBRVMsS0FBSyxDQUFnQjtRQUV4QixlQUFlLENBRXJCLFNBQWUsRUFDZixTQUFlLElBQ2IsQ0FBQztRQUVHLElBQUksS0FBSSxDQUFDO0tBQ2hCO0lBeEJZLFFBQUcsTUF3QmYsQ0FBQTtJQU9ELE1BQWEsR0FBSSxTQUFRLElBQWU7S0FBRztJQUE5QixRQUFHLE1BQTJCLENBQUE7SUFDM0MsTUFBYSxHQUFJLFNBQVEsSUFBZTtLQUFHO0lBQTlCLFFBQUcsTUFBMkIsQ0FBQTtJQUMzQyxNQUFhLElBQUssU0FBUSxJQUFnQjtLQUFHO0lBQWhDLFNBQUksT0FBNEIsQ0FBQTtBQUM5QyxDQUFDLEVBcENnQixJQUFJLEtBQUosSUFBSSxRQW9DcEI7QUFFRCxJQUFJLENBQUMsR0FBRyxDQUFDO0FBV1QsTUFBTSxPQUFPLEtBQVksU0FBUSxJQUFVO0lBRTFDLElBQW9CLEtBQUs7UUFFeEIsT0FBTyxJQUFJLENBQUUsT0FBTyxDQUFFLENBQUM7SUFDeEIsQ0FBQztDQUNEIn0=
