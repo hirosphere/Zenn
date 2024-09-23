@@ -46,22 +46,24 @@ export const main = () =>
 	);
 
 
-	dom.add( sec1, "#sec-1" );
-	dom.add( sec2, "#sec-1" );
+	// dom.add( sec1, "#sec-1" );
+	// dom.add( sec2, "#sec-1" );
+
+	dom.add( view.Applet1(), "body" );
 };
 
 namespace models
 {
-	export class App1
+	export class Applet1
 	{
-		text = new Leaf.str( "秋の虫の音" );
+		text = new Leaf.str( "常磐線で行こう" );
 
 		clist =
 		{
 			selected: new Leaf.bool( false ),
-			east: new Leaf.bool( false ),
-			center: new Leaf.bool( false ),
-			west: new Leaf.bool( false ),
+			shadowed: new Leaf.bool( false ),
+			green: new Leaf.bool( false ),
+			cyan: new Leaf.bool( false ),
 		};
 
 		color = new HSL();
@@ -122,15 +124,71 @@ namespace view
 {
 	export const Applet1 = () =>
 	{
+		const model = new models.Applet1();
+
 		return ef.article
 		(
 			{},
+			ef.h1( "Meh Quest : Leaf" ),
 			ef.section
 			(
 				{},
+				ef.p
+				(
+					{ class: model.clist },
+					model.text,
+				),
+			),
+			ef.section
+			(
+				{ class: "gap", },
+				v_button( "v1", model.text, "日暮里 にっぽり" ),
+				v_button( "v1", model.text, "三河島 みかわしま" ),
+				v_button( "v1", model.text, "南千住 みなみせんじゅ" ),
+			),
+
+			ef.section
+			(
+				{ class: "gap" },
+				check( "Selected", model.clist.selected ),
+				check( "Shadowed", model.clist.shadowed ),
+				check( "Green", model.clist.green ),
+				check( "Cyan", model.clist.cyan ),
 			),
 		);
 	};
+
+	const v_button = ( label : string, leaf : Leaf.str, value : string ) => ef.button
+	(
+		{ acts: { click() { leaf.value = value ; } } },
+		label,
+	);
+
+	const check = ( label : string, leaf : Leaf.bool ) => ef.span
+	(
+		ef.label( label ),
+		ef.input
+		(
+			{
+				attrs:
+				{
+					type: "checkbox",
+				},
+				props:
+				{
+					checked: leaf,
+				},
+				acts:
+				{
+					change( ev )
+					{
+						if( ! ( ev.target instanceof HTMLInputElement ) )  return;
+						leaf.value = ev.target.checked;
+					}
+				}
+			}
+		),
+	);
 }
 
 const v_button = ( title : string, lf : Leaf.str, v : string ) =>
