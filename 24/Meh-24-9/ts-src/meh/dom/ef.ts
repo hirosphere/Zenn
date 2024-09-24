@@ -68,8 +68,6 @@ class Handler < T extends object > implements ProxyHandler < T >
 	{
 		if( this.fns.has( type ) )  return this.fns.get( type );
 
-		// log( type );
-		
 		const fn : create_nodet_t < any > = ( first, ... remain ) => create_nodet( this.ns, type, first, ... remain );
 		this.fns.set( type, fn );
 		return fn;

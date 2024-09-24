@@ -3,9 +3,9 @@ import { Nodet } from "./nodet.js";
 
 export namespace defs
 {
-	export type literal = string | number | boolean ;
+	export type primitive = string | number | boolean ;
 	export type leaf = Leaf.str | Leaf.num | Leaf.bool ;
-	export type text = literal | leaf ;
+	export type text = primitive | leaf ;
 
 	export type acts =
 	{
@@ -22,7 +22,7 @@ export namespace defs
 
 	export type style =
 	{
-		[ name in keyof CSSStyleDeclaration ] ? : Text ;
+		[ name in keyof CSSStyleDeclaration ] ? : text ;
 	};
 
 	export type class_switch = Record < string, Leaf.bool > ;

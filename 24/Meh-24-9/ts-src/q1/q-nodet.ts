@@ -2,53 +2,6 @@ import { dom, Leaf, ef, log } from "../meh/index.js";
 
 export const main = () =>
 {
-	const body = document.body;
-	const v1 = new Leaf < string > ( "Aaa Oooo" );
-	const cl =
-	{
-		selected: new Leaf.bool ( false ),
-		green: new Leaf.bool ( false ),
-	};
-
-	const text = new dom.Nodet( { text: v1 } );
-	
-	const sec1 = new dom.Nodet
-	(
-		{
-			ns: "",
-			type: "section",
-			class: cl,
-			parts:
-			[
-				text,
-			]
-		}
-	);
-
-	const sec2 = new dom.Nodet
-	(
-		{
-			ns: "",
-			type: "section",
-			class: "gapp",
-			parts:
-			[
-				"nodeValue : ",
-				v_button( "nv-1", v1, "秋葉原 あきはばら" ),
-				v_button( "nv-2", v1, "御徒町 おかちまち" ),
-				v_button( "nv-3", v1, "上野 うえの" ),
-				" ",
-				s_button_2( "tg-1", cl.selected ),
-				s_button_2( "tg-2", cl.green ),
-				s_button_2( "tg-1", cl.selected ),
-			]
-		}
-	);
-
-
-	// dom.add( sec1, "#sec-1" );
-	// dom.add( sec2, "#sec-1" );
-
 	dom.add( view.Applet1(), "body" );
 };
 
@@ -149,7 +102,7 @@ namespace view
 
 			ef.section
 			(
-				{ class: "gap" },
+				{ class: "gap", style: { flexDirection: "" } },
 				check( "Selected", model.clist.selected ),
 				check( "Shadowed", model.clist.shadowed ),
 				check( "Green", model.clist.green ),
@@ -158,26 +111,22 @@ namespace view
 		);
 	};
 
+	const s : dom.defs.style = { display: new Leaf.str( "" ) };
+
 	const v_button = ( label : string, leaf : Leaf.str, value : string ) => ef.button
 	(
 		{ acts: { click() { leaf.value = value ; } } },
 		label,
 	);
 
-	const check = ( label : string, leaf : Leaf.bool ) => ef.span
+	const check = ( label : string, leaf : Leaf.bool ) => ef.section
 	(
 		ef.label( label ),
 		ef.input
 		(
 			{
-				attrs:
-				{
-					type: "checkbox",
-				},
-				props:
-				{
-					checked: leaf,
-				},
+				attrs: { type: "checkbox", },
+				props: { checked: leaf, },
 				acts:
 				{
 					change( ev )
@@ -190,41 +139,3 @@ namespace view
 		),
 	);
 }
-
-const v_button = ( title : string, lf : Leaf.str, v : string ) =>
-(
-	button( title, () => lf.value = v )
-);
-
-
-const s_button = ( title : string, lf : Leaf.bool ) =>
-(
-	button( title, () => lf.value = ! lf.value )
-);
-
-
-const s_button_2 = ( title : string, lf : Leaf.bool ) => ef.span
-(
-	ef.label( title ),
-	ef.input
-	(
-		{
-			attrs: { type: "checkbox", },
-			props: { checked: lf, },
-			acts: { change( ev ){ if( ev.target instanceof HTMLInputElement ) lf.value = ev.target.checked } },
-		}
-	),
-	" ",
-	lf,
-);
-	
-const button = ( title : string, act : () => void ) => new dom.Nodet
-(
-	{
-		ns: "",
-		type: "button",
-		acts: { click: act },
-		parts: [ title ]
-	}
-);
-

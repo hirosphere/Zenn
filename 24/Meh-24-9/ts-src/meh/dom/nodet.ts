@@ -48,6 +48,15 @@ export class Nodet
 
 		if( cname ) this.binb_class( this._el_, cname );
 
+		if( style && this._el_ instanceof HTMLElement ) for( const [ name, value ] of Object.entries( style ) )
+		{
+			this.bind
+			(
+				value,
+				value => this._el_
+			);
+		}
+
 		if( attrs ) for( const [ name, value ] of Object.entries( attrs ) )
 		{
 			this.bind
@@ -57,14 +66,14 @@ export class Nodet
 			);
 		}
 
-		if( props ) for( const [ name, value ] of Object.entries( props ) )
+		if( props && this._el_ ) for( const [ name, value ] of Object.entries( props ) )
 		{
 			this.bind
 			(
 				value,
 				value =>
 				{
-					if( this._el_ ) ( this._el_ as any )[ name ] = value;
+					( this._el_ as any )[ name ] = value;
 				}
 			);
 		}
