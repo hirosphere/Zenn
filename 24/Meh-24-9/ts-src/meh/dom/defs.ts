@@ -1,5 +1,5 @@
 import { Leaf, lol } from "../model/leaf.js";
-import { Nodet } from "./nodet.js";
+import * as nodet from "./nodet.js";
 
 export namespace defs
 {
@@ -36,10 +36,10 @@ export namespace defs
 		attrs ? : attrs < E > ;
 		props ? : attrs < E > ;
 		acts ? : acts ;
-		actacts ? : acts ;
+		actActs ? : acts ;
 	};
 
-	export type node = Nodet | text | Node ;
+	export type node = nodet.Element | nodet.Text | Element | Text | text | Node ;
 	export type part = node ;
 }
 

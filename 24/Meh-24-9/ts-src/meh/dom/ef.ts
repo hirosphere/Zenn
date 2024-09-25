@@ -1,6 +1,6 @@
 import { Leaf } from "../model/leaf.js";
 import { defs } from "./defs.js";
-import { Nodet } from "./nodet.js";
+import * as nodet from "./nodet.js";
 
 export const add =
 (
@@ -13,7 +13,7 @@ export const add =
 	const com_e : Element | null = typeof com_qe == "string" ? document.querySelector( com_qe ) : com_qe || null;
 	const rel_e : Node | null = typeof rel_qe == "string" ? document.querySelector( rel_qe ) : rel_qe || null;
 
-	if( part instanceof Nodet )
+	if( part instanceof nodet.Element )
 	{
 		com_e && part.node && com_e.insertBefore( part.node, rel_e )
 	}
@@ -24,7 +24,7 @@ type create_nodet_t < E extends Element > =
 	first ? : defs.ec < E > | defs.part,
 	... remain : defs.part []
 )
-=> Nodet ;
+=> nodet.Element ;
 
 function create_nodet
 (
@@ -32,13 +32,13 @@ function create_nodet
 	type : string,
 	first ? : defs.ec < any > | defs.part,
 	... remain : defs.part []
-) : Nodet
+) : nodet.Element
 {
 	const ec =
 	(
 		( first instanceof Object ) && !
 		(
-			first instanceof Nodet ||
+			first instanceof nodet.Element ||
 			first instanceof Leaf ||
 			first instanceof Node
 		)
@@ -48,7 +48,7 @@ function create_nodet
 
 	const parts = ec ? remain : first !== undefined ? [ first, ... remain ] : undefined;
 
-	return new Nodet( { ns, type, ... ec, parts } )
+	return new nodet.Element( { ns, type, ... ec, parts } )
 }
 
 

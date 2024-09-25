@@ -1,15 +1,31 @@
 import { log } from "../common.js";
 
 import { defs } from "./defs.js";
-import { Nodet } from "./nodet.js";
+import * as nodet from "./nodet.js";
 
-export class Parts
+export class PartsColl
 {
-	constructor( def : defs.node [], df : DocumentFragment )
+	constructor
+	(
+		ce : Element,
+		df : DocumentFragment,
+		def : defs.part [],
+		start : number = 0
+	)
+	{
+		this.expand( ce, df, def );
+	}
+
+	protected expand
+	(
+		ce : Element | undefined,
+		df : DocumentFragment,
+		def : defs.part []
+	)
 	{
 		for( const part of def )
 		{
-			if( part instanceof Nodet )
+			if( part instanceof nodet.Nodet )
 			{
 				part.node && df.appendChild( part.node );
 			}
@@ -21,10 +37,15 @@ export class Parts
 
 			else
 			{
-				const n = new Nodet( { text: part } );
+				const n = new nodet.Text( part );
 				n.node && df.appendChild( n.node );
 			}
 		}
+	}
+
+	public destruct()
+	{
+		;
 	}
 }
 
