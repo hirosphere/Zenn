@@ -48,6 +48,10 @@ export abstract class Nodet
 
 export class Element extends Nodet
 {
+	// protected _el_? : HTMLElement ;
+	protected _el_? : globalThis.Element ;
+	protected parts;
+
 	constructor( args : el_args )
 	{
 		super();
@@ -55,7 +59,7 @@ export class Element extends Nodet
 		const { ns, type, parts } = args;
 		const { class: cname, style, attrs, props, acts, actActs: actacts } = args;
 
-		this._el_ =
+		let el = this._el_ =
 		(
 			ns ?
 				document.createElementNS( ns, type ) :
@@ -107,14 +111,10 @@ export class Element extends Nodet
 		}
 	}
 
-	protected parts;
-
 	public get node()
 	{
 		return this._el_;
 	}
-
-	protected _el_? : globalThis.Element ;
 
 	protected binb_class( e : globalThis.Element, def : defs.class_spec )
 	{

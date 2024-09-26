@@ -39,7 +39,7 @@ export namespace defs
 		actActs ? : acts ;
 	};
 
-	export type node = nodet.Element | nodet.Text | Element | Text | text | Node ;
+	export type node = nodet.Element | text | Node ;
 	export type part = node ;
 }
 
