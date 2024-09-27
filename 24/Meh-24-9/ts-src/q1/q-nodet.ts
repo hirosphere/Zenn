@@ -16,7 +16,7 @@ namespace models
 			selected: new Leaf.bool( true ),
 			shadowed: new Leaf.bool( false ),
 			green: new Leaf.bool( false ),
-			cyan: new Leaf.bool( false ),
+			cyan: new Leaf.bool( true ),
 		};
 
 		color = new HSL();

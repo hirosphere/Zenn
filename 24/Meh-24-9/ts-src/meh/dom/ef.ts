@@ -4,7 +4,7 @@ import * as nodet from "./nodet.js";
 
 export const add =
 (
-	part : defs.part,
+	part : defs.part_,
 	com_qe : Element | string,
 	rel_qe ? : Node | string
 )
@@ -21,8 +21,8 @@ export const add =
 
 type create_nodet_t < E extends Element > =
 (
-	first ? : defs.ec < E > | defs.part,
-	... remain : defs.part []
+	first ? : defs.ec < E > | defs.parts,
+	... remain : defs.parts
 )
 => nodet.Element ;
 
@@ -30,8 +30,8 @@ function create_nodet
 (
 	ns : string,
 	type : string,
-	first ? : defs.ec < any > | defs.part,
-	... remain : defs.part []
+	first ? : defs.ec < any > | defs.part_ | defs.parts,
+	... remain : defs.parts
 ) : nodet.Element
 {
 	const ec =
@@ -46,9 +46,16 @@ function create_nodet
 		|| undefined
 	);
 
-	const parts = ec ? remain : first !== undefined ? [ first, ... remain ] : undefined;
+	if( ec )
+	{
+		return new nodet.Element( { ns, type, ... ec, parts : remain } )
+	}
 
-	return new nodet.Element( { ns, type, ... ec, parts } )
+	else
+	{
+		const parts = [];
+		return new nodet.Element( { ns, type, parts } )
+	}
 }
 
 

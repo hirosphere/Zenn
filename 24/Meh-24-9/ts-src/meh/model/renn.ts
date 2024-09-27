@@ -1,9 +1,14 @@
 
 export class Renn < V >
 {
-	constructor( values : V [] )
+	constructor( protected _values_ : V [] = [] )
 	{
 		;
+	}
+
+	public get values() : V []
+	{
+		return this._values_;
 	}
 
 	public insert( values : V [], start : Position )

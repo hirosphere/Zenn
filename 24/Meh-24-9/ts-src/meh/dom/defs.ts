@@ -40,6 +40,9 @@ export namespace defs
 	};
 
 	export type node = nodet.Element | text | Node ;
-	export type part = node ;
+	export type part_ = node ;
+	export type parts =  part_ [] | parts [] ;
+
+	export class Each {}
 }
 

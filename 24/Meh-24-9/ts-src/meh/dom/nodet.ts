@@ -7,7 +7,7 @@ type el_args = defs.ec < any > &
 {
 	ns : string,
 	type : string,
-	parts ? : defs.part [],
+	parts ? : defs.parts,
 };
 
 type E = HTMLElement | SVGAElement;

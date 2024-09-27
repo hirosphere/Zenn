@@ -3,6 +3,27 @@ import { log } from "../common.js";
 import { defs } from "./defs.js";
 import * as nodet from "./nodet.js";
 
+export const next_place =
+(
+	ce : Element ,
+	df : DocumentFragment ,
+) =>
+{
+	;
+};
+
+
+/* */
+
+export class Place
+{}
+
+class Static
+{
+
+}
+
+
 export class PartsColl
 {
 	constructor
@@ -35,7 +56,7 @@ export class PartsColl
 				df.appendChild( part );
 			}
 
-			else
+			else if( ! ( part instanceof Array ) )
 			{
 				const n = new nodet.Text( part );
 				n.node && df.appendChild( n.node );
