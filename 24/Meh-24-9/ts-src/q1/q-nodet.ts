@@ -1,4 +1,4 @@
-import { dom, Leaf, ef, log } from "../meh/index.js";
+import { dom, Leaf, Renn, ef, defs, free, each, log } from "../meh/index.js";
 
 export const main = () =>
 {
@@ -27,7 +27,7 @@ namespace models
 	export type CSSFlex =
 	{
 		"align-items" ? : align_items;
-	}
+	};
 
 	const flex : CSSFlex = { "align-items": "flex-start" };
 
@@ -79,10 +79,12 @@ namespace view
 	{
 		const model = new models.Applet1();
 
+		const fr = free();
+
 		return ef.article
 		(
 			{},
-			ef.h1( "Meh Quest : Leaf" ),
+			ef.h1( "Meh Quest : Leaf", ),
 			ef.section
 			(
 				{},
@@ -102,12 +104,13 @@ namespace view
 
 			ef.section
 			(
-				{ class: "gap", style: { flexDirection: "" } },
+				{ class: "gap", style: { flexDirection: "column" } },
 				check( "Selected", model.clist.selected ),
 				check( "Shadowed", model.clist.shadowed ),
 				check( "Green", model.clist.green ),
 				check( "Cyan", model.clist.cyan ),
 			),
+			ef.p( ef.span( "span" ) ),
 		);
 	};
 

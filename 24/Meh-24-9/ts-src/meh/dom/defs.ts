@@ -1,4 +1,4 @@
-import { Leaf, lol } from "../model/leaf.js";
+import { Leaf, lol, Renn } from "../model/index.js";
 import * as nodet from "./nodet.js";
 
 export namespace defs
@@ -22,7 +22,7 @@ export namespace defs
 
 	export type style =
 	{
-		[ name in keyof CSSStyleDeclaration ] ? : text ;
+		[ name in keyof CSSStyleDeclaration ] ? : lol.str ;
 	};
 
 	export type class_switch = Record < string, Leaf.bool > ;
@@ -39,10 +39,46 @@ export namespace defs
 		actActs ? : acts ;
 	};
 
-	export type node = nodet.Element | text | Node ;
-	export type part_ = node ;
-	export type parts =  part_ [] | parts [] ;
+	export class Place
+	{
+		constructor(){}
 
-	export class Each {}
+		protected isplace = isplace
+	}
+
+	const isplace = Symbol();
+
+	export class Free extends Place
+	{
+		public set content ( content : node ) {}
+	}
+
+	export class Each < v = any > extends Place
+	{
+		constructor
+		(
+			public readonly source : Renn < any > ,
+			public readonly create_node : ( value : v ) => node
+		)
+		{ super() }
+	}
+
+	export type node = nodet.Element | text | Node ;
+	export type part_item = node | Place ;
+	export type part_items = part_item [] ;
+	
+	export type part = part_item | part [];
+	export type parts =  part [] ;
 }
 
+export const each = < v >
+(
+	source : Renn < v > ,
+	create_node : ( value : v ) => defs.node
+)
+ : defs.Each < v > =>
+(
+	new defs.Each( source, create_node )
+);
+
+export const free = () => new defs.Free();

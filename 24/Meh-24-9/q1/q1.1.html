@@ -11,11 +11,15 @@
 
 html
 {
+	padding: 0 max( 2px, ( 100vw - 320px ) * 0.06 );
 	text-align: center;
 }
 
 body
 {
+	max-width: 60em;
+	margin: 0 auto;
+	padding: 1px;
 	display: flex;
 	flex-direction: column;
 	gap: 1em;
@@ -28,17 +32,29 @@ article
 	gap: 1ex;
 }
 
+ul
+{
+	list-style: none;
+	padding: 0;
+}
+
+li
+{
+	border-bottom: 1px dotted hsl( 50, 5%, 75% );
+}
+
 .gap
 {
 	display: flex;
 	gap: 1ex;
 	justify-content: center;
+
 }
 
 .selected
 {
 	color: hsl( 0, 80%, 100% );
-	background-color: hsl( 345, 50%, 50% );
+	background-color: hsl( 345, 45%, 50% );
 }
 
 .selected.green

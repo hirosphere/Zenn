@@ -1,7 +1,25 @@
 import { log } from "../common.js";
 import { Leaf, lol } from "../model/leaf.js";
 import { defs } from "./defs.js";
-import { PartsColl } from "./parts.js";
+import { create_place } from "./parts.js";
+
+export const add =
+(
+	part : defs.part,
+	com_qe : globalThis.Element | string,
+	rel_qe ? : globalThis.Node | string
+)
+ : void =>
+{
+	const com_e : globalThis.Element | null = typeof com_qe == "string" ? document.querySelector( com_qe ) : com_qe || null;
+	const rel_e : globalThis.Node | null = typeof rel_qe == "string" ? document.querySelector( rel_qe ) : rel_qe || null;
+
+	if( part instanceof Element )
+	{
+		com_e && part.node && com_e.insertBefore( part.node, rel_e )
+	}
+};
+
 
 type el_args = defs.ec < any > &
 {
@@ -10,7 +28,7 @@ type el_args = defs.ec < any > &
 	parts ? : defs.parts,
 };
 
-type E = HTMLElement | SVGAElement;
+type E = HTMLElement | SVGElement;
 
 export abstract class Nodet
 {
@@ -68,13 +86,9 @@ export class Element extends Nodet
 
 		if( cname ) this.binb_class( this._el_, cname );
 
-		if( style && this._el_ instanceof HTMLElement ) for( const [ name, value ] of Object.entries( style ) )
+		if( style && this._el_ instanceof HTMLElement )
 		{
-			this.bind
-			(
-				value,
-				value => this._el_
-			);
+			this.bind_style( this._el_, style );
 		}
 
 		if( attrs ) for( const [ name, value ] of Object.entries( attrs ) )
@@ -106,7 +120,8 @@ export class Element extends Nodet
 		if( parts )
 		{
 			const df = document.createDocumentFragment();
-			this.parts = new PartsColl( this._el_, df, parts );
+			// this.parts = new PartsColl( this._el_, df, parts );
+			this.parts = create_place( this._el_, df, parts );
 			this._el_.appendChild( df );
 		}
 	}
@@ -142,6 +157,18 @@ export class Element extends Nodet
 		}
 	}
 
+	protected bind_style( e : HTMLElement, def : defs.style )
+	{
+		for( const [ name, value ] of Object.entries( def ) )
+		{
+			this.bind
+			(
+				value,
+				value => e.style.setProperty( name, value )
+			);
+		}
+	}
+
 	public override _destruct()
 	{
 		this.parts?.destruct();
@@ -152,8 +179,6 @@ export class Element extends Nodet
 
 const set_attr = ( e : globalThis.Element | undefined, name : string, value : any ) =>
 {
-	log( "attr", value, typeof e );
-
 	if( !e ) return;
 
 	if( value === false )  e.removeAttribute( name );
@@ -184,3 +209,5 @@ export class Text extends Nodet
 
 	protected _node_ ? : globalThis.Text ;
 }
+
+const ents = Object.entries;

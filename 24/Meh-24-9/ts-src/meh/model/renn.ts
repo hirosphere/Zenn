@@ -1,20 +1,35 @@
+import { _set_ } from "../common.js";
+import { Leafr } from "./leaf.js";
 
-export class Renn < V >
+export class Renn < S >
 {
-	constructor( protected _values_ : V [] = [] )
+	constructor( protected _items_ : S [] = [] )
 	{
 		;
 	}
 
-	public get values() : V []
+
+
+	public get items() : S []
 	{
-		return this._values_;
+		return this._items_;
 	}
 
-	public insert( values : V [], start : Position )
+	public insert( items : S [], start : Position )
 	{
 		;
 	}
 }
 
 type Position = number | undefined ;
+
+export class Order < S > extends Leafr.num
+{
+	constructor
+	(
+		public readonly source : S, ord : number )
+	{
+		super( ord );
+	}
+}
+

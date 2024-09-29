@@ -1,8 +1,12 @@
-import { Leaf, Renn, dom, ef, each, log } from "../meh/index.js";
+import { Leaf, Renn, dom, ef, each, free, log } from "../meh/index.js";
 
 export const ListApp = () =>
 {
-	const mo = new models.App();
+	const m = new models.App();
+
+	const fr = free();
+
+	fr.content = "";
 
 	return ef.article
 	(
@@ -10,13 +14,27 @@ export const ListApp = () =>
 		ef.h2( "List" ),
 		ef.section
 		(
-			ef.h3( "快速" ),
+			ef.h3( "常磐線" ),
 
 			ef.ul
 			(
-				[ "aoto", "takasago", "koiwa" ]
-				.map( v => ef.li( v ) ),
+				ef.h4( "快速" ),
+
+				each
+				(
+					m.list,
+					v => ef.li( { style : { textAlign: "right", color: "hsl( 180, 50%, 40% )" } }, v ),
+				),
+
+				ef.h4( "各駅停車" ),
+
+				each
+				(
+					m.list,
+					v => ef.li( { style : { textAlign: "right", color: "hsl( 330, 60%, 40% )" } }, v ),
+				),
 			),
+			fr,
 		),
 	);
 };

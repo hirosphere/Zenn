@@ -2,26 +2,9 @@ import { Leaf } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import * as nodet from "./nodet.js";
 
-export const add =
-(
-	part : defs.part_,
-	com_qe : Element | string,
-	rel_qe ? : Node | string
-)
- : void =>
-{
-	const com_e : Element | null = typeof com_qe == "string" ? document.querySelector( com_qe ) : com_qe || null;
-	const rel_e : Node | null = typeof rel_qe == "string" ? document.querySelector( rel_qe ) : rel_qe || null;
-
-	if( part instanceof nodet.Element )
-	{
-		com_e && part.node && com_e.insertBefore( part.node, rel_e )
-	}
-}
-
 type create_nodet_t < E extends Element > =
 (
-	first ? : defs.ec < E > | defs.parts,
+	first ? : defs.ec < E > | defs.part,
 	... remain : defs.parts
 )
 => nodet.Element ;
@@ -30,34 +13,32 @@ function create_nodet
 (
 	ns : string,
 	type : string,
-	first ? : defs.ec < any > | defs.part_ | defs.parts,
+	first ? : defs.ec < any > | defs.part,
 	... remain : defs.parts
 ) : nodet.Element
 {
-	const ec =
+	if
 	(
-		( first instanceof Object ) && !
+		first instanceof Leaf ||
+		first instanceof nodet.Nodet ||
+		first instanceof Array ||
+		first instanceof Node ||
+		typeof first == "string" ||
+		typeof first == "number" ||
+		typeof first == "boolean"
+	)
+	{
+		const parts : defs.parts =
 		(
-			first instanceof nodet.Element ||
-			first instanceof Leaf ||
-			first instanceof Node
-		)
-		&& first
-		|| undefined
-	);
+			remain === undefined ? [ first ]
+			: [ first, ... remain ] 
+		);
 
-	if( ec )
-	{
-		return new nodet.Element( { ns, type, ... ec, parts : remain } )
+		return new nodet.Element( { ns, type, parts } );
 	}
 
-	else
-	{
-		const parts = [];
-		return new nodet.Element( { ns, type, parts } )
-	}
+	return new nodet.Element( { ns, type, ... first, parts : remain } );
 }
-
 
 class Handler < T extends object > implements ProxyHandler < T >
 {
