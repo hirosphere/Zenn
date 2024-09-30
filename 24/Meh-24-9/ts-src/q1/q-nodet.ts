@@ -98,8 +98,10 @@ namespace view
 			(
 				{ class: "gap", },
 				v_button( "v1", model.text, "日暮里 にっぽり" ),
-				v_button( "v1", model.text, "三河島 みかわしま" ),
-				v_button( "v1", model.text, "南千住 みなみせんじゅ" ),
+				v_button( "v2", model.text, "三河島 みかわしま" ),
+				v_button( "v3", model.text, "南千住 みなみせんじゅ" ),
+				v_button( "v4", model.text, "北千住 きたせんじゅ" ),
+				v_button( "v5", model.text, "綾瀬 あやせ" ),
 			),
 
 			ef.section
