@@ -43,7 +43,7 @@ export namespace defs
 	{
 		constructor(){}
 
-		protected isplace = isplace
+		protected isplace : typeof isplace = isplace
 	}
 
 	const isplace = Symbol();
