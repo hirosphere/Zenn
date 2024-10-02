@@ -6,6 +6,14 @@ const App = () =>
 
 	return ef.main
 	(
+		{
+			style :
+			{
+				"background" : "hsl( 330, 45%, 45% )",
+				"color" : "white",
+			}
+		},
+
 		ef.h1( m.clock.timestr ),
 	);
 };
@@ -15,6 +23,7 @@ namespace ms
 	export class App
 	{
 		public readonly clock = new Clock() ;
+		public readonly tones = new Tones() ;
 	}
 
 	class Clock
@@ -44,6 +53,47 @@ namespace ms
 				)
 			);
 		}
+	}
+
+	export class Tones
+	{
+		public readonly background = new Leaf.str( "hsl" );
+
+		constructor()
+		{
+			this.update() ;
+		}
+
+		protected update()
+		{
+			const bg = `hsl( 330, 45%, 45% )`;
+
+			this.background.value = bg ;
+		}
+	}
+
+	export class HSL
+	{
+		public readonly hue ;
+		public readonly sat ;
+		public readonly light ;
+
+		constructor( v : HSL.value )
+		{
+			this.hue = new Leaf.num( v.hue );
+			this.sat = new Leaf.num( v.sat );
+			this.light = new Leaf.num( v.light );
+		}
+	}
+
+	export namespace HSL
+	{
+		export type value =
+		{
+			hue : number ;
+			sat : number ;
+			light : number ;
+		};
 	}
 }
 
