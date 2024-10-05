@@ -3,20 +3,53 @@ import { Leaf, lol } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import { create_place } from "./parts.js";
 
+type gE = globalThis.Element ;
+type gN = globalThis.Node ;
+
 export const add =
 (
-	part : defs.part,
-	com_qe : globalThis.Element | string,
-	rel_qe ? : globalThis.Node | string
+	part : defs.part | defs.part [],
+	com_qe : gE | string,
+	rel_qn ? : gN | string
 )
  : void =>
 {
-	const com_e : globalThis.Element | null = typeof com_qe == "string" ? document.querySelector( com_qe ) : com_qe || null;
-	const rel_e : globalThis.Node | null = typeof rel_qe == "string" ? document.querySelector( rel_qe ) : rel_qe || null;
+	const com_e : gE | null = typeof com_qe == "string" ? document.querySelector( com_qe ) : com_qe || null;
+	const rel_n : gN | null = typeof rel_qn == "string" ? document.querySelector( rel_qn ) : rel_qn || null;
 
-	if( part instanceof Element )
+	if( ! com_e )  return ;
+
+	if( part instanceof Array )
 	{
-		com_e && part.node && com_e.insertBefore( part.node, rel_e )
+		part.forEach( p => add_node( p, com_e, rel_n ) );
+	}
+
+	else
+	{
+		add_node( part, com_e, rel_n );
+	}
+};
+
+const add_node =
+(
+	part : defs.part ,
+	com_e : gE ,
+	rel_n : gN | null
+) =>
+{
+	if( part instanceof Nodet )
+	{
+		part.node && com_e.insertBefore( part.node, rel_n )
+	}
+
+	else if( part instanceof Leaf )
+	{
+		;
+	}
+
+	else if( part instanceof globalThis.Node )
+	{
+		com_e.insertBefore( part, rel_n ) ;
 	}
 };
 
@@ -84,7 +117,7 @@ export class Element extends Nodet
 				document.createElement( type )
 		);
 
-		if( cname ) this.binb_class( this._el_, cname );
+		if( cname ) this.bind_class( this._el_, cname );
 
 		if( style && this._el_ instanceof HTMLElement )
 		{
@@ -131,7 +164,7 @@ export class Element extends Nodet
 		return this._el_;
 	}
 
-	protected binb_class( e : globalThis.Element, def : defs.class_spec )
+	protected bind_class( e : globalThis.Element, def : defs.class_spec )
 	{
 		if( typeof def == "string" )
 		{
@@ -143,7 +176,7 @@ export class Element extends Nodet
 
 		if( def instanceof Array )
 		{
-			def.forEach( def => this.binb_class( e, def ) );
+			def.forEach( def => this.bind_class( e, def ) );
 			return;
 		}
 
@@ -164,7 +197,8 @@ export class Element extends Nodet
 			this.bind
 			(
 				value,
-				value => e.style.setProperty( name, value )
+				// value => e.style.setProperty( name, value )
+				value => ( e.style as any ) [ name ] = String( value )
 			);
 		}
 	}

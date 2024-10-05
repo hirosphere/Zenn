@@ -106,7 +106,7 @@ namespace view
 
 			ef.section
 			(
-				{ class: "gap", style: { flexDirection: "column" } },
+				{ class: "gap", style: {  } },
 				check( "Selected", model.clist.selected ),
 				check( "Shadowed", model.clist.shadowed ),
 				check( "Green", model.clist.green ),

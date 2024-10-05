@@ -21,7 +21,6 @@ function create_nodet
 	(
 		first instanceof Leaf ||
 		first instanceof nodet.Nodet ||
-		first instanceof Array ||
 		first instanceof Node ||
 		typeof first == "string" ||
 		typeof first == "number" ||
@@ -30,8 +29,8 @@ function create_nodet
 	{
 		const parts : defs.parts =
 		(
-			remain === undefined ? [ first ]
-			: [ first, ... remain ] 
+			remain !== undefined ? [ first, ... remain ]
+			: [ first ] 
 		);
 
 		return new nodet.Element( { ns, type, parts } );

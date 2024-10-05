@@ -25,9 +25,9 @@ export namespace defs
 		[ name in keyof CSSStyleDeclaration ] ? : lol.str ;
 	};
 
-	export type class_switch = Record < string, Leaf.bool > ;
+	export type class_switch = Record < string, lol.bool > ;
 
-	export type class_spec = lol.str | class_switch | class_spec [] ;
+	export type class_spec = lol.str | class_switch | ( lol.str | class_switch ) [] ;
 
 	export type ec < E extends Element > =
 	{
@@ -64,10 +64,7 @@ export namespace defs
 	}
 
 	export type node = nodet.Element | text | Node ;
-	export type part_item = node | Place ;
-	export type part_items = part_item [] ;
-	
-	export type part = part_item | part [];
+	export type part = node | Place ;
 	export type parts =  part [] ;
 }
 

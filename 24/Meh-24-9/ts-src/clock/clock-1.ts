@@ -9,12 +9,14 @@ const App = () =>
 		{
 			style :
 			{
-				"background" : "hsl( 330, 45%, 45% )",
+				"backgroundColor" : m.tones.background,
 				"color" : "white",
 			}
 		},
 
 		ef.h1( m.clock.timestr ),
+
+		ef.p( { class : [ {}, "" ] },  ),
 	);
 };
 
@@ -66,7 +68,7 @@ namespace ms
 
 		protected update()
 		{
-			const bg = `hsl( 330, 45%, 45% )`;
+			const bg = `hsl( 345, 45%, 45% )`;
 
 			this.background.value = bg ;
 		}

@@ -8,16 +8,17 @@ export const create_place =
 	ce : Element ,
 	df : DocumentFragment ,
 	def : defs.parts
-) : Place | undefined =>
+)
+: Place | undefined =>
 (
-	next_place( ce, df, def.flat( 20 ) as defs.part_items, 0 )
+	next_place( ce, df, def, 0 )
 );
 
 const next_place =
 (
 	ce : Element ,
 	df : DocumentFragment ,
-	def : defs.part_items,
+	def : defs.parts,
 	pos : number,
 )
 : Place | undefined =>
@@ -32,6 +33,8 @@ const next_place =
 		{
 			return new EachPlace( ce, df, cur, def, pos );
 		}
+
+		return ;
 	}
 
 	if( cur !== undefined )
@@ -50,7 +53,7 @@ export class Place
 	protected make_part
 	(
 		df : DocumentFragment ,
-		pdef : defs.part_item ,
+		pdef : defs.part ,
 	)
 	 : boolean
 	{
@@ -89,7 +92,7 @@ class StaticPlace extends Place
 	(
 		ce : Element ,
 		df : DocumentFragment ,
-		def : defs.part_items ,
+		def : defs.parts ,
 		pos : number ,
 	)
 
@@ -112,6 +115,7 @@ class StaticPlace extends Place
 	}
 }
 
+
 class EachPlace extends Place
 {
 	constructor
@@ -119,7 +123,7 @@ class EachPlace extends Place
 		ce : Element,
 		df : DocumentFragment,
 		edef : defs.Each,
-		def : defs.part_items ,
+		def : defs.parts ,
 		pos : number ,
 	)
 	{
