@@ -1,11 +1,13 @@
-import { _set_ } from "../common.js";
+import { _set_, log } from "../common.js";
 import { Leafr } from "./leaf.js";
 
 export class Renn < S >
 {
-	constructor( protected _items_ : S [] = [] )
+	protected _items_ : S []  = [];
+
+	constructor( items ? : S [] )
 	{
-		;
+		if( items ) this.insert( items );
 	}
 
 
@@ -15,9 +17,13 @@ export class Renn < S >
 		return this._items_;
 	}
 
-	public insert( items : S [], start : Position )
+	public insert( items : S [], start : Position = undefined )
 	{
-		;
+		const s = start ?? this._items_.length ;
+
+		this._items_.splice ( s, 0, ... items );
+
+		log( "insert", items.length, this._items_.length );
 	}
 }
 

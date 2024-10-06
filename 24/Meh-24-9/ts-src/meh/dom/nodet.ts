@@ -19,38 +19,15 @@ export const add =
 
 	if( ! com_e )  return ;
 
-	if( part instanceof Array )
-	{
-		part.forEach( p => add_node( p, com_e, rel_n ) );
-	}
+	const df = new DocumentFragment();
+	const parts = create_place
+	(
+		com_e,
+		df,
+		part instanceof Array ? part : [ part ]
+	);
 
-	else
-	{
-		add_node( part, com_e, rel_n );
-	}
-};
-
-const add_node =
-(
-	part : defs.part ,
-	com_e : gE ,
-	rel_n : gN | null
-) =>
-{
-	if( part instanceof Nodet )
-	{
-		part.node && com_e.insertBefore( part.node, rel_n )
-	}
-
-	else if( part instanceof Leaf )
-	{
-		;
-	}
-
-	else if( part instanceof globalThis.Node )
-	{
-		com_e.insertBefore( part, rel_n ) ;
-	}
+	com_e.insertBefore( df, rel_n );
 };
 
 

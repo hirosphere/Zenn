@@ -68,7 +68,7 @@ namespace ms
 
 		protected update()
 		{
-			const bg = `hsl( 345, 45%, 45% )`;
+			const bg = `hsl( 337.5, 45%, 45% )`;
 
 			this.background.value = bg ;
 		}

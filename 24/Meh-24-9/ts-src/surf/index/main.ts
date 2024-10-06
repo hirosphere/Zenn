@@ -4,12 +4,78 @@ import { links } from "./link-data.js";
 
 const App = () =>
 {
+	const clock = new ClockModel();
+
 	return null ||
 	[
-		ef.h1( "Meh-24-9 Surf" ),
-		ef.p( "Meh-24-9 Surf" ),
-		...links.map( i => link.Block( i ) )
+		ef.h1( Clock( clock ) ),
+		
+		...links.map( i => link.Block( i ) ),
+
+		test(),
 	];
 };
 
-dom.add( ef.main( ... App() ), "body" )
+const test = () =>
+{
+	return ef.section
+	(
+		ef.label
+		(
+			"都道府県",
+			ef.input
+			(
+				{
+					attrs:
+					{
+						type : "text" ,
+						autocomplete : "address-level1"
+					}
+				},
+			),
+		),
+		ef.label( "市町村", ef.input( { props: { type: "text", autocomplete: "address-level2" } } ) ),
+	);
+};
+
+const loop = < T > ( count : number, fn : ( i : number ) => T ) : T[] =>
+{
+	const rt = new Array < T >;
+	for( let i = 0 ; i < count ; i ++ )
+	{
+		rt.push( fn( i ) ) ;
+	}
+	return rt;
+}
+
+const Clock = ( m : ClockModel ) =>
+{
+	return ef.span
+	(
+		m.time, " ", m.iid
+	);
+};
+
+class ClockModel
+{
+	time = new Leaf.str( "" );
+	iid = new Leaf.num( 0 );
+
+	constructor()
+	{
+		this.update();
+	}
+
+	update()
+	{
+		const date = new Date();
+		this.iid.value = setTimeout( () => this.update(), 1000 - date.getTime() % 1000 );
+		this.time.value = date.toLocaleString();
+	}
+}
+
+namespace models
+{
+}
+
+dom.add( App(), "body" )

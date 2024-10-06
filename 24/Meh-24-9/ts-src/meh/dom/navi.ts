@@ -1,14 +1,25 @@
-import { log } from "../common.js";
-import { Leaf, Renn } from "../model/index.js";
+import { _set_, log } from "../common.js";
+import { Leaf, Leafr, Renn } from "../model/index.js";
 
 
 export class Browser
 {
-	public set_current()
-	{}
+	public readonly current = new Leafr < Index | undefined > ( undefined );
+
+	public set_current( index : Index | undefined )
+	{
+		this.current[ _set_ ]( index );
+		
+		document.title = this.make_title( this.current.value );
+	}
 
 	public make_url()
 	{}
+
+	public make_title( index ? : Index ) : string
+	{
+		return index?.title.value ?? "";
+	}
 }
 
 export class Index < P extends Index = any >
