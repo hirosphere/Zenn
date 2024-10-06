@@ -10,7 +10,13 @@ export namespace view
 		(
 			{ class: "flex-col" },
 			ef.h2( "Renn" ),
-			Line( m.si ),
+			ef.section
+			(
+				{ class : "lines" },
+				Line( m.si ),
+				Line( m.si ),
+				Line( m.si ),
+			),
 		);
 	};
 
@@ -18,7 +24,7 @@ export namespace view
 	{
 		return ef.section
 		(
-			{ class: "flex-col" },
+			{ class: "flex-col line" },
 			ef.h3( m.name ),
 			ef.ul
 			(
