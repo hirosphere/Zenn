@@ -4,6 +4,7 @@ import { Leafr } from "./leaf.js";
 export class Renn < S >
 {
 	protected _items_ : S []  = [];
+	protected _orders_ : Order < S > [] = [] ;
 
 	constructor( items ? : S [] )
 	{
@@ -11,31 +12,40 @@ export class Renn < S >
 	}
 
 
-
 	public get items() : S []
 	{
 		return this._items_;
 	}
 
-	public insert( items : S [], start : Position = undefined )
+	public insert( srcs : S [], start : pos = undefined )
 	{
 		const s = start ?? this._items_.length ;
 
-		this._items_.splice ( s, 0, ... items );
+		this._items_.splice ( s, 0, ... srcs );
 
-		log( "insert", items.length, this._items_.length );
+		this._orders_.splice
+		(
+			s,
+			0,
+			... srcs.map
+			(
+				src => new Order < S > ( src )
+			)
+		);
+
+		log( "insert", srcs.length, this._items_.length );
 	}
 }
 
-type Position = number | undefined ;
-
-export class Order < S > extends Leafr.num
+export class Order < S > extends Leafr < pos >
 {
 	constructor
 	(
-		public readonly source : S, ord : number )
+		public readonly source : S, order : pos = undefined )
 	{
-		super( ord );
+		super( order );
 	}
 }
 
+
+type pos = number | undefined ;

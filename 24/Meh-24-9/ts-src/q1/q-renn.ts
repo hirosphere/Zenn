@@ -77,7 +77,7 @@ export namespace models
 		export type value =
 		{
 			name : string ;
-			station_list : Station.value []
+			station_list : Station.value [] ;
 		};
 	}
 
@@ -89,9 +89,9 @@ export namespace models
 
 		constructor( public v : Station.value )
 		{
-			this.kanji = v[ 0 ];
-			this.hira = v[ 1 ];
-			this.roma = v[ 2 ];
+			this.kanji = v[ 0 ] ?? "" ;
+			this.hira = v[ 1 ] ?? "" ;
+			this.roma = v[ 2 ] ?? "" ;
 		}
 	}
 
