@@ -11,31 +11,7 @@ const App = () =>
 		ef.h1( Clock( clock ) ),
 		
 		...links.map( i => link.Block( i ) ),
-
-		test(),
 	];
-};
-
-const test = () =>
-{
-	return ef.section
-	(
-		ef.label
-		(
-			"都道府県",
-			ef.input
-			(
-				{
-					attrs:
-					{
-						type : "text" ,
-						autocomplete : "address-level1"
-					}
-				},
-			),
-		),
-		ef.label( "市町村", ef.input( { props: { type: "text", autocomplete: "address-level2" } } ) ),
-	);
 };
 
 const loop = < T > ( count : number, fn : ( i : number ) => T ) : T[] =>

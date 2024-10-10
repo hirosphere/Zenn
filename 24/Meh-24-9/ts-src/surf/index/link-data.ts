@@ -2,7 +2,7 @@
 export const links =
 [
 	{
-		title: "いつもの",
+		title: "天気",
 		parts:
 		[
 			{ title: "hirosphere", url: "https://twitter.com/hirosphere/with_replies", },
