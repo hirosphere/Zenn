@@ -4,7 +4,7 @@ import * as nodet from "./nodet.js";
 export namespace defs
 {
 	export type primitive = string | number | boolean ;
-	export type leaf = Leaf.str | Leaf.num | Leaf.bool ;
+	export type leaf = Leaf.str | Leaf.num | Leaf.bool;
 	export type text = primitive | leaf ;
 
 	export type acts =

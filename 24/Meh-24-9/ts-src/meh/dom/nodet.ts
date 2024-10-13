@@ -1,5 +1,5 @@
 import { log } from "../common.js";
-import { Leaf, lol } from "../model/leaf.js";
+import { Src, Leaf, lol } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import { create_place } from "./parts.js";
 
@@ -50,7 +50,7 @@ export abstract class Nodet
 		update : ( value : any ) => void,
 	)
 	{
-		if( value instanceof Leaf )
+		if( value instanceof Src )
 		{
 			const ref = new Leaf.Ref();
 			ref.on_value_change = () => update( value.value ) ;
@@ -85,7 +85,7 @@ export class Element extends Nodet
 		super();
 
 		const { ns, type, parts } = args;
-		const { class: cname, style, attrs, props, acts, actActs: actacts } = args;
+		const { class: class_name, style, attrs, props, acts, actActs: actacts } = args;
 
 		let el = this._el_ =
 		(
@@ -94,7 +94,7 @@ export class Element extends Nodet
 				document.createElement( type )
 		);
 
-		if( cname ) this.bind_class( this._el_, cname );
+		if( class_name ) this.bind_class( this._el_, class_name );
 
 		if( style && this._el_ instanceof HTMLElement )
 		{

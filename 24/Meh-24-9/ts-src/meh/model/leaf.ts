@@ -1,43 +1,53 @@
-import { _value_, _set_, _refs_, log } from "../common.js";
+import { _value_, _set_, _on_value_change_, _refs_, log } from "../common.js";
 
-
-export class Leaf < V >
+export abstract class Src < V >
 {
+	public [ _refs_ ] = new Set < Leaf.Ref < V > >;
+	public abstract get value() : V ;
+}
+
+export class Leaf < V > extends Src < V >
+{
+	protected [ _value_ ] : V ;
+
 	constructor
 	(
 		value : V,
 		protected rel ? : Leaf.Rel
 	)
 	{
+		super();
 		this[ _value_ ] = value;
 	}
 
-	public [ _refs_ ] = new Set < Leaf.Ref < V > >;
-
-	public [ _value_ ] : V ;
 
 	public get value() : V
 	{
-		return this[ _value_ ];
+		return this [ _value_ ];
 	}
 
 	public set value( new_value : V )
 	{
-		this[ _set_ ] ( new_value );
+		this.set( new_value );
 	}
 
 	public [ _set_ ] ( new_value : V )
 	{
-		if( new_value === this[ _value_ ] )  return;
+		this.set( new_value );
+	}
 
-		const old_value = this[ _value_ ];
-		this[ _value_ ] = new_value;
+	public set( new_value : V ) : void
+	{
+		if( new_value === this.value )  return;
+
+		const old_value = this [ _value_ ];
+		this [ _value_ ] = new_value;
 
 		this.rel?.update();
 
 		this[ _refs_ ].forEach
 		(
-			ref => ref.on_value_change
+			ref => ref[ _on_value_change_ ]
 			(
 				new_value,
 				old_value
@@ -48,9 +58,9 @@ export class Leaf < V >
 
 export namespace Leaf
 {
-	export class Ref < V >
+	export class Ref < V, R = V >
 	{
-		public set src( new_src : Leaf < V > | undefined )
+		public set src( new_src : Src < V > | undefined )
 		{
 			if( new_src == this._src_ )  return;
 
@@ -60,10 +70,27 @@ export namespace Leaf
 			this._src_ = new_src;
 			new_src?.[ _refs_ ].add( this );
 			
-			this.on_value_change( new_src?.[ _value_ ],  old_src?.[ _value_ ] );
+			this.on_value_change
+			(
+				new_src?.value, 
+				old_src?.value
+			);
 		}
 
-		protected _src_ ? : Leaf < V >;
+		protected _src_ ? : Src < V >;
+
+		public [ _on_value_change_ ]
+		(
+			new_value ? : V,
+			old_value ? : V
+		)
+		{
+			this.on_value_change
+			(
+				new_value ,
+				old_value
+			);
+		}
 
 		public on_value_change
 		(
@@ -83,8 +110,6 @@ export namespace Leaf
 	export class num extends Leaf < number > {}
 	export class bool extends Leaf < boolean > {}
 }
-
-Leaf.str;
 
 export type lol < V > = V | Leaf < V >;
 

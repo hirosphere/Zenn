@@ -8,7 +8,7 @@ export function main()
 	console.log( "Surf Meh-24-9 q1" );
 
 	const lf1 = new Leaf < string > ( "zz" );
-	const r1 = new Leaf.Ref;
+	const r1 = new Leaf.Ref < string >;
 	
 	r1.on_value_change = ( new_v, old_v ) =>
 	{
