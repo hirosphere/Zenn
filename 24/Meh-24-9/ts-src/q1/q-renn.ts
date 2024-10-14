@@ -6,8 +6,6 @@ export namespace view
 	{
 		const m = new models.App ;
 
-		// m.si.station_list.orders.forEach( o => log( o.count.value, o.src.kanji ) )
-
 		return ef.article
 		(
 			{ class: "flex-col" },
@@ -30,7 +28,8 @@ export namespace view
 			ef.h3( m.name ),
 			ef.section
 			(
-				ef.button( { acts : { click() { m.insert() } } }, "+" ) ,
+				ins( m, [ [ "京成上野", "けいせいうえの", "Keisei-ueno" ] ] , 0 ),
+				ins( m, [ [ "西武秩父", "せいぶちちぶ", "Seibu-chichibu" ] ] ),
 			),
 			ef.ul
 			(
@@ -44,6 +43,24 @@ export namespace view
 			),
 		);
 	};
+
+	const ins = ( m : models.Line, v : models.Station.value [], pos ? : Order.pos ) =>
+	{
+		const click = () =>
+		{
+			m.station_list.new
+			(
+				v.map( v => new models.Station( v ) ),
+				pos
+			);
+		}
+
+		return ef.button
+		(
+			{ acts : { click } },
+			"+"
+		)
+	}
 
 	const Station = ( o : Order < models.Station > ) =>
 	{

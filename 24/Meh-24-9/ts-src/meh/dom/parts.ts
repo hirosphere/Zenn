@@ -7,18 +7,17 @@ import * as nodet from "./nodet.js";
 export const create_place =
 (
 	ce : Element ,
-	df : DocumentFragment ,
-	def : defs.parts
+	def : defs.parts ,
+	rel_n ? : Node ,
 )
 : Place | undefined =>
 (
-	next_place( ce, df, def, 0 )
+	next_place( ce, def, 0 )
 );
 
 const next_place =
 (
 	ce : Element ,
-	df : DocumentFragment ,
 	def : defs.parts,
 	pos : number,
 )
@@ -32,7 +31,7 @@ const next_place =
 
 		if( cur instanceof defs.Each )
 		{
-			return new EachPlace( ce, df, cur, def, pos );
+			return new EachPlace( ce, cur, def, pos );
 		}
 
 		return ;
@@ -40,16 +39,17 @@ const next_place =
 
 	if( cur !== undefined )
 	{
-		return new StaticPlace( ce, df, def, pos );
+		return new StaticPlace( ce, def, pos );
 	}
 };
 
 /* */
 
 
-export class Place
+export abstract class Place
 {
 	protected next ? : Place ;
+	public abstract get first_node () : Node | undefined ;
 
 	protected make_part
 	(
@@ -58,8 +58,6 @@ export class Place
 	)
 	 : nodet.Nodet | Node | undefined
 	{
-		let is_period = false
-
 		if( pdef instanceof nodet.Nodet )
 		{
 			pdef.node && df.appendChild( pdef.node );
@@ -91,7 +89,6 @@ class StaticPlace extends Place
 	constructor
 	(
 		ce : Element ,
-		df : DocumentFragment ,
 		def : defs.parts ,
 		pos : number ,
 	)
@@ -99,56 +96,70 @@ class StaticPlace extends Place
 	{
 		super();
 
+		const df = new DocumentFragment ;
+
 		while( pos < def.length )
 		{
 			const pdef = def[ pos ] ;
 
-			if( ! this.make_part( df, pdef ) )
-			{
-				break ;
-			}
+			const part = this.make_part( df, pdef );
 
+			this._first_node_ ??=
+			(
+				part instanceof Node ?
+					part :
+					part?.node
+			);
+
+			if( ! part )  break ;
 			pos ++ ;
 		}
 
-		this.next = next_place( ce, df, def, pos );
+		ce.appendChild( df ) ;
+
+		this.next = next_place( ce, def, pos );
+
+		this.next && log( "stat.next : " , this.next )
 	}
+
+	public override get first_node ()
+	{
+		return this._first_node_ ;
+	}
+
+	protected _first_node_ ? : Node ;
 }
 
 
-type part = nodet.Nodet | Node ;
-
 class EachPlace extends Place
 {
-	protected parts = new Map < Order < any > , part > ;
+	protected src : Renn < any > ;
+	protected create_node : ( order : Order < any > ) => defs.node ;
+	protected parts = new Map < Order < any > , Node > ;
 
 	constructor
 	(
-		ce : Element,
-		protected df : DocumentFragment,
-		protected def : defs.Each,
+		protected ce : Element,
+		def : defs.Each,
 		parts_def : defs.parts ,
 		pos : number ,
 	)
 	{
 		super();
 
+		this.src = def.source ;
+		this.create_node = def.create_node ;
+
 		def.source.add_ref ( this ) ;
+		this.next = next_place( ce, parts_def, pos );
 
-		false && def.source.orders.forEach
-		(
-			order => this.make_part
-			(
-				df ,
-				def.create_node( order )
-			)
-		);
-
-		this.next = next_place( ce, df, parts_def, pos );
+		this.next && log( "each.next : " , this.next )
 	}
 
 	public add ( { src , start , next } : Renn.range )
 	{
+		const df = new DocumentFragment ;
+
 		for
 		(
 			let pos = start ;
@@ -161,17 +172,37 @@ class EachPlace extends Place
 
 			const part = this.make_part
 			(
-				this.df ,
-				this.def.create_node( order )
+				df ,
+				this.create_node( order )
 			);
 
-			part && this.parts.set
+			const node = part instanceof Node ? part : part ?.node ;
+			node && this.parts.set
 			(
-				order ,
-				part,
+				order , node
 			) ;
 		}
+
+		const next_ord = this.src.orders [ next ];
+		
+		this.ce.insertBefore
+		(
+			df,
+			(
+				this.parts.get( next_ord ) ??
+				this.next ?.first_node ??
+				null
+			)
+		);
 	}
 
 	public remove ( range : Renn.range ){}
+
+	public override get first_node (): Node | undefined
+	{
+		return this.parts.get
+		(
+			this.src.orders [ 0 ]
+		);
+	}
 }

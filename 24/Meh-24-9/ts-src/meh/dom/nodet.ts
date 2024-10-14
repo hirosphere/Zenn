@@ -23,11 +23,8 @@ export const add =
 	const parts = create_place
 	(
 		com_e,
-		df,
 		part instanceof Array ? part : [ part ]
 	);
-
-	com_e.insertBefore( df, rel_n );
 };
 
 
@@ -133,10 +130,7 @@ export class Element extends Nodet
 
 		if( parts )
 		{
-			const df = document.createDocumentFragment();
-			// this.parts = new PartsColl( this._el_, df, parts );
-			this.parts = create_place( this._el_, df, parts );
-			this._el_.appendChild( df );
+			this.parts = create_place( this._el_, parts );
 		}
 	}
 
