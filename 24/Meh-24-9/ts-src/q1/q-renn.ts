@@ -12,12 +12,6 @@ export namespace view
 		(
 			{ class: "flex-col" },
 			ef.h2( "Renn" ),
-			ef.ul
-			(
-				ef.li( m.num ) ,
-				ef.li( m.str ) ,
-				ef.li( m.bool ) ,
-			),
 			ef.section
 			(
 				{ class : "lines", style: { gap : "0.8em" } },
@@ -34,13 +28,19 @@ export namespace view
 		(
 			{ class: "flex-col line" },
 			ef.h3( m.name ),
+			ef.section
+			(
+				ef.button( { acts : { click() { m.insert() } } }, "+" ) ,
+			),
 			ef.ul
 			(
+				ef.hr(),
 				each
 				(
 					m.station_list,
 					o => Station( o ),
 				),
+				ef.hr(),
 			),
 		);
 	};
@@ -86,6 +86,15 @@ export namespace models
 			this.station_list = new Renn < Station >
 			(
 				v.station_list.map( v => new Station( v ) )
+			);
+		}
+
+
+		public insert()
+		{
+			this.station_list.new
+			(
+				[ new Station ( [ "西武秩父", "せいぶちちぶ", "Seibu-chichibu" ] ) ]
 			);
 		}
 	}

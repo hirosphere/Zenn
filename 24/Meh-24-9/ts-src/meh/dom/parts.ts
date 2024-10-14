@@ -1,6 +1,6 @@
 import { log } from "../common.js";
 
-import { Leafr } from "../model/index.js";
+import { Renn, Order } from "../model/index.js";
 import { defs } from "./defs.js";
 import * as nodet from "./nodet.js";
 
@@ -56,29 +56,28 @@ export class Place
 		df : DocumentFragment ,
 		pdef : defs.part ,
 	)
-	 : boolean
+	 : nodet.Nodet | Node | undefined
 	{
 		let is_period = false
 
 		if( pdef instanceof nodet.Nodet )
 		{
 			pdef.node && df.appendChild( pdef.node );
+			return pdef ;
 		}
 
 		else if( pdef instanceof Node )
 		{
 			df.appendChild( pdef );
+			return pdef ;
 		}
 
 		else if( ! ( pdef instanceof defs.Place ) )
 		{
-			const n = new nodet.Text( pdef ) ;
-			n.node && df.appendChild( n.node ) ;
+			const text = new nodet.Text( pdef ) ;
+			text.node && df.appendChild( text.node ) ;
+			return text ;
 		}
-
-		else is_period = true ;
-
-		return is_period ;
 	}
 
 	public destruct()
@@ -104,7 +103,7 @@ class StaticPlace extends Place
 		{
 			const pdef = def[ pos ] ;
 
-			if( this.make_part( df, pdef ) )
+			if( ! this.make_part( df, pdef ) )
 			{
 				break ;
 			}
@@ -117,28 +116,62 @@ class StaticPlace extends Place
 }
 
 
+type part = nodet.Nodet | Node ;
+
 class EachPlace extends Place
 {
+	protected parts = new Map < Order < any > , part > ;
+
 	constructor
 	(
 		ce : Element,
-		df : DocumentFragment,
-		edef : defs.Each,
-		def : defs.parts ,
+		protected df : DocumentFragment,
+		protected def : defs.Each,
+		parts_def : defs.parts ,
 		pos : number ,
 	)
 	{
 		super();
 
-		edef.source.orders.forEach
+		def.source.add_ref ( this ) ;
+
+		false && def.source.orders.forEach
 		(
 			order => this.make_part
 			(
 				df ,
-				edef.create_node( order )
+				def.create_node( order )
 			)
 		);
 
-		this.next = next_place( ce, df, def, pos );
+		this.next = next_place( ce, df, parts_def, pos );
 	}
+
+	public add ( { src , start , next } : Renn.range )
+	{
+		for
+		(
+			let pos = start ;
+			pos < next ;
+			pos ++
+		)
+		{
+			const order = src.orders [ pos ] ;
+			if( this.parts.has( order ) )  return ;
+
+			const part = this.make_part
+			(
+				this.df ,
+				this.def.create_node( order )
+			);
+
+			part && this.parts.set
+			(
+				order ,
+				part,
+			) ;
+		}
+	}
+
+	public remove ( range : Renn.range ){}
 }
