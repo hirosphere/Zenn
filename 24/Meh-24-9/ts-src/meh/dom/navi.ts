@@ -1,4 +1,4 @@
-import { _set_, log } from "../common.js";
+import { _set_value_, log } from "../common.js";
 import { Leaf, Leafr, Renn } from "../model/index.js";
 
 
@@ -8,7 +8,7 @@ export class Browser
 
 	public set_current( index : Index | undefined )
 	{
-		this.current[ _set_ ]( index );
+		this.current[ _set_value_ ]( index );
 		
 		document.title = this.make_title( this.current.value );
 	}

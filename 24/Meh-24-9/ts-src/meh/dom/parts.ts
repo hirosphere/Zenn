@@ -1,5 +1,6 @@
 import { log } from "../common.js";
 
+import { Leafr } from "../model/index.js";
 import { defs } from "./defs.js";
 import * as nodet from "./nodet.js";
 
@@ -129,14 +130,12 @@ class EachPlace extends Place
 	{
 		super();
 
-		log( "EachPlace", edef.source.items )
-
-		edef.source.items.forEach
+		edef.source.orders.forEach
 		(
-			value => this.make_part
+			order => this.make_part
 			(
 				df ,
-				edef.create_node( value )
+				edef.create_node( order )
 			)
 		);
 

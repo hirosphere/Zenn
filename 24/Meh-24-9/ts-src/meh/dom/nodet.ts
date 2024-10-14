@@ -1,5 +1,5 @@
-import { log } from "../common.js";
-import { Src, Leaf, lol } from "../model/leaf.js";
+import { _add_ref_, log } from "../common.js";
+import { Srcr, Leafr, lol } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import { create_place } from "./parts.js";
 
@@ -46,16 +46,20 @@ export abstract class Nodet
 
 	protected bind
 	(
-		value : lol < any >,
+		value : lol < any > ,
 		update : ( value : any ) => void,
 	)
 	{
-		if( value instanceof Src )
+		if( value instanceof Srcr )
 		{
-			const ref = new Leaf.Ref();
-			ref.on_value_change = () => update( value.value ) ;
-			ref.src = value;
+			const ref = new Srcr.Ref
+			(
+				value ,
+				update
+			);
+
 			this.srcs.add( ref );
+			value [ _add_ref_ ] ( ref ) ;
 		}
 	
 		else  update( value );
@@ -71,7 +75,7 @@ export abstract class Nodet
 		this._destruct( true );
 	}
 
-	protected srcs = new Set < Leaf.Ref < any > > ;
+	protected srcs = new Set < Srcr.Ref < any > > ;
 }
 
 export class Element extends Nodet
@@ -145,8 +149,6 @@ export class Element extends Nodet
 	{
 		if( typeof def == "string" )
 		{
-			log( "class", def );
-
 			e.className += " " + def;
 			return;
 		}
@@ -174,7 +176,6 @@ export class Element extends Nodet
 			this.bind
 			(
 				value,
-				// value => e.style.setProperty( name, value )
 				value => ( e.style as any ) [ name ] = String( value )
 			);
 		}
@@ -208,7 +209,11 @@ export class Text extends Nodet
 			text,
 			value =>
 			{
-				if( this._node_ ) this._node_.nodeValue = value
+
+				if( this._node_ )
+				{
+					this._node_.nodeValue = value ?? "" ;
+				}
 			}
 		);
 	}

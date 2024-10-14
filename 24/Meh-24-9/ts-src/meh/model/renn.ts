@@ -1,10 +1,9 @@
-import { _set_, log } from "../common.js";
-import { Leafr } from "./leaf.js";
+import { _set_value_, log } from "../common.js";
+import { Leafr, Srcr } from "./leaf.js";
 
 export class Renn < S >
 {
-	protected _items_ : S []  = [];
-	protected _orders_ : Order < S > [] = [] ;
+	public readonly orders : Order < S > [] = [] ;
 
 	constructor( items ? : S [] )
 	{
@@ -12,43 +11,75 @@ export class Renn < S >
 	}
 
 
-	public get items() : S []
+	public insert
+	(
+		srcs : S [],
+		start ? : Order.pos
+	)
+	: void
 	{
-		return this._items_;
-	}
+		start = pos_trim( start, this.orders ) ;
 
-	public insert( srcs : S [], start ? : pos )
-	{
-		start = pos_trim( start, srcs ) ;
-
-		this._items_.splice ( start, 0, ... srcs );
-
-		this._orders_.splice
+		this.orders.splice
 		(
 			start, 0,
 			... srcs.map( src => new Order( src ) )
 		);
 
-		log( "insert", srcs.length, this._items_.length );
+		this.update_orders( start, this.orders.length );
+	}
+
+	protected update_orders
+	(
+		start : number,
+		next : number
+	)
+	{
+		for
+		(
+			let pos = start ;
+			pos < next ;
+			pos ++
+		)
+		{
+			this.orders [ pos ] [ _set_value_ ] ( pos );
+		}
 	}
 }
 
-const pos_trim = ( pos : pos, ar : Array < any > ) =>
+const pos_trim = ( pos : Order.pos, ar : Array < any > ) =>
 {
 	if( pos === undefined || pos >= ar.length )  return ar.length ;
 	if( pos < 0 )  return 0 ;
 	return pos ;
 }
 
-export class Order < S > extends Leafr < pos >
+export class Order < S > extends Leafr < Order.pos >
 {
 	constructor
 	(
-		public readonly source : S, order : pos = undefined )
+		public readonly src : S,
+		order : Order.pos = undefined
+	)
 	{
 		super( order );
 	}
+
+	protected _count_ ? : Leafr.Conv < Order.pos > ;
+
+	public get count ()
+	{
+		return this._count_ ??= new Leafr.Conv
+		(
+			this,
+			v => typeof v == "number" ? v + 1 : v
+		)
+	}
+}
+
+export namespace Order
+{
+	export type pos = number | undefined ;	
 }
 
 
-type pos = number | undefined ;

@@ -1,19 +1,70 @@
-import { _value_, _set_, _on_value_change_, _refs_, log } from "../common.js";
+import { _value_, _set_value_, _on_value_change_, _add_ref_, _remove_ref_, log } from "../common.js";
 
-export abstract class Src < V >
+/* */
+
+export abstract class Srcr < V >
 {
-	public [ _refs_ ] = new Set < Leaf.Ref < V > >;
 	public abstract get value() : V ;
+	protected refs = new Set < Srcr.Ref < V > > ;
+
+	public [ _add_ref_ ]
+	(
+		ref : Srcr.Ref < V > ,
+		old_value ? : V
+	)
+	: void
+	{
+		this.refs.add( ref );
+		ref [ _on_value_change_ ]
+		(
+			this.value,
+			old_value
+		) ;
+	}
+	public [ _remove_ref_ ] ( ref : Srcr.Ref < V > ) : void
+	{
+		this.refs.delete( ref );
+	}
 }
 
-export class Leaf < V > extends Src < V >
+export namespace Srcr
+{
+	export class Ref < V, R = V >
+	{
+		constructor
+		(
+			public readonly src : Srcr < V > ,
+			protected on_value_change : vc < V > ,
+		)
+		{}
+
+		public [ _on_value_change_ ]
+		(
+			new_value : V ,
+			old_value ? : V ,
+		)
+		{
+			this.on_value_change
+			(
+				new_value ,
+				old_value ,
+			);
+		}
+
+		public term() {}
+	}
+
+	type vc < V > = ( new_value : V , old_value ? : V ) => void ;
+}
+
+export class Leafr < V > extends Srcr < V >
 {
 	protected [ _value_ ] : V ;
 
 	constructor
 	(
 		value : V,
-		protected rel ? : Leaf.Rel
+		protected rel ? : Leafr.Rel
 	)
 	{
 		super();
@@ -26,17 +77,7 @@ export class Leaf < V > extends Src < V >
 		return this [ _value_ ];
 	}
 
-	public set value( new_value : V )
-	{
-		this.set( new_value );
-	}
-
-	public [ _set_ ] ( new_value : V )
-	{
-		this.set( new_value );
-	}
-
-	public set( new_value : V ) : void
+	public [ _set_value_ ] ( new_value : V )
 	{
 		if( new_value === this.value )  return;
 
@@ -45,7 +86,7 @@ export class Leaf < V > extends Src < V >
 
 		this.rel?.update();
 
-		this[ _refs_ ].forEach
+		this.refs.forEach
 		(
 			ref => ref[ _on_value_change_ ]
 			(
@@ -56,76 +97,62 @@ export class Leaf < V > extends Src < V >
 	}
 }
 
-export namespace Leaf
+export namespace Leafr
 {
-	export class Ref < V, R = V >
-	{
-		public set src( new_src : Src < V > | undefined )
-		{
-			if( new_src == this._src_ )  return;
-
-			const old_src = this._src_;
-			old_src?.[ _refs_ ].delete( this );
-
-			this._src_ = new_src;
-			new_src?.[ _refs_ ].add( this );
-			
-			this.on_value_change
-			(
-				new_src?.value, 
-				old_src?.value
-			);
-		}
-
-		protected _src_ ? : Src < V >;
-
-		public [ _on_value_change_ ]
-		(
-			new_value ? : V,
-			old_value ? : V
-		)
-		{
-			this.on_value_change
-			(
-				new_value ,
-				old_value
-			);
-		}
-
-		public on_value_change
-		(
-			new_value ? : V,
-			old_value ? : V
-		) {}
-
-		public term() {}
-	}
-
 	export interface Rel
 	{
 		update() : void ;
 	}
 
-	export class str extends Leaf < string > {}
-	export class num extends Leaf < number > {}
-	export class bool extends Leaf < boolean > {}
-}
+	export class str extends Leafr < string > {}
+	export class num extends Leafr < number > {}
+	export class bool extends Leafr < boolean > {}
 
-export type lol < V > = V | Leaf < V >;
+	/* */
 
-export namespace lol
-{
-	export type str = lol < string >;
-	export type num = lol < number >;
-	export type bool = lol < boolean >;
-}
-
-export class Leafr < V > extends Leaf < V >
-{
-	public override get value() : V
+	export class Conv < V, R = V > extends Srcr < R >
 	{
-		return this[ _value_ ];
+		protected src_ref : Srcr.Ref < V > ;
+
+		constructor
+		(
+			src : Srcr < V > ,
+			protected toref : conv_fn < V, R >
+		)
+		{
+			super() ;
+			
+			const ref = this.src_ref = new Srcr.Ref < V >
+			(
+				src,
+				( new_value , old_value ) =>
+				{
+					this.notify ( new_value , old_value ) ;
+				}
+			);
+
+			src [ _add_ref_ ] ( ref ) ;
+		}
+
+		public override get value ()
+		{
+			return this.toref( this.src_ref.src.value );
+		}
+
+		protected notify( new_value : V, old_value ? : V )
+		{
+			this.refs.forEach
+			(
+				ref => ref [ _on_value_change_ ]
+				(
+					this.toref( new_value ) ,
+					old_value !== undefined ? this.toref ( old_value ) : undefined
+				)
+			);
+		}
 	}
+
+	export type conv_fn < V, R = V > = ( value : V ) => R ;
 }
 
 export type lolr < V > = V | Leaf < V >;
@@ -135,5 +162,33 @@ export namespace lolr
 	export type str = lolr < string >;
 	export type num = lolr < number >;
 	export type bool = lolr < boolean >;
+}
+
+
+/* Leaf W/R */
+
+
+export class Leaf < V > extends Leafr < V >
+{
+	public override set value ( new_value : V ) { this [ _set_value_ ] ( new_value ) }
+	public override get value () : V { return this [ _value_ ] ; }
+}
+
+export namespace Leaf
+{
+	export class str extends Leaf < string > {}
+	export class num extends Leaf < number > {}
+	export class bool extends Leaf < boolean > {}
+}
+
+new Leaf.str( "" ).value = "1";
+
+export type lol < V > = V | Leaf < V >;
+
+export namespace lol
+{
+	export type str = lol < string >;
+	export type num = lol < number >;
+	export type bool = lol < boolean >;
 }
 

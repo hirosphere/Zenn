@@ -1,11 +1,12 @@
-import { Leaf, lol, Renn } from "../model/index.js";
+import { log } from "../common.js";
+import { Srcr, lol, Renn, Order } from "../model/index.js";
 import * as nodet from "./nodet.js";
 
 export namespace defs
 {
-	export type primitive = string | number | boolean ;
-	export type leaf = Leaf.str | Leaf.num | Leaf.bool;
-	export type text = primitive | leaf ;
+	export type primitive = string | number | boolean | undefined ;
+	export type srcr = Srcr < string > | Srcr < number > | Srcr < boolean > | Srcr < Order.pos > ;
+	export type text = primitive | srcr ;
 
 	export type acts =
 	{
@@ -22,7 +23,7 @@ export namespace defs
 
 	export type style =
 	{
-		[ name in keyof CSSStyleDeclaration ] ? : lol.str ;
+		[ name in keyof CSSStyleDeclaration ] ? : lol < CSSStyleDeclaration [ name ] > ;
 	};
 
 	export type class_switch = Record < string, lol.bool > ;
@@ -53,12 +54,12 @@ export namespace defs
 		public set content ( content : node ) {}
 	}
 
-	export class Each < v = any > extends Place
+	export class Each < S = any > extends Place
 	{
 		constructor
 		(
 			public readonly source : Renn < any > ,
-			public readonly create_node : ( value : v ) => node
+			public readonly create_node : ( order : Order < S > ) => node
 		)
 		{ super() }
 	}
@@ -68,12 +69,12 @@ export namespace defs
 	export type parts =  part [] ;
 }
 
-export const each = < v >
+export const each = < S >
 (
-	source : Renn < v > ,
-	create_node : ( value : v ) => defs.node
+	source : Renn < S > ,
+	create_node : ( order : Order < S > ) => defs.node
 )
- : defs.Each < v > =>
+ : defs.Each < S > =>
 (
 	new defs.Each( source, create_node )
 );

@@ -1,15 +1,8 @@
-import { Leaf } from "../model/leaf.js";
+import { Srcr } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import * as nodet from "./nodet.js";
 
-type create_nodet_t < E extends Element > =
-(
-	first ? : defs.ec < E > | defs.part,
-	... remain : defs.parts
-)
-=> nodet.Element ;
-
-function create_nodet
+function create_element
 (
 	ns : string,
 	type : string,
@@ -19,8 +12,9 @@ function create_nodet
 {
 	if
 	(
-		first instanceof Leaf ||
+		first instanceof Srcr ||
 		first instanceof nodet.Nodet ||
+		first instanceof defs.Place ||
 		first instanceof Node ||
 		typeof first == "string" ||
 		typeof first == "number" ||
@@ -39,6 +33,13 @@ function create_nodet
 	return new nodet.Element( { ns, type, ... first, parts : remain } );
 }
 
+type create_nodet_t < E extends Element > =
+(
+	first ? : defs.ec < E > | defs.part,
+	... remain : defs.parts
+)
+=> nodet.Element ;
+
 class Handler < T extends object > implements ProxyHandler < T >
 {
 	constructor( private ns : string )
@@ -55,7 +56,7 @@ class Handler < T extends object > implements ProxyHandler < T >
 	{
 		if( this.fns.has( type ) )  return this.fns.get( type );
 
-		const fn : create_nodet_t < any > = ( first, ... remain ) => create_nodet( this.ns, type, first, ... remain );
+		const fn : create_nodet_t < any > = ( first, ... remain ) => create_element( this.ns, type, first, ... remain );
 		this.fns.set( type, fn );
 		return fn;
 	}

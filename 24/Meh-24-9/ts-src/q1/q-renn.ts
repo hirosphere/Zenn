@@ -1,4 +1,4 @@
-import { Leaf, Renn, ef, each, dom, navi, log } from "../meh/index.js";
+import { Leaf, Renn, Order, ef, each, dom, navi, log } from "../meh/index.js";
 
 export namespace view
 {
@@ -6,13 +6,21 @@ export namespace view
 	{
 		const m = new models.App ;
 
+		// m.si.station_list.orders.forEach( o => log( o.count.value, o.src.kanji ) )
+
 		return ef.article
 		(
 			{ class: "flex-col" },
 			ef.h2( "Renn" ),
+			ef.ul
+			(
+				ef.li( m.num ) ,
+				ef.li( m.str ) ,
+				ef.li( m.bool ) ,
+			),
 			ef.section
 			(
-				{ class : "lines" },
+				{ class : "lines", style: { gap : "0.8em" } },
 				Line( m.si ),
 				Line( m.si ),
 				Line( m.si ),
@@ -28,15 +36,22 @@ export namespace view
 			ef.h3( m.name ),
 			ef.ul
 			(
-				... m.station_list.items.map ( i => Station( i ) )
+				each
+				(
+					m.station_list,
+					o => Station( o ),
+				),
 			),
 		);
 	};
 
-	const Station = ( m : models.Station ) =>
+	const Station = ( o : Order < models.Station > ) =>
 	{
+		const m = o.src ;
+
 		return ef.li
 		(
+			ef.span ( o.count ), "  ",
 			m.kanji, " ",
 			m.hira
 		);
@@ -49,6 +64,9 @@ export namespace models
 	{
 		public readonly  browser = new navi.Browser();
 		public readonly  si = new Line( data.si );
+		public readonly num = new Leaf.num ( 5 );
+		public readonly str = new Leaf.str ( "八日市場" );
+		public readonly bool = new Leaf.bool ( true );
 
 		constructor()
 		{
