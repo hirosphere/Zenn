@@ -28,6 +28,8 @@ export namespace view
 			ef.h3( m.name ),
 			ef.section
 			(
+				{ class : "fl-bar" },
+
 				ins( m, [ [ "京成上野", "けいせいうえの", "Keisei-ueno" ] ] , 0 ),
 				ins( m, [ [ "西武秩父", "せいぶちちぶ", "Seibu-chichibu" ] ] ),
 			),
@@ -68,9 +70,18 @@ export namespace view
 
 		return ef.li
 		(
-			ef.span ( o.count ), "  ",
-			m.kanji, " ",
-			m.hira
+			{ class : "station" },
+
+			ef.span( o.count ),
+			ef.span( m.kanji ),
+			ef.span( m.hira ),
+			ef.span
+			(
+				{
+					acts : { click () { o.remove () ; } } ,
+				} ,
+				"**"
+			),
 		);
 	};
 }

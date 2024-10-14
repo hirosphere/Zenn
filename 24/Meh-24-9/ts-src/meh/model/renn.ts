@@ -37,7 +37,7 @@ export class Renn < S >
 		this.orders.splice
 		(
 			start, 0,
-			... srcs.map( src => new Order( src ) )
+			... srcs.map( src => new Order( this, src ) )
 		);
 
 		this.update_orders( start, this.orders.length ) ;
@@ -49,11 +49,50 @@ export class Renn < S >
 			next : start + srcs.length
 		} ;
 
-		log( "new", note )
-
 		this [ _refs_ ] .forEach
 		(
 			ref => ref.add( note )
+		);
+	}
+
+	public remove
+	(
+		start : number ,
+		count : number ,
+	)
+	{
+		const next = pos_trim
+		(
+			start + count ,
+			this.orders
+		);
+		
+		start = pos_trim( start, this.orders ) ;
+
+		const orders = this.orders.splice
+		(
+			start, next - start,
+		);
+
+		orders.forEach
+		(
+			order => order [ _set_renn_ ] ()
+		);
+
+		this.update_orders( start, this.orders.length ) ;
+
+		const note =
+		{
+			src : this ,
+			start ,
+			next
+		};
+
+		log( start , next );
+
+		this [ _refs_ ] .forEach
+		(
+			ref => ref.remove( note )
 		);
 	}
 
@@ -86,15 +125,19 @@ export namespace Renn
 {
 	export class Ref < S >
 	{
-		public add ( range : range < S > ) {}
-		public remove ( range : range < S > ) {}
+		public add ( range : note < S > ) {}
+		public remove ( range : note < S > ) {}
 	}
 
-	export type range < S = any > =
+	export type range =
 	{
-		readonly src : Renn < S > ,
 		readonly start : number ;
 		readonly next : number ;
+	};
+
+	export type note < S = any > = range &
+	{
+		readonly src : Renn < S > ,
 	};
 }
 
@@ -102,15 +145,17 @@ export namespace Renn
 
 /* */
 
+export const _set_renn_ = Symbol();
+
 export class Order < S > extends Leafr < Order.pos >
 {
 	constructor
 	(
+		protected renn : Renn < S > | undefined,
 		public readonly src : S,
-		order : Order.pos = undefined
 	)
 	{
-		super( order );
+		super( undefined );
 	}
 
 	protected _count_ ? : Leafr.Conv < Order.pos > ;
@@ -122,6 +167,24 @@ export class Order < S > extends Leafr < Order.pos >
 			this,
 			to_count
 		)
+	}
+
+	public [ _set_renn_ ] ( renn ? : Renn < S > )
+	{
+		this.renn = renn ;
+	}
+
+	public remove()
+	{
+		this.value !== undefined &&
+		(
+			this.renn ?.remove ( this.value, 1 )
+		);
+	}
+
+	protected term ()
+	{
+		this.renn = undefined ;
 	}
 }
 

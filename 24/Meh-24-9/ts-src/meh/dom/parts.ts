@@ -118,8 +118,6 @@ class StaticPlace extends Place
 		ce.appendChild( df ) ;
 
 		this.next = next_place( ce, def, pos );
-
-		this.next && log( "stat.next : " , this.next )
 	}
 
 	public override get first_node ()
@@ -152,11 +150,9 @@ class EachPlace extends Place
 
 		def.source.add_ref ( this ) ;
 		this.next = next_place( ce, parts_def, pos );
-
-		this.next && log( "each.next : " , this.next )
 	}
 
-	public add ( { src , start , next } : Renn.range )
+	public add ( { src , start , next } : Renn.note )
 	{
 		const df = new DocumentFragment ;
 
@@ -184,7 +180,7 @@ class EachPlace extends Place
 		}
 
 		const next_ord = this.src.orders [ next ];
-		
+
 		this.ce.insertBefore
 		(
 			df,
@@ -196,7 +192,9 @@ class EachPlace extends Place
 		);
 	}
 
-	public remove ( range : Renn.range ){}
+	public remove ( { src, start, next } : Renn.note )
+	{
+	}
 
 	public override get first_node (): Node | undefined
 	{
