@@ -1,5 +1,5 @@
 import { _refs_, _set_value_, log } from "../common.js";
-import { Leafr, Srcr } from "./leaf.js";
+import { Leafr, SproutR } from "./leaf.js";
 
 export class Renn < S >
 {

@@ -1,5 +1,5 @@
 import { _add_ref_, log } from "../common.js";
-import { Srcr, Leafr, lol } from "../model/leaf.js";
+import { SproutR, Leafr, lol } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import { create_place } from "./parts.js";
 
@@ -47,9 +47,9 @@ export abstract class Nodet
 		update : ( value : any ) => void,
 	)
 	{
-		if( value instanceof Srcr )
+		if( value instanceof SproutR )
 		{
-			const ref = new Srcr.Ref
+			const ref = new SproutR.Ref
 			(
 				value ,
 				update
@@ -72,7 +72,7 @@ export abstract class Nodet
 		this._destruct( true );
 	}
 
-	protected srcs = new Set < Srcr.Ref < any > > ;
+	protected srcs = new Set < SproutR.Ref < any > > ;
 }
 
 export class Element extends Nodet
