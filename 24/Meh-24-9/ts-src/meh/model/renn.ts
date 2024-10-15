@@ -8,6 +8,7 @@ export class Renn < S >
 		if( items ) this.new( items );
 	}
 
+	public readonly length = new Leafr.num ( 0 );
 	public readonly orders : Order < S > [] = [] ;
 	protected [ _refs_ ] = new Set < Renn.Ref < S > > ;
 
@@ -21,9 +22,15 @@ export class Renn < S >
 				src : this ,
 				start : 0 ,
 				next : this.orders.length ,
+				orders : this.orders ,
 			}
 		);
-	 }
+	}
+
+	public clear ()
+	{
+		this.remove ( 0, this.orders.length ) ;
+	}
 
 	public new
 	(
@@ -34,10 +41,15 @@ export class Renn < S >
 	{
 		start = pos_trim( start, this.orders ) ;
 
+		const orders = srcs.map
+		(
+			src => new Order( this, src )
+		);
+
 		this.orders.splice
 		(
 			start, 0,
-			... srcs.map( src => new Order( this, src ) )
+			... orders
 		);
 
 		this.update_orders( start, this.orders.length ) ;
@@ -46,13 +58,16 @@ export class Renn < S >
 		{
 			src : this ,
 			start ,
-			next : start + srcs.length
+			next : start + srcs.length ,
+			orders ,
 		} ;
 
 		this [ _refs_ ] .forEach
 		(
 			ref => ref.add( note )
 		);
+
+		this.length [ _set_value_ ] ( this.orders.length ) ;
 	}
 
 	public remove
@@ -66,12 +81,13 @@ export class Renn < S >
 			start + count ,
 			this.orders
 		);
-		
+
 		start = pos_trim( start, this.orders ) ;
 
 		const orders = this.orders.splice
 		(
-			start, next - start,
+			start,
+			next - start,
 		);
 
 		orders.forEach
@@ -85,7 +101,8 @@ export class Renn < S >
 		{
 			src : this ,
 			start ,
-			next
+			next ,
+			orders ,
 		};
 
 		log( start , next );
@@ -94,6 +111,8 @@ export class Renn < S >
 		(
 			ref => ref.remove( note )
 		);
+
+		this.length [ _set_value_ ] ( this.orders.length ) ;
 	}
 
 	protected update_orders
@@ -137,7 +156,8 @@ export namespace Renn
 
 	export type note < S = any > = range &
 	{
-		readonly src : Renn < S > ,
+		readonly src : Renn < S > ;
+		readonly orders : Order < S > [] ;
 	};
 }
 
@@ -166,7 +186,7 @@ export class Order < S > extends Leafr < Order.pos >
 		(
 			this,
 			to_count
-		)
+		);
 	}
 
 	public [ _set_renn_ ] ( renn ? : Renn < S > )

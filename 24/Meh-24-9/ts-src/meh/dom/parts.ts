@@ -56,12 +56,12 @@ export abstract class Place
 		df : DocumentFragment ,
 		pdef : defs.part ,
 	)
-	 : nodet.Nodet | Node | undefined
+	 : Node | undefined
 	{
 		if( pdef instanceof nodet.Nodet )
 		{
 			pdef.node && df.appendChild( pdef.node );
-			return pdef ;
+			return pdef.node ;
 		}
 
 		else if( pdef instanceof Node )
@@ -74,7 +74,7 @@ export abstract class Place
 		{
 			const text = new nodet.Text( pdef ) ;
 			text.node && df.appendChild( text.node ) ;
-			return text ;
+			return text.node ;
 		}
 	}
 
@@ -101,17 +101,9 @@ class StaticPlace extends Place
 		while( pos < def.length )
 		{
 			const pdef = def[ pos ] ;
-
 			const part = this.make_part( df, pdef );
-
-			this._first_node_ ??=
-			(
-				part instanceof Node ?
-					part :
-					part?.node
-			);
-
 			if( ! part )  break ;
+			this._first_node_ ??= part ;
 			pos ++ ;
 		}
 
@@ -133,7 +125,7 @@ class EachPlace extends Place
 {
 	protected src : Renn < any > ;
 	protected create_node : ( order : Order < any > ) => defs.node ;
-	protected parts = new Map < Order < any > , Node > ;
+	protected nodes = new Map < Order < any > , Node > ;
 
 	constructor
 	(
@@ -164,16 +156,15 @@ class EachPlace extends Place
 		)
 		{
 			const order = src.orders [ pos ] ;
-			if( this.parts.has( order ) )  return ;
+			if( this.nodes.has( order ) )  return ;
 
-			const part = this.make_part
+			const node = this.make_part
 			(
 				df ,
 				this.create_node( order )
 			);
 
-			const node = part instanceof Node ? part : part ?.node ;
-			node && this.parts.set
+			node && this.nodes.set
 			(
 				order , node
 			) ;
@@ -185,20 +176,31 @@ class EachPlace extends Place
 		(
 			df,
 			(
-				this.parts.get( next_ord ) ??
+				this.nodes.get( next_ord ) ??
 				this.next ?.first_node ??
 				null
 			)
 		);
 	}
 
-	public remove ( { src, start, next } : Renn.note )
+	public remove ( { orders } : Renn.note )
 	{
+		orders.forEach
+		(
+			order => this.remove_node ( order )
+		);
+	}
+
+	protected remove_node ( order : Order < any > )
+	{
+		const node = this.nodes.get ( order ) ;
+		if( ! node )  return ;
+		this.ce.removeChild( node ) ;
 	}
 
 	public override get first_node (): Node | undefined
 	{
-		return this.parts.get
+		return this.nodes.get
 		(
 			this.src.orders [ 0 ]
 		);

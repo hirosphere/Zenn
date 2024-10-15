@@ -30,8 +30,14 @@ export namespace view
 			(
 				{ class : "fl-bar" },
 
+				bu ( "xx", () => m.station_list.clear () ) ,
 				ins( m, [ [ "京成上野", "けいせいうえの", "Keisei-ueno" ] ] , 0 ),
 				ins( m, [ [ "西武秩父", "せいぶちちぶ", "Seibu-chichibu" ] ] ),
+			),
+			ef.section
+			(
+				{ class : "fl-bar" },
+				ef.span( m.station_list.length ),
 			),
 			ef.ul
 			(
@@ -45,6 +51,12 @@ export namespace view
 			),
 		);
 	};
+
+	const bu = ( label : string , click : ( ev : MouseEvent ) => void ) => ef.button
+	(
+		{ acts : { click } } ,
+		label
+	);
 
 	const ins = ( m : models.Line, v : models.Station.value [], pos ? : Order.pos ) =>
 	{
