@@ -1,11 +1,11 @@
 import { log } from "../common.js";
-import { SproutR, lol, Renn, Order } from "../model/index.js";
+import { Budr, lol, Renn, Order } from "../model/index.js";
 import * as nodet from "./nodet.js";
 
 export namespace defs
 {
 	export type primitive = string | number | boolean | undefined ;
-	export type srcr = SproutR < string > | SproutR < number > | SproutR < boolean > | SproutR < Order.pos > ;
+	export type srcr = Budr < string > | Budr < number > | Budr < boolean > | Budr < Order.pos > ;
 	export type text = primitive | srcr ;
 
 	export type acts =

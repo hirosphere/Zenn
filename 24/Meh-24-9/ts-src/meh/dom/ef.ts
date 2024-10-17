@@ -1,4 +1,4 @@
-import { SproutR } from "../model/leaf.js";
+import { Budr } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import * as nodet from "./nodet.js";
 
@@ -12,7 +12,7 @@ function create_element
 {
 	if
 	(
-		first instanceof SproutR ||
+		first instanceof Budr ||
 		first instanceof nodet.Nodet ||
 		first instanceof defs.Place ||
 		first instanceof Node ||

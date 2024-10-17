@@ -2,14 +2,14 @@ import { _value_, _set_value_, _on_value_change_, _add_ref_, _remove_ref_, log }
 
 /* */
 
-export abstract class SproutR < V >
+export abstract class Budr < V >
 {
 	public abstract get value() : V ;
-	protected refs = new Set < SproutR.Ref < V > > ;
+	protected refs = new Set < Budr.Ref < V > > ;
 
 	public [ _add_ref_ ]
 	(
-		ref : SproutR.Ref < V > ,
+		ref : Budr.Ref < V > ,
 		old_value ? : V
 	)
 	: void
@@ -21,19 +21,19 @@ export abstract class SproutR < V >
 			old_value
 		) ;
 	}
-	public [ _remove_ref_ ] ( ref : SproutR.Ref < V > ) : void
+	public [ _remove_ref_ ] ( ref : Budr.Ref < V > ) : void
 	{
 		this.refs.delete( ref );
 	}
 }
 
-export namespace SproutR
+export namespace Budr
 {
 	export class Ref < V, R = V >
 	{
 		constructor
 		(
-			public readonly src : SproutR < V > ,
+			public readonly src : Budr < V > ,
 			protected on_value_change : vc < V > ,
 		)
 		{}
@@ -57,7 +57,7 @@ export namespace SproutR
 	type vc < V > = ( new_value : V , old_value ? : V ) => void ;
 }
 
-export class Leafr < V > extends SproutR < V >
+export class Leafr < V > extends Budr < V >
 {
 	protected [ _value_ ] : V ;
 
@@ -110,19 +110,19 @@ export namespace Leafr
 
 	/* */
 
-	export class Conv < V, R = V > extends SproutR < R >
+	export class Conv < V, R = V > extends Budr < R >
 	{
-		protected src_ref : SproutR.Ref < V > ;
+		protected src_ref : Budr.Ref < V > ;
 
 		constructor
 		(
-			src : SproutR < V > ,
+			src : Budr < V > ,
 			protected toref : conv_fn < V, R >
 		)
 		{
 			super() ;
 			
-			const ref = this.src_ref = new SproutR.Ref < V >
+			const ref = this.src_ref = new Budr.Ref < V >
 			(
 				src,
 				( new_value , old_value ) =>
