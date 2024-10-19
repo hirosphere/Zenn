@@ -1,5 +1,5 @@
 import { log } from "../common.js";
-import { Leafr, lol, Renn, Order } from "../model/index.js";
+import { Leafr, lolr, Renn, Order } from "../model/index.js";
 import * as nodet from "./nodet.js";
 
 export namespace defs
@@ -21,17 +21,20 @@ export namespace defs
 
 	export type attrs < E extends Element > =
 	{
-		[ name in keyof E ] ? : lol < E [ name ] > ;
+		[ name in keyof E ] ? : lolr < E [ name ] > ;
 	};
 
 	export type style =
 	{
-		[ name in keyof CSSStyleDeclaration ] ? : lol < CSSStyleDeclaration [ name ] > ;
+		[ name in keyof CSSStyleDeclaration ] ? : lolr < CSSStyleDeclaration [ name ] > ;
 	};
 
-	export type class_switch = Record < string, lol.bool > ;
+	export type class_switch = Record < string, lolr.bool > ;
 
-	export type class_spec = lol.str | class_switch | ( lol.str | class_switch ) [] ;
+	export type class_spec =
+	(
+		lolr.str | class_switch | ( string | class_switch ) []
+	);
 
 	export type ec < E extends Element > =
 	{

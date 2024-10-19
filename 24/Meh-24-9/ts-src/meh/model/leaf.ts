@@ -180,6 +180,13 @@ export namespace lolr
 	export type bool = lolr < boolean >;
 }
 
+export namespace leafr
+{
+	export class str extends Leafr.Entity < string > {};
+	export class num extends Leafr.Entity < number > {};
+	export class bool extends Leafr.Entity < boolean > {};
+}
+
 
 /* Leaf W/R */
 
@@ -218,5 +225,12 @@ export namespace lol
 	export type str = lol < string >;
 	export type num = lol < number >;
 	export type bool = lol < boolean >;
+}
+
+export namespace leaf
+{
+	export class str extends Leaf.Entity < string > {};
+	export class num extends Leaf.Entity < number > {};
+	export class bool extends Leaf.Entity < boolean > {};
 }
 
