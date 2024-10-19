@@ -1,11 +1,11 @@
 import { log } from "../common.js";
-import { Budr, lol, Renn, Order } from "../model/index.js";
+import { Leafr, lol, Renn, Order } from "../model/index.js";
 import * as nodet from "./nodet.js";
 
 export namespace defs
 {
 	export type primitive = string | number | boolean | undefined ;
-	export type srcr = Budr < string > | Budr < number > | Budr < boolean > | Budr < Order.pos > ;
+	export type srcr = Leafr < string > | Leafr < number > | Leafr < boolean > | Leafr < Order.pos > ;
 	export type text = primitive | srcr ;
 
 	export type acts =
@@ -15,6 +15,9 @@ export namespace defs
 
 	export type act < Ev extends Event = any > = ( ev : Ev ) => void ;
 
+	export type binds =
+	{
+	}
 
 	export type attrs < E extends Element > =
 	{

@@ -104,9 +104,9 @@ export namespace models
 	{
 		public readonly  browser = new navi.Browser();
 		public readonly  si = new Line( data.si );
-		public readonly num = new Leaf.num ( 5 );
-		public readonly str = new Leaf.str ( "八日市場" );
-		public readonly bool = new Leaf.bool ( true );
+		public readonly num = Leaf.num.new ( 5 );
+		public readonly str = Leaf.str.new ( "八日市場" );
+		public readonly bool = Leaf.bool.new ( true );
 
 		constructor()
 		{
@@ -122,7 +122,7 @@ export namespace models
 
 		constructor( v : Line.value )
 		{
-			this.name = new Leaf.str( v.name );
+			this.name = Leaf.str.new( v.name );
 			this.station_list = new Renn < Station >
 			(
 				v.station_list.map( v => new Station( v ) )

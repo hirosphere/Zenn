@@ -1,5 +1,5 @@
 import { _add_ref_, log } from "../common.js";
-import { Budr, Leafr, lol } from "../model/leaf.js";
+import { Leafr, lol } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import { create_place } from "./parts.js";
 
@@ -47,9 +47,9 @@ export abstract class Nodet
 		update : ( value : any ) => void,
 	)
 	{
-		if( value instanceof Budr )
+		if( value instanceof Leafr )
 		{
-			const ref = new Budr.Ref
+			const ref = new Leafr.Ref
 			(
 				value ,
 				update
@@ -72,7 +72,7 @@ export abstract class Nodet
 		this._destruct( true );
 	}
 
-	protected srcs = new Set < Budr.Ref < any > > ;
+	protected srcs = new Set < Leafr.Ref < any > > ;
 }
 
 export class Element extends Nodet

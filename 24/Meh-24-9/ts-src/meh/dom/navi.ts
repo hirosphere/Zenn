@@ -4,7 +4,7 @@ import { Leaf, Leafr, Renn } from "../model/index.js";
 
 export class Browser
 {
-	public readonly current = new Leafr < Index | undefined > ( undefined );
+	public readonly current = new Leafr.Entity < Index | undefined > ( undefined );
 
 	public set_current( index : Index | undefined )
 	{
@@ -30,8 +30,8 @@ export class Index < P extends Index = any >
 
 	constructor( v : Index.values )
 	{
-		this.name = new Leaf.str( v.name );
-		this.title = new Leaf.str( v.title );
+		this.name = Leaf.str.new ( v.name );
+		this.title = Leaf.str.new ( v.title );
 
 		log( "Index", this.title.value );
 

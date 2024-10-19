@@ -4,9 +4,9 @@ export class HSL
 {
 	constructor( i : HSL.value )
 	{
-		this.hue = new Leaf( i.hue, this );
-		this.sat = new Leaf( i.sat, this );
-		this.light = new Leaf( i.light, this );
+		this.hue = Leaf.new( i.hue, this );
+		this.sat = Leaf.new( i.sat, this );
+		this.light = Leaf.new( i.light, this );
 	}
 
 	public readonly hue;

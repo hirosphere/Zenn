@@ -2,14 +2,25 @@ import { _value_, _set_value_, _on_value_change_, _add_ref_, _remove_ref_, log }
 
 /* */
 
-export abstract class Budr < V >
+export abstract class Leafr < V >
 {
+	/*   */
+
+	public static new < V > ( value : V , rel ? : Leafr.Rel ) : Leafr.Entity < V >
+	{
+		return new Leafr.Entity ( value , rel ) ;
+	}
+
+	/*   */
+
 	public abstract get value() : V ;
-	protected refs = new Set < Budr.Ref < V > > ;
+	protected refs = new Set < Leafr.Ref < V > > ;
+
+	/*   */
 
 	public [ _add_ref_ ]
 	(
-		ref : Budr.Ref < V > ,
+		ref : Leafr.Ref < V > ,
 		old_value ? : V
 	)
 	: void
@@ -21,19 +32,21 @@ export abstract class Budr < V >
 			old_value
 		) ;
 	}
-	public [ _remove_ref_ ] ( ref : Budr.Ref < V > ) : void
+
+
+	public [ _remove_ref_ ] ( ref : Leafr.Ref < V > ) : void
 	{
 		this.refs.delete( ref );
 	}
 }
 
-export namespace Budr
+export namespace Leafr
 {
 	export class Ref < V, R = V >
 	{
 		constructor
 		(
-			public readonly src : Budr < V > ,
+			public readonly src : Leafr < V > ,
 			protected on_value_change : vc < V > ,
 		)
 		{}
@@ -55,74 +68,31 @@ export namespace Budr
 	}
 
 	type vc < V > = ( new_value : V , old_value ? : V ) => void ;
-}
 
-export class Leafr < V > extends Budr < V >
-{
-	protected [ _value_ ] : V ;
-
-	constructor
-	(
-		value : V,
-		protected rel ? : Leafr.Rel
-	)
-	{
-		super();
-		this[ _value_ ] = value;
-	}
-
-
-	public get value() : V
-	{
-		return this [ _value_ ];
-	}
-
-	public [ _set_value_ ] ( new_value : V )
-	{
-		if( new_value === this.value )  return;
-
-		const old_value = this [ _value_ ];
-		this [ _value_ ] = new_value;
-
-		this.rel?.update();
-
-		this.refs.forEach
-		(
-			ref => ref[ _on_value_change_ ]
-			(
-				new_value,
-				old_value
-			)
-		);
-	}
-}
-
-export namespace Leafr
-{
 	export interface Rel
 	{
 		update() : void ;
 	}
 
-	export class str extends Leafr < string > {}
-	export class num extends Leafr < number > {}
-	export class bool extends Leafr < boolean > {}
+	export abstract class str extends Leafr < string > {}
+	export abstract class num extends Leafr < number > {}
+	export abstract class bool extends Leafr < boolean > {}
 
 	/* */
 
-	export class Conv < V, R = V > extends Budr < R >
+	export class Conv < V, R = V > extends Leafr < R >
 	{
-		protected src_ref : Budr.Ref < V > ;
+		protected src_ref : Leafr.Ref < V > ;
 
 		constructor
 		(
-			src : Budr < V > ,
+			src : Leafr < V > ,
 			protected toref : conv_fn < V, R >
 		)
 		{
 			super() ;
 			
-			const ref = this.src_ref = new Budr.Ref < V >
+			const ref = this.src_ref = new Leafr.Ref < V >
 			(
 				src,
 				( new_value , old_value ) =>
@@ -141,18 +111,64 @@ export namespace Leafr
 
 		protected notify( new_value : V, old_value ? : V )
 		{
+			const new_r = this.toref ( new_value ) ;
+			const old_r =
+			(
+				old_value !== undefined ?
+					this.toref ( old_value )
+					: undefined
+			);
+
 			this.refs.forEach
 			(
-				ref => ref [ _on_value_change_ ]
-				(
-					this.toref( new_value ) ,
-					old_value !== undefined ? this.toref ( old_value ) : undefined
-				)
+				ref => ref [ _on_value_change_ ] ( new_r , old_r )
 			);
 		}
 	}
 
 	export type conv_fn < V, R = V > = ( value : V ) => R ;
+
+	/*  Entity  */
+
+	export class Entity < V > extends Leafr < V >
+	{
+		protected [ _value_ ] : V ;
+	
+		constructor
+		(
+			value : V,
+			protected rel ? : Leafr.Rel
+		)
+		{
+			super();
+			this[ _value_ ] = value;
+		}
+	
+	
+		public get value() : V
+		{
+			return this [ _value_ ];
+		}
+	
+		public [ _set_value_ ] ( new_value : V )
+		{
+			if( new_value === this.value )  return;
+	
+			const old_value = this [ _value_ ];
+			this [ _value_ ] = new_value;
+	
+			this.rel?.update();
+	
+			this.refs.forEach
+			(
+				ref => ref[ _on_value_change_ ]
+				(
+					new_value,
+					old_value
+				)
+			);
+		}
+	}
 }
 
 export type lolr < V > = V | Leaf < V >;
@@ -167,21 +183,33 @@ export namespace lolr
 
 /* Leaf W/R */
 
-
-export class Leaf < V > extends Leafr < V >
+export abstract class Leaf < V >  extends Leafr < V >
 {
-	public override set value ( new_value : V ) { this [ _set_value_ ] ( new_value ) }
-	public override get value () : V { return this [ _value_ ] ; }
+	public static override new < V > ( value : V , rel ? : Leafr.Rel ) : Leaf.Entity < V >
+	{
+		return new this.Entity( value , rel ) ;
+	}
+
+	public abstract override get value () : V ;
+	public abstract override set value ( value : V ) ;
 }
 
 export namespace Leaf
 {
-	export class str extends Leaf < string > {}
-	export class num extends Leaf < number > {}
-	export class bool extends Leaf < boolean > {}
+
+	export abstract class str extends Leaf < string > {}
+	export abstract class num extends Leaf < number > {}
+	export abstract class bool extends Leaf < boolean > {}
+
+
+	export class Entity < V > extends Leafr.Entity < V >
+	{
+		public override set value ( new_value : V ) { this [ _set_value_ ] ( new_value ) }
+		public override get value () : V { return this [ _value_ ] ; }
+	}	
 }
 
-new Leaf.str( "" ).value = "1";
+Leaf.str.new ( "" ) .value = "";
 
 export type lol < V > = V | Leaf < V >;
 

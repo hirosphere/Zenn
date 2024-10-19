@@ -9,14 +9,14 @@ namespace models
 {
 	export class Applet1
 	{
-		text = new Leaf.str( "常磐線で行こう" );
+		text = Leaf.str.new( "常磐線で行こう" );
 
 		clist =
 		{
-			selected: new Leaf.bool( true ),
-			shadowed: new Leaf.bool( false ),
-			green: new Leaf.bool( false ),
-			cyan: new Leaf.bool( true ),
+			selected: Leaf.new( true ),
+			shadowed: Leaf.new( false ),
+			green: Leaf.new( false ),
+			cyan: Leaf.new( true ),
 		};
 
 		color = new HSL();
@@ -40,11 +40,11 @@ namespace models
 
 	export class HSL
 	{
-		hue = new Leaf.num( 0, this );
-		sat = new Leaf.num( 0, this );
-		light = new Leaf.num( 0, this );
+		hue = Leaf.new ( 0, this );
+		sat = Leaf.new ( 0, this );
+		light = Leaf.new ( 0, this );
 
-		css = new Leaf.str( "" );
+		css = Leaf.str.new( "" );
 
 		set value( lit : hsl )
 		{
@@ -116,7 +116,7 @@ namespace view
 		);
 	};
 
-	const s : dom.defs.style = { display: new Leaf.str( "" ) };
+	const s : dom.defs.style = { display: Leaf.str.new( "" ) };
 
 	const v_button = ( label : string, leaf : Leaf.str, value : string ) => ef.button
 	(

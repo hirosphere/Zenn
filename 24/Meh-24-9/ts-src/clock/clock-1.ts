@@ -30,7 +30,7 @@ namespace ms
 
 	class Clock
 	{
-		public timestr = new Leaf.str( "" );
+		public timestr = Leaf.str.new( "" );
 		protected tid = 0;
 
 		constructor()
@@ -59,7 +59,7 @@ namespace ms
 
 	export class Tones
 	{
-		public readonly background = new Leaf.str( "hsl" );
+		public readonly background = Leaf.str.new ( "hsl" );
 
 		constructor()
 		{
@@ -82,9 +82,9 @@ namespace ms
 
 		constructor( v : HSL.value )
 		{
-			this.hue = new Leaf.num( v.hue );
-			this.sat = new Leaf.num( v.sat );
-			this.light = new Leaf.num( v.light );
+			this.hue = Leaf.num.new( v.hue );
+			this.sat = Leaf.num.new( v.sat );
+			this.light = Leaf.num.new( v.light );
 		}
 	}
 

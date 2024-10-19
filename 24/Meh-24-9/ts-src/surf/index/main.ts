@@ -34,8 +34,8 @@ const Clock = ( m : ClockModel ) =>
 
 class ClockModel
 {
-	time = new Leaf.str( "" );
-	iid = new Leaf.num( 0 );
+	time = Leaf.str.new ( "" );
+	iid = Leaf.num.new ( 0 );
 
 	constructor()
 	{

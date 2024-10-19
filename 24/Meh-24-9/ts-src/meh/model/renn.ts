@@ -1,5 +1,5 @@
 import { _refs_, _set_value_, log } from "../common.js";
-import { Leafr, Budr } from "./leaf.js";
+import { Leafr } from "./leaf.js";
 
 export class Renn < S >
 {
@@ -8,7 +8,7 @@ export class Renn < S >
 		if( items ) this.new( items );
 	}
 
-	public readonly length = new Leafr.num ( 0 );
+	public readonly length = Leafr.new ( 0 );
 	public readonly orders : Order < S > [] = [] ;
 	protected [ _refs_ ] = new Set < Renn.Ref < S > > ;
 
@@ -167,7 +167,7 @@ export namespace Renn
 
 export const _set_renn_ = Symbol();
 
-export class Order < S > extends Leafr < Order.pos >
+export class Order < S > extends Leafr.Entity < Order.pos >
 {
 	constructor
 	(
