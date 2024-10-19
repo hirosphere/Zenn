@@ -47,13 +47,21 @@ li
 
 .todo-item
 {
-	display : flex;
+	display : grid;
+	padding: 0 1ex ;
+	grid-template-columns: 2em 1fr 2ex;
 	gap : 1em ;
 }
 
 .todo-item.completed
 {
-	background-color: hsl( 0, 70%, 90% );
+	background-color: hsl( 93, 60%, 90% );
+}
+
+.todo-item input[ type="checkbox"]
+{
+	accent-color: hsl( 93, 40%, 70% ) ;
+	color: hsl( 23, 80%, 100% );
 }
 
 </style>

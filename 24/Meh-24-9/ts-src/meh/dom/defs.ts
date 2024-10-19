@@ -5,8 +5,8 @@ import * as nodet from "./nodet.js";
 export namespace defs
 {
 	export type primitive = string | number | boolean | undefined ;
-	export type srcr = Leafr < string > | Leafr < number > | Leafr < boolean > | Leafr < Order.pos > ;
-	export type text = primitive | srcr ;
+	export type leafr = Leafr < string > | Leafr < number > | Leafr < boolean > | Leafr < Order.pos > ;
+	export type text = primitive | leafr ;
 
 	export type acts =
 	{
@@ -47,7 +47,7 @@ export namespace defs
 	{
 		constructor(){}
 
-		protected isplace : typeof isplace = isplace
+		protected isplace : Symbol = isplace
 	}
 
 	const isplace = Symbol();
