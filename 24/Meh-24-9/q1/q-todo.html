@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +20,17 @@ html
 	color: hsl( 0, 0%, 10% );
 }
 
+body
+{
+	margin : 0 auto ;
+}
+
+article
+{
+	max-width: 30em;
+	padding : 1em ;
+}
+
 h1
 {
 	padding: 1ex ;
@@ -29,7 +40,7 @@ h1
 {
 	display: flex ;
 	flex-direction: column ;
-	align-items: center ;
+	align-items: stretch ;
 	gap: 1em ;
 }
 
@@ -68,6 +79,7 @@ button { padding: 0.65ex 1ex; }
 {
 	display: flex ;
 	flex-direction: column ;
+	align-items: stretch;
 	gap: 1px ;
 }
 
@@ -75,7 +87,6 @@ button { padding: 0.65ex 1ex; }
 {
 	display : grid;
 	border-bottom: 1px dotted hsl( 93, 0%, 75% );
-	min-width: 19em ;
 	background-color: hsl( 93, 60%, 100% );
 	padding: 2.6px 1.0ex ;
 	grid-template-columns: 2em 1fr 2ex;
@@ -95,7 +106,7 @@ button { padding: 0.65ex 1ex; }
 </style>
 
 </head>
-<body>
+<body class="fc" >
 	<script type="module" src="../js-out-1/q1/q-todo.js"></script>
 </body>
 </html>

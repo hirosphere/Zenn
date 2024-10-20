@@ -180,11 +180,20 @@ export namespace lolr
 	export type bool = lolr < boolean >;
 }
 
+export function leafr < V >
+(
+	value : V ,
+	rel ? : Leafr.Rel
+)
+{
+	return new Leafr.Entity ( value, rel ) ; 
+}
+
 export namespace leafr
 {
-	export class str extends Leafr.Entity < string > {};
-	export class num extends Leafr.Entity < number > {};
-	export class bool extends Leafr.Entity < boolean > {};
+	export const str = leafr < string > ;
+	export const num = leafr < number > ;
+	export const bool = leafr < boolean > ;
 }
 
 
@@ -227,10 +236,21 @@ export namespace lol
 	export type bool = lol < boolean >;
 }
 
+export function leaf < V >
+(
+	value : V ,
+	rel ? : Leafr.Rel
+)
+{
+	return new Leaf.Entity ( value, rel ) ; 
+}
+
 export namespace leaf
 {
-	export class str extends Leaf.Entity < string > {};
-	export class num extends Leaf.Entity < number > {};
-	export class bool extends Leaf.Entity < boolean > {};
+	export const str = leafr < string > ;
+	export const num = leafr < number > ;
+	export const bool = leafr < boolean > ;
 }
+
+
 
