@@ -73,7 +73,7 @@ export class Renn < S >
 	public remove
 	(
 		start : number ,
-		count : number ,
+		count : number = 1,
 	)
 	{
 		const next = pos_trim

@@ -75,6 +75,8 @@ export namespace defs
 	export type parts =  part [] ;
 }
 
+const x : Leafr.bool = Leafr.bool.new ( true );
+
 export const each = < S >
 (
 	source : Renn < S > ,
