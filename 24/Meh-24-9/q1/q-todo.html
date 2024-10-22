@@ -3,7 +3,6 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
 
 <style>
 
@@ -16,13 +15,16 @@
 
 html
 {
-	text-align: center ;
 	color: hsl( 0, 0%, 10% );
 }
 
 body
 {
-	margin : 0 auto ;
+	margin: 0 auto ;
+	display: flex ;
+	flex-direction: column ;
+	max-width: 55em ;
+	align-items: center ;
 }
 
 article
@@ -48,11 +50,6 @@ h1
 {
 	display: flex ;
 	gap : 1ex ;
-}
-
-li
-{
-	text-align: start ;
 }
 
 button { padding: 0.65ex 1ex; }
@@ -98,7 +95,7 @@ button { padding: 0.65ex 1ex; }
 	background-color: hsl( 93, 40%, 100% );
 }
 
-.todo-item input[ type="checkbox"]
+.todo-item input[ type="checkbox" ]
 {
 	accent-color: hsl( 93, 40%, 50% ) ;
 }
@@ -106,7 +103,7 @@ button { padding: 0.65ex 1ex; }
 </style>
 
 </head>
-<body class="fc" >
+<body>
 	<script type="module" src="../js-out-1/q1/q-todo.js"></script>
 </body>
 </html>

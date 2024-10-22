@@ -1,4 +1,4 @@
-import { Leaf, ef, each, dom, log } from "../../meh/index.js";
+import { leaf, ef, each, dom, log } from "../../meh/index.js";
 import * as link from "./link.js";
 import { links } from "./link-data.js";
 
@@ -34,8 +34,8 @@ const Clock = ( m : ClockModel ) =>
 
 class ClockModel
 {
-	time = Leaf.str.new ( "" );
-	iid = Leaf.num.new ( 0 );
+	time = leaf.str ( "" );
+	iid = leaf.num ( 0 );
 
 	constructor()
 	{

@@ -1,4 +1,4 @@
-import { dom, Leaf, Renn, ef, defs, free, each, log } from "../meh/index.js";
+import { dom, Leaf, leaf, Renn, ef, defs, free, each, log } from "../meh/index.js";
 
 export const main = () =>
 {
@@ -9,14 +9,14 @@ namespace models
 {
 	export class Applet1
 	{
-		text = Leaf.str.new( "常磐線で行こう" );
+		text = leaf.str ( "常磐線で行こう" );
 
 		clist =
 		{
-			selected: Leaf.new( true ),
-			shadowed: Leaf.new( false ),
-			green: Leaf.new( false ),
-			cyan: Leaf.new( true ),
+			selected: leaf.bool ( true ),
+			shadowed: leaf.bool ( false ),
+			green: leaf ( false ),
+			cyan: leaf ( true ),
 		};
 
 		color = new HSL();
@@ -40,11 +40,11 @@ namespace models
 
 	export class HSL
 	{
-		hue = Leaf.new ( 0, this );
-		sat = Leaf.new ( 0, this );
-		light = Leaf.new ( 0, this );
+		hue = leaf ( 0, this );
+		sat = leaf ( 0, this );
+		light = leaf ( 0, this );
 
-		css = Leaf.str.new( "" );
+		css = leaf ( "" );
 
 		set value( lit : hsl )
 		{
@@ -115,8 +115,6 @@ namespace view
 			ef.p( ef.span( "span" ) ),
 		);
 	};
-
-	const s : dom.defs.style = { display: Leaf.str.new( "" ) };
 
 	const v_button = ( label : string, leaf : Leaf.str, value : string ) => ef.button
 	(

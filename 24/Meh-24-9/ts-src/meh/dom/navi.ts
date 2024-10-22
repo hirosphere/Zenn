@@ -1,5 +1,5 @@
 import { _set_value_, log } from "../common.js";
-import { Leaf, Leafr, Renn } from "../model/index.js";
+import { Leaf, Leafr, leaf, leafr, Renn } from "../model/index.js";
 
 
 export class Browser
@@ -30,8 +30,8 @@ export class Index < P extends Index = any >
 
 	constructor( v : Index.values )
 	{
-		this.name = Leaf.str.new ( v.name );
-		this.title = Leaf.str.new ( v.title );
+		this.name = leafr ( v.name );
+		this.title = leafr ( v.title );
 
 		log( "Index", this.title.value );
 

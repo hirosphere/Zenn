@@ -1,4 +1,4 @@
-import { Leaf, lol, Renn, ef, each, dom, log, Order } from "../meh/index.js" ;
+import { Leaf, leaf, Renn, ef, each, dom, log, Order } from "../meh/index.js" ;
 
 export namespace sv
 {
@@ -19,14 +19,14 @@ export namespace vm
 {
 	export class App
 	{
-		public readonly title ;
+		public readonly title : Leaf.str ;
 		public readonly items ;
 		public readonly editor ;
 
-
 		constructor( v : sv.app )
 		{
-			this.title = Leaf.str.new ( v.title );
+			this.title = leaf.str ( v.title );
+			
 			this.items = new Items ( v.items ) ;
 			this.editor = new Editor( this.items ) ; 
 
@@ -37,7 +37,7 @@ export namespace vm
 
 	export class Editor
 	{
-		public readonly text = new Leaf.Entity ( "なにする？" ) ;
+		public readonly text = leaf.str ( "なにする？" ) ;
 
 		constructor( protected items : Items )
 		{
@@ -77,7 +77,7 @@ export namespace vm
 		{
 			this.orders.forEach
 			(
-				o => o.src.completed.value = bool_rand()
+				o => o.src.completed.value = bool_rand( 0.25 )
 			);
 		}
 	}
@@ -89,8 +89,8 @@ export namespace vm
 
 		constructor( v : sv.item )
 		{
-			this.text = Leaf.str.new ( v.text ) ;
-			this.completed = new Leaf.Entity ( false ) ;
+			this.text = leaf( v.text ) ;
+			this.completed = leaf( false ) ;
 
 			log( v.text );
 		}
@@ -200,6 +200,7 @@ export namespace vc
 			label
 		);
 	}
+	
 
 	const checkbox = ( state : Leaf.bool ) =>
 	{

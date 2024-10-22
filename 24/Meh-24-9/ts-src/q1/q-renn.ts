@@ -1,4 +1,4 @@
-import { Leaf, Renn, Order, ef, each, dom, navi, log } from "../meh/index.js";
+import { Leaf, leaf, Renn, Order, ef, each, dom, navi, log } from "../meh/index.js";
 
 export namespace view
 {
@@ -104,9 +104,9 @@ export namespace models
 	{
 		public readonly  browser = new navi.Browser();
 		public readonly  si = new Line( data.si );
-		public readonly num = Leaf.num.new ( 5 );
-		public readonly str = Leaf.str.new ( "八日市場" );
-		public readonly bool = Leaf.bool.new ( true );
+		public readonly num = leaf ( 5 );
+		public readonly str = leaf ( "八日市場" );
+		public readonly bool = leaf ( true );
 
 		constructor()
 		{
@@ -122,7 +122,7 @@ export namespace models
 
 		constructor( v : Line.value )
 		{
-			this.name = Leaf.str.new( v.name );
+			this.name = leaf ( v.name );
 			this.station_list = new Renn < Station >
 			(
 				v.station_list.map( v => new Station( v ) )

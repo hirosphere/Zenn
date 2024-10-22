@@ -1,4 +1,4 @@
-import { dom, ef, Leaf, log } from "../meh/index.js";
+import { dom, ef, leaf, log } from "../meh/index.js";
 
 const App = () =>
 {
@@ -30,7 +30,7 @@ namespace ms
 
 	class Clock
 	{
-		public timestr = Leaf.str.new( "" );
+		public timestr = leaf.str( "" );
 		protected tid = 0;
 
 		constructor()
@@ -59,7 +59,7 @@ namespace ms
 
 	export class Tones
 	{
-		public readonly background = Leaf.str.new ( "hsl" );
+		public readonly background = leaf.str ( "hsl" );
 
 		constructor()
 		{
@@ -82,9 +82,9 @@ namespace ms
 
 		constructor( v : HSL.value )
 		{
-			this.hue = Leaf.num.new( v.hue );
-			this.sat = Leaf.num.new( v.sat );
-			this.light = Leaf.num.new( v.light );
+			this.hue = leaf.num( v.hue );
+			this.sat = leaf.num ( v.sat );
+			this.light = leaf.num ( v.light );
 		}
 	}
 

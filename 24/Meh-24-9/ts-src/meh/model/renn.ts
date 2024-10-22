@@ -1,5 +1,5 @@
 import { _refs_, _set_value_, log } from "../common.js";
-import { Leafr } from "./leaf.js";
+import { Leafr, leafr } from "./leaf.js";
 
 export class Renn < S >
 {
@@ -8,7 +8,7 @@ export class Renn < S >
 		if( items ) this.new( items );
 	}
 
-	public readonly length = Leafr.new ( 0 );
+	public readonly length = leafr ( 0 );
 	public readonly orders : Order < S > [] = [] ;
 	protected [ _refs_ ] = new Set < Renn.Ref < S > > ;
 
