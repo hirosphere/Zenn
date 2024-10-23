@@ -38,7 +38,12 @@ namespace models
 		light : number ;
 	}
 
-	export class HSL
+	type to_leaf < v > =
+	{
+		[ prop in keyof v ] : Leaf < v [ prop ] > ;
+	};
+
+	export class HSL implements to_leaf < hsl >
 	{
 		hue = leaf ( 0, this );
 		sat = leaf ( 0, this );
@@ -51,6 +56,15 @@ namespace models
 			this.hue.value = lit.hue;
 			this.sat.value = lit.sat;
 			this.light.value = lit.light;
+
+			for
+			(
+				const [ prop , value ]
+					of Object.entries( lit )
+			)
+			{
+				this [ prop as keyof to_leaf < hsl > ].value = value ;
+			}
 		}
 
 		get value() : hsl

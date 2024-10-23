@@ -4,7 +4,7 @@ import { _value_, _set_value_, _on_value_change_, _add_ref_, _remove_ref_, log }
 
 export abstract class Leafr < V >
 {
-	public static readonly new = leafr ;
+	public static readonly create = leafr ;
 
 	/*   */
 
@@ -199,6 +199,8 @@ export namespace lolr
 
 export abstract class Leaf < V >  extends Leafr < V >
 {
+	public static override create = leaf ;
+
 	public abstract override get value () : V ;
 	public abstract override set value ( value : V ) ;
 }
@@ -230,7 +232,7 @@ export namespace leaf
 	export const str = leaf < string > ;
 	export const num = leaf < number > ;
 	export const bool = leaf < boolean > ;
-}		
+}
 
 
 export type lol < V > = V | Leaf < V >;
