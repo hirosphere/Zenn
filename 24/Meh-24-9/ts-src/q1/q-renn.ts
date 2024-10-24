@@ -1,4 +1,4 @@
-import { Leaf, leaf, Renn, Order, ef, each, dom, navi, log } from "../meh/index.js";
+import { leaf, Renn, Order, ef, each, dom, navi, log } from "../meh/index.js";
 
 export namespace view
 {

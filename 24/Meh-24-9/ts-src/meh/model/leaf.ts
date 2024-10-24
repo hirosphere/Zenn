@@ -1,47 +1,85 @@
 import { _value_, _set_value_, _on_value_change_, _add_ref_, _remove_ref_, log } from "../common.js";
 
+export function leaf < V >
+(
+	value : V ,
+	rel ? : leaf.r.Rel
+)
+{
+	return new leaf.Entity ( value, rel ) ; 
+}
+
 /* */
 
-export abstract class Leafr < V >
+export namespace leaf
 {
-	public static readonly create = leafr ;
-
-	/*   */
-
-	public abstract get value() : V ;
-	protected refs = new Set < Leafr.Ref < V > > ;
-
-	/*   */
-
-	public [ _add_ref_ ]
+	export function r < V >
 	(
-		ref : Leafr.Ref < V > ,
-		old_value ? : V
+		value : V ,
+		rel ? : leaf.r.Rel
 	)
-	: void
 	{
-		this.refs.add( ref );
-		ref [ _on_value_change_ ]
-		(
-			this.value,
-			old_value
-		) ;
-	}
-
-
-	public [ _remove_ref_ ] ( ref : Leafr.Ref < V > ) : void
-	{
-		this.refs.delete( ref );
+		return new r.Entity ( value, rel ) ; 
 	}
 }
 
-export namespace Leafr
+export namespace leaf.r
+{
+	export abstract class Leaf < V >
+	{
+		/*   */
+	
+		public abstract get value() : V ;
+		protected refs = new Set < Ref < V > > ;
+	
+		/*   */
+	
+		public [ _add_ref_ ]
+		(
+			ref : Ref < V > ,
+			old_value ? : V
+		)
+		: void
+		{
+			this.refs.add( ref );
+			ref [ _on_value_change_ ]
+			(
+				this.value,
+				old_value
+			);
+		}
+	
+	
+		public [ _remove_ref_ ] ( ref : Ref < V > ) : void
+		{
+			this.refs.delete( ref );
+		}
+	}
+
+	export namespace Leaf
+	{
+		export type str = Leaf < string > ;
+		export type num = Leaf < number > ;
+		export type bool = Leaf < boolean > ;	
+	}
+
+	export type lol < V > = V | Leaf < V >;
+
+	export namespace lol
+	{
+		export type str = lol < string >;
+		export type num = lol < number >;
+		export type bool = lol < boolean >;
+	}
+}
+
+export namespace leaf.r
 {
 	export class Ref < V, R = V >
 	{
 		constructor
 		(
-			public readonly src : Leafr < V > ,
+			public readonly src : Leaf < V > ,
 			protected on_value_change : vc < V > ,
 		)
 		{}
@@ -68,26 +106,23 @@ export namespace Leafr
 	{
 		update() : void ;
 	}
+}
 
-	export type str = Leafr < string > ;
-	export type num = Leafr < number > ;
-	export type bool = Leafr < boolean > ;
-
-	/* */
-
-	export class Conv < V, R = V > extends Leafr < R >
+export namespace leaf.r
+{
+	export class Conv < V, R = V > extends Leaf < R >
 	{
-		protected src_ref : Leafr.Ref < V > ;
+		protected src_ref : Ref < V > ;
 
 		constructor
 		(
-			src : Leafr < V > ,
+			src : Leaf < V > ,
 			protected toref : conv_fn < V, R >
 		)
 		{
 			super() ;
 			
-			const ref = this.src_ref = new Leafr.Ref < V >
+			const ref = this.src_ref = new Ref < V >
 			(
 				src,
 				( new_value , old_value ) =>
@@ -122,17 +157,20 @@ export namespace Leafr
 	}
 
 	export type conv_fn < V, R = V > = ( value : V ) => R ;
+}
 
+export namespace leaf.r
+{
 	/*  Entity  */
 
-	export class Entity < V > extends Leafr < V >
+	export class Entity < V > extends Leaf < V >
 	{
 		protected [ _value_ ] : V ;
 	
 		constructor
 		(
 			value : V,
-			protected rel ? : Leafr.Rel
+			protected rel ? : Rel
 		)
 		{
 			super();
@@ -164,85 +202,58 @@ export namespace Leafr
 			);
 		}
 	}
+
 }
 
-/* */
-
-export function leafr < V >
-(
-	value : V ,
-	rel ? : Leafr.Rel
-)
+export namespace leaf.r
 {
-	return new Leafr.Entity ( value, rel ) ; 
-}
-
-export namespace leafr
-{
-	export const str = leafr < string > ;
-	export const num = leafr < number > ;
-	export const bool = leafr < boolean > ;
-}
-
-
-export type lolr < V > = V | Leaf < V >;
-
-export namespace lolr
-{
-	export type str = lolr < string >;
-	export type num = lolr < number >;
-	export type bool = lolr < boolean >;
+	export const str = r < string > ;
+	export const num = r < number > ;
+	export const bool = r < boolean > ;
 }
 
 
 /* Leaf W/R */
 
-export abstract class Leaf < V >  extends Leafr < V >
+export namespace leaf
 {
-	public static override create = leaf ;
+	export abstract class Leaf < V >  extends r.Leaf < V >
+	{
+		public abstract override get value () : V ;
+		public abstract override set value ( value : V ) ;
+	}
+	
+	export namespace Leaf
+	{
+		export type str = Leaf < string > ;
+		export type num = Leaf < number > ;
+		export type bool = Leaf < boolean > ;
+	}
 
-	public abstract override get value () : V ;
-	public abstract override set value ( value : V ) ;
-}
-
-export namespace Leaf
-{
-	export type str = Leaf < string > ;
-	export type num = Leaf < number > ;
-	export type bool = Leaf < boolean > ;
-
-	export class Entity < V > extends Leafr.Entity < V >
+	
+	export class Entity < V > extends r.Entity < V >
 	{
 		public override set value ( new_value : V ) { this [ _set_value_ ] ( new_value ) }
 		public override get value () : V { return this [ _value_ ] ; }
 	}	
-}
 
-export function leaf < V >
-(
-	value : V ,
-	rel ? : Leafr.Rel
-)
-{
-	return new Leaf.Entity ( value, rel ) ; 
-}
+	/* */
 
-export namespace leaf
-{
+	export type lol < V > = V | Leaf < V >;
+	export namespace lol
+	{
+		export type str = lol < string >;
+		export type num = lol < number >;
+		export type bool = lol < boolean >;
+	}
+
+	/* */
+
 	export const str = leaf < string > ;
 	export const num = leaf < number > ;
 	export const bool = leaf < boolean > ;
 }
 
+abstract class Leaf < V > extends leaf.Leaf < V > {}
 
-export type lol < V > = V | Leaf < V >;
-export namespace lol
-{
-	export type String = lol < string >;
-	export type str = lol < string >;
-	export type num = lol < number >;
-	export type bool = lol < boolean >;
-}
-
-
-
+const x : leaf.Leaf.str = leaf( "" ) ;

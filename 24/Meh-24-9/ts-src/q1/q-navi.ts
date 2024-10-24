@@ -1,4 +1,4 @@
-import { Leaf, Renn, ef, each , navi } from "../meh/index.js";
+import { Renn, ef, each , navi } from "../meh/index.js";
 
 export const NaviApp = () =>
 {

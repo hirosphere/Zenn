@@ -1,10 +1,10 @@
 import { _set_value_, log } from "../common.js";
-import { Leaf, Leafr, leaf, leafr, Renn } from "../model/index.js";
+import { leaf, Renn } from "../model/index.js";
 
 
 export class Browser
 {
-	public readonly current = new Leafr.Entity < Index | undefined > ( undefined );
+	public readonly current = leaf.r < Index | undefined > ( undefined );
 
 	public set_current( index : Index | undefined )
 	{
@@ -30,8 +30,8 @@ export class Index < P extends Index = any >
 
 	constructor( v : Index.values )
 	{
-		this.name = leafr ( v.name );
-		this.title = leafr ( v.title );
+		this.name = leaf ( v.name );
+		this.title = leaf ( v.title );
 
 		log( "Index", this.title.value );
 

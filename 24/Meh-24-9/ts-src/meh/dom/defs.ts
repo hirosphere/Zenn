@@ -1,11 +1,11 @@
 import { log } from "../common.js";
-import { Leafr, lolr, Renn, Order } from "../model/index.js";
+import { leaf, Renn, Order } from "../model/index.js";
 import * as nodet from "./nodet.js";
 
 export namespace defs
 {
 	export type primitive = string | number | boolean | undefined ;
-	export type leafr = Leafr < string > | Leafr < number > | Leafr < boolean > | Leafr < Order.pos > ;
+	export type leafr = leaf.r.Leaf < string > | leaf.r.Leaf < number > | leaf.r.Leaf < boolean > | leaf.r.Leaf < Order.pos > ;
 	export type text = primitive | leafr ;
 
 	export type acts =
@@ -21,19 +21,19 @@ export namespace defs
 
 	export type attrs < E extends Element > =
 	{
-		[ name in keyof E ] ? : lolr < E [ name ] > ;
+		[ name in keyof E ] ? : leaf.r.lol < E [ name ] > ;
 	};
 
 	export type style =
 	{
-		[ name in keyof CSSStyleDeclaration ] ? : lolr < CSSStyleDeclaration [ name ] > ;
+		[ name in keyof CSSStyleDeclaration ] ? : leaf.r.lol < CSSStyleDeclaration [ name ] > ;
 	};
 
-	export type class_switch = Record < string, lolr.bool > ;
+	export type class_switch = Record < string, leaf.r.lol.bool > ;
 
 	export type class_spec =
 	(
-		lolr.str | class_switch | ( string | class_switch ) []
+		leaf.r.lol.str | class_switch | ( string | class_switch ) []
 	);
 
 	export type ec < E extends Element > =

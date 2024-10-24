@@ -1,4 +1,4 @@
-import { Leaf, Renn, ef, each, dom, log } from "../../meh/index.js";
+import { leaf, Renn, ef, each, dom, log } from "../../meh/index.js";
 
 export const Block = ( m : ms.block ) =>
 {

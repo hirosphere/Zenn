@@ -1,4 +1,4 @@
-import { Leaf, leaf, log } from "../meh/index.js";
+import { leaf, log } from "../meh/index.js";
 
 export class HSL
 {

@@ -1,4 +1,4 @@
-import { Leaf, leaf, Renn, ef, each, dom, log, Order } from "../meh/index.js" ;
+import { leaf, Renn, ef, each, dom, log, Order } from "../meh/index.js" ;
 
 export namespace sv
 {
@@ -19,7 +19,7 @@ export namespace vm
 {
 	export class App
 	{
-		public readonly title : Leaf.str ;
+		public readonly title : leaf.Leaf.str ;
 		public readonly items ;
 		public readonly editor ;
 
@@ -202,7 +202,7 @@ export namespace vc
 	}
 	
 
-	const checkbox = ( state : Leaf.bool ) =>
+	const checkbox = ( state : leaf.Leaf.bool ) =>
 	{
 		return ef.input
 		(

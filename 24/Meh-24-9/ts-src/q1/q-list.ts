@@ -1,4 +1,4 @@
-import { Leaf, Renn, dom, ef, each, free, log } from "../meh/index.js";
+import { Renn, dom, ef, each, free, log } from "../meh/index.js";
 
 export const ListApp = () =>
 {

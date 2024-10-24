@@ -1,4 +1,4 @@
-import { dom, Leaf, leaf, Renn, ef, defs, free, each, log } from "../meh/index.js";
+import { dom, leaf, Renn, ef, defs, free, each, log } from "../meh/index.js";
 
 export const main = () =>
 {
@@ -40,7 +40,7 @@ namespace models
 
 	type to_leaf < v > =
 	{
-		[ prop in keyof v ] : Leaf < v [ prop ] > ;
+		[ prop in keyof v ] : leaf.Leaf < v [ prop ] > ;
 	};
 
 	export class HSL implements to_leaf < hsl >
@@ -130,13 +130,15 @@ namespace view
 		);
 	};
 
-	const v_button = ( label : string, leaf : Leaf.str, value : string ) => ef.button
+	type Leaf < V > = leaf.Leaf < V > ;
+
+	const v_button = ( label : string, leaf : leaf.Leaf.str, value : string ) => ef.button
 	(
 		{ acts: { click() { leaf.value = value ; } } },
 		label,
 	);
 
-	const check = ( label : string, leaf : Leaf.bool ) => ef.section
+	const check = ( label : string, leaf : leaf.Leaf.bool ) => ef.section
 	(
 		ef.label( label ),
 		ef.input
