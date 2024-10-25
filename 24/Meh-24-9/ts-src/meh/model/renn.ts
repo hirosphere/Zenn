@@ -1,5 +1,5 @@
-import { _refs_, _set_value_, log } from "../common.js";
-import { leaf } from "./leaf.js";
+import { log } from "../common.js";
+import { Leafr , set_value , leafr } from "./leafr.js";
 
 export class Renn < S >
 {
@@ -8,13 +8,13 @@ export class Renn < S >
 		if( items ) this.new( items );
 	}
 
-	public readonly length = leaf.r ( 0 );
+	public readonly length = new Leafr.Entity ( 0 );
 	public readonly orders : Order < S > [] = [] ;
-	protected [ _refs_ ] = new Set < Renn.Ref < S > > ;
+	protected p_refs = new Set < Renn.Ref < S > > ;
 
-	 public add_ref( ref : Renn.Ref < S > )
-	 {
-		this [ _refs_ ] .add ( ref ) ;
+	public add_ref( ref : Renn.Ref < S > )
+	{
+		this.p_refs.add ( ref ) ;
 
 		ref.add
 		(
@@ -62,12 +62,12 @@ export class Renn < S >
 			orders ,
 		} ;
 
-		this [ _refs_ ] .forEach
+		this.p_refs.forEach
 		(
 			ref => ref.add( note )
 		);
 
-		this.length [ _set_value_ ] ( this.orders.length ) ;
+		this.length [ set_value ] ( this.orders.length ) ;
 	}
 
 	public remove
@@ -107,12 +107,12 @@ export class Renn < S >
 
 		log( start , next );
 
-		this [ _refs_ ] .forEach
+		this.p_refs.forEach
 		(
 			ref => ref.remove( note )
 		);
 
-		this.length [ _set_value_ ] ( this.orders.length ) ;
+		this.length [ set_value ] ( this.orders.length ) ;
 	}
 
 	protected update_orders
@@ -128,7 +128,7 @@ export class Renn < S >
 			pos ++
 		)
 		{
-			this.orders [ pos ] [ _set_value_ ] ( pos );
+			this.orders [ pos ] [ set_value ] ( pos );
 		}
 	}
 }
@@ -167,7 +167,7 @@ export namespace Renn
 
 export const _set_renn_ = Symbol();
 
-export class Order < S > extends leaf.r.Entity < Order.pos >
+export class Order < S > extends Leafr.Entity < Order.pos >
 {
 	constructor
 	(
@@ -178,11 +178,11 @@ export class Order < S > extends leaf.r.Entity < Order.pos >
 		super( undefined );
 	}
 
-	protected _count_ ? : leaf.r.Conv < Order.pos > ;
+	protected _count_ ? : Leafr.Conv < Order.pos > ;
 
 	public get count ()
 	{
-		return this._count_ ??= new leaf.r.Conv
+		return this._count_ ??= new Leafr.Conv
 		(
 			this,
 			to_count

@@ -1,5 +1,5 @@
-import { _add_ref_, log } from "../common.js";
-import { leaf } from "../model/leaf.js";
+import { log } from "../common.js";
+import { Leafr } from "../model/leafr.js";
 import { defs } from "./defs.js";
 import { create_place } from "./parts.js";
 
@@ -43,20 +43,20 @@ export abstract class Nodet
 
 	protected bind
 	(
-		value : leaf.r.lol < any > ,
-		update : ( value : any ) => void,
+		value : any ,
+		update : ( value : any ) => void ,
 	)
 	{
-		if( value instanceof leaf.r.Leaf )
+		if ( value instanceof Leafr )
 		{
-			const ref = new leaf.r.Ref
+			const ref = new Leafr.Ref
 			(
 				value ,
 				update
 			);
 
-			this.srcs.add( ref );
-			value [ _add_ref_ ] ( ref ) ;
+			this.srcs.add ( ref );
+			value.add_ref ( ref ) ;
 		}
 	
 		else  update( value );
@@ -64,7 +64,7 @@ export abstract class Nodet
 
 	protected _destruct( isroot ? : true )
 	{
-		this.srcs.forEach( ref => ref.term() );
+		this.srcs.forEach( ref => ref.terminate () );
 	}
 
 	public destruct()
@@ -72,12 +72,11 @@ export abstract class Nodet
 		this._destruct( true );
 	}
 
-	protected srcs = new Set < leaf.r.Ref < any > > ;
+	protected srcs = new Set < Leafr.Ref < any > > ;
 }
 
 export class Element extends Nodet
 {
-	// protected _el_? : HTMLElement ;
 	protected _el_? : globalThis.Element ;
 	protected parts;
 
@@ -151,6 +150,16 @@ export class Element extends Nodet
 		{
 			def.forEach( def => this.bind_class( e, def ) );
 			return;
+		}
+
+		if ( def instanceof Leafr )
+		{
+			this.bind
+			(
+				def ,
+				( new_v ) =>
+				{ if( this._el_ ) this._el_.className = new_v ; }
+			) ;
 		}
 
 		for( const [ name, value ] of Object.entries( def ) )

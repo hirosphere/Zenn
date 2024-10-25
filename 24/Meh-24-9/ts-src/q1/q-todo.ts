@@ -1,4 +1,4 @@
-import { leaf, Renn, ef, each, dom, log, Order } from "../meh/index.js" ;
+import { leaf, Leaf, Renn, ef, each, dom, log, Order } from "../meh/index.js" ;
 
 export namespace sv
 {
@@ -15,11 +15,12 @@ export namespace sv
 	};
 }
 
+
 export namespace vm
 {
 	export class App
 	{
-		public readonly title : leaf.Leaf.str ;
+		public readonly title : Leaf.str ;
 		public readonly items ;
 		public readonly editor ;
 
@@ -90,7 +91,7 @@ export namespace vm
 		constructor( v : sv.item )
 		{
 			this.text = leaf( v.text ) ;
-			this.completed = leaf( false ) ;
+			this.completed = leaf.bool( false ) ;
 
 			log( v.text );
 		}
@@ -202,7 +203,7 @@ export namespace vc
 	}
 	
 
-	const checkbox = ( state : leaf.Leaf.bool ) =>
+	const checkbox = ( state : Leaf.bool ) =>
 	{
 		return ef.input
 		(

@@ -1,4 +1,4 @@
-import { leaf } from "../model/leaf.js";
+import { Leafr } from "../model/leafr.js";
 import { defs } from "./defs.js";
 import * as nodet from "./nodet.js";
 
@@ -12,7 +12,7 @@ function create_element
 {
 	if
 	(
-		first instanceof leaf.r.Leaf ||
+		first instanceof Leafr ||
 		first instanceof nodet.Nodet ||
 		first instanceof defs.Place ||
 		first instanceof Node ||

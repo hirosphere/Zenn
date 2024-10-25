@@ -1,14 +1,14 @@
-import { _set_value_, log } from "../common.js";
-import { leaf, Renn } from "../model/index.js";
+import { log } from "../common.js";
+import { leafr , leaf , set_value , Renn } from "../model/index.js";
 
 
 export class Browser
 {
-	public readonly current = leaf.r < Index | undefined > ( undefined );
+	public readonly current = leafr < Index | undefined > ( undefined );
 
 	public set_current( index : Index | undefined )
 	{
-		this.current[ _set_value_ ]( index );
+		this.current[ set_value ]( index );
 		
 		document.title = this.make_title( this.current.value );
 	}
