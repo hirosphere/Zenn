@@ -1,3 +1,4 @@
+import { log } from "../common.js" ;
 
 export const set_value = Symbol() ;
 
@@ -36,49 +37,14 @@ export namespace Leafr
 			protected src : Leafr < V > | undefined ,
 			public readonly value_change : update < V >
 		)
-		{}
+		{
+			src?.add_ref ( this ) ;
+		}
 
 		public terminate()
 		{
 			this.src ?.remove_ref ( this ) ;
 			this.src = undefined ;
-		}
-	}
-}
-
-export namespace Leafr
-{
-	export class Conv < S , R = S > extends Leafr < R >
-	{
-		constructor
-		(
-			protected src : Leafr < S > ,
-			protected to_r : ( value : S ) => R
-		)
-		{
-			super() ;
-
-			new Ref < S >
-			(
-				src ,
-				( new_v , old_v ) => this.notify( new_v , old_v )
-			) ;
-		}
-
-		public override get value() : R
-		{
-			return this.to_r( this.src.value );
-		}
-
-		protected notify( new_sv : S , old_sv ? : S )
-		{
-			const new_rv = this.to_r ( new_sv ) ;
-			const old_rv = old_sv !== undefined ? this.to_r ( old_sv ) : undefined ;
-
-			this.p_refs.forEach
-			(
-				ref => ref.value_change ( new_rv , old_rv )
-			)
 		}
 	}
 }
@@ -99,19 +65,59 @@ export namespace Leafr
 			return this.p_value ;
 		}
 
-		public [ set_value ] ( new_v : V, is_rooting ? : boolean ) : void
+		public [ set_value ] ( new_v : V, is_permeating ? : boolean ) : void
 		{
 			if( new_v === this.p_value )  return ;
 
 			const old_v = this.p_value ;
 			this.p_value = new_v ;
 
-			( ! is_rooting ) && this.p_rel ?.update () ;
+			( ! is_permeating ) && this.p_rel ?.update () ;
 
 			this.p_refs.forEach
 			(
-				ref => ref.value_change ( new_v , old_v )
+				ref =>
+				{
+					ref.value_change ( new_v , old_v ) ;
+				}
 			);
+		}
+	}
+}
+
+export namespace Leafr
+{
+	export class Converter < S , R = S > extends Leafr < R >
+	{
+		constructor
+		(
+			protected src : Leafr < S > ,
+			protected to_ref : ( value : S ) => R
+		)
+		{
+			super() ;
+
+			new Ref < S >
+			(
+				src ,
+				( new_v , old_v ) => this.notify ( new_v , old_v )
+			) ;
+		}
+
+		public override get value() : R
+		{
+			return this.to_ref( this.src.value );
+		}
+
+		protected notify( new_sv : S , old_sv ? : S )
+		{
+			const new_rv = this.to_ref ( new_sv ) ;
+			const old_rv = old_sv !== undefined ? this.to_ref ( old_sv ) : undefined ;
+
+			this.p_refs.forEach
+			(
+				ref => ref.value_change ( new_rv , old_rv )
+			)
 		}
 	}
 }

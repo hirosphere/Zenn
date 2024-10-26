@@ -1,5 +1,5 @@
 import { log } from "../common.js";
-import { Leafr , set_value , leafr } from "./leafr.js";
+import { Leafr , set_value } from "./leafr.js";
 
 export class Renn < S >
 {
@@ -128,6 +128,7 @@ export class Renn < S >
 			pos ++
 		)
 		{
+			log( pos )
 			this.orders [ pos ] [ set_value ] ( pos );
 		}
 	}
@@ -178,11 +179,11 @@ export class Order < S > extends Leafr.Entity < Order.pos >
 		super( undefined );
 	}
 
-	protected _count_ ? : Leafr.Conv < Order.pos > ;
+	protected _count_ ? : Leafr.Converter < Order.pos > ;
 
 	public get count ()
 	{
-		return this._count_ ??= new Leafr.Conv
+		return this._count_ ??= new Leafr.Converter
 		(
 			this,
 			to_count

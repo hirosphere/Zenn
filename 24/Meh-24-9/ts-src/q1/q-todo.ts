@@ -13,6 +13,13 @@ export namespace sv
 		text : string ;
 		completed ? : boolean ;
 	};
+
+	const 進行状態 = [ "未着手", "進行中", "済み" ] as const ;
+	type tp = typeof 進行状態 [ number ] ;
+
+	let tp : tp = "未着手";
+	tp = "済み" ;
+	tp = "進行中" ;
 }
 
 
@@ -47,7 +54,7 @@ export namespace vm
 		public post()
 		{
 			const item = new Item( { text : this.text.value } ) ;
-			this.items.new ( [ item ] , 0 )
+			this.items.new ( [ item ] , 5 )
 			this.text.value = "";
 		}
 	}
@@ -188,7 +195,7 @@ export namespace vc
 		(
 			{ class : [ "todo-item" , { completed : m.completed } ] } ,
 			ef.span( o.count ),
-			ef.span( m.text ),
+			ef.span( { class : "todo-text" }, m.text ),
 			checkbox( m.completed )
 		)
 	};

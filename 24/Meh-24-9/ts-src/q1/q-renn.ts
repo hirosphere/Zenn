@@ -32,6 +32,7 @@ export namespace view
 
 				bu ( "xx", () => m.station_list.clear () ) ,
 				ins( m, [ [ "京成上野", "けいせいうえの", "Keisei-ueno" ] ] , 0 ),
+				ins( m, [ [ "和光市", "わこうし", "Wakoshi" ] ] , 5 ),
 				ins( m, [ [ "西武秩父", "せいぶちちぶ", "Seibu-chichibu" ] ] ),
 			),
 			ef.section
@@ -92,7 +93,7 @@ export namespace view
 				{
 					acts : { click () { o.remove () ; } } ,
 				} ,
-				"**"
+				"x"
 			),
 		);
 	};

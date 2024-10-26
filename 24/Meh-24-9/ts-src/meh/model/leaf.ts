@@ -15,9 +15,9 @@ export namespace Leaf
 		public override get value () : V { return this.p_value ; }
 		public override set value ( value : V ) { this.set ( value ) ; }
 
-		public set ( new_v : V, is_rooting ? : boolean ) : void
+		public set ( new_v : V, is_permeating ? : boolean ) : void
 		{
-			this [ set_value ] (  new_v , is_rooting ) ;
+			this [ set_value ] (  new_v , is_permeating ) ;
 		}
 	}
 }
