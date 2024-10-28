@@ -54,7 +54,7 @@ export namespace vm
 		public post()
 		{
 			const item = new Item( { text : this.text.value } ) ;
-			this.items.new ( [ item ] , 5 )
+			this.items.new ( [ item ] , 0 )
 			this.text.value = "";
 		}
 	}
