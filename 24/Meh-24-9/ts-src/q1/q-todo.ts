@@ -113,7 +113,7 @@ export namespace vc
 	{
 		return ef.article
 		(
-			{ class : "fc" },
+			{ class : "todo-app fc" },
 
 			ef.h1( m.title ),
 
