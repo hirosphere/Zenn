@@ -128,7 +128,6 @@ export class Renn < S >
 			pos ++
 		)
 		{
-			log( pos )
 			this.orders [ pos ] [ set_value ] ( pos );
 		}
 	}

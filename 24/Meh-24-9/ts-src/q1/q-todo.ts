@@ -113,14 +113,14 @@ export namespace vc
 	{
 		return ef.article
 		(
-			{ class : "todo-app fc" },
+			{ class : "todo-app" },
 
 			ef.h1( m.title ),
 
 			Post( m.editor ),
 
 			ef.section (
-				{ class : "bar" },
+				{ class : "fb" },
 				command
 				(
 					"Random" ,
@@ -254,9 +254,11 @@ const main = () =>
 			{ text : "英米を倒す" },
 			{ text : "ハイチュウを買う" },
 			{ text : "たけのこの里を分譲" },
+			{ text : "川越－高麗川－拝島－立川－武蔵小杉－池袋－大宮－小山－友部－土浦－上野 大回り乗車" },
 		]
 	};
 
+	dom.add( vc.App( new vm.App ( v ) ) , "body" );
 	dom.add( vc.App( new vm.App ( v ) ) , "body" );
 };
 

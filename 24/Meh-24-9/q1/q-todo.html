@@ -9,110 +9,79 @@
 *
 {
 	box-sizing: border-box ;
-	margin: 0 ;
-	padding: 0 ;
 }
 
 html
 {
-	color: hsl( 0, 0%, 10% );
+	color: hsl( 45 , 4% , 8% ) ;
 }
 
 body
 {
-	margin: 0 auto ;
-	padding: 0ex 1ex ;
 	display: flex ;
 	flex-direction: column ;
-	max-width: 65em ;
-	min-width : 320px ;
-	align-items: stretch ;
-}
-
-h1
-{
-	padding: 1ex ;
-	text-align: center ;
-}
-
-article
-{
-}
-
-.fc
-{
-	display: flex ;
-	flex-direction: column ;
-	align-items: stretch ;
-	gap: 1em ;
+	align-items: center ;
+	gap : 1em ;
 }
 
 .todo-app
 {
-	margin: 0 auto ;
-	max-width: 50em ;
-	min-width : 0 ;
+	max-width: 40em ;
+	display : flex ;
+	padding: 0 0.8ex 0.8em ;
+	flex-direction: column ;
+	gap : 1em ;
 }
 
-.bar
+h1
+{
+	text-align: center ;
+}
+
+button
+{
+	padding: 0.5ex 1ex ;
+}
+
+.fb
 {
 	display: flex ;
-	gap : 1ex ;
+	gap : 0.5ex ;
+	align-items: stretch ;
 }
-
-button { padding: 0.65ex 1ex; }
 
 .post
 {
-	display: flex ;
-	flex-wrap: nowrap ;
-	gap: 1ex ;
+	display: grid ;
+	grid-template-columns: 1fr auto ;
+	gap: 0.5ex ;
 }
 
-.post .text
+.post > .text
 {
-	min-width: 0 ;
-	flex-grow: 1 ;
-	padding: 0.3ex 0.5ex ;
-	font-size: 1.33em ;
+	min-inline-size: 0 ;
+	font-size: 1.3em;
+	padding: 0.4ex;
 }
 
-.post .submit
+ul.todo-list
 {
-	padding: 0.3ex 1.5ex;
-}
-
-.todo-list
-{
-	display: flex ;
-	flex-direction: column ;
-	align-items: stretch;
-	gap: 1px ;
+	padding: 0 ;
 }
 
 .todo-item
 {
-	display : grid;
-	border-bottom: 1px dotted hsl( 93, 0%, 75% );
-	background-color: hsl( 93, 60%, 100% );
-	padding: 0.45ex 1.0ex ;
-	grid-template-columns: 2em 1fr 2ex;
-	gap : 1em ;
+	display: grid ;
+	padding-block: 0.6ex;
+	border-bottom: 1px dotted hsl( 45 , 4% , 65% ) ;
+	grid-template-columns: 3ex 1fr 2ex ;
+	gap : 1ex ;
 }
 
-.todo-text
+.todo-item > input[ type = "checkbox" ]
 {
-
-}
-
-.todo-item.completed
-{
-	background-color: hsl( 93, 40%, 100% );
-}
-
-.todo-item input[ type="checkbox" ]
-{
-	accent-color: hsl( 93, 40%, 50% ) ;
+	width: 1.3em ;
+	accent-color: hsl( 90, 50%, 50% ) ;
 }
 
 </style>
