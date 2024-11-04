@@ -1,10 +1,10 @@
 import { log } from "../common.js";
 
-import { Renn, Order } from "../model/index.js";
+import { Renn, Position } from "../model/index.js";
 import { defs } from "./defs.js";
 import * as nodet from "./nodet.js";
 
-export const create_place =
+export const create_parts_place =
 (
 	ce : Element ,
 	def : defs.parts ,
@@ -124,8 +124,8 @@ class StaticPlace extends Place
 class EachPlace extends Place
 {
 	protected src : Renn < any > ;
-	protected create_node : ( order : Order < any > ) => defs.node ;
-	protected nodes = new Map < Order < any > , Node > ;
+	protected create_node : ( order : Position < any > ) => defs.node ;
+	protected nodes = new Map < Position < any > , Node > ;
 
 	constructor
 	(
@@ -155,7 +155,7 @@ class EachPlace extends Place
 			pos ++
 		)
 		{
-			const order = src.orders [ pos ] ;
+			const order = src.items [ pos ] ;
 			if( this.nodes.has( order ) )  return ;
 
 			const node = this.make_part
@@ -170,7 +170,7 @@ class EachPlace extends Place
 			) ;
 		}
 
-		const next_ord = this.src.orders [ next ];
+		const next_ord = this.src.items [ next ];
 
 		this.ce.insertBefore
 		(
@@ -183,7 +183,7 @@ class EachPlace extends Place
 		);
 	}
 
-	public remove ( { orders } : Renn.note )
+	public remove ( { items: orders } : Renn.note )
 	{
 		orders.forEach
 		(
@@ -191,7 +191,7 @@ class EachPlace extends Place
 		);
 	}
 
-	protected remove_node ( order : Order < any > )
+	protected remove_node ( order : Position < any > )
 	{
 		const node = this.nodes.get ( order ) ;
 		if( ! node )  return ;
@@ -202,7 +202,7 @@ class EachPlace extends Place
 	{
 		return this.nodes.get
 		(
-			this.src.orders [ 0 ]
+			this.src.items [ 0 ]
 		);
 	}
 }

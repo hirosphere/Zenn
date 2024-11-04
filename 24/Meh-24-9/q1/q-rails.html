@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="jp">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+*
+{
+	box-sizing: border-box ;
+	margin: 0 ;
+	padding: 0 ;
+}
+
+.lt
+{
+	background-color: hsla( 205 , 100% , 50% , 5% ) ;
+}
+
+body
+{
+	display: flex ;
+	flex-direction: column ;
+	align-items: center ;
+
+	gap : 1em ;
+}
+
+article
+{
+	width: 100% ;
+	max-width: 55em ;
+
+	padding: 1ex ;
+
+	display: flex ;
+	flex-direction: column ;
+	align-items: center	 ;
+	gap: 1ex ;
+}
+
+h1
+{
+	width : 100% ;
+	padding: 1ex ;
+	text-align: center ;
+}
+
+.list
+{
+	width: 100% ;
+	max-width : 33em ;	
+	display: flex ;
+	flex-direction: column ;
+
+	list-style : none ;
+	gap : 1px ;
+}
+
+.list li
+{
+	display: grid ;
+	padding: 0.6ex ;
+	grid-template-columns: 4ex 1fr ;
+}
+
+.list li .number
+{
+	text-align: center ;
+}
+
+.list li .number:hover
+{
+	background-color: hsla( 205 , 100% , 50% , 5% ) ;
+}
+
+
+</style>
+
+</head>
+<body>
+
+<script type="module">
+
+import { main } from "../js-out-1/q1/q-rails.js" ;
+main( "body" );
+
+</script>
+
+</body>
+</html>

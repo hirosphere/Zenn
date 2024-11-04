@@ -1,4 +1,4 @@
-import { leaf, Leaf, Renn, ef, each, dom, log, Order } from "../meh/index.js" ;
+import { leaf, Leaf, Renn, ef, each, dom, log, Position } from "../meh/index.js" ;
 
 export namespace sv
 {
@@ -13,13 +13,6 @@ export namespace sv
 		text : string ;
 		completed ? : boolean ;
 	};
-
-	const 進行状態 = [ "未着手", "進行中", "済み" ] as const ;
-	type tp = typeof 進行状態 [ number ] ;
-
-	let tp : tp = "未着手";
-	tp = "済み" ;
-	tp = "進行中" ;
 }
 
 
@@ -76,14 +69,14 @@ export namespace vm
 
 		public clear_completed()
 		{
-			const list = this.orders.filter( o => o.src.completed.value );
+			const list = this.items.filter( o => o.src.completed.value );
 
 			list.forEach ( o => o.remove () ) ;
 		}
 
 		public rand_check()
 		{
-			this.orders.forEach
+			this.items.forEach
 			(
 				o => o.src.completed.value = bool_rand( 0.25 )
 			);
@@ -99,8 +92,6 @@ export namespace vm
 		{
 			this.text = leaf( v.text ) ;
 			this.completed = leaf.bool( false ) ;
-
-			log( v.text );
 		}
 	}
 
@@ -119,25 +110,38 @@ export namespace vc
 
 			Post( m.editor ),
 
-			ef.section (
+			ef.section
+			(
 				{ class : "fb" },
-				command
+
+				ef.section
 				(
-					"Random" ,
-					() => m.items.rand_check()
+					{ class : "fb" , style : { gap : "2px" } },
+					
+					command
+					(
+						"Random" ,
+						() => m.items.rand_check()
+					),
+					command
+					(
+						"削除",
+						() => m.items.clear_completed ()
+					),
 				),
-				command
+				timer () ,
+				ef.a
 				(
-					"削除",
-					() => m.items.clear_completed ()
-				)
+					{ attrs : { href : location.pathname + "?" + new Date().toUTCString().replaceAll ( "/" , "-" ) } } ,
+					"遷移"
+				) ,
 			),
 
 			ef.ul (
 				{ class : "todo-list" },
 				each (
 					m.items ,
-					o => Item( o ) ,
+					p => Item( p ) ,
 				),
 			),
 		);
@@ -188,13 +192,13 @@ export namespace vc
 		);
 	}
 
-	const Item = ( o : Order < vm.Item > ) =>
+	const Item = ( o : Position < vm.Item > ) =>
 	{
 		const m = o.src ;
 		return ef.li
 		(
 			{ class : [ "todo-item" , { completed : m.completed } ] } ,
-			ef.span( o.count ),
+			ef.span( { class : "order" } , o.count ),
 			ef.span( { class : "todo-text" }, m.text ),
 			checkbox( m.completed )
 		)
@@ -215,7 +219,7 @@ export namespace vc
 		return ef.input
 		(
 			{
-				attrs : { type : "checkbox" } ,
+				attrs : { type : "checkbox" , autocomplete : "off" } ,
 				props : { checked : state } ,
 				acts :
 				{
@@ -230,11 +234,41 @@ export namespace vc
 			}
 		);
 	};
+
+	const czechbox = ( state : Leaf.bool )=>{
+		return ef.input({
+			attrs:{ type: "checkbox", autocomplete: "off" },
+			props: { checked: state },
+			acts: { change( ev ){
+				if( ev.target instanceof HTMLInputElement ){
+					state.value = ev.target.checked;
+				}
+			} }
+		});
+	};
+
+	const timer = () =>
+	{
+		const t = leaf.num ( 0 ) ;
+		const s = new Date().toLocaleString () ;
+
+		setInterval( () => { t.value ++ } , 1000 ) ;
+
+		return ef.span
+		(
+			{ class : "fb" } ,
+			ef.span ( s ) ,
+			ef.span ( t ) ,
+		);
+	}
 }
 
 
 const main = () =>
 {
+	window.addEventListener ( "pagehide" , () => log ( "HIDE" , new Date().toLocaleTimeString() ) ) ;
+	window.addEventListener ( "pageshow" , () => log ( "SHOW" , new Date().toLocaleTimeString() ) ) ;
+
 	const v : sv.app =
 	{
 		title : "ToDo 日本史" ,

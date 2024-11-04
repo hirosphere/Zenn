@@ -1,7 +1,7 @@
 import { log } from "../common.js";
 import { Leafr } from "../model/leafr.js";
 import { defs } from "./defs.js";
-import { create_place } from "./parts.js";
+import { create_parts_place } from "./parts.js";
 
 type gE = globalThis.Element ;
 type gN = globalThis.Node ;
@@ -20,7 +20,7 @@ export const add =
 	if( ! com_e )  return ;
 
 	const df = new DocumentFragment();
-	const parts = create_place
+	const parts = create_parts_place
 	(
 		com_e,
 		part instanceof Array ? part : [ part ]
@@ -85,7 +85,7 @@ export class Element extends Nodet
 		super();
 
 		const { ns, type, parts } = args;
-		const { class: class_name, style, attrs, props, acts, actActs: actacts } = args;
+		const { class: class_name, style, attrs, props, acts, active_acts: actacts } = args;
 
 		let el = this._el_ =
 		(
@@ -129,7 +129,7 @@ export class Element extends Nodet
 
 		if( parts )
 		{
-			this.parts = create_place( this._el_, parts );
+			this.parts = create_parts_place( this._el_, parts );
 		}
 	}
 

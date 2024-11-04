@@ -9,7 +9,7 @@ export class Renn < S >
 	}
 
 	public readonly length = new Leafr.Entity ( 0 );
-	public readonly orders : Order < S > [] = [] ;
+	public readonly items : Position < S > [] = [] ;
 	protected p_refs = new Set < Renn.Ref < S > > ;
 
 	public add_ref( ref : Renn.Ref < S > )
@@ -21,45 +21,45 @@ export class Renn < S >
 			{
 				src : this ,
 				start : 0 ,
-				next : this.orders.length ,
-				orders : this.orders ,
+				next : this.items.length ,
+				items : this.items ,
 			}
 		);
 	}
 
 	public clear ()
 	{
-		this.remove ( 0, this.orders.length ) ;
+		this.remove ( 0, this.items.length ) ;
 	}
 
 	public new
 	(
 		srcs : S [],
-		start ? : Order.pos
+		start ? : Position.value
 	)
 	: void
 	{
-		start = pos_trim( start, this.orders ) ;
+		start = pos_trim( start, this.items ) ;
 
-		const orders = srcs.map
+		const items = srcs.map
 		(
-			src => new Order( this, src )
+			src => new Position( this, src )
 		);
 
-		this.orders.splice
+		this.items.splice
 		(
 			start, 0,
-			... orders
+			... items
 		);
 
-		this.update_orders( start, this.orders.length ) ;
+		this.update_items( start, this.items.length ) ;
 
 		const note =
 		{
 			src : this ,
 			start ,
 			next : start + srcs.length ,
-			orders ,
+			items ,
 		} ;
 
 		this.p_refs.forEach
@@ -67,7 +67,7 @@ export class Renn < S >
 			ref => ref.add( note )
 		);
 
-		this.length [ set_value ] ( this.orders.length ) ;
+		this.length [ set_value ] ( this.items.length ) ;
 	}
 
 	public remove
@@ -79,43 +79,41 @@ export class Renn < S >
 		const next = pos_trim
 		(
 			start + count ,
-			this.orders
+			this.items
 		);
 
-		start = pos_trim( start, this.orders ) ;
+		start = pos_trim( start, this.items ) ;
 
-		const orders = this.orders.splice
+		const removed = this.items.splice
 		(
 			start,
 			next - start,
 		);
 
-		orders.forEach
+		removed.forEach
 		(
-			order => order [ _set_renn_ ] ()
+			pos => pos [ set_renn ] ()
 		);
 
-		this.update_orders( start, this.orders.length ) ;
+		this.update_items( start, this.items.length ) ;
 
 		const note =
 		{
 			src : this ,
 			start ,
 			next ,
-			orders ,
+			items: removed ,
 		};
-
-		log( start , next );
 
 		this.p_refs.forEach
 		(
 			ref => ref.remove( note )
 		);
 
-		this.length [ set_value ] ( this.orders.length ) ;
+		this.length [ set_value ] ( this.items.length ) ;
 	}
 
-	protected update_orders
+	protected update_items
 	(
 		start : number,
 		next : number
@@ -128,12 +126,12 @@ export class Renn < S >
 			pos ++
 		)
 		{
-			this.orders [ pos ] [ set_value ] ( pos );
+			this.items [ pos ] [ set_value ] ( pos );
 		}
 	}
 }
 
-const pos_trim = ( pos : Order.pos, ar : Array < any > ) =>
+const pos_trim = ( pos : Position.value, ar : Array < any > ) =>
 {
 	if( pos === undefined || pos >= ar.length )  return ar.length ;
 	if( pos < 0 )  return 0 ;
@@ -157,7 +155,7 @@ export namespace Renn
 	export type note < S = any > = range &
 	{
 		readonly src : Renn < S > ;
-		readonly orders : Order < S > [] ;
+		readonly items : Position < S > [] ;
 	};
 }
 
@@ -165,9 +163,9 @@ export namespace Renn
 
 /* */
 
-export const _set_renn_ = Symbol();
+const set_renn = Symbol();
 
-export class Order < S > extends Leafr.Entity < Order.pos >
+export class Position < S > extends Leafr.Entity < Position.value >
 {
 	constructor
 	(
@@ -178,7 +176,7 @@ export class Order < S > extends Leafr.Entity < Order.pos >
 		super( undefined );
 	}
 
-	protected _count_ ? : Leafr.Converter < Order.pos > ;
+	protected _count_ ? : Leafr.Converter < Position.value > ;
 
 	public get count ()
 	{
@@ -189,7 +187,7 @@ export class Order < S > extends Leafr.Entity < Order.pos >
 		);
 	}
 
-	public [ _set_renn_ ] ( renn ? : Renn < S > )
+	public [ set_renn ] ( renn ? : Renn < S > )
 	{
 		this.renn = renn ;
 	}
@@ -208,14 +206,14 @@ export class Order < S > extends Leafr.Entity < Order.pos >
 	}
 }
 
-const to_count = ( pos : Order.pos ) : Order.pos =>
+const to_count = ( pos : Position.value ) : Position.value =>
 (
 	typeof pos == "number" ? pos + 1 : pos
 );
 
-export namespace Order
+export namespace Position
 {
-	export type pos = number | undefined ;	
+	export type value = number | undefined ;	
 }
 
 

@@ -1,4 +1,4 @@
-import { Leafr , set_value } from "./leafr.js" ;
+import { Leafr , leafr , set_value } from "./leafr.js" ;
 
 export interface Leaf < V > extends Leafr < V >
 {
@@ -40,7 +40,25 @@ export namespace leaf
 	export const str = leaf < string > ;
 	export const num = leaf < number > ;
 	export const bool = leaf < boolean > ;
-
-	export const type = Leaf ;
 }
 
+export namespace leaf
+{
+	export type types < V > = Leaf < V > ;
+
+	export namespace types
+	{
+		export type str = Leaf < string > ;
+		export type num = Leaf < number > ;
+		export type bool = Leaf < boolean > ;
+
+		export type lol < V > = V | Leaf < V > ;
+
+		export namespace lol
+		{
+			export type str = lol < string > ;
+			export type num = lol < number > ;
+			export type bool = lol < boolean > ;
+		}
+	}
+}

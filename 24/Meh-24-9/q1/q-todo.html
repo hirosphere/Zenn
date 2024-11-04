@@ -28,7 +28,7 @@ body
 {
 	max-width: 40em ;
 	display : flex ;
-	padding: 0 0.8ex 0.8em ;
+	padding: 0 0.3ex 0.3em ;
 	flex-direction: column ;
 	gap : 1em ;
 }
@@ -40,14 +40,27 @@ h1
 
 button
 {
-	padding: 0.5ex 1ex ;
+	padding: 0.5ex 1.3ex ;
+}
+
+a
+{
+	text-decoration: none ;
+	color: hsl( 45 , 4% , 8% ) ;
 }
 
 .fb
 {
 	display: flex ;
-	gap : 0.5ex ;
+	gap : 1.2ex ;
 	align-items: stretch ;
+}
+
+.fb > span ,
+.fb > a
+{
+	display: flex ;
+	align-items: center ;
 }
 
 .post
@@ -71,17 +84,22 @@ ul.todo-list
 
 .todo-item
 {
-	display: grid ;
-	padding-block: 0.6ex;
+	display : grid ;
+	padding : 0.6ex 0.6ex ;
 	border-bottom: 1px dotted hsl( 45 , 4% , 65% ) ;
-	grid-template-columns: 3ex 1fr 2ex ;
+	grid-template-columns: 5ex 1fr 2ex ;
 	gap : 1ex ;
+}
+
+.todo-item > .order
+{
+	text-align: center ;
 }
 
 .todo-item > input[ type = "checkbox" ]
 {
 	width: 1.3em ;
-	accent-color: hsl( 90, 50%, 50% ) ;
+	accent-color: hsl( 90, 50%, 40% ) ;
 }
 
 </style>

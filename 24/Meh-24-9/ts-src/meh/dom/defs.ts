@@ -1,5 +1,5 @@
 import { log } from "../common.js";
-import { Leafr, Renn, Order } from "../model/index.js";
+import { Leafr, Renn, Position } from "../model/index.js";
 import * as nodet from "./nodet.js";
 
 export namespace defs
@@ -7,7 +7,7 @@ export namespace defs
 	type lolr < V > = V | Leafr < V > ;
 
 	export type primitive = string | number | boolean | undefined ;
-	export type leafr = Leafr.str | Leafr.num | Leafr.bool | lolr < Order.pos > ;
+	export type leafr = Leafr.str | Leafr.num | Leafr.bool | lolr < Position.value > ;
 	export type text = primitive | leafr ;
 
 	export type acts =
@@ -38,6 +38,11 @@ export namespace defs
 		string | Leafr.str | class_switch | ( string | class_switch ) []
 	);
 
+	export type part_switch =
+	{
+		update : ( el : Element , state : boolean ) => void ;
+	} ;
+
 	export type ec < E extends Element > =
 	{
 		class ? : class_spec ;
@@ -45,8 +50,10 @@ export namespace defs
 		attrs ? : attrs < E > ;
 		props ? : attrs < E > ;
 		acts ? : acts ;
-		actActs ? : acts ;
+		active_acts ? : acts ;
 	};
+
+	//  //
 
 	export class Place
 	{
@@ -62,12 +69,19 @@ export namespace defs
 		public set content ( content : node ) {}
 	}
 
+	export class Switch extends Place
+	{
+		constructor
+		()
+		{ super() ; }
+	}
+
 	export class Each < S = any > extends Place
 	{
 		constructor
 		(
 			public readonly source : Renn < any > ,
-			public readonly create_node : ( order : Order < S > ) => node
+			public readonly create_node : ( order : Position < S > ) => node
 		)
 		{ super() }
 	}
@@ -80,7 +94,7 @@ export namespace defs
 export const each = < S >
 (
 	source : Renn < S > ,
-	create_node : ( order : Order < S > ) => defs.node
+	create_node : ( order : Position < S > ) => defs.node
 )
  : defs.Each < S > =>
 (
