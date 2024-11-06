@@ -30,51 +30,65 @@ export namespace vc
 			
 			ef.section
 			(
-				{ class : "buttons x" } ,
-				... items.map ( item => sel_bu ( osel , item ) )
-			),
-	
-			ef.section
-			(
 				{ class : "fcol" },
 
-				ef.h1 ( "Object Keys 1" ) ,
+				ef.h1 ( "キー型 : [ Object ]" ) ,
+
+				ef.section
+				(
+					{ class : "buttons x" } ,
+					... items.map ( item => sel_bu ( item.title , osel , item ) )
+				),
+		
+				ef.h2 ( "実装 1" ) ,
 				pl.switch ( osel , k => ef.div ( { class : "card" } , k.title ) ) ,
 
-				ef.h1 ( "Object Keys 2" ) ,
+				ef.h2 ( "実装 2" ) ,
 				pl.switch ( osel , items.map ( k => [ k , ef.div ( { class : "card" } , k?.title ) ] ) ) ,
 
-				ef.h1 ( "Object Keys 3" ) ,
+				ef.h2 ( "実装 3" ) ,
 				pl.switch ( osel , k => ef.div ( { class : "card" } , k?.title ) , items ) ,
 	
-				ef.h1 ( "Boolean keys 1" ) ,
+			) ,
+
+			ef.section
+			(
+				ef.h1 ( "キー型 : [ Boolean ]" ) ,
+
+				ef.section
+				(
+					... [ false , true ].map ( k => sel_bu ( k , bsel , k ) )
+				),
+	
+				ef.h2 ( "実装 1" ) ,
 				pl.switch < boolean >
 				(
 					bsel ,
 					[
-						[ true, ef.span ( "はい" ) ] ,
-						[ false, ef.span ( "いいえ" ) ] ,
+						[ true, ef.span ( { class : "card" } , "はい" ) ] ,
+						[ false, ef.span ( { class : "card" } , "いいえ" ) ] ,
 					] ,
 					[ false ]
 				) ,
 	
-				ef.h1 ( "Boolean Keys 2" ) ,
+				ef.h2 ( "実装 2" ) ,
 				pl.switch
 				(
 					bsel ,
-					k => ef.span ( k ? "はい" : "いいえ" ) ,
+					k => ef.span ( { class : "card" } , k ? "ごもっとも" : "知りません" ) ,
 					[ false , true ]
 				)
+
 			)
 		);
 	};
 	
-	const sel_bu = ( sel : leaf.types < t_item | undefined > , item : t_item ) =>
+	const sel_bu = < K = any > ( title : any , sel : leaf.types < any > , key : K ) =>
 	{
 		return ef.button
 		(
-			{ acts : { click() { sel.value = item ; } } } ,
-			item ? item.title : "解除"
+			{ acts : { click() { sel.value = key ; } } } ,
+			String( title )
 		);
 	};
 	
