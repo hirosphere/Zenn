@@ -15,8 +15,8 @@ export namespace vc
 		[
 			{ title : "常磐線" , color : "hsl( 180, 100%, 40% )" } ,
 			{ title : "埼京線" , color : "hsl( 170, 100%, 35% )" } ,
-			{ title : "京浜東北線" , color : "hsl( 198, 75%, 55% )" } ,
-			{ title : "山手線" , color : "hsl( 108, 60%, 70% )" } ,
+			{ title : "京浜東北線" , color : "hsl( 198, 75%, 53% )" } ,
+			{ title : "山手線" , color : "hsl( 100, 60%, 70% )" } ,
 			{ title : "総武線" , color : "hsl( 50, 70%, 68% )" } ,
 			{ title : "中央線" , color : "hsl( 18, 75%, 60% )" } ,
 		];
@@ -44,10 +44,10 @@ export namespace vc
 				pl.switch ( osel , k => card( k.title , k.color , k.color ) ) ,
 
 				ef.h3 ( "実装 2" ) ,
-				pl.switch ( osel , items.map ( k => [ k , card( k.title, k.color , k.color ) ] ) ) ,
+				pl.switch ( osel , items.map ( k => [ k , card( k.title, "全駅グルメコンプリート" , k.color ) ] ) ) ,
 
 				ef.h3 ( "実装 3" ) ,
-				pl.switch ( osel , k => card( k.title , k.color , k.color ) , items ) ,
+				pl.switch ( osel , k => card( k.title , "各駅停車の旅" , k.color ) , items ) ,
 	
 			) ,
 
@@ -68,15 +68,13 @@ export namespace vc
 						[ true, ef.span ( { class : "card" } , "はい" ) ] ,
 						[ false, ef.span ( { class : "card" } , "いいえ" ) ] ,
 					] ,
-					[ false ]
 				) ,
 	
 				ef.h3 ( "実装 2" ) ,
 				pl.switch
 				(
 					bsel ,
-					k => ef.span ( { class : "card" } , k ? "ごもっとも" : "知りません" ) ,
-					[ false , true ]
+					k => ef.span ( { class : "card" } , k ? "ごもっとも*" : "知りません" ) ,
 				)
 
 			)
