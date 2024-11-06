@@ -144,7 +144,7 @@ class SwitchPlace extends Place
 	{
 		super() ;
 
-		/* items */
+		/* アイテムの生成と登録 */
 
 		const df = new DocumentFragment ;
 
@@ -152,7 +152,7 @@ class SwitchPlace extends Place
 		{
 			def.items.forEach
 			(
-				( [ key , mel ] ) => this.add_part_mel ( key , this.ce , mel )
+				( [ key , mel ] ) => this.add_part_mel ( key , df , mel )
 			) ;
 		}
 		else
@@ -161,9 +161,15 @@ class SwitchPlace extends Place
 
 			def.pre ?.forEach
 			(
-				key => this.make_part ( key , this.ce )
+				key => this.make_part ( key , df )
 			) ;
 		}
+
+		df.childElementCount && this.ce?.insertBefore
+		(
+			df ,
+			this.next_dom_node
+		) ;
 		
 
 		/* selector */

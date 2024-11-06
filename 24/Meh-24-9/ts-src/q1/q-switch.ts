@@ -5,7 +5,7 @@ function new_sel < K > ( value : K )
 	return leaf < K | undefined > ( value ) ;
 }
 
-type t_item = { title : string } ;
+type t_item = { title : string , color : string } ;
 
 export namespace vc
 {
@@ -13,12 +13,12 @@ export namespace vc
 	{
 		const items : t_item [] =
 		[
-			{ title : "埼京線" } ,
-			{ title : "中央線" } ,
-			{ title : "総武線" } ,
-			{ title : "山手線" } ,
-			{ title : "京浜東北線" } ,
-			{ title : "常磐線" } ,
+			{ title : "常磐線" , color : "hsl( 180, 100%, 40% )" } ,
+			{ title : "埼京線" , color : "hsl( 170, 100%, 35% )" } ,
+			{ title : "京浜東北線" , color : "hsl( 198, 75%, 55% )" } ,
+			{ title : "山手線" , color : "hsl( 108, 60%, 70% )" } ,
+			{ title : "総武線" , color : "hsl( 50, 70%, 68% )" } ,
+			{ title : "中央線" , color : "hsl( 18, 75%, 60% )" } ,
 		];
 	
 		const osel = new_sel < t_item > ( items [ 0 ] );
@@ -32,7 +32,7 @@ export namespace vc
 			(
 				{ class : "fcol" },
 
-				ef.h1 ( "キー型 : [ Object ]" ) ,
+				ef.h2 ( "キー型 : [ Object ]" ) ,
 
 				ef.section
 				(
@@ -40,27 +40,27 @@ export namespace vc
 					... items.map ( item => sel_bu ( item.title , osel , item ) )
 				),
 		
-				ef.h2 ( "実装 1" ) ,
-				pl.switch ( osel , k => ef.div ( { class : "card" } , k.title ) ) ,
+				ef.h3 ( "実装 1" ) ,
+				pl.switch ( osel , k => card( k.title , k.color , k.color ) ) ,
 
-				ef.h2 ( "実装 2" ) ,
-				pl.switch ( osel , items.map ( k => [ k , ef.div ( { class : "card" } , k?.title ) ] ) ) ,
+				ef.h3 ( "実装 2" ) ,
+				pl.switch ( osel , items.map ( k => [ k , card( k.title, k.color , k.color ) ] ) ) ,
 
-				ef.h2 ( "実装 3" ) ,
-				pl.switch ( osel , k => ef.div ( { class : "card" } , k?.title ) , items ) ,
+				ef.h3 ( "実装 3" ) ,
+				pl.switch ( osel , k => card( k.title , k.color , k.color ) , items ) ,
 	
 			) ,
 
 			ef.section
 			(
-				ef.h1 ( "キー型 : [ Boolean ]" ) ,
+				ef.h2 ( "キー型 : [ Boolean ]" ) ,
 
 				ef.section
 				(
 					... [ false , true ].map ( k => sel_bu ( k , bsel , k ) )
 				),
 	
-				ef.h2 ( "実装 1" ) ,
+				ef.h3 ( "実装 1" ) ,
 				pl.switch < boolean >
 				(
 					bsel ,
@@ -71,7 +71,7 @@ export namespace vc
 					[ false ]
 				) ,
 	
-				ef.h2 ( "実装 2" ) ,
+				ef.h3 ( "実装 2" ) ,
 				pl.switch
 				(
 					bsel ,
@@ -82,6 +82,16 @@ export namespace vc
 			)
 		);
 	};
+
+	const card = ( title : string , text ? : string , color ? : string ) =>
+	(
+		ef.section
+		(
+			{ class : "card" , style : { backgroundColor : color } } ,
+			ef.p ( { class : "title" } , title ) ,
+			ef.p ( { class : "text" } , text ) 
+		)
+	);
 	
 	const sel_bu = < K = any > ( title : any , sel : leaf.types < any > , key : K ) =>
 	{
