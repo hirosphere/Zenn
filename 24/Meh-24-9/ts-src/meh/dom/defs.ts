@@ -1,9 +1,11 @@
 import { log } from "../common.js";
-import { Leafr, Renn, Position } from "../model/index.js";
-import * as nodet from "./nodet.js";
+import { Leafr , leaf , Renn, Position } from "../model/index.js";
+import * as nodet from "./node.js";
 
 export namespace defs
 {
+	export type El = HTMLElement | SVGElement ;
+
 	type lolr < V > = V | Leafr < V > ;
 
 	export type primitive = string | number | boolean | undefined ;
@@ -35,13 +37,8 @@ export namespace defs
 
 	export type class_spec =
 	(
-		string | Leafr.str | class_switch | ( string | class_switch ) []
+		string | class_switch | Leafr.str | ( string | class_switch ) []
 	);
-
-	export type part_switch =
-	{
-		update : ( el : Element , state : boolean ) => void ;
-	} ;
 
 	export type ec < E extends Element > =
 	{
@@ -69,11 +66,16 @@ export namespace defs
 		public set content ( content : node ) {}
 	}
 
-	export class Switch extends Place
+	export class Switch < K > extends Place
 	{
 		constructor
-		()
-		{ super() ; }
+		(
+			public readonly selector : leaf.types.lol < K | undefined > ,
+			public readonly items : [ K , defs.element ] [] | ( ( key : K ) => defs.element ) ,
+			public readonly pre ? : K []
+
+		)
+		{ super() ;}
 	}
 
 	export class Each < S = any > extends Place
@@ -86,19 +88,36 @@ export namespace defs
 		{ super() }
 	}
 
-	export type node = nodet.Element | text | Node ;
+	export type element = nodet.MehElement ;
+	export type node = nodet.MehElement | text ;
 	export type part = node | Place ;
 	export type parts =  part [] ;
 }
 
-export const each = < S >
-(
-	source : Renn < S > ,
-	create_node : ( order : Position < S > ) => defs.node
-)
- : defs.Each < S > =>
-(
-	new defs.Each( source, create_node )
-);
+export abstract class place
+{
+	public static each = < S >
+	(
+		source : Renn < S > ,
+		create_node : ( order : Position < S > ) => defs.node
+	)
+	 : defs.Each < S > =>
+	(
+		new defs.Each( source, create_node )
+	);
+
+	public static switch < K >
+	(
+		sel : leaf.types.lol < K | undefined > ,
+		items : [ K , defs.element ] [] | ( ( key : K ) => defs.element ) ,
+		pre ? : K [] 
+	)
+	{
+		return new defs.Switch < K > ( sel , items , pre ) ;
+	}
+}
+
+export const pl = place ;
+export const each = place.each ;
 
 export const free = () => new defs.Free();

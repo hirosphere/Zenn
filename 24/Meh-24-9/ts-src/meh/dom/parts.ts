@@ -1,12 +1,14 @@
 import { log } from "../common.js";
 
-import { Renn, Position } from "../model/index.js";
+import { Leafr , leaf , Renn, Position } from "../model/index.js";
 import { defs } from "./defs.js";
-import * as nodet from "./nodet.js";
+import { MehNode , MehText , MehElement } from "./node.js";
+
+type El = defs.El ;
 
 export const create_parts_place =
 (
-	ce : Element ,
+	ce : El | undefined ,
 	def : defs.parts ,
 	rel_n ? : Node ,
 )
@@ -17,14 +19,14 @@ export const create_parts_place =
 
 const next_place =
 (
-	ce : Element ,
+	ce : El | undefined ,
 	def : defs.parts,
 	pos : number,
 )
 : Place | undefined =>
 {
 	const cur = def[ pos ];
-	
+
 	if( cur instanceof defs.Place )
 	{
 		pos ++ ;
@@ -32,6 +34,11 @@ const next_place =
 		if( cur instanceof defs.Each )
 		{
 			return new EachPlace( ce, cur, def, pos );
+		}
+
+		if( cur instanceof defs.Switch )
+		{
+			return new SwitchPlace( ce , cur , def , pos ) ;
 		}
 
 		return ;
@@ -48,38 +55,38 @@ const next_place =
 
 export abstract class Place
 {
-	protected next ? : Place ;
-	public abstract get first_node () : Node | undefined ;
+	public abstract get first_dom_node () : Node | undefined ;
+	protected next_place ? : Place ;
+	protected get next_dom_node () : Node | null
+	{
+		return this.next_place ?.first_dom_node || null ;
+	}
 
-	protected make_part
+	protected add_part
 	(
 		df : DocumentFragment ,
 		pdef : defs.part ,
 	)
-	 : Node | undefined
+	 : MehNode | undefined
 	{
-		if( pdef instanceof nodet.Nodet )
+		if( pdef instanceof MehNode )
 		{
 			pdef.node && df.appendChild( pdef.node );
-			return pdef.node ;
-		}
-
-		else if( pdef instanceof Node )
-		{
-			df.appendChild( pdef );
 			return pdef ;
 		}
 
 		else if( ! ( pdef instanceof defs.Place ) )
 		{
-			const text = new nodet.Text( pdef ) ;
+			const text = new MehText( pdef ) ;
 			text.node && df.appendChild( text.node ) ;
-			return text.node ;
+			return text ;
 		}
 	}
 
 	public destruct()
-	{}
+	{
+		this.next_place?.destruct() ;
+	}
 }
 
 
@@ -88,7 +95,7 @@ class StaticPlace extends Place
 {
 	constructor
 	(
-		ce : Element ,
+		ce : El | undefined ,
 		def : defs.parts ,
 		pos : number ,
 	)
@@ -101,18 +108,18 @@ class StaticPlace extends Place
 		while( pos < def.length )
 		{
 			const pdef = def[ pos ] ;
-			const part = this.make_part( df, pdef );
+			const part = this.add_part( df, pdef );
 			if( ! part )  break ;
-			this._first_node_ ??= part ;
+			this._first_node_ ??= part.node ;
 			pos ++ ;
 		}
 
-		ce.appendChild( df ) ;
+		ce?.appendChild( df ) ;
 
-		this.next = next_place( ce, def, pos );
+		this.next_place = next_place( ce, def, pos );
 	}
 
-	public override get first_node ()
+	public override get first_dom_node ()
 	{
 		return this._first_node_ ;
 	}
@@ -120,6 +127,142 @@ class StaticPlace extends Place
 	protected _first_node_ ? : Node ;
 }
 
+class SwitchPlace extends Place
+{
+	protected src ;
+	protected mels = new Map < any , MehElement > ;
+	protected create_element ? : ( key : any ) => defs.element ;
+
+	constructor
+	(
+		protected ce : El | undefined ,
+		protected def : defs.Switch < any > ,
+		next_def : defs.parts ,
+		pos : number ,
+
+	)
+	{
+		super() ;
+
+		/* items */
+
+		const df = new DocumentFragment ;
+
+		if( def.items instanceof Array )
+		{
+			def.items.forEach
+			(
+				( [ key , mel ] ) => this.add_part_mel ( key , this.ce , mel )
+			) ;
+		}
+		else
+		{
+			this.create_element = def.items ;
+
+			def.pre ?.forEach
+			(
+				key => this.make_part ( key , this.ce )
+			) ;
+		}
+		
+
+		/* selector */
+
+		if( def.selector instanceof Leafr )
+		{
+			this.src = new Leafr.Ref
+			(
+				def.selector ,
+				( new_key , old_key ) => this.on_cur_change ( new_key , old_key )
+			) ;
+			def.selector.add_ref( this.src ) ;
+		}
+		else
+		{
+			this.make_part ( def.selector , this.ce ) ;
+		}
+
+		/* next */
+
+		this.next_place = next_place ( ce , next_def , pos ) ;
+	}
+
+	protected on_cur_change ( new_key : any , old_key ? : any ) : void
+	{
+		this.make_part ( old_key , this.ce ) ;
+		this.make_part ( new_key , this.ce ) ;
+	}
+
+	protected make_part
+	(
+		key : any ,
+		ce : Element | DocumentFragment | undefined
+	)
+	 : void
+	{
+		if( key === undefined )  return ;
+
+		if( ! this.mels.has ( key ) && this.create_element )
+		{
+			const new_mel = this.create_element ( key ) ;
+			this.add_part_mel ( key , ce , new_mel ) ;
+		}
+
+		this.update_mel ( key ) ;
+	}
+
+	protected add_part_mel
+	(
+		key : any ,
+		ce : Element | DocumentFragment | undefined ,
+		new_mel : MehElement
+	)
+	 : void
+	{
+		if( key === undefined )  return ;
+
+		if( ! this.mels.has ( key ) )
+		{
+			this.mels.set ( key , new_mel );
+
+			new_mel.node && ce?.insertBefore
+			(
+				new_mel.node ,
+				this.next_dom_node
+			);
+		}
+
+		this.update_mel ( key ) ;
+	}
+
+	protected update_mel ( key : any ) : MehElement | undefined
+	{
+		const mel = this.mels.get ( key ) ;
+		const state = leaf.get ( this.def.selector ) == key ;
+		mel?.el && this.update_state ( mel.el , state ) ;
+
+		return mel ;
+	}
+
+	protected update_state ( el : El , state : boolean )
+	{
+		el.style.display = state ? "" : "none" ;
+	}
+
+	protected nodes : Node [] = [] ;
+
+	public override get first_dom_node(): Node | undefined
+	{
+		return this.nodes [ 0 ] ;
+	}
+
+	public override destruct () : void
+	{
+		this.src?.terminate () ;
+		this.src = undefined ;
+		super.destruct () ;
+	}
+}
 
 class EachPlace extends Place
 {
@@ -129,9 +272,9 @@ class EachPlace extends Place
 
 	constructor
 	(
-		protected ce : Element,
+		protected ce : El | undefined ,
 		def : defs.Each,
-		parts_def : defs.parts ,
+		next_def : defs.parts ,
 		pos : number ,
 	)
 	{
@@ -141,7 +284,7 @@ class EachPlace extends Place
 		this.create_node = def.create_node ;
 
 		def.source.add_ref ( this ) ;
-		this.next = next_place( ce, parts_def, pos );
+		this.next_place = next_place( ce, next_def, pos );
 	}
 
 	public add ( { src , start , next } : Renn.note )
@@ -158,26 +301,26 @@ class EachPlace extends Place
 			const order = src.items [ pos ] ;
 			if( this.nodes.has( order ) )  return ;
 
-			const node = this.make_part
+			const node = this.add_part
 			(
 				df ,
 				this.create_node( order )
 			);
 
-			node && this.nodes.set
+			node?.node && this.nodes.set
 			(
-				order , node
+				order , node.node
 			) ;
 		}
 
 		const next_ord = this.src.items [ next ];
 
-		this.ce.insertBefore
+		this.ce?.insertBefore
 		(
 			df,
 			(
 				this.nodes.get( next_ord ) ??
-				this.next ?.first_node ??
+				this.next_place ?.first_dom_node ??
 				null
 			)
 		);
@@ -195,14 +338,12 @@ class EachPlace extends Place
 	{
 		const node = this.nodes.get ( order ) ;
 		if( ! node )  return ;
-		this.ce.removeChild( node ) ;
+		this.ce ?.removeChild( node ) ;
 	}
 
-	public override get first_node (): Node | undefined
+	public override get first_dom_node (): Node | undefined
 	{
-		return this.nodes.get
-		(
-			this.src.items [ 0 ]
-		);
+		const pos = this.src.items [ 0 ] ;
+		return this.nodes.get ( pos ) ;
 	}
 }

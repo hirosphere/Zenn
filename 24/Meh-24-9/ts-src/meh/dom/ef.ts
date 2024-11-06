@@ -1,6 +1,6 @@
 import { Leafr } from "../model/leafr.js";
 import { defs } from "./defs.js";
-import * as nodet from "./nodet.js";
+import * as nodet from "./node.js";
 
 function create_element
 (
@@ -8,14 +8,13 @@ function create_element
 	type : string,
 	first ? : defs.ec < any > | defs.part,
 	... remain : defs.parts
-) : nodet.Element
+) : nodet.MehElement
 {
 	if
 	(
 		first instanceof Leafr ||
-		first instanceof nodet.Nodet ||
+		first instanceof nodet.MehNode ||
 		first instanceof defs.Place ||
-		first instanceof Node ||
 		typeof first == "string" ||
 		typeof first == "number" ||
 		typeof first == "boolean"
@@ -27,10 +26,10 @@ function create_element
 			: [ first ] 
 		);
 
-		return new nodet.Element( { ns, type, parts } );
+		return new nodet.MehElement( { ns, type, parts } );
 	}
 
-	return new nodet.Element( { ns, type, ... first, parts : remain } );
+	return new nodet.MehElement( { ns, type, ... first, parts : remain } );
 }
 
 type create_nodet_t < E extends Element > =
@@ -38,7 +37,7 @@ type create_nodet_t < E extends Element > =
 	first ? : defs.ec < E > | defs.part,
 	... remain : defs.parts
 )
-=> nodet.Element ;
+=> nodet.MehElement ;
 
 class Handler < T extends object > implements ProxyHandler < T >
 {

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Q-Switch</title>
+
+<style>
+
+*
+{
+	box-sizing: border-box ;
+	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+html
+{
+	padding: 0 ;
+	color: hsl( 0, 0%, 8% ) ;
+}
+
+body
+{
+	display : flex ;
+	flex-direction : column ;
+	align-items : center ;
+	gap : 1em ;
+}
+
+h1
+{
+	text-align: center ;
+}
+
+article
+{
+	width: 100% ;
+	max-width: 40em ;
+
+	display: flex ;
+	flex-direction: column ;
+	padding: 0ex 4vw ;
+
+	align-items: center ;
+	gap : 1em ;
+
+	background-color: hsla( 205 , 70% , 70% , 12% );
+}
+
+.fcol
+{
+	display: flex ;
+	flex-direction: column ;
+	padding: 1ex ;
+	gap : 0.5ex ;
+}
+
+button
+{
+	padding : 0.8ex 1.2ex ;
+}
+
+.buttons
+{
+	display : flex ;
+	gap : 3px ;
+	align-items : stretch ;
+	flex-wrap: wrap ;
+}
+
+.card
+{
+	max-width: 8em ;
+	min-width: 0;
+	display: flex ;
+	border: 3px solid hsl( 0, 0%, 8% );
+	border-radius: 1ex ;
+	justify-content: center ;
+	align-items: center ;
+	padding: 1em ;
+	gap : 0.3ex ;
+	font-size: clamp( 2.0em , 3.0em , 3.0em );
+}
+
+</style>
+
+</head>
+<body>
+
+<script type="module">
+
+import { main } from "../js-out-1/q1/q-switch.js" ;
+
+main() ;
+
+</script>
+
+</body>
+</html>

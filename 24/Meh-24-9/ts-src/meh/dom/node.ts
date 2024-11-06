@@ -3,28 +3,28 @@ import { Leafr } from "../model/leafr.js";
 import { defs } from "./defs.js";
 import { create_parts_place } from "./parts.js";
 
-type gE = globalThis.Element ;
-type gN = globalThis.Node ;
+type El = defs.El ;
 
 export const add =
 (
-	part : defs.part | defs.part [],
-	com_qe : gE | string,
-	rel_qn ? : gN | string
+	def : defs.node ,
+	com_qe : El | string | null ,
+	rel_qn ? : string
 )
  : void =>
 {
-	const com_e : gE | null = typeof com_qe == "string" ? document.querySelector( com_qe ) : com_qe || null;
-	const rel_n : gN | null = typeof rel_qn == "string" ? document.querySelector( rel_qn ) : rel_qn || null;
+	const com_el : El | null = typeof com_qe == "string" ? document.querySelector( com_qe ) : com_qe || null;
+	const rel_node : Node | null = typeof rel_qn == "string" ? document.querySelector( rel_qn ) : rel_qn || null;
 
-	if( ! com_e )  return ;
+	if ( ! com_el )  return ;
 
-	const df = new DocumentFragment();
-	const parts = create_parts_place
+	const part = def instanceof MehElement ? def : new MehText ( def ) ;
+
+	part.node && com_el.insertBefore
 	(
-		com_e,
-		part instanceof Array ? part : [ part ]
-	);
+		part.node ,
+		rel_node
+	)
 };
 
 
@@ -37,7 +37,7 @@ type el_args = defs.ec < any > &
 
 type E = HTMLElement | SVGElement;
 
-export abstract class Nodet
+export abstract class MehNode
 {
 	public abstract get node() : Node | undefined;
 
@@ -75,9 +75,9 @@ export abstract class Nodet
 	protected srcs = new Set < Leafr.Ref < any > > ;
 }
 
-export class Element extends Nodet
+export class MehElement extends MehNode
 {
-	protected _el_? : globalThis.Element ;
+	protected _el_ ? : El ;
 	protected parts;
 
 	constructor( args : el_args )
@@ -87,18 +87,22 @@ export class Element extends Nodet
 		const { ns, type, parts } = args;
 		const { class: class_name, style, attrs, props, acts, active_acts: actacts } = args;
 
-		let el = this._el_ =
+		let el =
 		(
 			ns ?
 				document.createElementNS( ns, type ) :
 				document.createElement( type )
 		);
 
-		if( class_name ) this.bind_class( this._el_, class_name );
+		if ( ! ( el instanceof HTMLElement || el instanceof SVGElement ) ) return ;
 
-		if( style && this._el_ instanceof HTMLElement )
+		this._el_ = el ;
+
+		if( class_name ) this.bind_class( el, class_name );
+
+		if( style )
 		{
-			this.bind_style( this._el_, style );
+			this.bind_style( el, style );
 		}
 
 		if( attrs ) for( const [ name, value ] of Object.entries( attrs ) )
@@ -106,30 +110,30 @@ export class Element extends Nodet
 			this.bind
 			(
 				value,
-				value => set_attr( this._el_, name, value )
+				value => set_attr( el, name, value )
 			);
 		}
 
-		if( props && this._el_ ) for( const [ name, value ] of Object.entries( props ) )
+		if( props && el ) for( const [ name, value ] of Object.entries( props ) )
 		{
 			this.bind
 			(
 				value,
 				value =>
 				{
-					( this._el_ as any )[ name ] = value;
+					( el as any )[ name ] = value;
 				}
 			);
 		}
 
 		if( acts ) for( const [ name, act ] of Object.entries < defs.act > ( acts ) )
 		{
-			this._el_.addEventListener( name, act as EventListener );
+			el.addEventListener( name, act as EventListener );
 		}
 
 		if( parts )
 		{
-			this.parts = create_parts_place( this._el_, parts );
+			this.parts = create_parts_place( el, parts );
 		}
 	}
 
@@ -138,11 +142,20 @@ export class Element extends Nodet
 		return this._el_;
 	}
 
-	protected bind_class( e : globalThis.Element, def : defs.class_spec )
+	public get el ()
+	{
+		return this._el_ ;
+	}
+
+	protected bind_class( e : El , def : defs.class_spec )
 	{
 		if( typeof def == "string" )
 		{
-			e.className += " " + def;
+			def.split( /\s/ ) .forEach
+			(
+				cn => e.classList.toggle ( cn , true )
+			) ;
+
 			return;
 		}
 
@@ -150,16 +163,6 @@ export class Element extends Nodet
 		{
 			def.forEach( def => this.bind_class( e, def ) );
 			return;
-		}
-
-		if ( def instanceof Leafr )
-		{
-			this.bind
-			(
-				def ,
-				( new_v ) =>
-				{ if( this._el_ ) this._el_.className = new_v ; }
-			) ;
 		}
 
 		for( const [ name, value ] of Object.entries( def ) )
@@ -172,7 +175,7 @@ export class Element extends Nodet
 		}
 	}
 
-	protected bind_style( e : HTMLElement, def : defs.style )
+	protected bind_style( e : El, def : defs.style )
 	{
 		for( const [ name, value ] of Object.entries( def ) )
 		{
@@ -200,7 +203,7 @@ const set_attr = ( e : globalThis.Element | undefined, name : string, value : an
 	else e.setAttribute( name, value );
 }
 
-export class Text extends Nodet
+export class MehText extends MehNode
 {
 	constructor( text : defs.text )
 	{

@@ -54,4 +54,4 @@ namespace models
 {
 }
 
-dom.add( App(), "body" )
+// dom.add( App(), "body" )

@@ -1,11 +1,11 @@
 import { Leafr , leafr , set_value } from "./leafr.js" ;
 
-export interface Leaf < V > extends Leafr < V >
+export abstract class Leaf < V > extends Leafr < V >
 {
-	get value () : V ;
-	set value ( value : V ) ;
+	abstract override get value () : V ;
+	abstract override set value ( value : V ) ;
 	
-	set ( new_v : V, is_rooting ? : boolean ) : void ;
+	abstract set ( new_v : V, is_rooting ? : boolean ) : void ;
 }
 
 export namespace Leaf
@@ -48,9 +48,9 @@ export namespace leaf
 
 	export namespace types
 	{
-		export type str = Leaf < string > ;
-		export type num = Leaf < number > ;
-		export type bool = Leaf < boolean > ;
+		export type str = types < string > ;
+		export type num = types < number > ;
+		export type bool = types < boolean > ;
 
 		export type lol < V > = V | Leaf < V > ;
 
@@ -60,5 +60,10 @@ export namespace leaf
 			export type num = lol < number > ;
 			export type bool = lol < boolean > ;
 		}
+	}
+
+	export const get = < V > ( lol : types.lol < V > ) : V =>
+	{
+		return ( lol instanceof Leafr ) ? lol.value : lol ;
 	}
 }
