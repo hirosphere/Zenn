@@ -1,4 +1,4 @@
-import { leaf, Leaf, Renn, ef, each, dom, log, Position } from "../meh/index.js" ;
+import { leaf, Renn, ef, each, dom, log, Order } from "../meh/index.js" ;
 
 export namespace sv
 {
@@ -20,7 +20,7 @@ export namespace vm
 {
 	export class App
 	{
-		public readonly title : Leaf.str ;
+		public readonly title ;
 		public readonly items ;
 		public readonly editor ;
 
@@ -69,14 +69,14 @@ export namespace vm
 
 		public clear_completed()
 		{
-			const list = this.items.filter( o => o.src.completed.value );
+			const list = this.orders.filter( o => o.src.completed.value );
 
 			list.forEach ( o => o.remove () ) ;
 		}
 
 		public rand_check()
 		{
-			this.items.forEach
+			this.orders.forEach
 			(
 				o => o.src.completed.value = bool_rand( 0.25 )
 			);
@@ -192,7 +192,7 @@ export namespace vc
 		);
 	}
 
-	const Item = ( o : Position < vm.Item > ) =>
+	const Item = ( o : Order < vm.Item > ) =>
 	{
 		const m = o.src ;
 		return ef.li
@@ -214,7 +214,7 @@ export namespace vc
 	}
 	
 
-	const checkbox = ( state : Leaf.bool ) =>
+	const checkbox = ( state : leaf.bool ) =>
 	{
 		return ef.input
 		(
@@ -235,7 +235,7 @@ export namespace vc
 		);
 	};
 
-	const czechbox = ( state : Leaf.bool )=>{
+	const czechbox = ( state : leaf.bool )=>{
 		return ef.input({
 			attrs:{ type: "checkbox", autocomplete: "off" },
 			props: { checked: state },

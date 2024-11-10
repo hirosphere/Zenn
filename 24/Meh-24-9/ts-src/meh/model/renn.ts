@@ -1,5 +1,5 @@
 import { log } from "../common.js";
-import { Leafr , set_value } from "./leafr.js";
+import { leaf , set_value } from "./leaf.js";
 
 export class Renn < S >
 {
@@ -8,51 +8,51 @@ export class Renn < S >
 		if( items ) this.new( items );
 	}
 
-	public readonly length = new Leafr.Entity ( 0 );
-	public readonly items : Position < S > [] = [] ;
+	public readonly length = leaf.num ( 0 );
+	public readonly orders : Order < S > [] = [] ;
 	protected p_refs = new Set < Renn.Ref < S > > ;
 
 	public add_ref( ref : Renn.Ref < S > )
 	{
 		this.p_refs.add ( ref ) ;
 
-		ref.add
+		ref.src_add_orders
 		(
 			{
 				src : this ,
 				start : 0 ,
-				next : this.items.length ,
-				items : this.items ,
+				next : this.orders.length ,
+				items : this.orders ,
 			}
 		);
 	}
 
 	public clear ()
 	{
-		this.remove ( 0, this.items.length ) ;
+		this.remove ( 0, this.orders.length ) ;
 	}
 
 	public new
 	(
 		srcs : S [],
-		start ? : Position.value
+		start ? : Order.value
 	)
 	: void
 	{
-		start = pos_trim( start, this.items ) ;
+		start = pos_trim( start, this.orders ) ;
 
 		const items = srcs.map
 		(
-			src => new Position( this, src )
+			src => new Order( this, src )
 		);
 
-		this.items.splice
+		this.orders.splice
 		(
 			start, 0,
 			... items
 		);
 
-		this.update_items( start, this.items.length ) ;
+		this.update_items( start, this.orders.length ) ;
 
 		const note =
 		{
@@ -64,10 +64,10 @@ export class Renn < S >
 
 		this.p_refs.forEach
 		(
-			ref => ref.add( note )
+			ref => ref.src_add_orders( note )
 		);
 
-		this.length [ set_value ] ( this.items.length ) ;
+		this.length [ set_value ] ( this.orders.length ) ;
 	}
 
 	public remove
@@ -79,12 +79,12 @@ export class Renn < S >
 		const next = pos_trim
 		(
 			start + count ,
-			this.items
+			this.orders
 		);
 
-		start = pos_trim( start, this.items ) ;
+		start = pos_trim( start, this.orders ) ;
 
-		const removed = this.items.splice
+		const removed = this.orders.splice
 		(
 			start,
 			next - start,
@@ -95,7 +95,7 @@ export class Renn < S >
 			pos => pos [ set_renn ] ()
 		);
 
-		this.update_items( start, this.items.length ) ;
+		this.update_items( start, this.orders.length ) ;
 
 		const note =
 		{
@@ -107,10 +107,10 @@ export class Renn < S >
 
 		this.p_refs.forEach
 		(
-			ref => ref.remove( note )
+			ref => ref.src_remove_orders( note )
 		);
 
-		this.length [ set_value ] ( this.items.length ) ;
+		this.length [ set_value ] ( this.orders.length ) ;
 	}
 
 	protected update_items
@@ -126,12 +126,12 @@ export class Renn < S >
 			pos ++
 		)
 		{
-			this.items [ pos ] [ set_value ] ( pos );
+			this.orders [ pos ] [ set_value ] ( pos );
 		}
 	}
 }
 
-const pos_trim = ( pos : Position.value, ar : Array < any > ) =>
+const pos_trim = ( pos : Order.value, ar : Array < any > ) =>
 {
 	if( pos === undefined || pos >= ar.length )  return ar.length ;
 	if( pos < 0 )  return 0 ;
@@ -140,10 +140,10 @@ const pos_trim = ( pos : Position.value, ar : Array < any > ) =>
 
 export namespace Renn
 {
-	export class Ref < S >
+	export interface Ref < S >
 	{
-		public add ( range : note < S > ) {}
-		public remove ( range : note < S > ) {}
+		src_add_orders ( range : note < S > ) : void ;
+		src_remove_orders ( range : note < S > ) : void ;
 	}
 
 	export type range =
@@ -155,7 +155,7 @@ export namespace Renn
 	export type note < S = any > = range &
 	{
 		readonly src : Renn < S > ;
-		readonly items : Position < S > [] ;
+		readonly items : Order < S > [] ;
 	};
 }
 
@@ -165,7 +165,7 @@ export namespace Renn
 
 const set_renn = Symbol();
 
-export class Position < S > extends Leafr.Entity < Position.value >
+export class Order < S > extends leaf.Entity < Order.value >
 {
 	constructor
 	(
@@ -176,11 +176,11 @@ export class Position < S > extends Leafr.Entity < Position.value >
 		super( undefined );
 	}
 
-	protected _count_ ? : Leafr.Converter < Position.value > ;
+	protected _count_ ? : leaf.Converter < Order.value > ;
 
 	public get count ()
 	{
-		return this._count_ ??= new Leafr.Converter
+		return this._count_ ??= new leaf.Converter
 		(
 			this,
 			to_count
@@ -199,19 +199,14 @@ export class Position < S > extends Leafr.Entity < Position.value >
 			this.renn ?.remove ( this.value, 1 )
 		);
 	}
-
-	protected term ()
-	{
-		this.renn = undefined ;
-	}
 }
 
-const to_count = ( pos : Position.value ) : Position.value =>
+const to_count = ( pos : Order.value ) : Order.value =>
 (
 	typeof pos == "number" ? pos + 1 : pos
 );
 
-export namespace Position
+export namespace Order
 {
 	export type value = number | undefined ;	
 }

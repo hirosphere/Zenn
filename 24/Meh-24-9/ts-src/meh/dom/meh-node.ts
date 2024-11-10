@@ -1,5 +1,5 @@
 import { log } from "../common.js";
-import { Leafr } from "../model/leafr.js";
+import { leaf } from "../model/leaf.js";
 import { defs } from "./defs.js";
 import { create_parts_place } from "./parts.js";
 
@@ -9,7 +9,7 @@ export const add =
 (
 	def : defs.node ,
 	com_qe : El | string | null ,
-	rel_qn ? : string
+	rel_qn ? : string | Node | null
 )
  : void =>
 {
@@ -47,16 +47,15 @@ export abstract class MehNode
 		update : ( value : any ) => void ,
 	)
 	{
-		if ( value instanceof Leafr )
+		if ( value instanceof leaf.Source )
 		{
-			const ref = new Leafr.Ref
+			const ref = leaf.ref < any >
 			(
 				value ,
-				update
-			);
+				update ,
+			) ;
 
 			this.srcs.add ( ref );
-			value.add_ref ( ref ) ;
 		}
 	
 		else  update( value );
@@ -64,7 +63,7 @@ export abstract class MehNode
 
 	protected _destruct( isroot ? : true )
 	{
-		this.srcs.forEach( ref => ref.terminate () );
+		this.srcs.forEach( ref => ref.term ?.() );
 	}
 
 	public destruct()
@@ -72,7 +71,7 @@ export abstract class MehNode
 		this._destruct( true );
 	}
 
-	protected srcs = new Set < Leafr.Ref < any > > ;
+	protected srcs = new Set < leaf.ref < any > > ;
 }
 
 export class MehElement extends MehNode

@@ -1,6 +1,6 @@
-import { Leafr } from "../model/leafr.js";
+import { leaf } from "../model/leaf.js";
 import { defs } from "./defs.js";
-import * as nodet from "./node.js";
+import * as nodet from "./meh-node.js";
 
 function create_element
 (
@@ -12,7 +12,7 @@ function create_element
 {
 	if
 	(
-		first instanceof Leafr ||
+		first instanceof leaf.Source ||
 		first instanceof nodet.MehNode ||
 		first instanceof defs.Place ||
 		typeof first == "string" ||

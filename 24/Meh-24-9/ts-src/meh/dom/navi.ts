@@ -1,10 +1,10 @@
 import { log } from "../common.js";
-import { leafr , leaf , set_value , Renn } from "../model/index.js";
+import { leaf , set_value , Renn } from "../model/index.js";
 
 
 export class Browser
 {
-	public readonly current = leafr < Index | undefined > ( undefined );
+	public readonly current = leaf < Index | undefined > ( undefined );
 
 	public set_current( index : Index | undefined )
 	{

@@ -3,9 +3,56 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>HSL App</title>
+
+<style>
+
+*
+{
+	box-sizing: border-box ;
+	margin: 0 ;
+	padding : 0 ;
+}
+
+html
+{
+	color : hsl( 35 0% 10% ) ;
+}
+
+body , main
+{
+	display: flex ;
+	flex-direction: column ;
+	padding: 1em ;
+	align-items: center ;
+	gap: 1em ;
+}
+
+.range
+{
+	width: 400px ;
+	display: grid ;
+	grid-template-columns: 4em 1fr 4em ;
+	gap : 1ex ;
+}
+
+.range > .-input
+{
+	accent-color: hsl( 95 75% 50% );
+}
+
+</style>
+
 </head>
 <body>
-	
+
+
+<script type="module" >
+
+import { main } from "../js-out-1/q1/q-hsl.js" ;
+main () ;
+
+</script>
+
+
 </body>
 </html>

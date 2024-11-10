@@ -1,16 +1,14 @@
 import { log } from "../common.js";
-import { Leafr , leaf , Renn, Position } from "../model/index.js";
-import * as nodet from "./node.js";
+import { leaf , Renn , Order } from "../model/index.js";
+import * as nodet from "./meh-node.js";
 
 export namespace defs
 {
 	export type El = HTMLElement | SVGElement ;
 
-	type lolr < V > = V | Leafr < V > ;
-
 	export type primitive = string | number | boolean | undefined ;
-	export type leafr = Leafr.str | Leafr.num | Leafr.bool | lolr < Position.value > ;
-	export type text = primitive | leafr ;
+	export type reactive = leaf.str | leaf.num | leaf.bool | leaf.ll < Order.value > ;
+	export type text = primitive | reactive ;
 
 	export type acts =
 	{
@@ -25,19 +23,19 @@ export namespace defs
 
 	export type attrs < E extends Element > =
 	{
-		[ name in keyof E ] ? : lolr < E [ name ] > ;
+		[ name in keyof E ] ? : any ;
 	};
 
 	export type style =
 	{
-		[ name in keyof CSSStyleDeclaration ] ? : lolr < CSSStyleDeclaration [ name ] > ;
+		[ name in keyof CSSStyleDeclaration ] ? : leaf.ll < CSSStyleDeclaration [ name ] > ;
 	};
 
-	export type class_switch = Record < string, lolr < boolean > > ;
+	export type class_switch = Record < string, leaf.r.ll < boolean > > ;
 
 	export type class_spec =
 	(
-		string | class_switch | Leafr.str | ( string | class_switch ) []
+		string | class_switch | leaf.str | ( string | class_switch ) []
 	);
 
 	export type ec < E extends Element > =
@@ -56,7 +54,7 @@ export namespace defs
 	{
 		constructor(){}
 
-		protected isplace : Symbol = isplace
+		protected isplace : Symbol = isplace ;
 	}
 
 	const isplace = Symbol();
@@ -70,8 +68,8 @@ export namespace defs
 	{
 		constructor
 		(
-			public readonly selector : leaf.types.lol < K | undefined > ,
-			public readonly items : [ K , defs.element ] [] | ( ( key : K ) => defs.element ) ,
+			public readonly selector : leaf.ll < K > ,
+			public readonly items : [ K , defs.element ] [] | ( ( key : K ) => defs.element | undefined ) ,
 			public readonly pre ? : K []
 
 		)
@@ -83,7 +81,7 @@ export namespace defs
 		constructor
 		(
 			public readonly source : Renn < any > ,
-			public readonly create_node : ( order : Position < S > ) => node
+			public readonly create_node : ( order : Order < S > ) => node
 		)
 		{ super() }
 	}
@@ -99,7 +97,7 @@ export abstract class place
 	public static each = < S >
 	(
 		source : Renn < S > ,
-		create_node : ( order : Position < S > ) => defs.node
+		create_node : ( order : Order < S > ) => defs.node
 	)
 	 : defs.Each < S > =>
 	(
@@ -108,8 +106,8 @@ export abstract class place
 
 	public static switch < K >
 	(
-		sel : leaf.types.lol < K | undefined > ,
-		items : [ K , defs.element ] [] | ( ( key : K ) => defs.element ) ,
+		sel : leaf.ll < K > ,
+		items : [ K , defs.element ] [] | ( ( key : K ) => defs.element | undefined ) ,
 		pre ? : K [] 
 	)
 	{
@@ -119,5 +117,6 @@ export abstract class place
 
 export const pl = place ;
 export const each = place.each ;
+export const sw = place.switch ;
 
 export const free = () => new defs.Free();

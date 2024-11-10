@@ -2,7 +2,7 @@ import { leaf , Renn  , dom , place , pl , ef , log } from "../meh/index.js" ;
 
 function new_sel < K > ( value : K )
 {
-	return leaf < K | undefined > ( value ) ;
+	return leaf < K > ( value ) ;
 }
 
 type t_item = { title : string , color : string } ;
@@ -41,13 +41,13 @@ export namespace vc
 				),
 		
 				ef.h3 ( "実装 1" ) ,
-				pl.switch ( osel , k => card( k.title , k.color , k.color ) ) ,
+				pl.switch ( osel , k =>  k && card( k.title , k.color , k.color ) ) ,
 
 				ef.h3 ( "実装 2" ) ,
 				pl.switch ( osel , items.map ( k => [ k , card( k.title, "全駅グルメコンプリート" , k.color ) ] ) ) ,
 
 				ef.h3 ( "実装 3" ) ,
-				pl.switch ( osel , k => card( k.title , "各駅停車の旅" , k.color ) , items ) ,
+				pl.switch ( osel , k => k && card( k.title , "各駅停車の旅" , k.color ) , items ) ,
 	
 			) ,
 
@@ -61,7 +61,7 @@ export namespace vc
 				),
 	
 				ef.h3 ( "実装 1" ) ,
-				pl.switch < boolean >
+				pl.switch
 				(
 					bsel ,
 					[
@@ -91,7 +91,7 @@ export namespace vc
 		)
 	);
 	
-	const sel_bu = < K = any > ( title : any , sel : leaf.types < any > , key : K ) =>
+	const sel_bu = < K = any > ( title : any , sel : leaf < any > , key : K ) =>
 	{
 		return ef.button
 		(

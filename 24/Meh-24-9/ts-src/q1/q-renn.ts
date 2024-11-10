@@ -1,4 +1,4 @@
-import { leaf, Renn, Position, ef, each, dom, navi, log } from "../meh/index.js";
+import { leaf, Renn, Order, ef, each, dom, navi, log } from "../meh/index.js";
 
 export namespace view
 {
@@ -59,7 +59,7 @@ export namespace view
 		label
 	);
 
-	const ins = ( m : models.Line, v : models.Station.value [], pos ? : Position.value ) =>
+	const ins = ( m : models.Line, v : models.Station.value [], pos ? : Order.value ) =>
 	{
 		const click = () =>
 		{
@@ -77,21 +77,21 @@ export namespace view
 		)
 	}
 
-	const Station = ( o : Position < models.Station > ) =>
+	const Station = ( p : Order < models.Station > ) =>
 	{
-		const m = o.src ;
+		const m = p.src ;
 
 		return ef.li
 		(
 			{ class : "station" },
 
-			ef.span( o.count ),
+			ef.span( p.count ),
 			ef.span( m.kanji ),
 			ef.span( m.hira ),
 			ef.span
 			(
 				{
-					acts : { click () { o.remove () ; } } ,
+					acts : { click () { p.remove () ; } } ,
 				} ,
 				"x"
 			),
