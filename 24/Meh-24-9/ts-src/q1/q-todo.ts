@@ -69,7 +69,7 @@ export namespace vm
 
 		public clear_completed()
 		{
-			const list = this.orders.filter( o => o.src.completed.value );
+			const list = this.orders.filter( o => o.target.completed.value );
 
 			list.forEach ( o => o.remove () ) ;
 		}
@@ -78,7 +78,7 @@ export namespace vm
 		{
 			this.orders.forEach
 			(
-				o => o.src.completed.value = bool_rand( 0.25 )
+				o => o.target.completed.value = bool_rand( 0.25 )
 			);
 		}
 	}
@@ -194,7 +194,7 @@ export namespace vc
 
 	const Item = ( o : Order < vm.Item > ) =>
 	{
-		const m = o.src ;
+		const m = o.target ;
 		return ef.li
 		(
 			{ class : [ "todo-item" , { completed : m.completed } ] } ,

@@ -117,7 +117,7 @@ export const main = () =>
 			pl.each
 			(
 				r,
-				p => ef.p ( p.count , " - " , p.src )
+				p => ef.p ( p.count , " - " , p.target )
 			)
 		),
 		"body"

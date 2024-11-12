@@ -170,17 +170,17 @@ export class Order < S > extends leaf.Entity < Order.value >
 	constructor
 	(
 		protected renn : Renn < S > | undefined,
-		public readonly src : S,
+		public readonly target : S,
 	)
 	{
 		super( undefined );
 	}
 
-	protected _count_ ? : leaf.Converter < Order.value > ;
+	protected _count_ ? : leaf.Conv < Order.value > ;
 
 	public get count ()
 	{
-		return this._count_ ??= new leaf.Converter
+		return this._count_ ??= new leaf.Conv
 		(
 			this,
 			to_count

@@ -20,6 +20,10 @@ html
 
 body , main
 {
+}
+
+body
+{
 	display: flex ;
 	flex-direction: column ;
 	padding: 1em ;
@@ -27,17 +31,49 @@ body , main
 	gap: 1em ;
 }
 
+main
+{
+	max-width: 50em ;
+	display: flex ;
+	flex-direction: column ;
+	padding: 1em ;
+	align-items: stretch ;
+	gap: 1em ;
+}
+
+section
+{
+	padding: 1em ;
+	background-color: hsla(90, 75%, 75%, 30%);
+}
+
+.color_display
+{
+	border-radius: 1ex ;
+	border-color: hsl( 35 0% 10% ) ;
+	height: 5em ;
+}
+
 .range
 {
-	width: 400px ;
-	display: grid ;
-	grid-template-columns: 4em 1fr 4em ;
+	width : 100% ;
+	padding: 0.5ex ;
+	display: flex ;
+	flex-wrap: wrap ;
 	gap : 1ex ;
 }
 
-.range > .-input
+.range > ._name { width: 5ex; }
+.range > ._input
 {
-	accent-color: hsl( 95 75% 50% );
+	flex-grow: 1 ;
+	accent-color: hsl( 95 70% 55% );
+}
+.range > ._value_unit
+{
+	display: grid ;
+	grid-template-columns: 3ex 1ex ;
+	gap : 0.35ex ;
 }
 
 </style>

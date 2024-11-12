@@ -79,7 +79,7 @@ export namespace view
 
 	const Station = ( p : Order < models.Station > ) =>
 	{
-		const m = p.src ;
+		const m = p.target ;
 
 		return ef.li
 		(

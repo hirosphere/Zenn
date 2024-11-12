@@ -14,9 +14,16 @@ export namespace leaf
 	export const num = leaf < number > ;
 	export const bool = leaf < boolean > ;
 
-	export const get = < V > ( lol : ll < V > ) =>
+	export const get = < V > ( ll : ll < V > ) =>
 	{
-		return lol instanceof Source ? lol.value : lol ;
+		return ll instanceof Source ? ll.value : ll ;
+	}
+
+	export const mk_str = < V > ( ll : ll < V > ) =>
+	{
+		// log ( ll instanceof Source , get ( ll ) )
+
+		return ( ll instanceof Source ) ? ll.mk_str() : String( ll ) ;
 	}
 }
 
@@ -73,18 +80,13 @@ export namespace leaf
 
 	export interface r < V >
 	{
+		add_ref ( ref : leaf.ref < V > , old_v ? : V ) : void ;
+		remove_ref ( ref : leaf.ref < V > ) : void ;
+
 		get value () : V ;
-	
 		[ set_value ] ( value : V , changer ? : object ) : void ;
 		
-		add_ref
-		(
-			ref : leaf.ref < V > ,
-			old_v ? : V
-		
-		) : void ;
-	
-		remove_ref ( ref : leaf.ref < V > ) : void ;
+		mk_str ( to_cv ? : ( src : V ) => string ) : leaf.str ;
 	}
 
 	export namespace r
@@ -115,6 +117,8 @@ export namespace leaf
 
 	export abstract class Source < V > implements leaf < V >
 	{
+		/* ref */
+
 		protected refs = new Set < ref < V > > ;
 
 		public add_ref ( ref : ref < V > , old_v ? : V ) : void
@@ -128,6 +132,8 @@ export namespace leaf
 			this.refs.delete ( ref );
 		}
 
+		/* value */
+
 		public abstract get value () : V ;
 		public abstract set value ( value : V ) ;
 
@@ -136,6 +142,17 @@ export namespace leaf
 		public [ set_value ] ( new_v: V , changer ? : object ) : void
 		{
 			this.set ( new_v , changer ) ;
+		}
+
+		/* */
+
+		public mk_str
+		(
+			to_cv : conv < V , string > = def_to_str < V >
+		
+		) : leaf < string >
+		{
+			return new Conv < V , string > ( this , to_cv ) ;
 		}
 	}
 
@@ -151,6 +168,8 @@ export namespace leaf
 		{
 			super () ;
 		}
+
+		/* value */
 
 		public override get value ()
 		{
@@ -181,20 +200,23 @@ export namespace leaf
 		}
 	}
 
+	const def_to_str = < V > ( src : V ) => String ( src ) ;
+
 	/* 参照・変換クラス */
 
-	export class Converter < S , R = S > extends Source < R >
+	export class Conv < S , R = S > extends Source < R >
 	{
 		constructor
 		(
 			protected src : Source < S > ,
 			protected to_ref : conv < S , R > ,
-			x ? : [ conv < S , R > , conv < R , S > ]
 		)
 		{
 			super () ;
 			src.add_ref( this ) ;
 		}
+
+		/* value */
 
 		public override get value () : R
 		{
@@ -223,7 +245,7 @@ export namespace leaf
 		}
 	}
 
-	type conv < S ,R > = ( s : S ) => R ;
+	export type conv < S ,R > = ( s : S ) => R ;
 
 	/* */
 

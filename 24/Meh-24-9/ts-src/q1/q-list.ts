@@ -23,7 +23,7 @@ export const ListApp = () =>
 				each
 				(
 					m.list,
-					o => ef.li( { style : { color: "hsl( 180, 50%, 40% )" } }, o.count, " - " , o.src ),
+					o => ef.li( { style : { color: "hsl( 180, 50%, 40% )" } }, o.count, " - " , o.target ),
 				),
 
 				ef.h4( "各駅停車" ),
@@ -31,7 +31,7 @@ export const ListApp = () =>
 				each
 				(
 					m.list,
-					o => ef.li( { style : { color: "hsl( 330, 60%, 40% )" } }, o.count, " - ", o.src ),
+					o => ef.li( { style : { color: "hsl( 330, 60%, 40% )" } }, o.count, " - ", o.target ),
 				),
 			),
 			fr,

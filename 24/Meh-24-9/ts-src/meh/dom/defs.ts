@@ -23,7 +23,7 @@ export namespace defs
 
 	export type attrs < E extends Element > =
 	{
-		[ name in keyof E ] ? : any ;
+		[ name in keyof E ] ? : leaf.ll < E [ name ] > ;
 	};
 
 	export type style =

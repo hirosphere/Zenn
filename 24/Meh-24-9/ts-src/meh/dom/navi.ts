@@ -2,23 +2,23 @@ import { log } from "../common.js";
 import { leaf , set_value , Renn } from "../model/index.js";
 
 
-export class Browser
+export class Browser < I >
 {
-	public readonly current = leaf < Index | undefined > ( undefined );
+	public readonly current = leaf < I | undefined > ( undefined );
 
-	public set_current( index : Index | undefined )
+	public set_current( index : I | undefined )
 	{
 		this.current[ set_value ]( index );
 		
 		document.title = this.make_title( this.current.value );
 	}
 
-	public make_url()
-	{}
+	public make_url() : string
+	{ return "" ; }
 
-	public make_title( index ? : Index ) : string
+	public make_title( index ? : I ) : string
 	{
-		return index?.title.value ?? "";
+		return "";
 	}
 }
 

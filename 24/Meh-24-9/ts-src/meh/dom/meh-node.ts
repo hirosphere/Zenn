@@ -181,7 +181,7 @@ export class MehElement extends MehNode
 			this.bind
 			(
 				value,
-				value => ( e.style as any ) [ name ] = String( value )
+				value => ( e.style as any ) [ name ] = value
 			);
 		}
 	}
@@ -193,6 +193,7 @@ export class MehElement extends MehNode
 		super._destruct();
 	}
 }
+
 
 const set_attr = ( e : globalThis.Element | undefined, name : string, value : any ) =>
 {

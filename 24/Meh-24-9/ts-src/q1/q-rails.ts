@@ -109,7 +109,7 @@ export namespace vc
 				each
 				(
 					node.parts ,
-					pos => link ( pos.src , sel )
+					pos => link ( pos.target , sel )
 				),
 
 				link ( node , sel )
