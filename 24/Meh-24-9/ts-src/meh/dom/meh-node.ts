@@ -47,7 +47,7 @@ export abstract class MehNode
 		update : ( value : any ) => void ,
 	)
 	{
-		if ( value instanceof leaf.Source )
+		if ( value instanceof leaf.Src )
 		{
 			const ref = leaf.ref < any >
 			(
@@ -109,7 +109,7 @@ export class MehElement extends MehNode
 			this.bind
 			(
 				value,
-				value => set_attr( el, name, value )
+				value => set_attr( el , name , value , ns )
 			);
 		}
 
@@ -195,11 +195,27 @@ export class MehElement extends MehNode
 }
 
 
-const set_attr = ( e : globalThis.Element | undefined, name : string, value : any ) =>
+const set_attr =
+(
+	e : globalThis.Element | undefined,
+	name : string,
+	value : any ,
+	ns : string
+) =>
 {
 	if( !e ) return;
 
-	if( value === false )  e.removeAttribute( name );
+	if( typeof value == "boolean" )
+	{
+		if( ns ) value ?
+			e.setAttributeNS ( ns , name , "" ) :
+			e.removeAttributeNS ( ns , name )
+		;
+		else value ?
+			e.setAttribute ( name , "" ) :
+			e.removeAttribute ( name )
+		;
+	}
 	else e.setAttribute( name, value );
 }
 

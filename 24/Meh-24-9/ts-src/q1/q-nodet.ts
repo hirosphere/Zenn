@@ -149,7 +149,7 @@ namespace view
 					type: "checkbox",
 					checked: leaf.value,
 				},
-				props: { checked: leaf, },
+				// props: { checked: leaf, },
 				acts:
 				{
 					change( ev )

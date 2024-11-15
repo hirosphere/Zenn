@@ -16,14 +16,14 @@ export namespace leaf
 
 	export const get = < V > ( ll : ll < V > ) =>
 	{
-		return ll instanceof Source ? ll.value : ll ;
+		return ll instanceof Src ? ll.value : ll ;
 	}
 
 	export const mk_str = < V > ( ll : ll < V > ) =>
 	{
 		// log ( ll instanceof Source , get ( ll ) )
 
-		return ( ll instanceof Source ) ? ll.mk_str() : String( ll ) ;
+		return ( ll instanceof Src ) ? ll.mk_str() : String( ll ) ;
 	}
 }
 
@@ -37,6 +37,12 @@ export interface leaf < V > extends leaf.r < V >
 	set value ( value : V ) ;
 
 	set ( value : V , changer ? : object ) : void ;
+	cv < R >
+	(
+		to_ref : leaf.conv < V , R > ,
+		to_src ? : leaf.conv < R , V >
+
+	) : leaf < R > ;
 }
 
 export namespace leaf
@@ -87,6 +93,11 @@ export namespace leaf
 		[ set_value ] ( value : V , changer ? : object ) : void ;
 		
 		mk_str ( to_cv ? : ( src : V ) => string ) : leaf.str ;
+		cv < R >
+		(
+			to_ref : leaf.conv < V , R > ,
+	
+		) : r < R > ;
 	}
 
 	export namespace r
@@ -115,7 +126,7 @@ export namespace leaf
 {
 	/* 基底抽象クラス */
 
-	export abstract class Source < V > implements leaf < V >
+	export abstract class Src < V > implements leaf < V >
 	{
 		/* ref */
 
@@ -154,11 +165,16 @@ export namespace leaf
 		{
 			return new Conv < V , string > ( this , to_cv ) ;
 		}
+
+		public cv < R > ( to_ref : conv < V , R > , to_src ? : conv < R , V > ) : leaf < R >
+		{
+			return new Conv ( this , to_ref , to_src ) ;
+		}
 	}
 
 	/* 値実体クラス */
 
-	export class Entity < V > extends Source < V >
+	export class Entity < V > extends Src < V >
 	{
 		constructor
 		(
@@ -176,7 +192,10 @@ export namespace leaf
 			return this.p_value ;
 		}
 
-		public override set value ( new_v : V ) { this.set ( new_v ) }
+		public override set value ( new_v : V )
+		{
+			this.set ( new_v )
+		}
 
 		public override set( new_v: V , changer ? : object ) : void
 		{
@@ -204,12 +223,13 @@ export namespace leaf
 
 	/* 参照・変換クラス */
 
-	export class Conv < S , R = S > extends Source < R >
+	export class Conv < S , R = S > extends Src < R >
 	{
 		constructor
 		(
-			protected src : Source < S > ,
+			protected src : Src < S > ,
 			protected to_ref : conv < S , R > ,
+			protected to_src ? : conv < R , S >
 		)
 		{
 			super () ;
@@ -289,5 +309,4 @@ export namespace leaf
 	{
 		update : update < V > ;
 	}
-
 }

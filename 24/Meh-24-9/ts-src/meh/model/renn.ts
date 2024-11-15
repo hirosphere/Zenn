@@ -176,7 +176,7 @@ export class Order < S > extends leaf.Entity < Order.value >
 		super( undefined );
 	}
 
-	protected _count_ ? : leaf.Conv < Order.value > ;
+	protected _count_ ? : leaf.r < Order.value > ;
 
 	public get count ()
 	{

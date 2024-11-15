@@ -191,7 +191,7 @@ class SwitchPlace extends Place
 
 		/* セレクタを動的参照に結び付ける。 */
 
-		if( def.selector instanceof leaf.Source )
+		if( def.selector instanceof leaf.Src )
 		{
 			this.src_ref = leaf.ref < any >
 			(

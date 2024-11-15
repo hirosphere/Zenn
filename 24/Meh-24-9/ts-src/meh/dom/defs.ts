@@ -7,7 +7,7 @@ export namespace defs
 	export type El = HTMLElement | SVGElement ;
 
 	export type primitive = string | number | boolean | undefined ;
-	export type reactive = leaf.str | leaf.num | leaf.bool | leaf.ll < Order.value > ;
+	export type reactive = leaf.r.str | leaf.r.num | leaf.r.bool | leaf.r.ll < Order.value > ;
 	export type text = primitive | reactive ;
 
 	export type acts =
@@ -19,23 +19,26 @@ export namespace defs
 
 	export type binds =
 	{
+		el ? : element ;
+		value ? : leaf.str ;
+		checked ? : leaf.bool ;
 	}
 
 	export type attrs < E extends Element > =
 	{
-		[ name in keyof E ] ? : leaf.ll < E [ name ] > ;
+		[ name in keyof E ] ? : leaf.r.ll < E [ name ] > ;
 	};
 
 	export type style =
 	{
-		[ name in keyof CSSStyleDeclaration ] ? : leaf.ll < CSSStyleDeclaration [ name ] > ;
+		[ name in keyof CSSStyleDeclaration ] ? : leaf.r.ll < CSSStyleDeclaration [ name ] > ;
 	};
 
 	export type class_switch = Record < string, leaf.r.ll < boolean > > ;
 
 	export type class_spec =
 	(
-		string | class_switch | leaf.str | ( string | class_switch ) []
+		string | class_switch | leaf.r.str | ( string | class_switch ) []
 	);
 
 	export type ec < E extends Element > =
@@ -68,7 +71,7 @@ export namespace defs
 	{
 		constructor
 		(
-			public readonly selector : leaf.ll < K > ,
+			public readonly selector : leaf.r.ll < K > ,
 			public readonly items : [ K , defs.element ] [] | ( ( key : K ) => defs.element | undefined ) ,
 			public readonly pre ? : K []
 
@@ -106,7 +109,7 @@ export abstract class place
 
 	public static switch < K >
 	(
-		sel : leaf.ll < K > ,
+		sel : leaf.r.ll < K > ,
 		items : [ K , defs.element ] [] | ( ( key : K ) => defs.element | undefined ) ,
 		pre ? : K [] 
 	)

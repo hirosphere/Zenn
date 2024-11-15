@@ -79,9 +79,16 @@ export namespace docm
 		public update ()
 		{
 			const { hue , sat , light , alpha = 1 } = this.value ;
-			this.css.value = `hsl( ${ hue }, ${ sat * 100 }%, ${ light * 100 }%, ${ alpha * 100 }% )` ;
+			this.css.value = `hsl( ${ hue.toFixed ( 1 ) }, ${ pc( sat ) }, ${ pc( light ) }, ${ pc( alpha ) } )` ;
 		}
 	}
+
+	/* */
+
+	const pc = ( v : number ) =>
+	(
+		( v * 100 ).toFixed ( 1 ) + "%"
+	);
 }
 
 
@@ -110,19 +117,19 @@ export namespace vm
 
 		constructor ( m : docm.HSL )
 		{
-			const p =
-			{
-				max : 1 ,
-				step : 0.01 ,
-				unit : "%" ,
-				to_m : ( n : number ) => String ( Math.round ( n * 100 ) ) ,
-			}
-
-			this.hue = Range ( { title : "Hue" , value : m.hue , max : 360 } ) ;
-			this.sat = Range ( { title : "Sat" , value : m.sat , ... p } ) ;
-			this.light = Range ( { title : "Light" , value : m.light , ... p } ) ;
-			this.alpha = Range ( { title : "Alpha" , value : m.alpha , ... p } ) ;
+			this.hue = Range ( { title : "Hue" , value : m.hue , max : 360 , step : 0.5 , to_disp_v : n => n.toFixed ( 1 ) } ) ;
+			this.sat = Range ( { title : "Sat" , value : m.sat , ... pc } ) ;
+			this.light = Range ( { title : "Light" , value : m.light , ... pc } ) ;
+			this.alpha = Range ( { title : "Alpha" , value : m.alpha , ... pc } ) ;
 		}
+	}
+
+	const pc = // パーセント表示
+	{
+		max : 1 ,
+		step : 0.005 ,
+		unit : "%" ,
+		to_disp_v : ( n : number ) => ( n * 100 ).toFixed ( 0 ) ,
 	}
 
 	export type Range =
@@ -132,8 +139,9 @@ export namespace vm
 		min : leaf.ll.num ;
 		max : leaf.ll.num ;
 		step : leaf.ll.num ;
+		disp_v : leaf.str ;
 		unit : leaf.ll.str ;
-		to_m : ( v : number ) => string
+		to_disp_v : to_disp_v
 	};
 
 	const Range = ( m : Partial < Range > ) : Range =>
@@ -146,13 +154,16 @@ export namespace vm
 			max = 100 ,
 			step = 1 ,
 			unit = "" ,
-			to_m = def_to_m
+			to_disp_v = def_to_disp_v
 		} = m ;
 
-		return { title , value , min , max , step , unit , to_m } ;
+		const disp_v = value.mk_str (  ) ;
+
+		return { title , value , min , max , step , disp_v , unit , to_disp_v } ;
 	}
 
-	const def_to_m = ( v : number ) => String( v ) ;
+	type to_disp_v = ( v : number ) => string ;
+	const def_to_disp_v = ( v : number ) => String( v ) ;
 }
 
 
@@ -163,25 +174,27 @@ export namespace vc
 	export const App = ( m : vm.App ) => ef.main
 	(
 		ef.h1 ( "HSL App" ) ,
-		ef.section
-		(
-			{ class : "f-col" } ,
-			ef.section
-			(
-				{
-					class : "color_display" ,
-					style : { backgroundColor : m.doc.color_1.css } ,
-				} ,
-				m.doc.color_1.css ,
-			) ,
-			HSLARange ( m.color_1 ) ,
-		) ,
+		display ( m ),
+		HSLARange ( m.color_1 ) ,
+	);
+
+	const display = ( m : vm.App ) => ef.section
+	(
+		{
+			class : "color_display" ,
+			style : { backgroundColor : m.doc.color_1.css } ,
+		} ,
+
+		ef.span ( { style : { color : "hsl( 0, 0%, 100% )" } } , m.doc.color_1.css ) ,
+		ef.span ( { style : { color : "hsl( 0, 0%, 0% )" } } , m.doc.color_1.css ) ,
 	);
 
 	const HSLARange = ( m : vm.HSLRange ) =>
 	{
 		return ef.section
 		(
+			{ class : "ranges" } ,
+
 			Range ( m.hue ) ,
 			Range ( m.sat ) ,
 			Range ( m.light ) ,
@@ -198,7 +211,7 @@ export namespace vc
 		ef.span
 		(
 			{ class : "_value_unit" } ,
-			ef.span ( { class : "_value" } , m.value.mk_str ( m.to_m ) ) ,
+			ef.span ( { class : "_value" } , m.value.mk_str ( m.to_disp_v ) ) ,
 			ef.span ( { class : "_unit" } , m.unit )
 		)
 	);
@@ -207,12 +220,13 @@ export namespace vc
 	(
 		{
 			class : "_input" ,
-			attrs : { type : "range" } ,
+			attrs : { type : "range" , autocomplete : "off" } ,
 			props :
 			{
 				step : leaf.mk_str ( m.step ) ,
 				max : leaf.mk_str ( m.max ) ,
-				value : m.value.mk_str () ,
+				// value : m.value.mk_str () ,
+				value : m.value.cv ( v => String ( v ) )
 			} ,
 			acts :
 			{

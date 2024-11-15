@@ -16,51 +16,76 @@
 html
 {
 	color : hsl( 35 0% 10% ) ;
+
+	background-color: hsl( 40 8% 90% ) ;
 }
 
-body , main
+body , main , article , section , h1
 {
+	border: 0px solid hsla( 212, 0%, 100%, 30% ) ;
+	border-radius: 0.3ex ;
+	background-color: hsla( 90, 50%, 100%, 30% );
+	padding: 1ex ;
 }
 
 body
 {
 	display: flex ;
 	flex-direction: column ;
-	padding: 1em ;
 	align-items: center ;
 	gap: 1em ;
 }
 
 main
 {
-	max-width: 50em ;
+	width: 98% ;
+	max-width: 60em ;
 	display: flex ;
 	flex-direction: column ;
-	padding: 1em ;
 	align-items: stretch ;
-	gap: 1em ;
+	gap: 1.2em ;
+
+	container-type: size ;
 }
 
-section
+h1 , h2 , h3
 {
-	padding: 1em ;
-	background-color: hsla(90, 75%, 75%, 30%);
+	padding: 1.5em ;
+	text-align: center ;
 }
 
 .color_display
 {
-	border-radius: 1ex ;
+
+	border-radius: 1rex ;
 	border-color: hsl( 35 0% 10% ) ;
-	height: 5em ;
+	height: 22rem ;
+
+	display: flex ;
+	flex-direction: column ;
+	justify-content: center ;
+	align-items: center ;
+
+	font-size: calc( 2cqw + 0.6em ) ;
+}
+
+.ranges
+{
+	margin-inline: max( 0px , ( 100cqw - 500px ) * 0.5 / 2 ) ;
+
+	display: flex ;
+	flex-direction: column ;
+	padding: 0 ;
+	gap : 1px ;
 }
 
 .range
 {
 	width : 100% ;
-	padding: 0.5ex ;
+	padding: 1ex ;
 	display: flex ;
 	flex-wrap: wrap ;
-	gap : 1ex ;
+	gap : 0 1ex ;
 }
 
 .range > ._name { width: 5ex; }
@@ -72,8 +97,13 @@ section
 .range > ._value_unit
 {
 	display: grid ;
-	grid-template-columns: 3ex 1ex ;
+	grid-template-columns: 3ex 1em ;
 	gap : 0.35ex ;
+}
+
+.range > ._value_unit > ._value
+{
+	text-align: right ;
 }
 
 </style>

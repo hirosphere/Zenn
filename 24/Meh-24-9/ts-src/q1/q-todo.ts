@@ -219,8 +219,16 @@ export namespace vc
 		return ef.input
 		(
 			{
-				attrs : { type : "checkbox" , autocomplete : "off" } ,
-				props : { checked : state } ,
+				attrs :
+				{
+					type : "checkbox" ,
+					autocomplete : "off" ,
+					checked : state ,
+				} ,
+				props :
+				{
+					// checked : state
+				} ,
 				acts :
 				{
 					change ( ev )

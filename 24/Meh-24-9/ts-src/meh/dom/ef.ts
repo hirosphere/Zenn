@@ -12,7 +12,7 @@ function create_element
 {
 	if
 	(
-		first instanceof leaf.Source ||
+		first instanceof leaf.Src ||
 		first instanceof nodet.MehNode ||
 		first instanceof defs.Place ||
 		typeof first == "string" ||
