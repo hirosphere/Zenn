@@ -194,10 +194,10 @@ export namespace leaf
 
 		public override set value ( new_v : V )
 		{
-			this.set ( new_v )
+			this.set ( new_v ) ;
 		}
 
-		public override set( new_v: V , changer ? : object ) : void
+		public override set ( new_v: V , changer ? : object ) : void
 		{
 			if( new_v === this.p_value )  return ;
 
@@ -227,20 +227,33 @@ export namespace leaf
 	{
 		constructor
 		(
-			protected src : Src < S > ,
+			protected p_src : leaf < S > ,
 			protected to_ref : conv < S , R > ,
 			protected to_src ? : conv < R , S >
 		)
 		{
 			super () ;
-			src.add_ref( this ) ;
+			p_src.add_ref( this ) ;
+		}
+
+		/* source */
+
+		public set src ( new_s : leaf < S > )
+		{
+			if( new_s == this.p_src )  return ;
+
+			const old_s = this.p_src ;
+			this.p_src = new_s ;
+			
+			old_s ?.remove_ref ( this );
+			new_s ?.add_ref ( this , old_s ?.value ) ;
 		}
 
 		/* value */
 
 		public override get value () : R
 		{
-			return this.to_ref ( this.src.value ) ;
+			return this.to_ref ( this.p_src.value ) ;
 		}
 
 		public override set value ( new_v : R )

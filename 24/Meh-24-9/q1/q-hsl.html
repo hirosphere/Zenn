@@ -15,14 +15,13 @@
 
 html
 {
+	background-color: hsl( 40 8% 80% ) ;
 	color : hsl( 35 0% 10% ) ;
-
-	background-color: hsl( 40 8% 90% ) ;
 }
 
 body , main , article , section , h1
 {
-	border: 0px solid hsla( 212, 0%, 100%, 30% ) ;
+	border: 0px solid hsla( 212, 0%, 50%, 100% ) ;
 	border-radius: 0.3ex ;
 	background-color: hsla( 90, 50%, 100%, 30% );
 	padding: 1ex ;
@@ -45,7 +44,7 @@ main
 	align-items: stretch ;
 	gap: 1.2em ;
 
-	container-type: size ;
+	container-type: inline-size ;
 }
 
 h1 , h2 , h3
@@ -71,7 +70,7 @@ h1 , h2 , h3
 
 .ranges
 {
-	margin-inline: max( 0px , ( 100cqw - 500px ) * 0.5 / 2 ) ;
+	margin-inline: max( 0px , ( 100cqw - 600px ) * 0.5 / 2 ) ;
 
 	display: flex ;
 	flex-direction: column ;
@@ -110,15 +109,13 @@ h1 , h2 , h3
 
 </head>
 <body>
-
+</body>
 
 <script type="module" >
 
-import { main } from "../js-out-1/q1/q-hsl.js" ;
-main () ;
+	import { main } from "../js-out-1/q1/q-hsl.js" ;
+	main () ;
+	
+</script>	
 
-</script>
-
-
-</body>
 </html>

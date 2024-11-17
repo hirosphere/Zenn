@@ -1,0 +1,7 @@
+/* */
+let next_ru_ctr = 1;
+export const next_ru = () => String("ru-" + (next_ru_ctr++));
+/* */
+/* */
+/* */
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZm9ybXMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi90cy1zcmMvbWVoL2RvbS9mb3Jtcy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFHQSxLQUFLO0FBRUwsSUFBSSxXQUFXLEdBQUcsQ0FBQyxDQUFFO0FBRXJCLE1BQU0sQ0FBQyxNQUFNLE9BQU8sR0FBRyxHQUFZLEVBQUUsQ0FBQyxNQUFNLENBQUcsS0FBSyxHQUFHLENBQUUsV0FBVyxFQUFHLENBQUUsQ0FBRSxDQUFFO0FBRTdFLEtBQUs7QUFJTCxLQUFLO0FBSUwsS0FBSyJ9

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+*
+{
+	box-sizing: border-box ;
+	margin: 0 ;
+	padding: 0 ;
+}
+
+html
+{
+	background: hsl( 90 , 40% , 40% );
+	color: hsl( 50 , 10% , 10% );
+}
+
+body , main , article , section , h1 , h2
+{
+	background-color: hsl( 50 , 10% , 100% , 25% );
+}
+
+body
+{
+	min-height: 80vh ;
+	display : flex ;
+	flex-direction : column ;
+	align-items : stretch ;
+	gap : 1em ;
+}
+
+main
+{
+	margin: 0.5ex auto ;
+	max-width: 99% ;
+	width: 800px ;
+
+	display : flex ;
+	flex-direction : column ;
+	align-items : stretch ;
+	gap : 1ex ;
+}
+
+article
+{
+	width: 100% ;
+
+	display : flex ;
+	flex-direction: column ;
+	padding: 1ex ;
+	gap : 1ex ;
+}
+
+h1 , h2 , h3 , h4 { text-align: center ; }
+h1 { padding: 1em ; }
+
+.fl-bar
+{
+	padding:  1ex ;
+	display: flex ;
+	justify-content: center ;
+	gap : 1ex ;
+}
+
+label > input[ type = "radio" ]
+{
+	margin-inline-end: 0.6ex ;
+}
+
+label > input[ type = "radio" ][ checked ]
+{
+}
+
+</style>
+</head>
+<body>
+<script type="module">
+
+import { main } from "../js-out-1/q1/q-from.js" ;
+
+main () ;
+
+</script>
+</body>
+</html>

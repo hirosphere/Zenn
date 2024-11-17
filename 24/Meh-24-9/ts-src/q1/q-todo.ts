@@ -1,6 +1,6 @@
 import { leaf, Renn, ef, each, dom, log, Order } from "../meh/index.js" ;
 
-export namespace sv
+export namespace sv		// static value //
 {
 	export type app =
 	{
@@ -16,7 +16,7 @@ export namespace sv
 }
 
 
-export namespace vm
+export namespace vm		// view models //
 {
 	export class App
 	{
@@ -98,7 +98,7 @@ export namespace vm
 	const bool_rand = ( r = 0.5 ) => Math.random() < r ;
 }
 
-export namespace vc
+export namespace vc		// view components //
 {
 	export const App = ( m : vm.App ) : dom.defs.node =>
 	{
@@ -271,6 +271,8 @@ export namespace vc
 	}
 }
 
+
+/* */
 
 const main = () =>
 {
