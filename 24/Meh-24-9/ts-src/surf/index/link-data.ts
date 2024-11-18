@@ -15,9 +15,15 @@ export const links =
 		title: "開発",
 		parts:
 		[
-			{ title: "loc Root", url: "/zz-index.html", },
 			{ title: "GitHub", url: "https://github.com/hirosphere/", },
-			{ title: "I/O Zenn", url: "https://hirosphere.github.io/Zenn/zz-index.html", },
+			{ title: "GitHub IO Zenn", url: "https://hirosphere.github.io/Zenn/zz-index.html", },
+		]
+	},
+	{
+		title: "ローカル",
+		parts:
+		[
+			{ title: "Local Zenn", url: "/GitHub/Zenn/zz-index.html", },
 		]
 	},
 ];

@@ -2,9 +2,13 @@ import { log } from "../common.js";
 import { leaf , set_value , Renn } from "../model/index.js";
 
 
-export class Browser < I >
+export class Browser < I extends Index >
 {
-	public readonly current = leaf < I | undefined > ( undefined );
+	public readonly current = leaf < I | undefined >
+	(
+		undefined ,
+		{ update : ( new_i ) => this.set_current( new_i ) }
+	);
 
 	public set_current( index : I | undefined )
 	{
@@ -18,7 +22,7 @@ export class Browser < I >
 
 	public make_title( index ? : I ) : string
 	{
-		return "";
+		return index?.title.value ?? "";
 	}
 }
 
@@ -28,7 +32,7 @@ export class Index < P extends Index = any >
 	public readonly title ;
 	public readonly parts : Renn < Index < P > >;
 
-	constructor( v : Index.values )
+	constructor( v : Index.value )
 	{
 		this.name = leaf ( v.name );
 		this.title = leaf ( v.title );
@@ -42,11 +46,11 @@ export class Index < P extends Index = any >
 
 export namespace Index
 {
-	export type values < p extends Index = any > =
+	export type value < p extends Index = any > =
 	{
 		name : string ;
 		title : string ;
-		parts ? : Index.values < p > [];
+		parts ? : Index.value < p > [];
 	};
 }
 

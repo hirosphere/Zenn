@@ -1,5 +1,5 @@
 
-export { log } from "./common.js";
+export { log , df } from "./common.js";
 
 export * as model from "./model/index.js";
 export { leaf, selector , Renn, Order } from "./model/index.js";

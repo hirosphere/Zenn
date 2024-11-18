@@ -13,7 +13,7 @@ export const NaviApp = () =>
 
 namespace ms
 {
-	const sitetree : navi.Index.values =
+	const sitetree : navi.Index.value =
 	{
 		name : "",
 		title : "通勤電車",

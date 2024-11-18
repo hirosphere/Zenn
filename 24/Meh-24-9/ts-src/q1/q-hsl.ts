@@ -11,11 +11,6 @@ export namespace sv
 		light : number ;
 		alpha ? : number ;
 	};
-
-	export type index =
-	{
-		title : string ;
-	}
 }
 
 
@@ -98,16 +93,15 @@ export namespace vm
 {
 	export class App
 	{
-		public readonly doc = new docm.App ;
 
-		protected br = new navi.Browser < sv.index > ();
+		public readonly doc = new docm.App ;
 		public readonly color_1 = new  HSLRange ( this.doc.color_1 ) ;
+		protected br = new navi.Browser ();
 
 		constructor()
 		{
-			this.br.make_title = i => i?.title ?? "..." ;
-
-			this.br.set_current ( { title : "HSL App" } ) ;
+			const i = new navi.Index ( { name : "" , title : "HSL App" } ) ;
+			this.br.set_current ( i ) ;
 		}
 	}
 

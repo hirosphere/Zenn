@@ -1,4 +1,4 @@
-import { leaf , selector , dom , defs , ef , forms , log } from "../meh/index.js" ;
+import { leaf , selector , dom , defs , ef , forms , navi , log } from "../meh/index.js" ;
 import { Clock } from "./q-clock.js" ;
 
 const ents = Object.entries ;
@@ -7,9 +7,17 @@ namespace vm
 {
 	export class App
 	{
-		gr1 = { "lf" : "長波" , "mw" : "中波" , "sw" : "短波" , "vhf" : "超短波" ,  } ;
+		gr1 = { "LF" : "長波" , "MW" : "中波" , "SW" : "短波" , "VHF" : "超短波" ,  } ;
 
-		sel1 = selector ( "mw" );
+		sel1 = selector ( "SW" );
+
+		constructor ()
+		{
+			const index = new navi.Index ( { title : "Form Quest" , name : "" } ) ;
+			const br = new navi.Browser () ;
+			br.make_title
+			br.set_current ( index ) ;
+		}
 	}
 
 	export type opts = { [ key : string ] : string } ;
