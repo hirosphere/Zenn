@@ -8,7 +8,7 @@ export const log = console.log;
 
 export function df ( format : string , date : Date = new Date ) : string
 {
-	return format.replace ( /u?(YY|Y|MM|M|DD|D|hh|h|mm|m|ss|s)|B/g , s => df.cv ( s , date ) ) ;
+	return format.replace ( /u?(YY|Y|MM|M|DD|D|hh|h|mm|m|ss|s|B)/g , s => df.cv ( s , date ) ) ;
 }
 
 export namespace df

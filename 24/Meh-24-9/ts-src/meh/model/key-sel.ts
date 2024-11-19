@@ -1,15 +1,16 @@
 import { log } from "../common.js" ;
 import { leaf } from "./leaf.js" ;
 
-export type selector < K > = selector.Selector < K > ;
+export type ksel < K > = ksel.Selector < K > ;
 
-export function selector < K > ( init : K )
+export function ksel < K > ( init : K )
 {
-	return new selector.Selector ( init ) ;
+	return new ksel.Selector ( init ) ;
 }
 
-export namespace selector
+export namespace ksel
 {
+
 	export class Selector < K >
 	{
 		public readonly current : leaf < K > ;
@@ -53,6 +54,14 @@ export namespace selector
 			return ( key == this.current.value ) ? this.stat_src.true : this.stat_src.false ;
 		}
 	}
+
+	/* */
+
+	export type item < K > = Item < K > ;
+	export const item = < K > ( selector : Selector < K > , key : K , init_state : leaf.bool ) =>
+	(
+		new Item ( selector , key , init_state )
+	) ;
 
 	export class Item < K > extends leaf.Conv < boolean >
 	{

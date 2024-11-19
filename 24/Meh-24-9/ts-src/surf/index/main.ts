@@ -9,7 +9,7 @@ const App = () =>
 	return ef.main
 	(
 		ef.h1( clock.time ),
-		ef.p ( clock.delay ) ,
+		ef.p ( clock.delay , " msec" ) ,
 		
 		...links.map( i => link.Block( i ) ),
 	);

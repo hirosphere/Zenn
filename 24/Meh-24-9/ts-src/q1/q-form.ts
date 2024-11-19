@@ -1,4 +1,4 @@
-import { leaf , selector , dom , defs , ef , forms , navi , log } from "../meh/index.js" ;
+import { leaf , ksel , dom , defs , ef , forms , navi , log } from "../meh/index.js" ;
 import { Clock } from "./q-clock.js" ;
 
 const ents = Object.entries ;
@@ -7,9 +7,11 @@ namespace vm
 {
 	export class App
 	{
-		gr1 = { "LF" : "長波" , "MW" : "中波" , "SW" : "短波" , "VHF" : "超短波" ,  } ;
+		gr1 = { "LF" : "長波" , "MW" : "中波" , "SW" : "短波" , "VHF" : "超短波" , } ;
+		gr2 = { "AM" : "AM" , "FM" : "FM" , "DSB" : "DSB" , "SSB" : "SSB" , "PM" : "PM" , } ;
 
-		sel1 = selector ( "SW" );
+		sel1 = ksel ( "SW" ) ;
+		sel2 = ksel ( "AM" ) ;
 
 		constructor ()
 		{
@@ -23,7 +25,9 @@ namespace vm
 	export type opts = { [ key : string ] : string } ;
 }
 
+
 namespace vc
+
 {
 	export const App = () =>
 	{
@@ -32,29 +36,31 @@ namespace vc
 		return ef.article
 		(
 			ef.h2 ( "Article 1" ) ,
-			GroupA ( forms.next_ru () , m.gr1 , m.sel1 ) ,
-			GroupA ( forms.next_ru () , m.gr1 , m.sel1 ) ,
-			GroupA ( forms.next_ru () , m.gr1 , m.sel1 ) ,
+			r_grp ( "波長" , forms.next_ru () , m.gr1 , m.sel1 ) ,
+			r_grp ( "波長" , forms.next_ru () , m.gr1 , m.sel1 ) ,
+			r_grp ( "変調方式" , forms.next_ru () , m.gr2 , m.sel2 ) ,
 
 			Clock ( { style : { fontSize : "1.9em" } } ) ,
 		)
 	} ;
 
-	const GroupA = ( name : string , m : vm.opts , sel : selector < string > ) =>
+	const r_grp = ( title : string , name : string , m : vm.opts , sel : ksel < string > ) =>
 	{
 		return ef.section
 		(
-			ef.h3 ( "Group A" ) ,
+			ef.h3 ( title ) ,
 			ef.section
 			(
 				{ class : "fl-bar" },
 				... radios ( name , m , sel ),
 				ef.b ( { style : { width : "5em" } } , "[ " , sel.current , " ]" ),
+				// ef.input ( { props : { value : sel.current } } ) ,
+				select ( m , sel ) ,
 			)
 		) ;
 	}
 
-	const radios = ( name : string , m : vm.opts , sel : selector < string > ) =>
+	const radios = ( name : string , m : vm.opts , sel : ksel < string > ) =>
 	{
 		return ents ( m ) .map
 		(
@@ -63,7 +69,7 @@ namespace vc
 		.flat () ;
 	}
 
-	const radio = ( m : selector.Item < string > , name : string , key : string , label : string ) =>
+	const radio = ( m : ksel.Item < string > , name : string , key : string , label : string ) =>
 	{
 		const input = ef.input
 		(
@@ -92,6 +98,59 @@ namespace vc
 
 		return ef.label ( input , label ) ;
 	}
+
+	const select = ( m : vm.opts , sel : ksel < string > ) =>
+	{
+		const map = new Map < Element , string > ;
+
+		return ef.select
+		(
+			{
+				attrs : { autocomplete : "off" } ,
+				acts :
+				{
+					input ( ev )
+					{
+						if( ! ( ev.target instanceof HTMLSelectElement ) )  return ;
+
+						const i = ev.target.selectedIndex ;
+						const opt = ev.target.options [ i ] ;
+						const key = map.get ( opt ) ;
+						if ( key !== undefined )  sel.current.value = key ;
+					},
+				}
+			},
+
+			... ents ( m ) .map
+			(
+				( [ key , label ] ) => option
+				(
+					label ,
+					sel.make_item ( key ) ,
+					map
+				)
+			)
+		)
+	}
+
+	const option =
+	(
+		label : string ,
+		m : ksel.Item < string > ,
+		map : Map < Element , string > ,
+	
+	) => ef.option
+	(
+		{
+			props : { selected : m } ,
+			hook :
+			{
+				init ( el ) { map.set ( el , m.key ) ; } ,
+				term ( el ) { map.delete ( el ) ; } ,
+			} ,
+		} ,
+		label
+	);
 }
 
 export const main = () =>

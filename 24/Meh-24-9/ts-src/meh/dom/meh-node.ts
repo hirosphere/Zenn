@@ -84,7 +84,7 @@ export class MehElement extends MehNode
 		super();
 
 		const { ns, type, parts } = args;
-		const { class: class_name, style, attrs, props, acts, active_acts: actacts } = args;
+		const { class: class_name, style, attrs, props, acts, active_acts , hook } = args;
 
 		let el =
 		(
@@ -133,6 +133,11 @@ export class MehElement extends MehNode
 		if( parts )
 		{
 			this.parts = create_parts_place( el, parts );
+		}
+
+		if( hook )
+		{
+			hook.init ?.( el ) ;
 		}
 	}
 

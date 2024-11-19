@@ -2,7 +2,7 @@
 export const log = console.log;
 /* */
 export function df(format, date = new Date) {
-    return format.replace(/u?(YY|Y|MM|M|DD|D|hh|h|mm|m|ss|s)|B/g, s => df.cv(s, date));
+    return format.replace(/u?(YY|Y|MM|M|DD|D|hh|h|mm|m|ss|s|B)/g, s => df.cv(s, date));
 }
 (function (df) {
     df.cv = (s, d) => {

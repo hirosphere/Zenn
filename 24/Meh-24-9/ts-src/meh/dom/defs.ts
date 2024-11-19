@@ -41,6 +41,12 @@ export namespace defs
 		string | class_switch | leaf.r.str | ( string | class_switch ) []
 	);
 
+	export type hook < E extends Element > =
+	{
+		init ? ( el : Element ) : void ;
+		term ? ( el : Element ) : void ;
+	};
+
 	export type ec < E extends Element > =
 	{
 		class ? : class_spec ;
@@ -49,6 +55,7 @@ export namespace defs
 		props ? : attrs < E > ;
 		acts ? : acts ;
 		active_acts ? : acts ;
+		hook ? : hook < E > ;
 	};
 
 	//  //
@@ -95,17 +102,18 @@ export namespace defs
 	export type parts =  part [] ;
 }
 
+
 export abstract class place
 {
-	public static each = < S >
+	public static each < S >
 	(
 		source : Renn < S > ,
 		create_node : ( order : Order < S > ) => defs.node
 	)
-	 : defs.Each < S > =>
-	(
-		new defs.Each( source, create_node )
-	);
+	 : defs.Each < S >
+	{
+		return new defs.Each( source, create_node )
+	}
 
 	public static switch < K >
 	(

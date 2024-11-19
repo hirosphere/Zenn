@@ -7,7 +7,6 @@ export const Clock = ( ec ? : defs.ec < any > ) =>
 
 	const update = () =>
 	{
-		// time_str.value = df ( "YY-MM-DD hh:mm:ss B曜日" , new Date ( "2024/3/3 3:3:3" ) ) ;
 		time_str.value = df ( "Y年 MM月 DD日 B曜日 - hh:mm:ss" , new Date (  ) ) ;
 	}
 
