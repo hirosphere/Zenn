@@ -5,7 +5,7 @@ import { log } from "../common.js" ;
 
 export function leaf < V > ( value : V , branch ? : leaf.branch < V > ) : leaf < V >
 {
-	return new leaf.Entity ( value , branch ) ;
+	return new leaf.Entity < V > ( value , branch ) ;
 }
 
 export namespace leaf

@@ -9,9 +9,13 @@ namespace vm
 	{
 		gr1 = { "LF" : "長波" , "MW" : "中波" , "SW" : "短波" , "VHF" : "超短波" , } ;
 		gr2 = { "AM" : "AM" , "FM" : "FM" , "DSB" : "DSB" , "SSB" : "SSB" , "PM" : "PM" , } ;
+		gr3 = { "N" : "ノーマル" , "S" : "ソフト" , "H" : "ハード" , "M" : "ミュート"  }
 
 		sel1 = ksel ( "SW" ) ;
 		sel2 = ksel ( "AM" ) ;
+		sel3 = ksel ( "N" ) ;
+
+		bg = colors () ;
 
 		constructor ()
 		{
@@ -20,6 +24,32 @@ namespace vm
 			br.make_title
 			br.set_current ( index ) ;
 		}
+	}
+
+	class Colors
+	{
+		items =
+		{
+			"green" : [ 90 , 0.5 , 0.5 ] ,
+			"blue" : [ 210 , 0.6 , 0.6 ] ,
+			"red" : [ 357 , 0.55 , 0.65 ] ,
+		};
+
+		color = leaf ( "" ) ;
+	}
+
+	const colors = () =>
+	{
+		const sel = ksel ( "緑" ) ;
+
+		const update = () =>
+		{
+			document.documentElement.style.backgroundColor = "hsl( 355, 50% , 50% )" ;
+		}
+
+		update () ;
+
+		return { sel }
 	}
 
 	export type opts = { [ key : string ] : string } ;
@@ -39,6 +69,7 @@ namespace vc
 			r_grp ( "波長" , forms.next_ru () , m.gr1 , m.sel1 ) ,
 			r_grp ( "波長" , forms.next_ru () , m.gr1 , m.sel1 ) ,
 			r_grp ( "変調方式" , forms.next_ru () , m.gr2 , m.sel2 ) ,
+			r_grp ( "音質" , forms.next_ru () , m.gr3 , m.sel3 ) ,
 
 			Clock ( { style : { fontSize : "1.9em" } } ) ,
 		)

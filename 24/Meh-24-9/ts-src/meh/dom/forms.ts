@@ -59,10 +59,69 @@ export namespace input
 	const ec : defs.ec < HTMLInputElement > =
 	{
 		attrs :
-		{} ,
+		{
+			value : ""
+		} ,
 	}
 
 	export const text = () => ef.input ( ec ) ;
+}
+
+export interface range
+{
+	title : leaf.ll.str ;
+	value : leaf.num ;
+	min ? : leaf.ll.num ;
+	max ? : leaf.ll.num ;
+	step ? : leaf.ll.num ;
+	unit ? : leaf.ll.str ;
+	to_lv ? : ( value : number ) => string ;
+}
+
+export function range ( m : range )
+{
+	const ec : defs.ec < HTMLInputElement > = {} ;
+
+	ec.attrs =
+	{
+		type : "range" ,
+		autocomplete : "off" ,
+		min  : leaf.mk_str ( m.min  ?? 0 ) ,
+		step : leaf.mk_str ( m.step ?? 1 ) ,
+		max  : leaf.mk_str ( m.max  ?? 100 ) ,
+	}
+
+	ec.props =
+	{
+		value : m.value.mk_str () ,
+	}
+
+	ec.acts =
+	{
+		input ( ev )
+		{
+			if( ! ( ev.target instanceof HTMLInputElement ) )  return ;
+			
+			m.value.value = Number ( ev.target.value ) ;
+		}
+	}
+
+	return ef.section
+	(
+		{ class : "Range" } ,
+		ef.label ( { class : "title" } , m.title ) ,
+		ef.input ( ec ) ,
+		ef.span
+		(
+			{ class : "value_unit" } ,
+			ef.span ( { class : "value" } , m.value.mk_str ( m.to_lv ) ) ,
+			ef.span ( { class : "unit" } , m.unit )
+		)
+	);
+}
+
+export namespace range
+{
 }
 
 

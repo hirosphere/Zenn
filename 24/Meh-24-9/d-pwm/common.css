@@ -1,0 +1,47 @@
+*
+{
+	box-sizing : border-box ;
+	margin : 0 ;
+	padding: 0 ;
+}
+
+html
+{
+	font-family : sans-serif ;
+	background-color: hsl( 208 , 60% , 65% ) ;
+}
+
+body , main , article , section ,
+h1 , h2 , h3 , h4 , h5
+{
+	padding : 1ex ;
+	background-color : hsla( 95 , 45% , 100% , 20% ) ;
+}
+
+body
+{
+	margin : 0 auto ;
+	max-width : 1000px ;
+}
+
+.fl-col
+{
+	display : flex ;
+	flex-direction : column ;
+	gap : 1ex ;
+}
+
+h1 , h2 , h3 , h4 , h5
+{
+	padding : 0.8em ;
+	text-align : center ;
+}
+
+.Range
+{
+	border-radius : 0.1ex ;
+	padding : 1ex ;
+	display: grid ;
+	grid-template-columns: 5em 1fr 5em ;
+	gap : 1ex ;
+}
