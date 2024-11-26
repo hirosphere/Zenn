@@ -1,63 +1,54 @@
 import { leaf , Renn , dom , ef , each , forms , navi , log } from "../meh/index.js" ;
 import * as af from "../meh-au/audio.js" ;
 
-namespace DM    /* doc models */
+namespace DM    /* Doc Models */
 {
 	export class App
 	{
-		freq = leaf ( 300 ) ;
-		width = leaf ( 0.5 ) ;
-		volume = leaf.num ( 0.155 ) ;
+		freq = leaf ( 12 ) ;
+		offset = leaf ( -1 ) ;
+		volume = leaf.num ( 0.10 ) ;
 	}
 }
 
-namespace VM    /*  view models  */
+namespace VM    /*  View Models  */
 {
 	export class App
 	{
 		freq : forms.range ;
-		width : forms.range ;
+		offset : forms.range ;
 		volume : forms.range ;
 
 		constructor ( public dm : DM.App )
 		{
 			this.freq   = { title : "周波数" ,   value : dm.freq  , max : 3000 , unit : "Hz" } ;
-			this.width  = { title : "パルス幅" , value : dm.width , ... pc } ;
+			this.offset  = { title : "オフセット" , value : dm.offset , min : -1 , step : 0.005 , max : 1 } ;
 			this.volume = { title : "音量" ,     value : dm.volume , ... pc  }
 		}
 	}
 
 	const pc =
 	{
-		step : 0.01 ,
+		step : 0.002 ,
 		max : 1 ,
-		to_lv : ( v : number ) => ( v * 100 ) .toFixed ( 0 ) ,
+		to_lv : ( v : number ) => ( v * 100 ) .toFixed ( 1 ) ,
 		unit : "%"
 	}
 }
 
 
-namespace VC    /*  view components  */
+namespace VC    /*  View Components  */
 {
 	export const App = ( vm : VM.App , au_start : () => void ) =>
 	{
+		document.documentElement.addEventListener ( "touchstart" , au_start ) ;
 		document.documentElement.addEventListener ( "mousedown" , au_start ) ;
+		document.documentElement.addEventListener ( "keydown" , au_start ) ;
 
 		return ef.article
 		(
-			ef.h2 ( "Article" ) ,
-			
+			ef.h2 ( "Article" ) ,			
 			ranges ( vm ) ,
-
-			ef.section
-			(
-				ef.h3 ( "Section" )
-			) ,
-
-			ef.section
-			(
-				ef.h3 ( "Section" )
-			) ,
 		) ;
 	}
 
@@ -66,7 +57,7 @@ namespace VC    /*  view components  */
 		{ class : "Ranges fl-col" } ,
 
 		forms.range ( vm.freq ) ,
-		forms.range ( vm.width ) ,
+		forms.range ( vm.offset ) ,
 		forms.range ( vm.volume ) ,
 	)
 }
@@ -75,6 +66,27 @@ namespace AC    /* Audio Components */
 {
 	export const PWM = ( m : DM.App , ac : AudioContext ) =>
 	{
+		const osc = af.osc ( { freq : af.constant ( m.freq , 0.01 , ac ) , type : "triangle" } , ac ) ;
+		const bias = af.constant ( m.offset , 0.02 , ac ) ;
+		const scaled = af.gain ( [ osc , bias ] , 10000 , ac ) ;
+
+		const pulse = af.shaper
+		(
+			[ scaled ] ,
+			new Float32Array ( [ -1 , 1 ] ) ,
+			ac
+		) ;
+
+
+		const root = af.gain
+		(
+			//[ af.pil ( 100 , ac ) , af.pil ( 100.3 , ac ) , af.pil ( 500.25 , ac ) , af.pil ( 500.75 , ac ) , ] ,
+			[ pulse ] ,
+			[ af.constant ( m.volume , 0.01 , ac ) ],
+			ac
+		) ;
+
+		root.node.connect ( ac.destination ) ;
 	}
 }
 
