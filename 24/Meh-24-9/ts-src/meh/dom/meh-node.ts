@@ -156,9 +156,9 @@ export class MehElement extends MehNode
 	{
 		if( typeof def == "string" )
 		{
-			def.split( /\s/ ) .forEach
+			def.split( /\s/g ) .forEach
 			(
-				cn => e.classList.toggle ( cn , true )
+				cn => cn && e.classList.toggle ( cn , true )
 			) ;
 
 			return;

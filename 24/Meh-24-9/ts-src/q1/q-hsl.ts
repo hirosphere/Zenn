@@ -74,7 +74,7 @@ export namespace docm
 		public update ()
 		{
 			const { hue , sat , light , alpha = 1 } = this.value ;
-			this.css.value = `hsl( ${ hue.toFixed ( 1 ) }, ${ pc( sat ) }, ${ pc( light ) }, ${ pc( alpha ) } )` ;
+			this.css.value = `hsl( ${ hue.toFixed ( 1 ) }, ${ pc( sat ) }, ${ pc( light ) } )` ;
 		}
 	}
 
@@ -177,30 +177,46 @@ export namespace vc
 		document.exitFullscreen
 
 		const hook : dom.defs.hook  = {};
-		let fullscreen = false ;
 
-		const click = () =>
+		const toggle_fs = ( ev : MouseEvent ) =>
 		{
 			if( ! hook.el )  return ;
 
-			( fullscreen = ! fullscreen ) ?
-				hook.el.requestFullscreen () :
-				document.exitFullscreen ()
+			const fullscreen = document.fullscreenElement == hook.el ;
+
+			fullscreen ?
+				document.exitFullscreen () :
+				hook.el.requestFullscreen ()
+			;
+
+			ev.preventDefault () ;
 		}
 
-		return ef.section
+		return ef.form
 		(
 			{
 				class : "color_display" ,
 				style : { backgroundColor : m.doc.color_1.css } ,
-				acts : { click },
+				acts : { dblclick : toggle_fs },
 				hook
 			} ,
 
-			ef.span ( { style : { color : "hsl( 0, 0%, 100% )" } } , m.doc.color_1.css ) ,
-			ef.span ( { style : { color : "hsl( 0, 0%, 0% )" } } , m.doc.color_1.css ) ,
+			HSLInput ( m.doc.color_1.css ) ,
+			// HSLInput ( m.doc.color_1.css , "w" ) ,
+
+			// ef.span ( { style : { color : "hsl( 0, 0%, 100% )" } } , m.doc.color_1.css ) ,
+			// ef.span ( { style : { color : "hsl( 0, 0%, 0% )" } } , m.doc.color_1.css ) ,
 		);
 	}
+
+	const HSLInput = ( color : leaf.str , subclass : string = "" ) => ef.input
+	(
+		{
+			class : "color-input " + subclass ,
+			props : { value : color } ,
+			acts : { click ( ev ) { ev.stopPropagation () ; } }
+		}
+	);
 
 	const HSLARange = ( m : vm.HSLRange ) =>
 	{
@@ -211,7 +227,7 @@ export namespace vc
 			Range ( m.hue ) ,
 			Range ( m.sat ) ,
 			Range ( m.light ) ,
-			Range ( m.alpha ) ,
+			// Range ( m.alpha ) ,
 		);
 	}
 
