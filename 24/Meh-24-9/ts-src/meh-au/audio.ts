@@ -51,7 +51,7 @@ export const gain = ( input : node [] , gain : param_srcs , ac : AC ) : node =>
 
 export const constant = ( offset : leaf.ll.num , st_rate : number , ac : AC ) : node =>
 {
-	const node = new ConstantSourceNode ( ac , { offset : 0 } ) ;
+	const node = new ConstantSourceNode ( ac , { offset : leaf.get ( offset ) } ) ;
 	const an = { node , ... new_an () } ;
 
 	const value_changed = ( v : number ) =>

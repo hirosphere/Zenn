@@ -41,13 +41,14 @@ export namespace defs
 		string | class_switch | leaf.r.str | ( string | class_switch ) []
 	);
 
-	export type hook < E extends Element > =
+	export type hook < E extends El = El > =
 	{
+		el ? : El ;
 		init ? ( el : Element ) : void ;
 		term ? ( el : Element ) : void ;
 	};
 
-	export type ec < E extends Element > =
+	export type ec < E extends El > =
 	{
 		class ? : class_spec ;
 		style ? : style ;

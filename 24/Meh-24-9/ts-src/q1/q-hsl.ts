@@ -172,16 +172,35 @@ export namespace vc
 		HSLARange ( m.color_1 ) ,
 	);
 
-	const display = ( m : vm.App ) => ef.section
-	(
-		{
-			class : "color_display" ,
-			style : { backgroundColor : m.doc.color_1.css } ,
-		} ,
+	const display = ( m : vm.App ) =>
+	{
+		document.exitFullscreen
 
-		ef.span ( { style : { color : "hsl( 0, 0%, 100% )" } } , m.doc.color_1.css ) ,
-		ef.span ( { style : { color : "hsl( 0, 0%, 0% )" } } , m.doc.color_1.css ) ,
-	);
+		const hook : dom.defs.hook  = {};
+		let fullscreen = false ;
+
+		const click = () =>
+		{
+			if( ! hook.el )  return ;
+
+			( fullscreen = ! fullscreen ) ?
+				hook.el.requestFullscreen () :
+				document.exitFullscreen ()
+		}
+
+		return ef.section
+		(
+			{
+				class : "color_display" ,
+				style : { backgroundColor : m.doc.color_1.css } ,
+				acts : { click },
+				hook
+			} ,
+
+			ef.span ( { style : { color : "hsl( 0, 0%, 100% )" } } , m.doc.color_1.css ) ,
+			ef.span ( { style : { color : "hsl( 0, 0%, 0% )" } } , m.doc.color_1.css ) ,
+		);
+	}
 
 	const HSLARange = ( m : vm.HSLRange ) =>
 	{

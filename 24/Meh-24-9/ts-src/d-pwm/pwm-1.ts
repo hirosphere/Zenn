@@ -5,8 +5,8 @@ namespace DM    /* Doc Models */
 {
 	export class App
 	{
-		freq = leaf ( 12 ) ;
-		offset = leaf ( -1 ) ;
+		freq = leaf ( 100 ) ;
+		offset = leaf ( 0 ) ;
 		volume = leaf.num ( 0.10 ) ;
 	}
 }
@@ -41,9 +41,8 @@ namespace VC    /*  View Components  */
 {
 	export const App = ( vm : VM.App , au_start : () => void ) =>
 	{
-		document.documentElement.addEventListener ( "touchstart" , au_start ) ;
-		document.documentElement.addEventListener ( "mousedown" , au_start ) ;
-		document.documentElement.addEventListener ( "keydown" , au_start ) ;
+		ae ( "mousedown" , au_start ) ;
+		ae ( "keydown" , au_start ) ;
 
 		return ef.article
 		(
@@ -60,6 +59,11 @@ namespace VC    /*  View Components  */
 		forms.range ( vm.offset ) ,
 		forms.range ( vm.volume ) ,
 	)
+
+	const ae = ( type : keyof GlobalEventHandlersEventMap , hdr : () => void ) =>
+	{
+		document.documentElement.addEventListener ( type , hdr , { once : true } )
+	}
 }
 
 namespace AC    /* Audio Components */
@@ -80,7 +84,7 @@ namespace AC    /* Audio Components */
 
 		const root = af.gain
 		(
-			//[ af.pil ( 100 , ac ) , af.pil ( 100.3 , ac ) , af.pil ( 500.25 , ac ) , af.pil ( 500.75 , ac ) , ] ,
+			// [ pulse , af.pil ( 100 , ac ) , af.pil ( 100.3 , ac ) , af.pil ( 500.25 , ac ) , af.pil ( 500.75 , ac ) , ] ,
 			[ pulse ] ,
 			[ af.constant ( m.volume , 0.01 , ac ) ],
 			ac

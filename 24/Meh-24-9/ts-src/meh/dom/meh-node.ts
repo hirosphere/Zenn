@@ -137,6 +137,7 @@ export class MehElement extends MehNode
 
 		if( hook )
 		{
+			hook.el = el ;
 			hook.init ?.( el ) ;
 		}
 	}

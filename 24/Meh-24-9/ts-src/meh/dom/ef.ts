@@ -1,6 +1,6 @@
 import { leaf } from "../model/leaf.js";
 import { defs } from "./defs.js";
-import * as nodet from "./meh-node.js";
+import * as mn from "./meh-node.js";
 
 function create_element
 (
@@ -8,12 +8,12 @@ function create_element
 	type : string,
 	first ? : defs.ec < any > | defs.part,
 	... remain : defs.parts
-) : nodet.MehElement
+) : mn.MehElement
 {
 	if
 	(
 		first instanceof leaf.Src ||
-		first instanceof nodet.MehNode ||
+		first instanceof mn.MehNode ||
 		first instanceof defs.Place ||
 		typeof first == "string" ||
 		typeof first == "number" ||
@@ -26,18 +26,18 @@ function create_element
 			: [ first ] 
 		);
 
-		return new nodet.MehElement( { ns, type, parts } );
+		return new mn.MehElement( { ns, type, parts } );
 	}
 
-	return new nodet.MehElement( { ns, type, ... first, parts : remain } );
+	return new mn.MehElement( { ns, type, ... first, parts : remain } );
 }
 
-type create_nodet_t < E extends Element > =
+type create_meh_element_t < E extends defs.El > =
 (
 	first ? : defs.ec < E > | defs.part,
 	... remain : defs.parts
 )
-=> nodet.MehElement ;
+=> mn.MehElement ;
 
 class Handler < T extends object > implements ProxyHandler < T >
 {
@@ -49,13 +49,13 @@ class Handler < T extends object > implements ProxyHandler < T >
 		return this.makefn( type );
 	}
 
-	private fns = new Map < string, create_nodet_t < any > > ;
+	private fns = new Map < string, create_meh_element_t < any > > ;
 
 	private makefn( type : string )
 	{
 		if( this.fns.has( type ) )  return this.fns.get( type );
 
-		const fn : create_nodet_t < any > = ( first, ... remain ) => create_element( this.ns, type, first, ... remain );
+		const fn : create_meh_element_t < any > = ( first, ... remain ) => create_element( this.ns, type, first, ... remain );
 		this.fns.set( type, fn );
 		return fn;
 	}
@@ -64,7 +64,7 @@ class Handler < T extends object > implements ProxyHandler < T >
 
 type EF < Map extends { [ key : string ] : any } > =
 {
-	[ e in keyof Map ] : create_nodet_t < Map[ e ] > ;
+	[ e in keyof Map ] : create_meh_element_t < Map[ e ] > ;
 };
 
 export const ef = new Proxy
