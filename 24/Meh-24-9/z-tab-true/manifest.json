@@ -1,0 +1,16 @@
+{
+	"manifest_version" : 3 ,
+	"name" : "Tabを正す" ,
+	"version" : "1.0" ,
+	"content_scripts" :
+	[
+		{
+			"matches" :
+			[
+				"https://zenn.dev/*" ,
+				"https://qiita.com/*"
+			] ,
+			"css" : [ "true.css" ]
+		}
+	] 
+}

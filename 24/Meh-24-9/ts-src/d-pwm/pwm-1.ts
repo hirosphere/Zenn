@@ -48,6 +48,16 @@ namespace VC    /*  View Components  */
 		(
 			ef.h2 ( "Article" ) ,			
 			ranges ( vm ) ,
+
+			ef.section
+			(
+				ef.h3 ( "Section" ) ,
+			) ,
+
+			ef.section
+			(
+				ef.h3 ( "Section" ) ,
+			) ,
 		) ;
 	}
 
