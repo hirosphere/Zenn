@@ -22,7 +22,7 @@ namespace VM    /*  View Models  */
 		constructor ( public dm : DM.App )
 		{
 			this.freq   = { title : "周波数" ,   value : dm.freq  , max : 3000 , unit : "Hz" } ;
-			this.offset  = { title : "オフセット" , value : dm.offset , min : -1 , step : 0.005 , max : 1 } ;
+			this.offset  = { title : "パルス幅" , value : dm.offset , ... pw } ;
 			this.volume = { title : "音量" ,     value : dm.volume , ... pc  }
 		}
 	}
@@ -34,6 +34,14 @@ namespace VM    /*  View Models  */
 		to_lv : ( v : number ) => ( v * 100 ) .toFixed ( 1 ) ,
 		unit : "%"
 	}
+
+	const pw : forms.range.p =
+	{
+		step : 0.002 ,
+		min : -1 , max : 1 ,
+		to_lv : v => ( ( v + 1 ) * 50 ) .toFixed ( 1 ) ,
+		unit : "%"
+	} ;
 }
 
 

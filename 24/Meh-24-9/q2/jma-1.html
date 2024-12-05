@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="./q2.css" />
+	<title>JMA-App 1</title>
+<style>
+
+.node-head
+{
+	display: grid ;
+	grid-template-columns: 1.0em 9ex 1fr 1fr;
+	align-items: center ;
+	gap: 1ex ;
+}
+
+.node-head button
+{
+	height : 2.5ex ;
+}
+
+.node-body { display: none ; }
+.node-body.expanded
+{
+	display: block ;
+	border: 1px solid hsl( 0, 0% , 30% );
+}
+
+</style>
+</head>
+<body>
+
+<script type="module">
+
+import { main } from "../js-out-1/q2/jma-app-1.js" ;
+
+main ( "body" ) ;
+
+</script>
+
+</body>
+</html>

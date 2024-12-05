@@ -1,4 +1,4 @@
-export default
+export const lists =
 {
 	"centers": {
 		"010100": {
@@ -17255,3 +17255,9 @@ export default
 		}
 	}
 }
+
+export type center_code = keyof typeof lists.centers ;
+export type office_code = keyof typeof lists.offices ;
+export type class10_code = keyof typeof lists.class10s ;
+export type class15_code = keyof typeof lists.class15s ;
+export type class20_code = keyof typeof lists.class20s ;

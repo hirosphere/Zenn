@@ -122,6 +122,7 @@ export function range ( m : range )
 
 export namespace range
 {
+	export type p = Partial < range > ;
 }
 
 
