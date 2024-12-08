@@ -3,8 +3,6 @@ import * as jma from "./map.js" ;
 
 namespace VM
 {
-	export type IndexKey = leaf < string | undefined > ;
-
 	type node = { name : string , enName ? : string , officeName ? : string , children ? : string [] } ;
 
 	export abstract class Node
@@ -170,7 +168,6 @@ namespace VC
 			ef.span ( m.title ) ,
 		) ;
 
-		log ( m.title , m.parts != null )
 		const body = m.parts ? ef.ul
 		(
 			{ class : [ "node-body" , { expanded : m.expanded } ] } ,

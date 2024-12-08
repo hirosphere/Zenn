@@ -1,4 +1,5 @@
 import { leaf , ksel , defs , ef } from "../index.js" ;
+import { set_value } from "../model/leaf.js";
 
 /* */
 
@@ -54,17 +55,72 @@ export namespace model
 
 /* */
 
-export namespace input
-{	
-	const ec : defs.ec < HTMLInputElement > =
-	{
-		attrs :
-		{
-			value : ""
-		} ,
-	}
+export function input ( m : leaf.str , ec : defs.ec < HTMLInputElement > = {} )
+{
+	return ef.input ( input_ec ( m , ec  ) )
+}
 
-	export const text = () => ef.input ( ec ) ;
+export function textarea ( m : leaf.str , ec : defs.ec < HTMLTextAreaElement > = {} )
+{
+	return ef.textarea ( textarea_ec ( m , ec ) )
+}
+
+function input_ec
+(
+	m : leaf.str ,
+	ec : defs.ec < HTMLInputElement > ,
+)
+{
+	return ec =
+	{
+		props :
+		{
+			value : m ,
+			... ( ec?.props ?? {} )
+		} ,
+
+		acts :
+		{
+			... ( ec ?.acts ?? {} ) ,
+
+			input ( ev )
+			{
+				if( ev.target instanceof HTMLInputElement )
+				{
+					m.value = ev.target.value;
+				}
+			}
+		}
+	}
+}
+
+function textarea_ec
+(
+	m : leaf.str ,
+	ec : defs.ec < HTMLTextAreaElement > ,
+)
+{
+	return ec =
+	{
+		props :
+		{
+			value : m ,
+			... ( ec?.props ?? {} )
+		} ,
+
+		acts :
+		{
+			... ( ec ?.acts ?? {} ) ,
+
+			input ( ev )
+			{
+				if( ev.target instanceof HTMLTextAreaElement )
+				{
+					m.value = ev.target.value;
+				}
+			}
+		}
+	}
 }
 
 export interface range
@@ -113,7 +169,7 @@ export function range ( m : range )
 		ef.input ( ec ) ,
 		ef.span
 		(
-			{ class : "value_unit" } ,
+			{ class : "value-unit" } ,
 			ef.span ( { class : "value" } , m.value.mk_str ( m.to_lv ) ) ,
 			ef.span ( { class : "unit" } , m.unit )
 		)
