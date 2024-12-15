@@ -1,34 +1,35 @@
 const log = console.log ;
 
-export type stores_type = Record < string , any > ;
-
-export namespace schema
+export type db_schema < SS extends stores > =
 {
-	export type db < S extends stores_type > =
-	{
-		name : string ;
-		version : number ;
-		stores : stores < S > ;
-	}
-	
-	export type stores < S extends stores_type > =
-	{
-		[ name in keyof S ] : store < S [ name ] > ;
-	}
-	
-	export type store < R = any > =
-	{
-		keyPath ? : string ;
-		autoIncrement ? : boolean ;
-		defval ? : R ;
-	}	
+	name : string ;
+	version : number ;
+	stores : stores_schema < SS > ;
 }
 
-export const create = < S extends stores_type >
-(
-	schema : schema.db < S >
+export type stores_schema < SS extends stores >  =
+{
+	[ name in keyof SS ] : store_schema < SS [ name ] , any , any > ;
+}
 
-) : Promise < DB < S > > =>
+export type store_schema < R , KP , K > =
+{
+	keyPath : string ,
+	make ( key : K , record : R ) : R & KP ;
+	autoIncrement ? : boolean ;
+	defval ? : R ;
+}
+
+
+/* */
+
+export type stores = Record < string , any > ;
+
+export const create = < SS extends stores >
+(
+	schema : db_schema < SS >
+
+) : Promise < DB < SS > > =>
 {
 	const orq = indexedDB.open ( schema.name , schema.version ) ;
 
@@ -62,11 +63,11 @@ export const create = < S extends stores_type >
 	)
 }
 
-const store_update_schema = < S extends stores_type >
+const store_update_schema = < SS extends stores >
 (
 	db : IDBDatabase ,
 	name : string ,
-	schemata : schema.stores < S >
+	schemata : stores_schema < SS >
 
 ) =>
 {
@@ -82,19 +83,14 @@ const store_update_schema = < S extends stores_type >
 
 /* */
 
-type Stores < SS extends stores_type > =
+export class DB < SS extends stores >
 {
-	[ name in keyof SS ] : Store < SS [ name ] > ;
-}
-
-export class DB < S extends stores_type >
-{
-	stores : Stores < S > ;
+	stores : Stores < SS > ;
 
 	constructor
 	(
 		protected db : IDBDatabase ,
-		schema : schema.db < S >
+		schema : db_schema < SS >
 	)
 	{
 		const stores : any = {} ;
@@ -106,6 +102,23 @@ export class DB < S extends stores_type >
 
 		this.stores = stores ;
 	}
+
+	public transaction ( stores : ( keyof SS ) [] , mode : IDBTransactionMode , tr : transaction ) : Promise < void >
+	{
+		return new Promise
+		(
+			( resolve , reject ) =>
+			{
+				tr ( this.db.transaction ( stores.join ( " " ) , mode ) ) ;
+			}
+		)
+	}
+
+}
+
+type Stores < SS extends stores > =
+{
+	[ name in keyof SS ] : Store < SS [ name ] > ;
 }
 
 export class Store < R >
@@ -114,9 +127,20 @@ export class Store < R >
 	(
 		protected db : IDBDatabase ,
 		public readonly name : string ,
-		protected schema : schema.store < R >
+		protected schema : store_schema < R >
 	)
 	{
+	}
+
+	public list () : Promise < any [] >
+	{
+		return new Promise
+		(
+			( resolve , reject ) =>
+			{
+				resolve ( [] )
+			}
+		) ;
 	}
 
 	public set ( key : string , value : R ) : Promise < void >
@@ -135,25 +159,23 @@ export class Store < R >
 		)
 	}
 
-	public new ( defv ? : R ) : Promise < R >
+	public new ( value ? : R , tr ? : IDBTransaction ) : Promise < R >
 	{		
 		return new Promise < R >
 		(
 			( resolve , reject ) =>
 			{
-				log ( "Store new" , this.db.name , this.name )
-
 				const tr = this.db.transaction ( [ this.name ] , "readwrite" ) ;
 				tr.onerror = ev => reject ( tr.error ) ;
 
 				const st = tr.objectStore ( this.name ) ;
 
-				const rq = st.add ( defv ?? this.schema.defval ) ;
+				const rq = st.add ( value ?? this.schema.defval ) ;
 				rq.onsuccess = ev =>
 				{
 					const new_key = ( ev.target as IDBRequest ) .result ;
-					log ( `Store ${ this.name } new key : ${ new_key } ` )
-					// resolve ( rq.result ?? defv ?? this.defv ) ;
+					log ( `Store ${ this.name } new key : ${ new_key } ` , value )
+					resolve ( {  } ) ;
 				}
 
 				rq.onerror = ev => reject ( rq.error ) ;
@@ -186,3 +208,4 @@ export class Store < R >
 	}
 }
 
+type transaction = ( tr : IDBTransaction ) => void

@@ -1,0 +1,3 @@
+const note = { type: "on", id: "", key: 64, velocity: 1 };
+export {};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5zdC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3RzLXNyYy9tZWgtYXUvaW5zdC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFvQkEsTUFBTSxJQUFJLEdBQVUsRUFBRSxJQUFJLEVBQUcsSUFBSSxFQUFHLEVBQUUsRUFBRyxFQUFFLEVBQUcsR0FBRyxFQUFHLEVBQUUsRUFBRyxRQUFRLEVBQUcsQ0FBQyxFQUFFLENBQUEifQ==

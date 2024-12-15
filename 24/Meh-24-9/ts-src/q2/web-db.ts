@@ -1,16 +1,16 @@
 import { leaf , Renn , dom , forms , ef , log } from "../meh/index.js" ;
 import * as idb from "./idb.js" ;
 
-namespace PS	// permanent
+namespace PS	/*  Permanent Storage  */
 {
 	/* DB Schemata */
 
 	type stores =
 	{
-		"text-memo" : DM.record
+		"text-memo" : DM.record ;
 	}
 
-	const schema : idb.schema.db < stores > =
+	const schema : idb.db_schema < stores > =
 	{
 		name : "db-quest" ,
 		version : 1 ,
@@ -34,7 +34,7 @@ namespace DM
 {
 	export class App
 	{
-		// record ;
+		record ;
 
 		constructor ( protected db ? : PS.DB )
 		{
@@ -45,10 +45,15 @@ namespace DM
 			if( store )
 			{
 				log ( store.name );
-				store.set ( "5" , { title : "" , text : "" } )
+				// store.set ( "5" , { title : "" , text : "" } )
 			}
 
-			// this.record  = new Record ( store ) ;
+			this.record  = new Record ( store ) ;
+		}
+
+		add ()
+		{
+			this.db?.stores[ "text-memo" ].new ( { title : "新規" , text : "おめでとうございます！" } )
 		}
 	}
 
@@ -92,6 +97,15 @@ namespace VC
 		(
 			ef.h1 ( "Indexed DB - 1" ) ,
 			//Record ( d.record ) ,
+			Pane ( d ) ,
+		)
+	}
+
+	const Pane = ( d : DM.App ) =>
+	{
+		return ef.section
+		(
+			ef.button ( { acts : { click () {  d.add () ; } } } , "New" ) ,
 		)
 	}
 

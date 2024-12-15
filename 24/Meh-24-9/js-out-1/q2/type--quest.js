@@ -1,0 +1,17 @@
+"use strict";
+const store_schema = {
+    set_data: (r, s) => {
+        s.put(r);
+    },
+    get_key: r => r.id,
+};
+class Store {
+    schema;
+    constructor(schema) {
+        this.schema = schema;
+    }
+    set(r) {
+        const key = this.schema.get_key(r);
+    }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidHlwZS0tcXVlc3QuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi90cy1zcmMvcTIvdHlwZS0tcXVlc3QudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQU9BLE1BQU0sWUFBWSxHQUNsQjtJQUNDLFFBQVEsRUFBRyxDQUFFLENBQUMsRUFBRyxDQUFDLEVBQUcsRUFBRTtRQUV0QixDQUFDLENBQUMsR0FBRyxDQUFHLENBQUMsQ0FBRSxDQUFFO0lBQ2QsQ0FBQztJQUVELE9BQU8sRUFBRyxDQUFDLENBQUMsRUFBRSxDQUFDLENBQUMsQ0FBQyxFQUFFO0NBQ25CLENBQUE7QUFFRCxNQUFNLEtBQUs7SUFFVztJQUFyQixZQUFxQixNQUFrQztRQUFsQyxXQUFNLEdBQU4sTUFBTSxDQUE0QjtJQUV2RCxDQUFDO0lBRUQsR0FBRyxDQUFHLENBQVM7UUFFZCxNQUFNLEdBQUcsR0FBRyxJQUFJLENBQUMsTUFBTSxDQUFDLE9BQU8sQ0FBRyxDQUFDLENBQUUsQ0FBRTtJQUN4QyxDQUFDO0NBQ0QifQ==
