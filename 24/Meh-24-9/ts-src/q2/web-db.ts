@@ -1,131 +1,31 @@
 import { leaf , Renn , dom , forms , ef , log } from "../meh/index.js" ;
-import * as idb from "./idb.js" ;
-
-namespace PS	/*  Permanent Storage  */
-{
-	/* DB Schemata */
-
-	type stores =
-	{
-		"text-memo" : DM.record ;
-	}
-
-	const schema : idb.db_schema < stores > =
-	{
-		name : "db-quest" ,
-		version : 1 ,
-		stores :
-		{
-			"text-memo" :
-			{
-				keyPath : "id" ,
-				autoIncrement : true ,
-				defval : { title : "IndexDBは"  , text : "激メンドクサイけど、便利そう。" }
-			}
-		}
-	}
-
-	export type DB = idb.DB < stores > ;
-
-	export const create = () => idb.create ( schema ) ;
-}
-
-namespace DM
-{
-	export class App
-	{
-		record ;
-
-		constructor ( protected db ? : PS.DB )
-		{
-			log ( "DM.App" , db ?.stores [ "text-memo" ] .name ) ;
-
-			const store = db ?.stores [ "text-memo" ] ;
-			
-			if( store )
-			{
-				log ( store.name );
-				// store.set ( "5" , { title : "" , text : "" } )
-			}
-
-			this.record  = new Record ( store ) ;
-		}
-
-		add ()
-		{
-			this.db?.stores[ "text-memo" ].new ( { title : "新規" , text : "おめでとうございます！" } )
-		}
-	}
-
-	export type record = { title : string , text : string }
-
-	export class Record
-	{
-		title = leaf ( "" ) ;
-		text = leaf ( "" ) ;
-
-		constructor ( protected store ? : idb.Store < record > )
-		{
-			store ?.name ;
-			store ?.new ();
-		}
-
-		set value ( v : record )
-		{
-			this.title.value = v.title ;
-			this.text.value = v.text ;
-		}
-
-		get value () : record
-		{
-			return { title : this.title.value , text : this.text.value } ;
-		}
-
-		save ()
-		{
-			log ( this.title.value , this.text.value ) ;
-			//this.store.set ( this.id , this.value )
-		}
-	}
-}
+import { idb_quest } from "./web-db-idb.js" ;
 
 namespace VC
 {
-	export const App = ( d : DM.App ) =>
+	export const App = (  ) =>
 	{
+		idb_quest () ;
+
 		return ef.main
 		(
 			ef.h1 ( "Indexed DB - 1" ) ,
 			//Record ( d.record ) ,
-			Pane ( d ) ,
 		)
 	}
 
-	const Pane = ( d : DM.App ) =>
+	const Pane = (  ) =>
 	{
 		return ef.section
 		(
-			ef.button ( { acts : { click () {  d.add () ; } } } , "New" ) ,
-		)
-	}
-
-	const Record = ( d : DM.Record ) =>
-	{
-		return ef.section
-		(
-			{ class : "record" } ,
-
-			forms.input ( d.title ) ,
-			forms.textarea ( d.text ) ,
-			ef.button ( { acts : { click () { d.save () } } } , "保存" )
+			ef.button ( { acts : { click () {   ; } } } , "New" ) ,
 		)
 	}
 }
 
 export const main = async () =>
 {
-	const db = await PS.create () ;
-	dom.add ( VC.App ( new DM.App ( db ) ) , "body" ) ;
+	dom.add ( VC.App () , "body" ) ;
 }
 
 function upgrade ( db : IDBDatabase )

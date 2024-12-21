@@ -5,8 +5,8 @@ namespace DM    /* Doc Models */
 {
 	export class App
 	{
-		freq = leaf ( 100 ) ;
-		offset = leaf ( 0 ) ;
+		freq = leaf ( 1684 ) ;
+		offset = leaf ( -0.95 ) ;
 		volume = leaf.num ( 0.10 ) ;
 	}
 }

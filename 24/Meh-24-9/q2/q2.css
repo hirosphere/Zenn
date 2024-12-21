@@ -34,6 +34,9 @@ ul
 	list-style : none ;
 }
 
+textarea { padding : 1ex ; }
+button { padding: 1ex 1em ; }
+
 .Range
 {
 	display: grid ;

@@ -84,6 +84,7 @@ export const osc = ( args : t.osc , ac : AC ) : node =>
 export const shaper = ( input : node [] , curve : leaf.ll < Float32Array > , ac : AC ) =>
 {
 	const node = new WaveShaperNode ( ac ) ;
+	node.oversample = "4x" ;
 	const an = { node , ... new_an () } ;
 
 	bind_ll
