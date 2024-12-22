@@ -28,7 +28,7 @@ export const add =
 };
 
 
-type el_args = defs.ec < any > &
+type el_def = defs.ec < any > &
 {
 	ns : string,
 	type : string,
@@ -79,12 +79,12 @@ export class MehElement extends MehNode
 	protected _el_ ? : El ;
 	protected parts;
 
-	constructor( args : el_args )
+	constructor( def : el_def )
 	{
 		super();
 
-		const { ns, type, parts } = args;
-		const { class: class_name, style, attrs, props, acts, active_acts , hook } = args;
+		const { ns, type, parts } = def;
+		const { class: class_name, style, attrs, props , binds , acts, active_acts , hook } = def;
 
 		let el =
 		(
@@ -97,12 +97,8 @@ export class MehElement extends MehNode
 
 		this._el_ = el ;
 
-		if( class_name ) this.bind_class( el, class_name );
-
-		if( style )
-		{
-			this.bind_style( el, style );
-		}
+		if( class_name )  this.bind_class( el, class_name );
+		if( style )  this.bind_style( el, style );
 
 		if( attrs ) for( const [ name, value ] of Object.entries( attrs ) )
 		{
@@ -113,7 +109,7 @@ export class MehElement extends MehNode
 			);
 		}
 
-		if( props && el ) for( const [ name, value ] of Object.entries( props ) )
+		if( props && el ) for( const [ name , value ] of Object.entries( props ) )
 		{
 			this.bind
 			(
@@ -123,6 +119,33 @@ export class MehElement extends MehNode
 					( el as any )[ name ] = value;
 				}
 			);
+		}
+
+		if
+		(
+			binds && binds.value
+		)
+		{
+			this.bind ( binds.value.src , value => ( el as any ) [ "value" ] = value ) ;
+
+			log ( binds.value.act )
+
+			el.addEventListener
+			(
+				binds.value.act ,
+				ev =>
+				{
+					const is_target =
+					(
+						ev.target instanceof HTMLInputElement ||
+						ev.target instanceof HTMLTextAreaElement
+					);
+
+					if ( ! is_target )  return ;
+
+					binds.value?.src.set ( ev.target.value ) ;
+				}
+			)
 		}
 
 		if( acts ) for( const [ name, act ] of Object.entries < defs.act > ( acts ) )

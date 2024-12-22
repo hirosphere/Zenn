@@ -10,8 +10,8 @@ export type SP = IDBObjectStoreParameters ;
 
 export class DB
 {
-	stores = new Map < string , Store < any , any > > ;
-	db ? : IDBDatabase ;
+	stores = new Map < string , Store < any , any , any > > ;
+	core ? : IDBDatabase ;
 
 	init ( sch : DBSchema ) : void
 	{
@@ -21,8 +21,8 @@ export class DB
 
 			oreq.onsuccess = ev =>
 			{
-				this.db = oreq.result ;
-				log ( this.db ) ;
+				this.core = oreq.result ;
+				log ( this.core ) ;
 				this.on_open_db () ;
 			}
 		
@@ -46,7 +46,7 @@ export class DB
 	on_open_db () : void {}
 }
 
-const make_store = ( db : IDBDatabase , stores : Map < string , Store < any , any > > ) =>
+const make_store = ( db : IDBDatabase , stores : Map < string , Store < any , any , any > > ) =>
 {
 	stores.forEach
 	(
@@ -62,7 +62,7 @@ const make_store = ( db : IDBDatabase , stores : Map < string , Store < any , an
 	)
 }
 
-export class Store < R , I >
+export class Store < R , KR , K extends ( number | string ) >
 {
 	constructor ( public db : DB , public name : string , public param : SP )
 	{
@@ -71,7 +71,7 @@ export class Store < R , I >
 
 	add ( value : R , tr ? : IDBTransaction )
 	{
-		const db = this.db.db ;
+		const db = this.db.core ;
 		log ( db ) ;
 		if ( ! db )  return ;
 		tr ??= db.transaction ( [ this.name ] , "readwrite" ) ;
@@ -79,14 +79,41 @@ export class Store < R , I >
 		preq.onsuccess = () => log ( this.name , "add" , value )
 	}
 
-	set ( value : R & I , tr ? : IDBTransaction )
+	set ( value : R & KR , tr ? : IDBTransaction )
 	{
-		const db = this.db.db ;
+		const db = this.db.core ;
 		log ( db ) ;
 		if ( ! db )  return ;
 		tr ??= db.transaction ( [ this.name ] , "readwrite" ) ;
 		const preq = tr.objectStore ( this.name ) .put ( value ) ;
 		preq.onsuccess = () => log ( this.name , "set" , value )
+	}
+
+	get ( key : K , tr ? : IDBTransaction ) : Promise < R & KR >
+	{
+		const f = ( resolve : ( v : R & KR ) => void , reject : ( v ? : any ) => void ) =>
+		{
+			try
+			{
+				if( ! this.db.core ) throw new Error ( "Coreがないよ。" ) ;
+				tr ??= this.db.core.transaction ( [ this.name ] , "readonly" ) ;
+				if( ! tr ) throw new Error () ;
+
+				const st = tr.objectStore ( this.name ) ;
+				const req = st.get ( key ) ;
+				req.onsuccess = ev =>
+				{
+					resolve ( req.result ) ;
+				}
+			}
+
+			catch ( err )
+			{
+				reject ( err ) ;
+			}
+		}
+
+		return new Promise ( f ) ;
 	}
 }
 
@@ -108,9 +135,9 @@ export const idb_quest = () =>
 		{
 			super () ;
 			const sp : SP = { keyPath : "id" , autoIncrement : false } ;
-			this.todo_1 = new Store < todo , idr > ( this, "todo_1" , sp ) ;
-			this.todo_2 = new Store < todo , idr > ( this, "todo_2" , sp ) ;
-			this.todo_3 = new Store < todo , idr > ( this, "todo_3" , sp ) ;
+			this.todo_1 = new Store < todo , idr , number > ( this, "todo_1" , sp ) ;
+			this.todo_2 = new Store < todo , idr , number > ( this, "todo_2" , sp ) ;
+			this.todo_3 = new Store < todo , idr , number > ( this, "todo_3" , sp ) ;
 
 			this.init ( { name : "IDB-Quest" , version : 1 } ) ;
 		}

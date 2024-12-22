@@ -41,10 +41,11 @@ namespace VC
 			ef.h1 ( "4017" ),
 			ef.section
 			(
+				{ class : "fl-bar" } ,
 				ef.button ( { acts : { click () { vm.clk () ; } } } , "CLK" ) ,
 				ef.button ( { acts : { click () { vm.play () ; } } } , "Play" ) ,
 			) ,
-			ef.section ( ... lamps ) ,
+			ef.section ( { class : "fl-bar" } , ... lamps ) ,
 		);
 	}
 

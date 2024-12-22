@@ -19,10 +19,11 @@ export namespace defs
 
 	export type binds =
 	{
-		el ? : element ;
-		value ? : leaf.str ;
+		value ? : { src : leaf.str , act : bind_acts } ;
 		checked ? : leaf.bool ;
 	}
+
+	export type bind_acts = "input" | "change" ;
 
 	export type attrs < E extends Element > =
 	{
@@ -54,6 +55,7 @@ export namespace defs
 		style ? : style ;
 		attrs ? : attrs < E > ;
 		props ? : attrs < E > ;
+		binds ? : binds ;
 		acts ? : acts ;
 		active_acts ? : acts ;
 		hook ? : hook < E > ;

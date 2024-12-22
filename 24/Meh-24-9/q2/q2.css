@@ -7,15 +7,20 @@
 
 html
 {
+	tab-size: 4ex ;
 	background-color: hsl( 175 , 45% , 50% ) ;
-	
 	color : hsl( 0 , 0% , 10% ) ;
 }
 
 body , main , article , section , ul
 {
+	display: flex ;
+	flex-direction: column ;
+
 	padding : 0.8ex ;
-	background-color: hsl( 0 , 0% , 100% , 20% ) ;
+	background-color: hsl( 0 , 0% , 100% , 18% ) ;
+
+	gap : 0.5ex ;
 }
 
 body
@@ -24,18 +29,32 @@ body
 	max-width : 1000px ;
 }
 
-h1 , h2 , h3
+h1 , h2 , h3 , h4 , h5
 {
+	border-radius: 0.12ex ;
+	background: hsl( 0 , 0% , 10% , 15% ) ;
+	padding: 0.5ex 1ex ;
 	text-align : center ;
 }
+
 
 ul
 {
 	list-style : none ;
 }
 
+input { padding : 0.33ex ; }
 textarea { padding : 1ex ; }
-button { padding: 1ex 1em ; }
+button { padding : 1ex 1em ; }
+
+.fl-bar
+{
+	display : flex ;
+	flex-direction : row ;
+	justify-content : center ;
+	align-items : stretch ;
+	gap : 0.25ex ;
+}
 
 .Range
 {
