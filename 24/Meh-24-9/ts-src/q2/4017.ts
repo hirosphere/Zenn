@@ -4,20 +4,20 @@ namespace VM
 {
 	export class App
 	{
-		position = ksel ( 0 ) ;
+		phase = ksel ( 0 ) ;
 		iid = 0 ;
 
 		clk ()
 		{
-			const v = this.position.current.value + 1 ;
-			this.position.current.value = ( v >= 10 ? 0 : v ) ;
+			const l = this.phase.current ;
+			l.value = ( l.value + 1 ) % 10 ;
 		}
 
 		play ()
 		{
 			if ( ! this.iid )
 			{
-				this.iid = setInterval ( () => this.clk () , 200 );
+				this.iid = setInterval ( () => this.clk () , 1000 / 8 );
 			}
 			else
 			{
@@ -34,7 +34,7 @@ namespace VC
 	{
 		const lamps = [] ;
 
-		for ( let i = 0 ; i < 10 ; i ++ )  lamps.push ( Lamp ( vm.position , i ) )
+		for ( let i = 0 ; i < 10 ; i ++ )  lamps.push ( Lamp ( vm.phase , i ) )
 
 		return ef.article
 		(

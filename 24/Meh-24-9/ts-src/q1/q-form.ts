@@ -44,7 +44,7 @@ namespace vm
 
 		const update = () =>
 		{
-			document.documentElement.style.backgroundColor = "hsl( 355, 50% , 50% )" ;
+			// document.documentElement.style.backgroundColor = "hsl( 355, 50% , 50% )" ;
 		}
 
 		update () ;
