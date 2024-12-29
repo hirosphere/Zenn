@@ -1,5 +1,13 @@
 import { leaf , Renn , dom , ef , log } from "../meh/index.js" ;
-import * as jma from "./map.js" ;
+
+namespace jma
+{
+	export type center = { name : string , enName : string , officeName : string , children : string [] } ;
+	export type office = { name : string , enName : string , officeName : string , children : string [] } ;
+	export type class10 = { name : string , enName : string , children : string [] } ;
+	export type class15 = { name : string , enName : string , children : string [] } ;
+	export type class20 = { name : string , enName : string , kana : string } ;
+}
 
 namespace VM
 {
@@ -60,7 +68,7 @@ namespace VM
 	{
 		override get_props ( code: string ) : node
 		{
-			return jma.lists.class20s [ code as jma.class20_code ] ;
+			return jma.lists.class20s [ code ] ;
 		}
 	}
 
@@ -68,7 +76,7 @@ namespace VM
 	{
 		override get_props ( code: string ) : node
 		{
-			return jma.lists.class15s [ code as jma.class15_code ] ;
+			return jma.lists.class15s [ code ] ;
 		}
 
 		override mk_part ( code : string ) : Node
@@ -81,7 +89,7 @@ namespace VM
 	{
 		override get_props ( code: string ) : node
 		{
-			return jma.lists.class10s [ code as jma.class10_code ] ;
+			return jma.lists.class10s [ code ] ;
 		}
 
 		override mk_part ( code : string ) : Node
@@ -94,7 +102,7 @@ namespace VM
 	{
 		override get_props ( code: string ) : node
 		{
-			return jma.lists.offices [ code as jma.office_code ] ;
+			return jma.lists.offices [ code ] ;
 		}
 
 		override get title () : string
@@ -109,7 +117,7 @@ namespace VM
 	{
 		override get_props ( code: string ) : node
 		{
-			return jma.lists.centers [ code as jma.center_code ] ;
+			return jma.lists.centers [ code ] ;
 		}
 
 		override get title () : string

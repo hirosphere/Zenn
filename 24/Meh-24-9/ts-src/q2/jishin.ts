@@ -18,7 +18,19 @@ namespace DM
 				;
 				
 				const diff = list.get ( s.eid ) ;
-				if ( ! diff || diff && ( s.ser ) > diff.ser ) list.set ( s.eid , s ) ;
+				if
+				(
+					! diff ||
+					diff && ( s.ser > diff.ser )
+				)
+				{
+					log ( s.ser , diff ?.ser )
+					list.set ( s.eid , s ) ;
+				}
+				else
+				{
+					log ( diff.ser ) ;
+				}
 			}
 		) ;
 

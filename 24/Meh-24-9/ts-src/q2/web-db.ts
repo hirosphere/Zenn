@@ -1,5 +1,6 @@
 import { leaf , Renn , dom , forms , ef , log } from "../meh/index.js" ;
 import * as IDB from "./web-db-idb.js" ;
+import * as wdt from "../widjet/widjet.js" ;
 
 namespace PS
 {
@@ -105,6 +106,7 @@ namespace VC
 			ef.h1 ( "Indexed DB - 1" ) ,
 			//Record ( d.record ) ,
 			MemoPad ( vm.pad_1 ) ,
+			wdt.ClockA () ,
 		)
 	}
 

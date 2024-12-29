@@ -1,4 +1,5 @@
-import { leaf , ksel , dom , ef , log } from "../meh/index.js"
+import { leaf , ksel , dom , ef , log } from "../meh/index.js" ;
+import { ClockA } from "../widjet/widjet.js" ;
 
 namespace VM
 {
@@ -46,6 +47,7 @@ namespace VC
 				ef.button ( { acts : { click () { vm.play () ; } } } , "Play" ) ,
 			) ,
 			ef.section ( { class : "fl-bar" } , ... lamps ) ,
+			ClockA () ,
 		);
 	}
 

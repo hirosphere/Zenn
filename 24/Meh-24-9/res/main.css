@@ -1,0 +1,80 @@
+*
+{
+	box-sizing : border-box ;
+	margin : 0 ;
+	padding : 0 ;
+}
+
+html
+{
+	tab-size: 4ex ;
+	background-color: hsl( 175 , 45% , 50% ) ;
+	color : hsl( 0 , 0% , 10% ) ;
+}
+
+body , main , article , section , ul
+{
+	display: flex ;
+	flex-direction: column ;
+
+	padding : 0.8ex ;
+	background-color: hsl( 0 , 0% , 100% , 18% ) ;
+
+	gap : 0.5ex ;
+}
+
+body
+{
+	margin-inline : auto ;
+	max-width : 1000px ;
+}
+
+h1 , h2 , h3 , h4 , h5
+{
+	border-radius: 0.12ex ;
+	background: hsl( 0 , 0% , 10% , 15% ) ;
+	padding: 0.2ex 1ex ;
+	text-align : center ;
+}
+
+a
+{
+	padding-inline : 1ex ;
+	background-color : hsl( 0 , 0% , 10% , 15% ) ;
+	text-decoration : none ;
+	color : hsl( 0 , 0% , 10% )
+}
+
+ul
+{
+	list-style : none ;
+}
+
+input { padding : 0.33ex ; }
+textarea { padding : 1ex ; }
+button { padding : 1ex 1em ; }
+
+.fl-bar
+{
+	display : flex ;
+	flex-direction : row ;
+	justify-content : center ;
+	align-items : stretch ;
+	gap : 0.25ex ;
+}
+
+.Range
+{
+	display: grid ;
+	grid-template-columns: 3em 1fr auto ;
+	gap : 1ex ;
+}
+
+.Range .value-unit
+{
+	display: grid ;
+	grid-template-columns : 5ex 1em ;
+	gap : 0.35ex ;
+}
+
+.Range .value { text-align: right ; }

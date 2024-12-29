@@ -6,8 +6,8 @@ namespace DM    /* Doc Models */
 {
 	export class App
 	{
-		freq = leaf ( 1684 ) ;
-		offset = leaf ( -0.95 ) ;
+		freq = leaf ( 310 ) ;
+		offset = leaf ( -0.90 ) ;
 		volume = leaf.num ( 0.10 ) ;
 	}
 }
@@ -55,18 +55,8 @@ namespace VC    /*  View Components  */
 
 		return ef.article
 		(
-			ef.h2 ( "Article" ) ,			
+			ef.h1 ( "PWM-1" ) ,
 			ranges ( vm ) ,
-
-			ef.section
-			(
-				ef.h3 ( "Section" ) ,
-			) ,
-
-			ef.section
-			(
-				ef.h3 ( "Section" ) ,
-			) ,
 		) ;
 	}
 
@@ -133,7 +123,6 @@ export const main = () =>
 	(
 		ef.main
 		(
-			ef.h1 ( "PWM-1" ) ,
 			VC.App ( vm , au_start ) ,
 			wdt.ClockA () ,
 		),
