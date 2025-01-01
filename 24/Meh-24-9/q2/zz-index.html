@@ -60,18 +60,19 @@ ul.path-list
 
 ul.item-list
 {
-	border: 0px solid hsl( 95, 30%, 80% );
 	overflow: auto;
-	font-size: 1em;
 }
 
 .item-list li
 {
-	border-bottom: 1px dotted hsl( 50, 5%, 60% ); padding: 1.0ex 1.2ex;
-	display: grid; grid-template-columns: 1fr 5ex 3ex;
+	border-bottom: 1px dotted hsl( 50, 5%, 60% );
+	padding-block: 1px ;
+	display: grid; grid-template-columns: 1fr auto;
 }
-.item-list a.main { }
-.item-list a.sub { color: red; }
+.item-list a { padding: 1.0ex 1.2ex; text-align: center ; }
+
+.item-list a:hover { background-color: hsl( 0 , 0% , 0% , 6% ); color: hsl( 0, 0%, 10% ); }
+
 
 
 .monitor
@@ -93,17 +94,17 @@ td { padding: 0.1ex 1ex; line-height: 1.2em; }
 	<div class="content">
 		<div class="path"><ul class="path-list"><a href="../../../../zz-index.html">Root</a><span class="sep">&gt;</span><a href="../../../zz-index.html">Zenn</a><span class="sep">&gt;</span><a href="../../zz-index.html">24</a><span class="sep">&gt;</span><a href="../zz-index.html">Meh-24-9</a></ul></div>
 		<h1><a href="./">q2</a></h1>
-		<ul class="item-list"><li><span class="title" >4017.html</span><a style="color: #bba">Alt</a><a href="./4017.html">File</a></li>
-<li><span class="title" >jishin.html</span><a style="color: #bba">Alt</a><a href="./jishin.html">File</a></li>
-<li><span class="title" >jma-1.html</span><a style="color: #bba">Alt</a><a href="./jma-1.html">File</a></li>
-<li><span class="title" >kbd-1.html</span><a style="color: #bba">Alt</a><a href="./kbd-1.html">File</a></li>
-<li><span class="title" >q2.css</span><a style="color: #bba">Alt</a><a href="./q2.css">File</a></li>
-<li><span class="title" >train-1.html</span><a style="color: #bba">Alt</a><a href="./train-1.html">File</a></li>
-<li><span class="title" >web-db.html</span><a style="color: #bba">Alt</a><a href="./web-db.html">File</a></li>
-<li><span class="title" >zz-index.html</span><a style="color: #bba">Alt</a><a href="./zz-index.html">File</a></li></ul>
+		<ul class="item-list"><li><a class="title-link" href="./4017.html"><span class="title" >4017.html</span></a></li>
+<li><a class="title-link" href="./jishin.html"><span class="title" >jishin.html</span></a></li>
+<li><a class="title-link" href="./jma-1.html"><span class="title" >jma-1.html</span></a></li>
+<li><a class="title-link" href="./kbd-1.html"><span class="title" >kbd-1.html</span></a></li>
+<li><a class="title-link" href="./q2.css"><span class="title" >q2.css</span></a></li>
+<li><a class="title-link" href="./train-1.html"><span class="title" >train-1.html</span></a></li>
+<li><a class="title-link" href="./web-db.html"><span class="title" >web-db.html</span></a></li>
+<li><a class="title-link" href="./zz-index.html"><span class="title" >zz-index.html</span></a></li></ul>
 	</div>
 	<div class="monitor" style="display: none;">
-		<table><tbody><tr><td>updated</td><td>2024/12/28 16:29:54</td></tr>
+		<table><tbody><tr><td>updated</td><td>2025/1/1 19:11:39</td></tr>
 <tr><td>uReqPath</td><td>/Zenn/24/Meh-24-9/q2/zz-index.html</td></tr>
 <tr><td>uEsc</td><td>zz-index.html</td></tr>
 <tr><td>uDir</td><td>/Zenn/24/Meh-24-9/q2</td></tr>

@@ -3,7 +3,7 @@ import { leaf , log } from "../meh/index.js" ;
 type AC = AudioContext ;
 class PSMap extends Map < node , AudioParam > {}
 
-interface node
+export interface node
 {
 	node : AudioNode ;
 	term () : void ;
@@ -74,6 +74,7 @@ export const osc = ( args : t.osc , ac : AC ) : node =>
 	const an = { node , ... new_an () } ;
 
 	connect_param ( an , node.frequency , args.freq ) ;
+	connect_param ( an , node.detune , args.pitch ) ;
 	bind_ll ( an , v => node.type = v , args.type ) ;
 
 	node.start () ;
