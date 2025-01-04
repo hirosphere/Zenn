@@ -1,4 +1,4 @@
-import { leaf , dom , ef , log } from "../meh/index.js"
+import { leaf , Renn , dom , ef , each , log } from "../meh/index.js"
 
 namespace DM
 {
@@ -62,10 +62,27 @@ namespace DM
 
 namespace VM
 {
+	type record =
+	{
+		eid : string ,
+		ser : string , 
+		at : string ,
+		ttl : string ,
+		anm : string ,
+		mag : string ,
+		maxi : string ,
+		cod : string
+	}
+
+	export type Records = Renn < record > ;
+
 	export class App
 	{
-		list = leaf ( "" ) ;
+		list = new Renn < record > ;
+
+		text_list = leaf ( "" ) ;
 		json = leaf ( "" ) ;
+		data ? : object ;
 
 		async init ()
 		{
@@ -80,33 +97,43 @@ namespace VM
 
 			const data = await res.json();
 	
-			const list = new Map < string , string > ;
+			const list = new Map < string , record > ;
 
 			data.forEach
 			(
-				( s : any, n : number ) =>
+				( s : record, n : number ) =>
 				{
-					const d =
-					[
-						// String( n + 1 ),
-						s.eid ,
-						s.ser - 0 ,
-						s.at.slice( 0, 19 ).replace( "T", " " ),
-						s.anm || s.ttl,
-						s.mag,
-						s.maxi,
-						s.cod
-					]
-					.join( "\t" ) ;
+					const { eid , ser , ttl , anm , mag , maxi , cod } = s ;
+					const at = s.at.slice( 0, 19 ).replace( "T", " " ) ;
+					const d : record = { eid , ser , at , ttl , anm , mag , maxi , cod } ;
 					
-					list.set ( s.eid , d ) ;
+					const i = list.get ( s.eid ) as any ;
+					if( i )
+					{
+						if ( s.ser > i.ser )  list.set ( s.eid , s ) ;
+					}
+					
+					else  list.set ( s.eid , d ) ;
 				}
 			) ;
 
 			log ( new Date () .toISOString () )
 
-			this.list.value = Array.from ( list.values () ).join ( "\n" ) ;
-			this.json.value = JSON.stringify ( data , null , "\t" )
+			this.text_list.value = Array.from ( list.values () ).map ( i => Object.values ( i ).join ( "\t" ) ).join ( "\n" ) ;
+			this.data = data ;
+
+			list
+
+			this.list.clear () ;
+			this.list.new
+			(
+				Array.from ( list.values () )
+			) ;
+		}
+
+		json_update ()
+		{
+			this.json.value = JSON.stringify ( this.data , null , "\t" )	;
 		}
 	}
 }
@@ -118,16 +145,54 @@ namespace VC
 		return ef.article
 		(
 			ef.h1 ( "地震リスト" ),
+
 			ef.section
 			(
+				{ class : "fl-col" } ,
 				ef.button ( { acts : { click () { vm.load () ; } } } , "更新" )
 			),
+
+			Records ( vm.list ) ,
+			
 			ef.section
 			(
-				ef.textarea ( { props : { value : vm.list } } ) ,
+				ef.textarea ( { props : { value : vm.text_list } } ) ,
+			) ,
+			ef.section
+			(
+				{ class : "fl-col" } ,
+				ef.button ( { acts : { click () { vm.json_update () } } } , "JSON" )
+			) ,
+			ef.section
+			(
 				ef.textarea ( { props : { value : vm.json } } ) ,
 			)
 		);
+	}
+
+	const Records = ( m : VM.Records ) =>
+	{
+		return ef.table
+		(
+			ef.tbody
+			(
+				each
+				(
+					m ,
+					o => ef.tr
+					(
+						ef.td ( o.count ) ,
+						ef.td ( o.target.eid ) ,
+						ef.td ( o.target.ser ) ,
+						ef.td ( o.target.at ) ,
+						ef.td ( o.target.anm ) ,
+						ef.td ( o.target.mag ) ,
+						ef.td ( o.target.maxi ) ,
+						ef.td ( o.target.cod ) ,
+					)
+				)
+			)
+		) ;
 	}
 }
 

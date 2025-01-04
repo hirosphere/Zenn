@@ -119,12 +119,7 @@ export class Renn < S >
 		next : number
 	)
 	{
-		for
-		(
-			let pos = start ;
-			pos < next ;
-			pos ++
-		)
+		for ( let pos = start ; pos < next ; pos ++ )
 		{
 			this.orders [ pos ] [ set_value ] ( pos );
 		}

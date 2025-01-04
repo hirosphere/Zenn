@@ -9,6 +9,7 @@ html
 {
 	tab-size: 4ex ;
 	background-color: hsl( 175 , 45% , 50% ) ;
+	background-color: hsl( 95 , 37% , 45% ) ;
 	color : hsl( 0 , 0% , 10% ) ;
 }
 
@@ -40,9 +41,14 @@ h1 , h2 , h3 , h4 , h5
 a
 {
 	padding-inline : 1ex ;
-	background-color : hsl( 0 , 0% , 10% , 15% ) ;
+	background-color : hsl( 0 , 0% , 10% , 4% ) ;
 	text-decoration : none ;
 	color : hsl( 0 , 0% , 10% )
+}
+
+a:hover
+{
+	background-color: hsl( 0 , 0% , 10% , 15% ) ;
 }
 
 ul
@@ -50,11 +56,15 @@ ul
 	list-style : none ;
 }
 
+table
+{
+	background-color: hsl( 0 , 0% , 100% );
+}
 input { padding : 0.33ex ; }
 textarea { padding : 1ex ; }
 button { padding : 1ex 1em ; }
 
-.fl-bar
+.fl-bar, .fl-col
 {
 	display : flex ;
 	flex-direction : row ;
@@ -78,3 +88,9 @@ button { padding : 1ex 1em ; }
 }
 
 .Range .value { text-align: right ; }
+
+.clock-widjet .clock-display
+{
+	text-align : center ;
+	font-size : 27px ;
+}

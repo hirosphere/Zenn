@@ -34,7 +34,7 @@ export const ClockA = () =>
 	(
 		{ class : "clock-widjet" } ,
 
-		ef.section ( {} , vm.clock ) ,
+		ef.section ( { class : "clock-display" } , vm.clock ) ,
 		ef.section
 		(
 			{ class : "fl-bar" } ,

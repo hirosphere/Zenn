@@ -60,18 +60,19 @@ ul.path-list
 
 ul.item-list
 {
-	border: 0px solid hsl( 95, 30%, 80% );
 	overflow: auto;
-	font-size: 1em;
 }
 
 .item-list li
 {
-	border-bottom: 1px dotted hsl( 50, 5%, 60% ); padding: 1.0ex 1.2ex;
-	display: grid; grid-template-columns: 1fr 5ex 3ex;
+	border-bottom: 1px dotted hsl( 50, 5%, 60% );
+	padding-block: 1px ;
+	display: grid; grid-template-columns: 1fr auto;
 }
-.item-list a.main { }
-.item-list a.sub { color: red; }
+.item-list a { padding: 1.0ex 1.2ex; text-align: center ; }
+
+.item-list a:hover { background-color: hsl( 0 , 0% , 0% , 6% ); color: hsl( 0, 0%, 10% ); }
+
 
 
 .monitor
@@ -93,17 +94,16 @@ td { padding: 0.1ex 1ex; line-height: 1.2em; }
 	<div class="content">
 		<div class="path"><ul class="path-list"><a href="../../zz-index.html">Root</a><span class="sep">&gt;</span><a href="../zz-index.html">Zenn</a></ul></div>
 		<h1><a href="./">23</a></h1>
-		<ul class="item-list"><li><span class="title" >101-eq-map</span><a href="./101-eq-map/zz-index.html">Alt</a><a href="./101-eq-map/">Dir</a></li>
-<li><span class="title" >23-051</span><a href="./23-051/zz-index.html">Alt</a><a href="./23-051/">Dir</a></li>
-<li><span class="title" >23-102-eq-map</span><a href="./23-102-eq-map/zz-index.html">Alt</a><a href="./23-102-eq-map/">Dir</a></li>
-<li><span class="title" >23-102-eq-map-dc</span><a href="./23-102-eq-map-dc/zz-index.html">Alt</a><a href="./23-102-eq-map-dc/">Dir</a></li>
-<li><span class="title" >23-103-exist</span><a href="./23-103-exist/zz-index.html">Alt</a><a href="./23-103-exist/">Dir</a></li>
-<li><span class="title" >23-111-app</span><a href="./23-111-app/zz-index.html">Alt</a><a href="./23-111-app/">Dir</a></li>
-<li><span class="title" >24-011</span><a href="./24-011/zz-index.html">Alt</a><a href="./24-011/">Dir</a></li>
-<li><span class="title" >zz-index.html</span><a style="color: #bba">Alt</a><a href="./zz-index.html">File</a></li></ul>
+		<ul class="item-list"><li><a href="./101-eq-map/zz-index.html">101-eq-map</a><a href="./101-eq-map/">I</a></li>
+<li><a href="./23-051/zz-index.html">23-051</a><a href="./23-051/">D</a></li>
+<li><a href="./23-102-eq-map/zz-index.html">23-102-eq-map</a><a href="./23-102-eq-map/">I</a></li>
+<li><a href="./23-102-eq-map-dc/zz-index.html">23-102-eq-map-dc</a><a href="./23-102-eq-map-dc/">I</a></li>
+<li><a href="./23-103-exist/zz-index.html">23-103-exist</a><a href="./23-103-exist/">I</a></li>
+<li><a href="./23-111-app/zz-index.html">23-111-app</a><a href="./23-111-app/">D</a></li>
+<li><a href="./24-011/zz-index.html">24-011</a><a href="./24-011/">D</a></li></ul>
 	</div>
-	<div class="monitor">
-		<table><tbody><tr><td>updated</td><td>2024/12/15 8:08:12</td></tr>
+	<div class="monitor" style="display: none;">
+		<table><tbody><tr><td>updated</td><td>2025/1/3 13:31:12</td></tr>
 <tr><td>uReqPath</td><td>/Zenn/23/zz-index.html</td></tr>
 <tr><td>uEsc</td><td>zz-index.html</td></tr>
 <tr><td>uDir</td><td>/Zenn/23</td></tr>
@@ -121,7 +121,6 @@ td { padding: 0.1ex 1ex; line-height: 1.2em; }
 <tr><td></td><td>23-102-eq-map-dc</td></tr>
 <tr><td></td><td>23-103-exist</td></tr>
 <tr><td></td><td>23-111-app</td></tr>
-<tr><td></td><td>24-011</td></tr>
-<tr><td></td><td>zz-index.html</td></tr></tbody></table></div>	
+<tr><td></td><td>24-011</td></tr></tbody></table></div>	
 </body>
 </html>
