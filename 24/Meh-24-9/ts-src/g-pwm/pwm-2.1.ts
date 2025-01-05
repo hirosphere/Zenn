@@ -1,5 +1,5 @@
 import { leaf , Renn , dom , ef , each , forms , navi , log } from "../meh/index.js" ;
-import * as af from "../meh-au/audio.js" ;
+import * as au from "../meh-au/audio.js" ;
 import * as wdt from "../widjet/widjet.js" ;
 
 namespace DM    /* Doc Models */
@@ -89,12 +89,11 @@ namespace VC    /*  View Components  */
 	export const App = ( vm : VM.App , au_start : () => void ) =>
 	{
 		ae ( "mousedown" , au_start ) ;
-		ae ( "touchend" , au_start ) ;
 		ae ( "keydown" , au_start ) ;
 
 		return ef.article
 		(
-			ef.h1 ( "PWM-1.1" ) ,
+			ef.h1 ( "PWM-2.1" ) ,
 			
 			ef.section
 			(
@@ -146,50 +145,12 @@ namespace VC    /*  View Components  */
 
 namespace AC    /* Audio Components */
 {
-	export const App = ( m : DM.App , ac : AudioContext ) =>
+	export class App extends au.Node
 	{
-		const lfo_osc = af.osc ( { freq : af.constant ( m.lfo.freq , 0.01 , ac ) , type : "sine" } , ac ) ;
-		const lfo_cf_amp = af.gain ( [ lfo_osc ] , [ af.constant ( m.lfo.cf_amp , 0.01 , ac ) ] , ac ) ;
-		const lfo_pw_u_amp = af.gain ( [ lfo_osc ] , [ af.constant ( m.lfo.pw_u_amp , 0.01 , ac ) ] , ac ) ;
-		const lfo_pw_v_amp = af.gain ( [ lfo_osc ] , [ af.constant ( m.lfo.pw_v_amp , 0.01 , ac ) ] , ac ) ;
-
-		const osc = af.osc ( { freq : af.constant ( m.osc.freq , 0.01 , ac ) , pitch : lfo_cf_amp , type : "triangle" } , ac ) ;
-
-		const u_pulse = pulse_shaper ( osc , lfo_pw_u_amp , m.osc.u_offset , m.osc.u_amp , ac ) ;
-		const v_pulse = pulse_shaper ( osc , lfo_pw_v_amp , m.osc.v_offset , m.osc.v_amp , ac ) ;
-
-		const root = af.gain
-		(
-			// [ pulse , af.pil ( 100 , ac ) , af.pil ( 100.3 , ac ) , af.pil ( 500.25 , ac ) , af.pil ( 500.75 , ac ) , ] ,
-			[ u_pulse , v_pulse ] ,
-			[ af.constant ( m.volume , 0.01 , ac ) ],
-			ac
-		) ;
-
-		root.node.connect ( ac.destination ) ;
-	}
-
-	const pulse_shaper =
-	(
-		carriar : af.node ,
-		moduration : af.node ,
-		offset : leaf.ll.num ,
-		amp : leaf.ll.num ,
-		ac : AudioContext
-	
-	) : af.node =>
-	{
-		const bias = af.constant ( offset , 0.02 , ac ) ;
-		const scaled = af.gain ( [ carriar , bias, moduration ] , 10000 , ac ) ;
-
-		const pulse = af.shaper
-		(
-			[ scaled ] ,
-			new Float32Array ( [ -1 , 1 ] ) ,
-			ac
-		) ;
-
-		return af.gain ( [ pulse ] , [ af.constant ( amp , 0.01 , ac ) ] , ac ) ;
+		constructor ( m : DM.App )
+		{
+			super () ;
+		}
 	}
 }
 
@@ -197,16 +158,13 @@ export const main = () =>
 {
 	const dm = new DM.App ;
 	const vm = new VM.App ( dm ) ;
+	const ac = new AC.App ( dm ) ;
 
-	let ac : AudioContext ;
 	const au_start = async () =>
 	{
-		if( ac ) return ;
-
-		ac = new AudioContext ;
+		const ac = new AudioContext ;
 		ac.resume () ;
 		log ( ac.state )
-		AC.App ( vm.dm , ac ) ;
 	}
 
 	dom.add
