@@ -64,7 +64,7 @@ input { padding : 0.33ex ; }
 textarea { padding : 1ex ; }
 button { padding : 1ex 1em ; }
 
-.fl-bar, .fl-col
+.fl-bar, .fl-row
 {
 	display : flex ;
 	flex-direction : row ;

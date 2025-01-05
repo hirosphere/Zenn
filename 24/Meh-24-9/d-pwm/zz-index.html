@@ -60,18 +60,19 @@ ul.path-list
 
 ul.item-list
 {
-	border: 0px solid hsl( 95, 30%, 80% );
 	overflow: auto;
-	font-size: 1em;
 }
 
 .item-list li
 {
-	border-bottom: 1px dotted hsl( 50, 5%, 60% ); padding: 1.0ex 1.2ex;
-	display: grid; grid-template-columns: 1fr 5ex 3ex;
+	border-bottom: 1px dotted hsl( 50, 5%, 60% );
+	padding-block: 1px ;
+	display: grid; grid-template-columns: 1fr auto;
 }
-.item-list a.main { }
-.item-list a.sub { color: red; }
+.item-list a { padding: 1.0ex 1.2ex; text-align: center ; }
+
+.item-list a:hover { background-color: hsl( 0 , 0% , 0% , 6% ); color: hsl( 0, 0%, 10% ); }
+
 
 
 .monitor
@@ -93,12 +94,11 @@ td { padding: 0.1ex 1ex; line-height: 1.2em; }
 	<div class="content">
 		<div class="path"><ul class="path-list"><a href="../../../../zz-index.html">Root</a><span class="sep">&gt;</span><a href="../../../zz-index.html">Zenn</a><span class="sep">&gt;</span><a href="../../zz-index.html">24</a><span class="sep">&gt;</span><a href="../zz-index.html">Meh-24-9</a></ul></div>
 		<h1><a href="./">d-pwm</a></h1>
-		<ul class="item-list"><li><span class="title" >common.css</span><a style="color: #bba">Alt</a><a href="./common.css">File</a></li>
-<li><span class="title" >d-pwm-1.html</span><a style="color: #bba">Alt</a><a href="./d-pwm-1.html">File</a></li>
-<li><span class="title" >zz-index.html</span><a style="color: #bba">Alt</a><a href="./zz-index.html">File</a></li></ul>
+		<ul class="item-list"><li><a class="title-link" href="./common.css"><span class="title" >common.css</span></a></li>
+<li><a class="title-link" href="./d-pwm-1.html"><span class="title" >d-pwm-1.html</span></a></li></ul>
 	</div>
-	<div class="monitor">
-		<table><tbody><tr><td>updated</td><td>2024/12/28 6:02:34</td></tr>
+	<div class="monitor" style="display: none;">
+		<table><tbody><tr><td>updated</td><td>2025/1/5 9:30:52</td></tr>
 <tr><td>uReqPath</td><td>/Zenn/24/Meh-24-9/d-pwm/zz-index.html</td></tr>
 <tr><td>uEsc</td><td>zz-index.html</td></tr>
 <tr><td>uDir</td><td>/Zenn/24/Meh-24-9/d-pwm</td></tr>
@@ -111,7 +111,6 @@ td { padding: 0.1ex 1ex; line-height: 1.2em; }
 <tr><td>htName</td><td>d-pwm</td></tr></tbody></table>
 		
 		<table><tbody><tr><td></td><td>common.css</td></tr>
-<tr><td></td><td>d-pwm-1.html</td></tr>
-<tr><td></td><td>zz-index.html</td></tr></tbody></table></div>	
+<tr><td></td><td>d-pwm-1.html</td></tr></tbody></table></div>	
 </body>
 </html>

@@ -29,8 +29,9 @@ namespace VC
 			ef.h1 ( "Q3" ) ,
 			ef.section
 			(
-				{ class : "fl-col" } ,
+				{ class : "fl-row" } ,
 				ef.a ( { attrs : { href : "http://localhost:3030/GitHub/Zenn/24/Meh-24-9/q3/q3.html" } } , ":3030" ) ,
+				ef.a ( { attrs : { href : "http://localhost/GitHub/Zenn/24/Meh-24-9/q3/q3.html" } } , ":80" ) ,
 				ef.a ( { attrs : { href : "./zz-index.html" } } , "zz" ) ,
 			) ,
 			Serial () ,
