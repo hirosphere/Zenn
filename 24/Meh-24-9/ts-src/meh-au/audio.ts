@@ -5,18 +5,6 @@ class PSMap extends Map < node , AudioParam > {}
 
 /* */
 
-export abstract class Node
-{
-	protected node ? : AudioNode ;
-
-	public start ( ac : AudioContext ) : void
-	{}
-}
-
-
-
-/* */
-
 export interface node
 {
 	node : AudioNode ;

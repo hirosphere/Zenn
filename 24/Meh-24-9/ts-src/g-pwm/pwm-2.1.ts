@@ -1,5 +1,5 @@
 import { leaf , Renn , dom , ef , each , forms , navi , log } from "../meh/index.js" ;
-import * as au from "../meh-au/audio.js" ;
+import * as au from "../meh-au/au2.js" ;
 import * as wdt from "../widjet/widjet.js" ;
 
 namespace DM    /* Doc Models */
@@ -86,11 +86,8 @@ namespace VM    /*  View Models  */
 
 namespace VC    /*  View Components  */
 {
-	export const App = ( vm : VM.App , au_start : () => void ) =>
+	export const App = ( vm : VM.App ) =>
 	{
-		ae ( "mousedown" , au_start ) ;
-		ae ( "keydown" , au_start ) ;
-
 		return ef.article
 		(
 			ef.h1 ( "PWM-2.1" ) ,
@@ -136,20 +133,22 @@ namespace VC    /*  View Components  */
 			) ,
 		) ;
 	}
-
-	const ae = ( type : keyof GlobalEventHandlersEventMap , hdr : () => void ) =>
-	{
-		document.documentElement.addEventListener ( type , hdr , { once : true } )
-	}
 }
+
 
 namespace AC    /* Audio Components */
 {
-	export class App extends au.Node
+	export class App extends au.Composition
 	{
+		public override readonly output : au.Node ;
+
 		constructor ( m : DM.App )
 		{
 			super () ;
+
+			const osc = new au.Osc ( this , { freq : 440 , pitch : 0 , type : "sine" } ) ;
+
+			this.output = new au.Gain ( this, { in : [ osc ] , gain : 0.1 } ) ;
 		}
 	}
 }
@@ -158,20 +157,14 @@ export const main = () =>
 {
 	const dm = new DM.App ;
 	const vm = new VM.App ( dm ) ;
-	const ac = new AC.App ( dm ) ;
 
-	const au_start = async () =>
-	{
-		const ac = new AudioContext ;
-		ac.resume () ;
-		log ( ac.state )
-	}
+	au.inits.add ( new AC.App ( dm ) ) ;
 
 	dom.add
 	(
 		ef.main
 		(
-			VC.App ( vm , au_start ) ,
+			VC.App ( vm ) ,
 			wdt.ClockA () ,
 		),
 		"body"
