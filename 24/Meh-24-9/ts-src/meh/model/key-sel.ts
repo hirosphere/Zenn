@@ -3,9 +3,9 @@ import { leaf } from "./leaf.js" ;
 
 export type ksel < K > = ksel.Selector < K > ;
 
-export function ksel < K > ( init : K )
+export function ksel < K > ( init : leaf.ll < K > )
 {
-	return new ksel.Selector ( init ) ;
+	return new ksel.Selector < K > ( init ) ;
 }
 
 export namespace ksel
@@ -19,10 +19,10 @@ export namespace ksel
 
 		constructor
 		(
-			init : K ,
+			init : leaf.ll < K > ,
 		)
 		{
-			this.current = leaf < K > ( init ) ;
+			this.current = leaf.ll.make ( init ) ;
 
 			const key_change : leaf.update < K > = ( new_k , old_k ) =>
 			{
@@ -41,8 +41,6 @@ export namespace ksel
 			let item = this.items.get ( key ) ;
 			if( ! item )
 			{
-				log( "make_item" , key ) ;
-
 				item = new Item ( this , key , this.get_stat_src ( key ) ) ;
 				this.items.set ( key , item ) ;
 			}

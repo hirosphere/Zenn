@@ -23,7 +23,7 @@ namespace DM    /* Doc Models */
 	export class LFO
 	{
 		freq = leaf ( 0.1 ) ;
-		waveform : leaf < OscillatorType > = leaf ( "sine" );
+		waveform = leaf < OscillatorType > ( "sine" );
 		cf_amp = leaf ( 0 ) ;
 		pw_u_amp = leaf ( 0 ) ;
 		pw_v_amp = leaf ( 0 ) ;

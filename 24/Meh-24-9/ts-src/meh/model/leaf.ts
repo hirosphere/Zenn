@@ -5,8 +5,10 @@ import { log } from "../common.js" ;
 
 export function leaf < V > ( value : V , branch ? : leaf.branch < V > ) : leaf < V >
 {
-	return new leaf.Entity < V > ( value , branch ) ;
+	return new leaf.Entity ( value , branch ) ;
 }
+
+export type leaf < V > = leaf.Src < V > ;
 
 export namespace leaf
 {
@@ -31,20 +33,6 @@ export namespace leaf
 
 export const set_value = Symbol() ;
 
-export interface leaf < V > extends leaf.r < V >
-{
-	get value () : V ;
-	set value ( value : V ) ;
-
-	set ( value : V , changer ? : object ) : void ;
-	cv < R >
-	(
-		to_ref : leaf.conv < V , R > ,
-		to_src ? : leaf.conv < R , V >
-
-	) : leaf < R > ;
-}
-
 export namespace leaf
 {
 	export type str = leaf < string > ;
@@ -54,79 +42,34 @@ export namespace leaf
 
 export namespace leaf
 {
+	export function ll < V > ( ll : ll < V > ) : leaf < V >
+	{
+		return ll instanceof leaf.Src ? ll : leaf ( ll ) ;
+	}
+
 	export type ll < V > = leaf < V > | V ;
 
 	export namespace ll
 	{
+		export function make < V > ( ll :  ll < V > ) : leaf < V >
+		{
+			return ll instanceof leaf.Src ? ll : leaf ( ll ) ;
+		}
+
 		export type str = ll < string > ;
 		export type num = ll < number > ;
 		export type bool = ll < boolean > ;
 	}
 }
 
-/* readonly */
 
-export namespace leaf
-{
-	/* R 実体生成 */
-
-	export function r < V > ( value : V , branch ? : leaf.branch < V > ) : r < V >
-	{
-		return new leaf.Entity ( value , branch ) ;
-	}
-
-	export namespace r
-	{
-		export const str = r < string > ;
-		export const num = r < number > ;
-		export const bool = r < boolean > ;
-	}
-	
-	/* R 型定義 */
-
-	export interface r < V >
-	{
-		add_ref ( ref : leaf.ref < V > , old_v ? : V ) : void ;
-		remove_ref ( ref : leaf.ref < V > ) : void ;
-
-		get value () : V ;
-		[ set_value ] ( value : V , changer ? : object ) : void ;
-		
-		mk_str ( to_cv ? : ( src : V ) => string ) : leaf.str ;
-		cv < R >
-		(
-			to_ref : leaf.conv < V , R > ,
-	
-		) : r < R > ;
-	}
-
-	export namespace r
-	{
-		export type str = r < string > ;
-		export type num = r < number > ;
-		export type bool = r < boolean > ;
-	}
-
-	export namespace r
-	{
-		export type ll < V > = r < V > | V ;
-
-		export namespace ll
-		{
-			export type str = ll < string > ;
-			export type num = ll < number > ;
-			export type bool = ll < boolean > ;
-		}	
-	}
-}
-
-/* */
+/* 実装 */
 
 export namespace leaf
 {
 	/* 基底抽象クラス */
 
-	export abstract class Src < V > implements leaf < V >
+	export abstract class Src < V >
 	{
 		/* ref */
 
@@ -166,7 +109,7 @@ export namespace leaf
 			return new Conv < V , string > ( this , to_cv ) ;
 		}
 
-		public cv < R > ( to_ref : conv < V , R > , to_src ? : conv < R , V > ) : leaf < R >
+		public conv < R > ( to_ref : conv < V , R > , to_src ? : conv < R , V > ) : leaf < R >
 		{
 			return new Conv ( this , to_ref , to_src ) ;
 		}
@@ -221,19 +164,25 @@ export namespace leaf
 
 	const def_to_str = < V > ( src : V ) => String ( src ) ;
 
+
+
+	
 	/* 参照・変換クラス */
 
 	export class Conv < S , R = S > extends Src < R >
 	{
+		protected p_src : leaf < S > ;
+
 		constructor
 		(
-			protected p_src : leaf < S > ,
+			src : leaf < S > ,
 			protected to_ref : conv < S , R > ,
 			protected to_src ? : conv < R , S >
 		)
 		{
 			super () ;
-			p_src.add_ref( this ) ;
+			this.p_src = src ;
+			src.add_ref ( this ) ;
 		}
 
 		/* source */
@@ -278,8 +227,13 @@ export namespace leaf
 		}
 	}
 
-	export type conv < S ,R > = ( s : S ) => R ;
+	export type conv < S , R > = ( value : S ) => R ;
+	
+}
 
+
+export namespace leaf
+{
 	/* */
 
 	export const ref = < V >
@@ -321,5 +275,56 @@ export namespace leaf
 	export interface branch < V >
 	{
 		update : update < V > ;
+	}
+}
+
+
+
+/* readonly */
+
+export namespace leaf
+{
+	/* R 実体生成 */
+
+	export function r < V > ( value : V , branch ? : leaf.branch < V > ) : r < V >
+	{
+		return new leaf.Entity ( value , branch ) ;
+	}
+
+	/* R 型定義 */
+
+	export interface r < V >
+	{
+		add_ref ( ref : leaf.ref < V > , old_v ? : V ) : void ;
+		remove_ref ( ref : leaf.ref < V > ) : void ;
+
+		get value () : V ;
+		[ set_value ] ( value : V , changer ? : object ) : void ;
+		
+		mk_str ( to_cv ? : ( src : V ) => string ) : leaf.str ;
+		conv < R >
+		(
+			to_ref : leaf.conv < V , R > ,
+	
+		) : r < R > ;
+	}
+
+	export namespace r
+	{
+		export type str = r < string > ;
+		export type num = r < number > ;
+		export type bool = r < boolean > ;
+	}
+
+	export namespace r
+	{
+		export type ll < V > = r < V > | V ;
+
+		export namespace ll
+		{
+			export type str = ll < string > ;
+			export type num = ll < number > ;
+			export type bool = ll < boolean > ;
+		}	
 	}
 }

@@ -19,10 +19,8 @@ namespace vm
 
 		constructor ()
 		{
-			const index = new navi.Index ( { title : "Form Quest" , name : "" } ) ;
-			const br = new navi.Browser () ;
-			br.make_title
-			br.set_current ( index ) ;
+			const n = new navi.Navi ( { title : "Form Quest" , root : { name : "" , title : "Form Quest" } } ) ;
+			n.set_current ( n.root ) ;
 		}
 	}
 

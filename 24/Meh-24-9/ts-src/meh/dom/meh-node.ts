@@ -128,11 +128,11 @@ export class MehElement extends MehNode
 		{
 			this.bind ( binds.value.src , value => ( el as any ) [ "value" ] = value ) ;
 
-			log ( binds.value.act )
+			log ( binds.value.action_type )
 
 			el.addEventListener
 			(
-				binds.value.act ,
+				binds.value.action_type ,
 				ev =>
 				{
 					const is_target =
@@ -151,6 +151,11 @@ export class MehElement extends MehNode
 		if( acts ) for( const [ name, act ] of Object.entries < defs.act > ( acts ) )
 		{
 			el.addEventListener( name, act as EventListener );
+		}
+
+		if( active_acts ) for( const [ name, act ] of Object.entries < defs.act > ( active_acts ) )
+		{
+			el.addEventListener( name, act as EventListener , { passive : false } );
 		}
 
 		if( parts )

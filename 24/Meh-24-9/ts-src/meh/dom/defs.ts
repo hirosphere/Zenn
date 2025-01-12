@@ -19,7 +19,7 @@ export namespace defs
 
 	export type binds =
 	{
-		value ? : { src : leaf.str , act : bind_acts } ;
+		value ? : { src : leaf.str , action_type : bind_acts } ;
 		checked ? : leaf.bool ;
 	}
 
@@ -51,6 +51,7 @@ export namespace defs
 
 	export type ec < E extends El > =
 	{
+		hook ? : hook < E > ;
 		class ? : class_spec ;
 		style ? : style ;
 		attrs ? : attrs < E > ;
@@ -58,7 +59,6 @@ export namespace defs
 		binds ? : binds ;
 		acts ? : acts ;
 		active_acts ? : acts ;
-		hook ? : hook < E > ;
 	};
 
 	//  //

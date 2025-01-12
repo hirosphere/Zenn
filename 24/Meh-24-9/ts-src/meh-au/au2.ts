@@ -7,9 +7,9 @@ export abstract class Node
 {
 	public abstract get core () : AudioNode | undefined ;
 
-	constructor ( com : Composition )
+	constructor ( com ? : Composition )
 	{
-		com.parts.add ( this ) ;
+		com ?.parts.add ( this ) ;
 	}
 
 	public abstract init ( ac : AudioContext ) : void ;
@@ -55,7 +55,7 @@ abstract class Leaf extends Node
 		if ( src instanceof AudioNode )
 		{
 			src.connect ( target ) ;
-			this.src_nodes.add ( src ) ;
+			// this.src_nodes.add ( src ) ;
 		}
 
 		else if ( typeof src == "number" )  target.value = src ;
@@ -63,7 +63,7 @@ abstract class Leaf extends Node
 
 	public term () : void
 	{
-		this.src_nodes.forEach ( src  ) ;
+		// this.src_nodes.forEach ( src  ) ;
 		this._core = undefined ;
 	}
 }

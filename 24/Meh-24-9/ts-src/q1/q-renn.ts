@@ -103,17 +103,10 @@ export namespace models
 {
 	export class App
 	{
-		public readonly  browser = new navi.Browser();
 		public readonly  si = new Line( data.si );
 		public readonly num = leaf ( 5 );
 		public readonly str = leaf ( "八日市場" );
 		public readonly bool = leaf ( true );
-
-		constructor()
-		{
-			const root = new navi.Index( { title: "Renn", name: "" } );
-			this.browser.set_current( root );
-		}
 	}
 
 	export class Line

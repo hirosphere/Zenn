@@ -96,12 +96,9 @@ export namespace vm
 
 		public readonly doc = new docm.App ;
 		public readonly color_1 = new  HSLRange ( this.doc.color_1 ) ;
-		protected br = new navi.Browser ();
 
 		constructor()
 		{
-			const i = new navi.Index ( { name : "" , title : "HSL App" } ) ;
-			this.br.set_current ( i ) ;
 		}
 	}
 
@@ -255,7 +252,7 @@ export namespace vc
 				step : leaf.mk_str ( m.step ) ,
 				max : leaf.mk_str ( m.max ) ,
 				// value : m.value.mk_str () ,
-				value : m.value.cv ( v => String ( v ) )
+				value : m.value.conv ( v => String ( v ) )
 			} ,
 			acts :
 			{

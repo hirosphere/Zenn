@@ -77,7 +77,7 @@ export const osc = ( args : t.osc , ac : AC ) : node =>
 
 	connect_param ( an , node.frequency , args.freq ) ;
 	connect_param ( an , node.detune , args.pitch ) ;
-	bind_ll ( an , v => node.type = v , args.type ) ;
+	bind_ll < OscillatorType > ( an , v => node.type = v , args.type ?? "sine" ) ;
 
 	node.start () ;
 
