@@ -1,11 +1,10 @@
-import { leaf , navi , ef , sw , forms , dom , log } from "../meh/index.js" ;
+import { leaf , spa , ef , sw , forms , dom , log } from "../meh/index.js" ;
 import { ClockA } from "../widjet/widjet.js" ;
 
 namespace DM
 {
 	export class App
 	{
-		public exp = leaf ( 0 ) ;
 	}
 }
 
@@ -13,7 +12,7 @@ namespace VM
 {
 	export class App
 	{
-		navi = navi ( navi_def ) ;
+		navi = spa ( navi_def ) ;
 
 		constructor ( public readonly dm = new DM.App )
 		{
@@ -21,7 +20,7 @@ namespace VM
 		}
 	}
 
-	const navi_def : navi =
+	const navi_def : spa =
 	{
 		title : "Station-1" ,
 		make_url_path ( index )
@@ -37,12 +36,11 @@ namespace VM
 				"国分寺" , "三鷹" , "吉祥寺" , "荻窪" , "中野" , "新宿" , "四ツ谷" , "御茶ノ水" ,  "神田" , "東京" ,
 				"東葉勝田台" , "葛西臨海公園" , "高輪ゲートウェイ" , "津" ,
 				"空港第２ビル" , "見沼代親水公園" , "八千代緑が丘" , "千葉ニュータウン中央" , "羽田空港第1・第2ターミナル" ,
+				"富山トヨペット本社前（五福末広町)"
 			]
-			.map ( name => ( { name , title : name } ) ) ,
+			.map ( name => ( { type : "station" , name , title : name } ) ) ,
 		} ,
-	}
-
-	
+	}	
 }
 
 namespace VC
@@ -55,8 +53,8 @@ namespace VC
 		(
 			sw
 			(
-				vm.navi.currentIndex ,
-				index => index && station ( index )
+				vm.navi.current_index ,
+				index => index && content ( index )
 			) ,
 			ef.article
 			(
@@ -67,16 +65,25 @@ namespace VC
 		) ;	
 	}
 
-	const top_page = ( vm : VM.App ) =>
+	const content = ( index : spa.Index ) =>
 	{
-
+		if ( index.type == "station" )  return station ( index ) ;
+		return top_page ( index ) ;
 	}
 
-	const station = ( index : navi.Index ) =>
+	const top_page = ( index : spa.Index ) =>
 	{
-		const [ shrink , gap ] = calc_spc( index.title.value.length ) ;
+		return ef.article
+		(
+			ef.h1 ( index.title ) ,
+		)
+	}
 
-		log ( shrink , gap )
+	const station = ( index : spa.Index ) =>
+	{
+		const { shrink , gap, letters } = calc_spc( index.title.value ) ;
+
+		log ( index.title.value , shrink , gap )
 
 		return ef.section
 		(
@@ -84,31 +91,34 @@ namespace VC
 			ef.section
 			(
 				{ class : "_main" , style : { gap , transform : shrink } } ,
-				index.title ,
+				... letters.map ( l => ef.span ( l ) ) ,
 			) ,
 		) ;
 	}
 
-	const calc_spc = ( len : number ) =>
+	const calc_spc = ( s : string ) =>
 	{
-		const space = [ 0 , 0 , 1.1 , 0.5 , 0.1 , 0.06 , -0.04 ] [ len ] ?? 0 ;
-		const shrink = ( len > 7 ? 7 / len : 1 ) ;
+		const len = s.length ;
+
+		const letters = Array.from ( s );
+		const gap = ( [ 0 , 0 , 1.2 , 0.45 , 0.08 , 0.04 ] [ len ] ?? 0 ) + "em" ;
+		const shrink = `scale( ${  len >= 7  ? 7 / len : 1  } , 1 )` ;
 		
-		return [ `scale(${ shrink },1)` , space + "em" , - space + "em" ] ;
+		return { gap , shrink , letters } ;
 	}
 		
 	const page_list = ( m : VM.App ) =>
 	{
-		return ef.ul ( { class : "fl-row" } ,
-
+		return ef.ul
+		(
+			{ class : "fl-row" } ,
 			dom.each ( m.navi.root.parts , o => navi_link ( o.target ) )
 		) ;
 	}
 
-	const navi_link = ( index : navi.Index ) =>
+	const navi_link = ( index : spa.Index ) =>
 	{
-		const sel = index.make_selector () ;
-		return ef.li ( { class : { selected : sel.selected } } , navi.link( sel ) ) ;
+		return ef.li ( { class : { selected : index.selector_item } } , spa.link( index ) ) ;
 	}
 }
 

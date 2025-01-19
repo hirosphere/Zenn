@@ -1,0 +1,105 @@
+export const win_en = [
+    "Arial",
+    "Arial Black",
+    "Arial Narrow",
+    "Calibri",
+    "Cambria",
+    "Candara",
+    "Consolas",
+    "Constantia",
+    "Corbel",
+    "Courier New",
+    "Franklin Gothic Medium",
+    "Garamond",
+    "Georgia",
+    "Gill Sans MT",
+    "Helvetica",
+    "Impact",
+    "Lucida Console",
+    "Lucida Sans Unicode",
+    "Microsoft Sans Serif",
+    "Palatino Linotype",
+    "Segoe UI",
+    "Tahoma",
+    "Times New Roman",
+    "Trebuchet MS",
+    "Verdana"
+];
+export const win_jk = [
+    "Meiryo",
+    "Meiryo UI",
+    "MS Gothic",
+    "MS PGothic",
+    "MS Mincho",
+    "MS PMincho",
+    "Yu Gothic",
+    "Yu Gothic UI",
+    "Yu Mincho",
+    "HG Maru Gothic M-PRO",
+    "HG Mincho E",
+    "HGP Mincho B",
+    "HGP Gothic M",
+    "Batang",
+    "BatangChe",
+    "Gulim",
+    "GulimChe",
+    "Gungsuh",
+    "GungsuhChe",
+    "Malgun Gothic",
+    "Dotum",
+    "DotumChe"
+];
+export const win_zh = [
+    "SimSun",
+    "NSimSun",
+    "SimHei",
+    "Microsoft YaHei",
+    "Microsoft JhengHei",
+    "MingLiU",
+    "PMingLiU",
+    "DFKai-SB",
+    "FangSong",
+    "KaiTi",
+    "LiSu",
+    "YouYuan"
+];
+export const mac_cjk = [
+    "SimSun",
+    "NSimSun",
+    "SimHei",
+    "Microsoft YaHei",
+    "Microsoft JhengHei",
+    "MingLiU",
+    "PMingLiU",
+    "DFKai-SB",
+    "FangSong",
+    "KaiTi",
+    "LiSu",
+    "YouYuan"
+];
+export const linux_cjk = [
+    // 日本語フォント
+    "TakaoGothic",
+    "TakaoMincho",
+    "VL Gothic",
+    "VL PGothic",
+    "Noto Sans CJK JP",
+    "Noto Serif CJK JP",
+    // 韓国語フォント
+    "UnDotum",
+    "UnBatang",
+    "Noto Sans CJK KR",
+    "Noto Serif CJK KR",
+    // 中国語（簡体字）フォント
+    "WenQuanYi Zen Hei",
+    "WenQuanYi Micro Hei",
+    "Noto Sans CJK SC",
+    "Noto Serif CJK SC",
+    // 中国語（繁体字）フォント
+    "AR PL UMing CN",
+    "AR PL UMing HK",
+    "AR PL UMing TW",
+    "Noto Sans CJK TC",
+    "Noto Serif CJK TC"
+];
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZm9udHMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi90cy1zcmMvcmVzL2ZvbnRzLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUNBLE1BQU0sQ0FBQyxNQUFNLE1BQU0sR0FDbkI7SUFDSSxPQUFPO0lBQ1AsYUFBYTtJQUNiLGNBQWM7SUFDZCxTQUFTO0lBQ1QsU0FBUztJQUNULFNBQVM7SUFDVCxVQUFVO0lBQ1YsWUFBWTtJQUNaLFFBQVE7SUFDUixhQUFhO0lBQ2Isd0JBQXdCO0lBQ3hCLFVBQVU7SUFDVixTQUFTO0lBQ1QsY0FBYztJQUNkLFdBQVc7SUFDWCxRQUFRO0lBQ1IsZ0JBQWdCO0lBQ2hCLHFCQUFxQjtJQUNyQixzQkFBc0I7SUFDdEIsbUJBQW1CO0lBQ25CLFVBQVU7SUFDVixRQUFRO0lBQ1IsaUJBQWlCO0lBQ2pCLGNBQWM7SUFDZCxTQUFTO0NBQ1osQ0FBRTtBQUVILE1BQU0sQ0FBQyxNQUFNLE1BQU0sR0FDbkI7SUFDSSxRQUFRO0lBQ1IsV0FBVztJQUNYLFdBQVc7SUFDWCxZQUFZO0lBQ1osV0FBVztJQUNYLFlBQVk7SUFDWixXQUFXO0lBQ1gsY0FBYztJQUNkLFdBQVc7SUFDWCxzQkFBc0I7SUFDdEIsYUFBYTtJQUNiLGNBQWM7SUFDZCxjQUFjO0lBQ2QsUUFBUTtJQUNSLFdBQVc7SUFDWCxPQUFPO0lBQ1AsVUFBVTtJQUNWLFNBQVM7SUFDVCxZQUFZO0lBQ1osZUFBZTtJQUNmLE9BQU87SUFDUCxVQUFVO0NBQ2IsQ0FBRTtBQUVILE1BQU0sQ0FBQyxNQUFNLE1BQU0sR0FDbkI7SUFDQyxRQUFRO0lBQ1IsU0FBUztJQUNULFFBQVE7SUFDUixpQkFBaUI7SUFDakIsb0JBQW9CO0lBQ3BCLFNBQVM7SUFDVCxVQUFVO0lBQ1YsVUFBVTtJQUNWLFVBQVU7SUFDVixPQUFPO0lBQ1AsTUFBTTtJQUNOLFNBQVM7Q0FDVCxDQUFFO0FBRUgsTUFBTSxDQUFDLE1BQU0sT0FBTyxHQUNwQjtJQUNDLFFBQVE7SUFDUixTQUFTO0lBQ1QsUUFBUTtJQUNSLGlCQUFpQjtJQUNqQixvQkFBb0I7SUFDcEIsU0FBUztJQUNULFVBQVU7SUFDVixVQUFVO0lBQ1YsVUFBVTtJQUNWLE9BQU87SUFDUCxNQUFNO0lBQ04sU0FBUztDQUNULENBQUU7QUFFSCxNQUFNLENBQUMsTUFBTSxTQUFTLEdBQ3RCO0lBQ0ksVUFBVTtJQUNWLGFBQWE7SUFDYixhQUFhO0lBQ2IsV0FBVztJQUNYLFlBQVk7SUFDWixrQkFBa0I7SUFDbEIsbUJBQW1CO0lBRW5CLFVBQVU7SUFDVixTQUFTO0lBQ1QsVUFBVTtJQUNWLGtCQUFrQjtJQUNsQixtQkFBbUI7SUFFbkIsZUFBZTtJQUNmLG1CQUFtQjtJQUNuQixxQkFBcUI7SUFDckIsa0JBQWtCO0lBQ2xCLG1CQUFtQjtJQUVuQixlQUFlO0lBQ2YsZ0JBQWdCO0lBQ2hCLGdCQUFnQjtJQUNoQixnQkFBZ0I7SUFDaEIsa0JBQWtCO0lBQ2xCLG1CQUFtQjtDQUN0QixDQUFFIn0=

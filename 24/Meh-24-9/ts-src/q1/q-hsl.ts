@@ -1,4 +1,4 @@
-import { leaf , dom , ef , navi , log } from "../meh/index.js" ;
+import { leaf , dom , ef , log } from "../meh/index.js" ;
 
 /* static values */
 

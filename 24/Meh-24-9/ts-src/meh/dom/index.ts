@@ -1,5 +1,4 @@
 export * from "./defs.js";
-export { add } from "./meh-node.js";
+export * from "./meh-node.js";
 export { ef, sf } from "./ef.js";
-export * from "./navi.js";
 export * as forms from "./forms.js" ;

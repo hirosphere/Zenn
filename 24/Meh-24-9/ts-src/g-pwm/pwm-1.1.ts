@@ -1,4 +1,4 @@
-import { leaf , Renn , dom , ef , each , forms , navi , log } from "../meh/index.js" ;
+import { leaf , Renn , dom , ef , each , forms , log } from "../meh/index.js" ;
 import * as af from "../meh-au/audio.js" ;
 import * as wdt from "../widjet/widjet.js" ;
 

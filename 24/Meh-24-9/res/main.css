@@ -41,7 +41,7 @@ h1 , h2 , h3 , h4 , h5
 a
 {
 	padding-inline : 1ex ;
-	background-color : hsl( 0 , 0% , 10% , 4% ) ;
+	background-color : hsl( 0 , 0% , 10% , 8% ) ;
 	text-decoration : none ;
 	color : hsl( 0 , 0% , 10% )
 }

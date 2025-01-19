@@ -16,6 +16,13 @@ li { word-break : keep-all ; }
 li.selected { background-color: hsl( 0, 0%, 8% ) ; }
 li.selected a { color : hsl( 0, 0%, 90% ) ; }
 
+.part-list a
+{
+	border-radius: 0.3ex ;
+	padding : 1em ;
+	line-height : 4em ;
+}
+
 .station
 {
 	display : flex ;
@@ -25,15 +32,13 @@ li.selected a { color : hsl( 0, 0%, 90% ) ; }
 }
 .station ._main
 {
-	display: flex ;
-	flex-direction: row ;
-	width : fit-content ;
 	background: none ;
 	padding-block : 0.7em ;
 	text-align : center ;
 	white-space : nowrap ;
 	font-size : 12vw ;
 }
+.station h2 { width : 100% ; }
 
 .Ranges { gap : 2px ; }
 
@@ -42,7 +47,7 @@ li.selected a { color : hsl( 0, 0%, 90% ) ; }
 <body>
 	<script type="module">
 		
-		import { main } from "../js-out-1/g-railway/station-1.js" ;
+		import { main } from "../js-out-1/g-railway/heart-rails-1.js" ;
 
 		main () ;
 
