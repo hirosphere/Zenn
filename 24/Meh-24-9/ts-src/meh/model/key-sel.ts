@@ -43,6 +43,8 @@ export namespace ksel
 			{
 				item = new Item ( this , key , this.get_stat_src ( key ) ) ;
 				this.items.set ( key , item ) ;
+
+				log ( item.value )
 			}
 			return item ;
 		}

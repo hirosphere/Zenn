@@ -13,8 +13,6 @@ body
 
 ul { display : flex ; flex-wrap : wrap ; gap : 1em ; }
 li { word-break : keep-all ; }
-li.selected { background-color: hsl( 0, 0%, 8% ) ; }
-li.selected a { color : hsl( 0, 0%, 90% ) ; }
 
 .part-list a
 {
@@ -23,12 +21,20 @@ li.selected a { color : hsl( 0, 0%, 90% ) ; }
 	line-height : 4em ;
 }
 
+.part-list li.selected a
+{
+	background-color: hsl( 0, 0%, 8% ) ;
+	color: hsl( 0, 0%, 90% ) ;
+}
+
 .station
 {
 	display : flex ;
 	flex-direction: column ;
 	align-items : center ;
 	overflow: hidden ;
+
+	background-color : hsl( 0, 0%, 100% ) ;
 }
 .station ._main
 {

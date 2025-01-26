@@ -1,5 +1,4 @@
-import { leaf , Renn , dom , ef , each , forms , log } from "../meh/index.js" ;
-import * as au from "../meh-au/au2.js" ;
+import { leaf , Renn , dom , ef , each , forms , au , log } from "../meh/index.js" ;
 import * as wdt from "../widjet/widjet.js" ;
 
 namespace DM    /* Doc Models */

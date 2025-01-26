@@ -71,9 +71,9 @@ export class Order extends leaf.Entity {
         this.renn = renn;
         this.target = target;
     }
-    _count_;
+    p_count;
     get count() {
-        return this._count_ ??= new leaf.Conv(this, to_count);
+        return this.p_count ??= new leaf.Conv(this, to_count);
     }
     [set_renn](renn) {
         this.renn = renn;

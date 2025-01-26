@@ -1,8 +1,12 @@
-import { df , leaf , ef , log } from "../meh/index.js" ;
+import { df , leaf , ef , forms , log } from "../meh/index.js" ;
+
+/* VM */
 
 class Model
 {
-	clock = leaf ( "" ) ;
+	clock_ymd = leaf ( "" ) ;
+	clock_hms = leaf ( "" ) ;
+	theme = leaf < keyof typeof theme > ( "sky" ) ;
 
 	constructor ()
 	{
@@ -16,15 +20,28 @@ class Model
 			1000 - ( new Date ().getTime () % 1000 )
 		) ;
 		this.on_interval () ;
+
+		const l : leaf.r.num = leaf ( 0 ) ;
 	}
 
 	on_interval ()
 	{
 		const d = new Date ().getTime () % 1000 ;
-		this.clock.value = df ( "Y年 MM月 DD日 B曜日 hh:mm:ss" ) ;
+		this.clock_ymd.value = df ( "Y年 MM月 DD日 (B)" ) ;
+		this.clock_hms.value = df ( "hh:mm:ss" ) ;
 	}
 }
 
+const theme =
+{
+	red   : [   0 , 0.5 , 0.5 ] ,
+	green : [  90 , 0.5 , 0.5 ] ,
+	aqua  : [ 180 , 0.5 , 0.5 ] ,
+	sky   : [ 210 , 0.5 , 0.5 ] ,
+}
+
+
+/* VC */
 
 export const ClockA = () =>
 {
@@ -34,11 +51,26 @@ export const ClockA = () =>
 	(
 		{ class : "clock-widjet" } ,
 
-		ef.section ( { class : "clock-display" } , vm.clock ) ,
+		ef.section
+		(
+			{ class : "clock-display" } ,
+			ef.span ( vm.clock_ymd ) ,
+			ef.span ( vm.clock_hms )
+		) ,
 		ef.section
 		(
 			{ class : "fl-bar" } ,
 			ef.a ( { attrs : { href : "./zz-index.html" } } , "index" ) ,
-		)
+		) ,
+		ThemeSelector () ,
 	);
+}
+
+const ThemeSelector = () =>
+{
+	return ef.section
+	(
+		{ class : "fl-row" } ,
+		... Object.entries( theme ).map ( ( [ key , value ] ) => ef.span ( key , " " , value.toString () ) )
+	)
 }

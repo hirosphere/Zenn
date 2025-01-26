@@ -13,6 +13,11 @@ html
 	color : hsl( 0 , 0% , 10% ) ;
 }
 
+html
+{
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
+}
+
 body , main , article , section , ul
 {
 	display: flex ;
@@ -70,7 +75,7 @@ button { padding : 1ex 1em ; }
 	flex-direction : row ;
 	justify-content : center ;
 	align-items : stretch ;
-	gap : 0.25ex ;
+	gap : 0.5ex ;
 }
 
 .Range
@@ -91,6 +96,17 @@ button { padding : 1ex 1em ; }
 
 .clock-widjet .clock-display
 {
+	display: flex ;
+	flex-direction: row ;
+	flex-wrap: wrap ;
+	justify-content : center ;
+	align-items: center ;
 	text-align : center ;
-	font-size : 27px ;
+	font-size : min( 36px , 4cqw + 1ex ) ;
+	font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
+
+.clock-widjet .clock-display span
+{
+}
+

@@ -1,15 +1,23 @@
-import { leaf , spa as SPA , ef , each , sw , dom , log } from "../meh/index.js" ;
+import { leaf , app as app , ef , each , sw , dom , log } from "../meh/index.js" ;
 import { ClockA } from "../widjet/widjet.js" ;
 
 namespace VM
 {
-	const app_def : SPA =
+	const app_def : app =
 	{
 		title : "Heart Rails - 1" ,
-		root : ( navi ) => new Root ( navi ) ,
-		make_url_path ( index )
+		root : ( app ) => new Root ( app ) ,
+
+		make_url_from_index ( index )
 		{
-			return `?p=${ encodeURIComponent( index.name.value ) }` ;	
+			return `?page=${ index.url_path .splice ( 1 ) .join ( "/" ) }` ;	
+		},
+
+		make_path_from_url ( { root , params } )
+		{
+			const page_path = params.get ( "page" ) ?.split ( "/" ) ?? [] ;
+			log ( "page_path" , page_path ) ;
+			return page_path ;
 		},
 
 		containers :
@@ -18,12 +26,12 @@ namespace VM
 		}
 	}
 
-	export class App extends SPA.Application
+	export class App extends app.Application
 	{
 		constructor ()
 		{
 			super ( app_def ) ;
-			this.set_current ( this.root ) ;
+			this.init () ;
 		}
 	}
 
@@ -32,12 +40,12 @@ namespace VM
 	//   lines      https://express.heartrails.com/api/json?method=getLines&prefecture=埼玉県
 	//   stations   https://express.heartrails.com/api/json?method=getStations&line=東武伊勢崎線
 
-	abstract class RailIndex < res_t > extends SPA.Index
+	abstract class RailIndex < res_t > extends app.Index
 	{
 		public fetch_query : string = "" ;
 		protected part_created = false ;
 
-		public async fetch ()
+		public override async fetch_parts ()
 		{
 			if ( this.part_created )  return ;
 			this.part_created = true ;
@@ -53,16 +61,15 @@ namespace VM
 			}
 		}
 
-		protected abstract create_parts ( data : res_t ) : SPA.Index [] ;
+		protected abstract create_parts ( data : res_t ) : app.Index [] ;
 	}
 
 	export class Root extends RailIndex < res_types.areas >
 	{
-		constructor ( nav : SPA.Application )
+		constructor ( nav : app.Application )
 		{
 			super ( nav , null , { type : "index" , name : "" , title : "トップページ" } ) ;
 			this.fetch_query = "method=getAreas" ;
-			log ( "Root Index" ) ;
 		}
 
 		create_parts ( data : res_types.areas )
@@ -75,12 +82,10 @@ namespace VM
 	{
 		override fetch_query : string ;
 
-		constructor ( nav : SPA.Application , com : SPA.Index , name : string )
+		constructor ( nav : app.Application , com : app.Index , name : string )
 		{
 			super ( nav , com , { type : "index" , name , title : name } ) ;
 			this.fetch_query = `method=getPrefectures&area=${ name }` ;
-
-			log ( "Area Index" , name , this.fetch_query ) ;
 		}
 
 		create_parts ( data : res_types.prefs )
@@ -91,12 +96,10 @@ namespace VM
 
 	export class Pref extends RailIndex < res_types.lines >
 	{
-		constructor ( nav : SPA.Application , com : SPA.Index , name : string )
+		constructor ( nav : app.Application , com : app.Index , name : string )
 		{
 			super ( nav , com , { type : "index" , name , title : name } ) ;
 			this.fetch_query = `method=getLines&prefecture=${ name }` ;
-
-			log ( "Pref Index" , name , this.fetch_query ) ;
 		}
 
 		create_parts ( data : res_types.lines )
@@ -107,7 +110,7 @@ namespace VM
 
 	export class Line extends RailIndex < res_types.stations >
 	{
-		constructor ( app : SPA.Application , com : SPA.Index , name : string )
+		constructor ( app : app.Application , com : app.Index , name : string )
 		{
 			super ( app , com , { type : "index" , name , title : name } ) ;
 			this.fetch_query = `method=getStations&line=${ name }` ;
@@ -119,9 +122,9 @@ namespace VM
 		}
 	}
 
-	export class Station extends SPA.Index
+	export class Station extends app.Index
 	{
-		constructor ( app : SPA.Application , com : SPA.Index , i : station )
+		constructor ( app : app.Application , com : app.Index , i : station )
 		{
 			super ( app , com , { name : i.name , title : i.name } ) ;
 		}
@@ -154,20 +157,11 @@ namespace VC
 	{
 		return ef.div
 		(
-			sw
-			(
-				vm.current_container ,
-				container =>
-				(
-					container?.def ?. ( container.current_index ) ??
-					ef.p ( String ( container?.def ) )
-				)
-			) ,
 			ef.div ( sw ( vm.current_index , index => index_page ( index ) ) ) ,
 		)
 	}
 
-	export const index_page = ( index ? : SPA.Index ) =>
+	export const index_page = ( index ? : app.Index ) =>
 	{
 		if ( index instanceof VM.Root )  return root ( index ) ;
 		if ( index instanceof VM.Area )  return area ( index ) ;
@@ -181,7 +175,7 @@ namespace VC
 		);
 	}
 
-	export const station_container = ( index : SPA.Index ) =>
+	export const station_container = ( index : app.Index ) =>
 	{
 		return ef.article
 		(
@@ -191,7 +185,7 @@ namespace VC
 
 	const root = ( index : VM.Root ) =>
 	{
-		index.fetch () ;
+		index.fetch_parts () ;
 
 		return ef.article
 		(
@@ -203,7 +197,7 @@ namespace VC
 
 	const area = ( index : VM.Area ) =>
 	{
-		index.fetch () ;
+		index.fetch_parts () ;
 
 		return ef.article
 		(
@@ -215,7 +209,7 @@ namespace VC
 
 	const pref = ( index : VM.Pref ) =>
 	{
-		index.fetch () ;
+		index.fetch_parts () ;
 
 		return ef.article
 		(
@@ -227,7 +221,7 @@ namespace VC
 
 	const line = ( index : VM.Line ) =>
 	{
-		index.fetch () ;
+		index.fetch_parts () ;
 
 		return ef.article
 		(
@@ -253,25 +247,25 @@ namespace VC
 
 			ef.h2
 			(
-				com && SPA.link ( com ) || undefined
+				com && app.link ( com ) || undefined
 			) ,
 			
 			com && list ( com ) || undefined ,
 		)
 	}
 
-	const com_link = ( index : SPA.Index ) =>
+	const com_link = ( index : app.Index ) =>
 	{
 		const com = index.com ;
 
 		return com && ef.h2
 		(
-			SPA.link ( com , index.title )
+			app.link ( com , index.title )
 		)
 		|| undefined ;
 	}
 
-	const list = ( index : SPA.Index ) =>
+	const list = ( index : app.Index ) =>
 	(
 		ef.ul
 		(
@@ -279,7 +273,7 @@ namespace VC
 			each
 			(
 				index.parts ,
-				o => ef.li ( SPA.link ( o.target ) )
+				o => ef.li ( { class : { selected : o.target.sel_item } } , app.link ( o.target ) )
 			)
 		)
 	) ;

@@ -171,11 +171,11 @@ export class Order < S > extends leaf.Entity < Order.value >
 		super( undefined );
 	}
 
-	protected _count_ ? : leaf.r < Order.value > ;
+	protected p_count ? : leaf.r < Order.value > ;
 
 	public get count ()
 	{
-		return this._count_ ??= new leaf.Conv
+		return this.p_count ??= new leaf.Conv
 		(
 			this,
 			to_count

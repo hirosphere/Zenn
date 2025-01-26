@@ -1,0 +1,17 @@
+import { leaf } from "../model/index.js";
+export class Player {
+    tempo;
+    current;
+    state;
+    constructor(i) {
+        this.tempo = leaf(i.tempo ?? 120);
+        this.current = leaf(i.current_time ?? 0);
+        this.state = leaf.r(i.state ?? false);
+    }
+    start() { }
+    stop() { }
+    render(current, length) {
+        ;
+    }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGltZS1iYXNlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vdHMtc3JjL21laC9hdWRpby90aW1lLWJhc2UudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0EsT0FBTyxFQUFFLElBQUksRUFBYyxNQUFNLG1CQUFtQixDQUFFO0FBY3RELE1BQU0sT0FBTyxNQUFNO0lBRUYsS0FBSyxDQUFhO0lBQ2xCLE9BQU8sQ0FBYTtJQUNwQixLQUFLLENBQWdCO0lBRXJDLFlBQWMsQ0FBNEI7UUFFekMsSUFBSSxDQUFDLEtBQUssR0FBRyxJQUFJLENBQUcsQ0FBQyxDQUFDLEtBQUssSUFBSSxHQUFHLENBQUUsQ0FBRTtRQUN0QyxJQUFJLENBQUMsT0FBTyxHQUFHLElBQUksQ0FBRyxDQUFDLENBQUMsWUFBWSxJQUFJLENBQUMsQ0FBRSxDQUFFO1FBQzdDLElBQUksQ0FBQyxLQUFLLEdBQUcsSUFBSSxDQUFDLENBQUMsQ0FBRyxDQUFDLENBQUMsS0FBSyxJQUFJLEtBQUssQ0FBRSxDQUFFO0lBQzNDLENBQUM7SUFFTSxLQUFLLEtBQUssQ0FBQztJQUVYLElBQUksS0FBSyxDQUFDO0lBRVAsTUFBTSxDQUFHLE9BQWdCLEVBQUcsTUFBZTtRQUVwRCxDQUFDO0lBQ0YsQ0FBQztDQUNEIn0=

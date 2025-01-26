@@ -1,4 +1,4 @@
-import { leaf, ksel, dom, ef, forms, spa } from "../meh/index.js";
+import { leaf, ksel, dom, ef, forms, app } from "../meh/index.js";
 import { Clock } from "./q-clock.js";
 const ents = Object.entries;
 var vm;
@@ -12,7 +12,7 @@ var vm;
         sel3 = ksel("N");
         bg = colors();
         constructor() {
-            const n = new spa.Application({ title: "Form Quest", root: { name: "", title: "Form Quest" } });
+            const n = new app.Application({ title: "Form Quest", root: { name: "", title: "Form Quest" } });
             n.set_current(n.root);
         }
     }

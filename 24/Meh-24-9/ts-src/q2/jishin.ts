@@ -148,7 +148,7 @@ namespace VC
 
 			ef.section
 			(
-				{ class : "fl-col" } ,
+				{ class : "fl-row" } ,
 				ef.button ( { acts : { click () { vm.load () ; } } } , "更新" )
 			),
 
@@ -160,12 +160,13 @@ namespace VC
 			) ,
 			ef.section
 			(
-				{ class : "fl-col" } ,
-				ef.button ( { acts : { click () { vm.json_update () } } } , "JSON" )
+				{ class : "fl-row" } ,
+				ef.button ( { acts : { click () { vm.json_update () } } } , "JSON" ) ,
+				ef.button ( { acts : { click () { vm.json.value = "" } } } , "消去" ) ,
 			) ,
 			ef.section
 			(
-				ef.textarea ( { props : { value : vm.json } } ) ,
+				ef.p ( { style : { whiteSpace : "pre-wrap" , background : "white" } } , vm.json ) ,
 			)
 		);
 	}
