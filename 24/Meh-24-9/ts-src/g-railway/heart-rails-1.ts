@@ -64,11 +64,13 @@ namespace VM
 		protected abstract create_parts ( data : res_t ) : app.Index [] ;
 	}
 
-	export class Root extends RailIndex < res_types.areas >
+	export abstract class ListIndex < res_t > extends RailIndex < res_t > {}
+
+	export class Root extends ListIndex < res_types.areas >
 	{
 		constructor ( nav : app.Application )
 		{
-			super ( nav , null , { type : "index" , name : "" , title : "トップページ" } ) ;
+			super ( nav , null , { type : "index" , name : "" , title : "Heart Rails" } ) ;
 			this.fetch_query = "method=getAreas" ;
 		}
 
@@ -78,7 +80,7 @@ namespace VM
 		}
 	}
 
-	export class Area extends RailIndex < res_types.prefs >
+	export class Area extends ListIndex < res_types.prefs >
 	{
 		override fetch_query : string ;
 
@@ -94,7 +96,7 @@ namespace VM
 		}
 	}
 
-	export class Pref extends RailIndex < res_types.lines >
+	export class Pref extends ListIndex < res_types.lines >
 	{
 		constructor ( nav : app.Application , com : app.Index , name : string )
 		{
@@ -108,7 +110,7 @@ namespace VM
 		}
 	}
 
-	export class Line extends RailIndex < res_types.stations >
+	export class Line extends ListIndex < res_types.stations >
 	{
 		constructor ( app : app.Application , com : app.Index , name : string )
 		{
@@ -163,10 +165,7 @@ namespace VC
 
 	export const index_page = ( index ? : app.Index ) =>
 	{
-		if ( index instanceof VM.Root )  return root ( index ) ;
-		if ( index instanceof VM.Area )  return area ( index ) ;
-		if ( index instanceof VM.Pref )  return pref ( index ) ;
-		if ( index instanceof VM.Line )  return line ( index ) ;
+		if ( index instanceof VM.ListIndex )  return list_page ( index ) ;
 		if ( index instanceof VM.Station )  return station ( index ) ;
 
 		return ef.article
@@ -183,51 +182,24 @@ namespace VC
 		) ;
 	}
 
-	const root = ( index : VM.Root ) =>
+	const list_page = ( index : VM.ListIndex < any > ) =>
 	{
 		index.fetch_parts () ;
 
-		return ef.article
+		const com_link =
 		(
-			ef.h1 ( index.app.make_title ( index ) ) ,
-			list ( index ) ,
-			ef.p ( index.link ) ,
-		)
-	}
-
-	const area = ( index : VM.Area ) =>
-	{
-		index.fetch_parts () ;
+			index.com && [ app.link ( index.com , index.com ?.title ) , ">" ] || [ "" ]
+		) ;
 
 		return ef.article
 		(
-			com_link ( index ) ,
+			ef.h1
+			(
+				ef.span ( ... com_link ),
+				ef.span ( app.link ( index , index.title ) ) ,
+			) ,
 			list ( index ) ,
-			ef.p ( index.link ) ,
-		)
-	}
-
-	const pref = ( index : VM.Pref ) =>
-	{
-		index.fetch_parts () ;
-
-		return ef.article
-		(
-			com_link ( index ) ,
-			list ( index ) ,
-			ef.p ( index.link ) ,
-		)
-	}
-
-	const line = ( index : VM.Line ) =>
-	{
-		index.fetch_parts () ;
-
-		return ef.article
-		(
-			com_link ( index ) ,
-			list ( index ) ,
-			ef.p ( index.link ) ,
+			ef.p ( "list_page" )
 		)
 	}
 

@@ -8,8 +8,9 @@
 html
 {
 	tab-size: 4ex ;
-	background-color: hsl( 175 , 45% , 50% ) ;
 	background-color: hsl( 95 , 37% , 45% ) ;
+	background-color: hsl( 25 ,  3% , 100% ) ;
+	background-color: hsl( 175 , 45% , 50% ) ;
 	color : hsl( 0 , 0% , 10% ) ;
 }
 
