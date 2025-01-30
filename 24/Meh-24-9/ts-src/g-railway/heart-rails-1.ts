@@ -160,6 +160,7 @@ namespace VC
 		return ef.div
 		(
 			ef.div ( sw ( vm.current_index , index => index_page ( index ) ) ) ,
+			ClockA () ,
 		)
 	}
 
