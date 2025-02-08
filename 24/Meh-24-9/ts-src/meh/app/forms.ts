@@ -1,6 +1,17 @@
 import { leaf , ksel , defs , ef } from "../index.js" ;
 import { set_value } from "../model/leaf.js";
 
+/*
+	spa
+	container_switch
+
+	select > option
+	radio_group
+	range
+
+*/
+
+
 /* */
 
 export namespace model
@@ -164,7 +175,7 @@ export function range ( m : range )
 
 	return ef.section
 	(
-		{ class : "Range" } ,
+		{ class : "Range range" } ,
 		ef.label ( { class : "title" } , m.title ) ,
 		ef.input ( ec ) ,
 		ef.span

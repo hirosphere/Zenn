@@ -7,24 +7,30 @@
 	<link rel="stylesheet" href="../res/main.css" />
 <style>
 
-textarea
+.地震リスト
 {
-	width : 80% ;
-	height : 40em ;
-	line-height: 1.35 ;
+	display: flex ;
+	flex-direction: column ;
+	gap: 1px ;
 }
 
-table
+.地震リスト > li
 {
-	border-collapse : collapse ;
+	background-color: hsl( 0, 0%, 100% , 50% );
+	display: flex ;
+	justify-content: center ;
+	border-bottom: 1px dotted hsl( 0, 0%, 75% );
+	flex-wrap: wrap ;
+	gap : 1px ;
 }
 
-td
+.地震リスト > li > span
 {
-	border : 1px dotted hsl( 0, 0%, 70% ) ;
-	padding: 0.30ex 1ex ;
+	background-color: hsl( 0, 0%, 100% );
+	padding-block: 0.2ex ;
 	text-align: center ;
 }
+
 
 </style>
 </head>

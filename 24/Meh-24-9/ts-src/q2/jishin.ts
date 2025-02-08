@@ -117,7 +117,7 @@ namespace VM
 				}
 			) ;
 
-			log ( new Date () .toISOString () )
+			log ( new Date () .toLocaleString () )
 
 			this.text_list.value = Array.from ( list.values () ).map ( i => Object.values ( i ).join ( "\t" ) ).join ( "\n" ) ;
 			this.data = data ;
@@ -152,7 +152,7 @@ namespace VC
 				ef.button ( { acts : { click () { vm.load () ; } } } , "更新" )
 			),
 
-			Records ( vm.list ) ,
+			List ( vm.list ) ,
 			
 			ef.section
 			(
@@ -171,30 +171,34 @@ namespace VC
 		);
 	}
 
-	const Records = ( m : VM.Records ) =>
+	const List = ( m : VM.Records ) =>
 	{
-		return ef.table
+		return ef.ul
 		(
-			ef.tbody
+			{ class : "地震リスト" } ,
+			each
 			(
-				each
+				m ,
+				o => ef.li
 				(
-					m ,
-					o => ef.tr
-					(
-						ef.td ( o.count ) ,
-						ef.td ( o.target.eid ) ,
-						ef.td ( o.target.ser ) ,
-						ef.td ( o.target.at ) ,
-						ef.td ( o.target.anm ) ,
-						ef.td ( o.target.mag ) ,
-						ef.td ( o.target.maxi ) ,
-						ef.td ( o.target.cod ) ,
-					)
+					col ( 5 , String ( o.count.value ) , true ) ,
+					col ( 18 , o.target.eid ) ,
+					col ( 3 , o.target.ser ) ,
+					col ( 22 , o.target.at ) ,
+					col ( 20 , o.target.anm ) ,
+					col ( 5 , o.target.mag ) ,
+					col ( 5 , o.target.maxi ) ,
+					col ( 23 , o.target.cod ) ,
 				)
 			)
 		) ;
 	}
+
+	const col = ( span : number , text : string | number , bold : boolean = false ) => ef.span
+	(
+		{ style : { width : span + "ex" , fontWeight : bold ? "bold" : "normal" } } ,
+		text
+	)
 }
 
 

@@ -1,4 +1,4 @@
-import { leaf , ksel , dom , defs , ef , forms , app , log } from "../meh/index.js" ;
+import { leaf , ksel , dom , defs , ef , forms , navi , log } from "../meh/index.js" ;
 import { Clock } from "./q-clock.js" ;
 
 const ents = Object.entries ;
@@ -19,7 +19,7 @@ namespace vm
 
 		constructor ()
 		{
-			const n = new app.Application ( { title : "Form Quest" , root : { name : "" , title : "Form Quest" } } ) ;
+			const n = new navi.Application ( { title : "Form Quest" , root : { name : "" , title : "Form Quest" } } ) ;
 			n.set_current ( n.root ) ;
 		}
 	}

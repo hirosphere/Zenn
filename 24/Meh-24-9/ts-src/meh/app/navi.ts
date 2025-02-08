@@ -1,36 +1,36 @@
 import { log } from "../common.js";
-import { leaf , set_value , Renn , ksel } from "./index.js";
+import { leaf , set_value , Renn , ksel } from "../model/index.js";
 import { MehElement , ef , defs } from "../dom/index.js" ;
 
 
 
-export type app =
+export type navi =
 {
 	title : string ;
-	root : app.t.index | ( ( app : app.Application ) => app.Index ) ;
+	root : navi.t.index | ( ( app : navi.Application ) => navi.Index ) ;
 	
-	make_title ? : ( index : app.Index ) => string ;
-	make_index_from_url ? ( args : make_index_from_url_args ) : app.Index | undefined ;
+	make_title ? : ( index : navi.Index ) => string ;
+	make_index_from_url ? ( args : make_index_from_url_args ) : navi.Index | undefined ;
 	make_path_from_url ? ( args : make_index_from_url_args ) : string [] ;
-	make_url_from_index ? : ( index : app.Index ) => string ;
+	make_url_from_index ? : ( index : navi.Index ) => string ;
 	
-	containers ? : Record < string , app.t.create_containner > ;
+	containers ? : Record < string , navi.t.create_containner > ;
 }
 
 type make_index_from_url_args =
 {
 	path : string ,
 	params : URLSearchParams ,
-	root : app.Index ,
+	root : navi.Index ,
 	location : Location
 }
 
-export function app ( i : app )
+export function navi ( i : navi )
 {
-	return new app.Application ( i ) ;
+	return new navi.Application ( i ) ;
 }
 
-export namespace app
+export namespace navi
 {
 	export namespace t
 	{
@@ -46,7 +46,7 @@ export namespace app
 		export type index_type = string ;
 
 		export type container_key = string | undefined ;
-		export type create_containner = ( current : leaf.r < app.t.index_key > ) => defs.element ;
+		export type create_containner = ( current : leaf.r < navi.t.index_key > ) => defs.element ;
 	}
 	
 	
@@ -60,10 +60,10 @@ export namespace app
 		public readonly current_container = leaf < Container | undefined > ( undefined ) ;
 		public readonly containers = new Map < t.container_key , Container > ;
 	
-		constructor ( protected i : app )
+		constructor ( protected i : navi )
 		{
 			this.title = leaf.str ( i.title ) ;
-			this.root = ( typeof i.root == "function" && i.root ( this ) ) || new app.Index ( this , null , i.root ) ;
+			this.root = ( typeof i.root == "function" && i.root ( this ) ) || new navi.Index ( this , null , i.root ) ;
 			this.current_index = leaf < t.index_key> ( undefined ) ;
 			this.current_index.add_ref ( { src_value_change : new_index => this.set_current ( new_index ) } ) ;
 			this.selector = ksel < t.index_key > ( this.current_index ) ;

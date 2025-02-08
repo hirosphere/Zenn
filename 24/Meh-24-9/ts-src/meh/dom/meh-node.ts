@@ -1,7 +1,7 @@
 import { log } from "../common.js";
 import { leaf } from "../model/leaf.js";
 import { defs } from "./defs.js";
-import { create_parts_place } from "./parts.js";
+import { create_parts_place } from "./place.js";
 
 type El = defs.El ;
 

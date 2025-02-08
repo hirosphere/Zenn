@@ -1,6 +1,6 @@
 import { log } from "../common.js";
 import { leaf } from "../model/leaf.js";
-import { create_parts_place } from "./parts.js";
+import { create_parts_place } from "./place.js";
 export const add = (def, com_qe, rel_qn) => {
     const com_el = typeof com_qe == "string" ? document.querySelector(com_qe) : com_qe || null;
     const rel_node = typeof rel_qn == "string" ? document.querySelector(rel_qn) : rel_qn || null;

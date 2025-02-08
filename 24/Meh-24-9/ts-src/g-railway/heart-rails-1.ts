@@ -1,9 +1,13 @@
-import { leaf , app as app , ef , each , sw , dom , log } from "../meh/index.js" ;
+import { leaf , ksel , navi , ef , each , sw , dom , log } from "../meh/index.js" ;
 import { ClockA } from "../widjet/widjet.js" ;
+
+
+
+/* View Models */
 
 namespace VM
 {
-	const app_def : app =
+	const navi_def : navi =
 	{
 		title : "Heart Rails - 1" ,
 		root : ( app ) => new Root ( app ) ,
@@ -22,33 +26,51 @@ namespace VM
 
 		containers :
 		{
-			index : ( current ) => ef.div ( sw ( current , index => VC.index_page ( index ) ) ) ,
+			index : ( current ) => ef.div ( sw ( current , index => VC.root ( index ) ) ) ,
 		}
 	}
 
-	export class App extends app.Application
+	export class App
 	{
+		public readonly navi = new navi.Application ( navi_def ) ;
+		public readonly cs = root_cs () ;
+		public readonly station_cs = new Map < Line , ksel < Station > > ;
+
 		constructor ()
 		{
-			super ( app_def ) ;
-			this.init () ;
+			this.navi.init () ;
+
+			this.cs.make_item ( "Full" ) .select () ;
 		}
 	}
+
+	const root_cs = () =>
+	{
+		return ksel < root_cs > ( "" ) ;
+	}
+
+
+	/**
+	 *     ( TypeA | TypeB )
+	 *     
+	 */
+
+	type root_cs = "" | "Full" | "Stations" ;
 
 	//   areas      https://express.heartrails.com/api/json?method=getAreas
 	//   prefs      https://express.heartrails.com/api/json?method=getPrefectures&area=関東
 	//   lines      https://express.heartrails.com/api/json?method=getLines&prefecture=埼玉県
 	//   stations   https://express.heartrails.com/api/json?method=getStations&line=東武伊勢崎線
 
-	abstract class RailIndex < res_t > extends app.Index
+	abstract class RailIndex < res_t > extends navi.Index
 	{
 		public fetch_query : string = "" ;
-		protected part_created = false ;
+		protected part_fetched = false ;
 
 		public override async fetch_parts ()
 		{
-			if ( this.part_created )  return ;
-			this.part_created = true ;
+			if ( this.part_fetched )  return ;
+			this.part_fetched = true ;
 
 			const url = "https://express.heartrails.com/api/json?" + this.fetch_query ;
 			const res = await fetch ( url ) ;
@@ -61,14 +83,14 @@ namespace VM
 			}
 		}
 
-		protected abstract create_parts ( data : res_t ) : app.Index [] ;
+		protected abstract create_parts ( data : res_t ) : navi.Index [] ;
 	}
 
 	export abstract class ListIndex < res_t > extends RailIndex < res_t > {}
 
 	export class Root extends ListIndex < res_types.areas >
 	{
-		constructor ( nav : app.Application )
+		constructor ( nav : navi.Application )
 		{
 			super ( nav , null , { type : "index" , name : "" , title : "Heart Rails" } ) ;
 			this.fetch_query = "method=getAreas" ;
@@ -84,7 +106,7 @@ namespace VM
 	{
 		override fetch_query : string ;
 
-		constructor ( nav : app.Application , com : app.Index , name : string )
+		constructor ( nav : navi.Application , com : navi.Index , name : string )
 		{
 			super ( nav , com , { type : "index" , name , title : name } ) ;
 			this.fetch_query = `method=getPrefectures&area=${ name }` ;
@@ -98,7 +120,7 @@ namespace VM
 
 	export class Pref extends ListIndex < res_types.lines >
 	{
-		constructor ( nav : app.Application , com : app.Index , name : string )
+		constructor ( nav : navi.Application , com : navi.Index , name : string )
 		{
 			super ( nav , com , { type : "index" , name , title : name } ) ;
 			this.fetch_query = `method=getLines&prefecture=${ name }` ;
@@ -112,7 +134,7 @@ namespace VM
 
 	export class Line extends ListIndex < res_types.stations >
 	{
-		constructor ( app : app.Application , com : app.Index , name : string )
+		constructor ( app : navi.Application , com : navi.Index , name : string )
 		{
 			super ( app , com , { type : "index" , name , title : name } ) ;
 			this.fetch_query = `method=getStations&line=${ name }` ;
@@ -124,9 +146,9 @@ namespace VM
 		}
 	}
 
-	export class Station extends app.Index
+	export class Station extends navi.Index
 	{
-		constructor ( app : app.Application , com : app.Index , i : station )
+		constructor ( app : navi.Application , com : navi.Index , i : station )
 		{
 			super ( app , com , { name : i.name , title : i.name } ) ;
 		}
@@ -153,18 +175,21 @@ namespace VM
 	}
 }
 
+
+/* View Components */
+
 namespace VC
 {
 	export const App = ( vm : VM.App = new VM.App ) =>
 	{
 		return ef.div
 		(
-			ef.div ( sw ( vm.current_index , index => index_page ( index ) ) ) ,
+			ef.div ( sw ( vm.navi.current_index , index => root ( index ) ) ) ,
 			ClockA () ,
 		)
 	}
 
-	export const index_page = ( index ? : app.Index ) =>
+	export const root = ( index ? : navi.Index ) =>
 	{
 		if ( index instanceof VM.ListIndex )  return list_page ( index ) ;
 		if ( index instanceof VM.Station )  return station ( index ) ;
@@ -175,7 +200,7 @@ namespace VC
 		);
 	}
 
-	export const station_container = ( index : app.Index ) =>
+	export const station_container = ( index : navi.Index ) =>
 	{
 		return ef.article
 		(
@@ -189,7 +214,7 @@ namespace VC
 
 		const com_link =
 		(
-			index.com && [ app.link ( index.com , index.com ?.title ) , ">" ] || [ "" ]
+			index.com && [ navi.link ( index.com , index.com ?.title ) , ">" ] || [ "" ]
 		) ;
 
 		return ef.article
@@ -197,13 +222,14 @@ namespace VC
 			ef.h1
 			(
 				ef.span ( ... com_link ),
-				ef.span ( app.link ( index , index.title ) ) ,
+				ef.span ( navi.link ( index , index.title ) ) ,
 			) ,
 			list ( index ) ,
 			ef.p ( "list_page" )
 		)
 	}
 
+	
 	const station = ( index : VM.Station ) =>
 	{
 		const com = index.com ;
@@ -220,25 +246,25 @@ namespace VC
 
 			ef.h2
 			(
-				com && app.link ( com ) || undefined
+				com && navi.link ( com ) || undefined
 			) ,
 			
 			com && list ( com ) || undefined ,
 		)
 	}
 
-	const com_link = ( index : app.Index ) =>
+	const com_link = ( index : navi.Index ) =>
 	{
 		const com = index.com ;
 
 		return com && ef.h2
 		(
-			app.link ( com , index.title )
+			navi.link ( com , index.title )
 		)
 		|| undefined ;
 	}
 
-	const list = ( index : app.Index ) =>
+	const list = ( index : navi.Index ) =>
 	(
 		ef.ul
 		(
@@ -246,7 +272,7 @@ namespace VC
 			each
 			(
 				index.parts ,
-				o => ef.li ( { class : { selected : o.target.sel_item } } , app.link ( o.target ) )
+				o => ef.li ( { class : { selected : o.target.sel_item } } , navi.link ( o.target ) )
 			)
 		)
 	) ;

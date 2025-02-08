@@ -4,13 +4,11 @@ import { leaf , Renn, Order } from "../model/index.js";
 import { defs } from "./defs.js";
 import { MehNode , MehText , MehElement } from "./meh-node.js";
 
-type El = defs.El ;
-
 /* export */
 
 export const create_parts_place =
 (
-	ce : El | undefined ,
+	ce : defs.El | undefined ,
 	def : defs.parts ,
 	rel_n ? : Node ,
 )
@@ -20,17 +18,7 @@ export const create_parts_place =
 );
 
 
-
-/* def に応じたタイプの PFP オブジェクトを作成 */
-
-type work =
-{
-	ce : El | undefined ;
-	def : defs.parts ;
-	pos : number ;
-} ;
-
-const next_place =
+export const next_place =
 (
 	w : work ,
 )
@@ -60,6 +48,7 @@ const next_place =
 		return new StaticPlace( w );
 	}
 };
+
 
 
 /* PFP : 「パートDOMノードフラグメント」の「プレース」 */
@@ -107,6 +96,15 @@ export abstract class Place
 }
 
 
+export type work =
+{
+	ce : defs.El | undefined ;
+	def : defs.parts ;
+	pos : number ;
+} ;
+
+
+
 /* 固定 PFP */
 
 class StaticPlace extends Place
@@ -144,10 +142,94 @@ class StaticPlace extends Place
 }
 
 
-/* ページスイッチ PFP */
-/* 可視・不可視制御のため、パートは MehElement 限定で、MehText は使えません。 */
+/* Renn 配列をソースとした、動的生去 PFP */
 
-class SwitchPlace extends Place
+class EachPlace extends Place implements Renn.Ref < any >
+{
+	protected src : Renn < any > ;
+	protected create_node : ( order : Order < any > ) => defs.node ;
+	protected nodes = new Map < Order < any > , Node > ;
+
+	constructor
+	(
+		protected w : work ,
+		def : defs.Each,
+	)
+	{
+		super();
+
+		this.src = def.source ;
+		this.create_node = def.create_node ;
+
+		def.source.add_ref ( this ) ;
+		this.next_place = next_place( w );
+	}
+
+	public src_add_orders ( { src , start , next } : Renn.note ) : void
+	{
+		const df = new DocumentFragment ;
+
+		for
+		(
+			let pos = start ;
+			pos < next ;
+			pos ++
+		)
+		{
+			const order = src.orders [ pos ] ;
+			if( this.nodes.has( order ) )  return ;
+
+			const node = this.add_part
+			(
+				df ,
+				this.create_node( order )
+			);
+
+			node?.node && this.nodes.set
+			(
+				order , node.node
+			) ;
+		}
+
+		const next_ord = this.src.orders [ next ];
+
+		this.w.ce?.insertBefore
+		(
+			df,
+			(
+				this.nodes.get( next_ord ) ??
+				this.next_place ?.first_dom_node ??
+				null
+			)
+		);
+	}
+
+	public src_remove_orders ( { items: orders } : Renn.note ) : void
+	{
+		orders.forEach
+		(
+			order => this.remove_node ( order )
+		);
+	}
+
+	protected remove_node ( order : Order < any > )
+	{
+		const node = this.nodes.get ( order ) ;
+		if( ! node )  return ;
+		this.w.ce ?.removeChild( node ) ;
+	}
+
+	public override get first_dom_node (): Node | undefined
+	{
+		const pos = this.src.orders [ 0 ] ;
+		return this.nodes.get ( pos ) ;
+	}
+}
+
+
+/*  */
+
+export class SwitchPlace extends Place
 {
 	protected src_ref ;
 	protected mels = new Map < any , MehElement > ;
@@ -268,7 +350,7 @@ class SwitchPlace extends Place
 		return mel ;
 	}
 
-	protected update_state ( el : El , state : boolean )
+	protected update_state ( el : defs.El , state : boolean )
 	{
 		el.style.display = state ? "" : "none" ;
 	}
@@ -285,90 +367,5 @@ class SwitchPlace extends Place
 		this.src_ref ?.term ?.() ;
 		this.src_ref = undefined ;
 		super.destruct () ;
-	}
-}
-
-
-/* Renn 配列をソースとした、動的生去 PFP */
-
-class EachPlace extends Place implements Renn.Ref < any >
-{
-	protected src : Renn < any > ;
-	protected create_node : ( order : Order < any > ) => defs.node ;
-	protected nodes = new Map < Order < any > , Node > ;
-
-	constructor
-	(
-		protected w : work ,
-		def : defs.Each,
-	)
-	{
-		super();
-
-		this.src = def.source ;
-		this.create_node = def.create_node ;
-
-		def.source.add_ref ( this ) ;
-		this.next_place = next_place( w );
-	}
-
-	public src_add_orders ( { src , start , next } : Renn.note ) : void
-	{
-		const df = new DocumentFragment ;
-
-		for
-		(
-			let pos = start ;
-			pos < next ;
-			pos ++
-		)
-		{
-			const order = src.orders [ pos ] ;
-			if( this.nodes.has( order ) )  return ;
-
-			const node = this.add_part
-			(
-				df ,
-				this.create_node( order )
-			);
-
-			node?.node && this.nodes.set
-			(
-				order , node.node
-			) ;
-		}
-
-		const next_ord = this.src.orders [ next ];
-
-		this.w.ce?.insertBefore
-		(
-			df,
-			(
-				this.nodes.get( next_ord ) ??
-				this.next_place ?.first_dom_node ??
-				null
-			)
-		);
-	}
-
-	public src_remove_orders ( { items: orders } : Renn.note ) : void
-	{
-		orders.forEach
-		(
-			order => this.remove_node ( order )
-		);
-	}
-
-	protected remove_node ( order : Order < any > )
-	{
-		const node = this.nodes.get ( order ) ;
-		if( ! node )  return ;
-		this.w.ce ?.removeChild( node ) ;
-	}
-
-	public override get first_dom_node (): Node | undefined
-	{
-		const pos = this.src.orders [ 0 ] ;
-		return this.nodes.get ( pos ) ;
 	}
 }

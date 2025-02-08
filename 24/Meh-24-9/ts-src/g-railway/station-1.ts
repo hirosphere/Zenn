@@ -1,4 +1,4 @@
-import { leaf , app , ef , sw , forms , dom , log } from "../meh/index.js" ;
+import { leaf , navi , ef , sw , forms , dom , log } from "../meh/index.js" ;
 import { ClockA } from "../widjet/widjet.js" ;
 
 namespace DM
@@ -12,7 +12,7 @@ namespace VM
 {
 	export class App
 	{
-		navi = app ( navi_def ) ;
+		navi = navi ( navi_def ) ;
 
 		constructor ( public readonly dm = new DM.App )
 		{
@@ -20,7 +20,7 @@ namespace VM
 		}
 	}
 
-	const navi_def : app =
+	const navi_def : navi =
 	{
 		title : "Station-1" ,
 		make_url_from_index ( index )
@@ -65,13 +65,13 @@ namespace VC
 		) ;	
 	}
 
-	const content = ( index : app.Index ) =>
+	const content = ( index : navi.Index ) =>
 	{
 		if ( index.type == "station" )  return station ( index ) ;
 		return top_page ( index ) ;
 	}
 
-	const top_page = ( index : app.Index ) =>
+	const top_page = ( index : navi.Index ) =>
 	{
 		return ef.article
 		(
@@ -79,7 +79,7 @@ namespace VC
 		)
 	}
 
-	const station = ( index : app.Index ) =>
+	const station = ( index : navi.Index ) =>
 	{
 		const { shrink , gap, letters } = calc_spc( index.title.value ) ;
 
@@ -116,9 +116,9 @@ namespace VC
 		) ;
 	}
 
-	const navi_link = ( index : app.Index ) =>
+	const navi_link = ( index : navi.Index ) =>
 	{
-		return ef.li ( { class : { selected : index.sel_item } } , app.link( index ) ) ;
+		return ef.li ( { class : { selected : index.sel_item } } , navi.link( index ) ) ;
 	}
 }
 
