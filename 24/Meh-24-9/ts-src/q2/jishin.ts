@@ -80,6 +80,7 @@ namespace VM
 	{
 		list = new Renn < record > ;
 
+		loadtime = leaf ( "" ) ;
 		text_list = leaf ( "" ) ;
 		json = leaf ( "" ) ;
 		data ? : object ;
@@ -105,24 +106,29 @@ namespace VM
 				{
 					const { eid , ser , ttl , anm , mag , maxi , cod } = s ;
 					const at = s.at.slice( 0, 19 ).replace( "T", " " ) ;
-					const d : record = { eid , ser , at , ttl , anm , mag , maxi , cod } ;
+					const eid2 = eid.replace ( /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/ , ( all , Y , M , D , h , m , s  ) => `${ Y }/${ M }/${ D } ${ h }:${ m }:${ s }` );
+					
+					log ( eid2.length )
+
+					const d : record = { eid : eid2 , ser , at , ttl , anm , mag , maxi , cod } ;
 					
 					const i = list.get ( s.eid ) as any ;
 					if( i )
 					{
-						if ( s.ser > i.ser )  list.set ( s.eid , s ) ;
+						if ( s.ser > i.ser )  list.set ( s.eid , d ) ;
 					}
 					
 					else  list.set ( s.eid , d ) ;
 				}
 			) ;
 
-			log ( new Date () .toLocaleString () )
+			this.loadtime.value = ( new Date () .toLocaleString () ) ;
 
-			this.text_list.value = Array.from ( list.values () ).map ( i => Object.values ( i ).join ( "\t" ) ).join ( "\n" ) ;
+			this.text_list.value =
+			(
+				Array.from ( list.values () ).map ( i => Object.values ( i ).join ( "\t" ) ).join ( "\n" )
+			) ;
 			this.data = data ;
-
-			list
 
 			this.list.clear () ;
 			this.list.new
@@ -144,6 +150,7 @@ namespace VC
 	{
 		return ef.article
 		(
+			{ class : "地震アプリ" } ,
 			ef.h1 ( "地震リスト" ),
 
 			ef.section
@@ -156,7 +163,7 @@ namespace VC
 			
 			ef.section
 			(
-				ef.textarea ( { props : { value : vm.text_list } } ) ,
+				ef.textarea ( { style : { height : "100%" } , props : { value : vm.text_list } } ) ,
 			) ,
 			ef.section
 			(
@@ -166,6 +173,7 @@ namespace VC
 			) ,
 			ef.section
 			(
+				{ class : "JSONモニタ" } ,
 				ef.p ( { style : { whiteSpace : "pre-wrap" , background : "white" } } , vm.json ) ,
 			)
 		);
@@ -182,13 +190,16 @@ namespace VC
 				o => ef.li
 				(
 					col ( 5 , String ( o.count.value ) , true ) ,
-					col ( 18 , o.target.eid ) ,
-					col ( 3 , o.target.ser ) ,
-					col ( 22 , o.target.at ) ,
-					col ( 20 , o.target.anm ) ,
-					col ( 5 , o.target.mag ) ,
-					col ( 5 , o.target.maxi ) ,
-					col ( 23 , o.target.cod ) ,
+					ef.span
+					(
+						{ class : "cols" } ,
+						col ( 18 , o.target.eid ) ,
+						col ( 3 , o.target.ser ) ,
+						col ( 20 , o.target.anm || o.target.ttl , true ) ,
+						col ( 5 , o.target.mag ) ,
+						col ( 5 , o.target.maxi ) ,
+						col ( 23 , o.target.cod ) ,	
+					),
 				)
 			)
 		) ;
@@ -196,7 +207,7 @@ namespace VC
 
 	const col = ( span : number , text : string | number , bold : boolean = false ) => ef.span
 	(
-		{ style : { width : span + "ex" , fontWeight : bold ? "bold" : "normal" } } ,
+		{ class : "col" , style : { minWidth : span + "ex" , fontWeight : bold ? "bold" : "normal" } } ,
 		text
 	)
 }

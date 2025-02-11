@@ -7,30 +7,51 @@
 	<link rel="stylesheet" href="../res/main.css" />
 <style>
 
+.地震アプリ
+{
+	display : grid ;
+	height: 200vh ;
+	grid-template-rows: auto auto 1.2fr 15em auto 0.8fr;
+}
+
 .地震リスト
 {
 	display: flex ;
 	flex-direction: column ;
+	overflow: auto ;
 	gap: 1px ;
 }
 
 .地震リスト > li
 {
-	background-color: hsl( 0, 0%, 100% , 50% );
-	display: flex ;
-	justify-content: center ;
+	background-color: hsl( 0, 0%, 100% );
 	border-bottom: 1px dotted hsl( 0, 0%, 75% );
-	flex-wrap: wrap ;
+	display: grid ;
+	padding : 0.25ex ;
+	grid-template-columns: 5ex auto ;
+	justify-content : center ;
+	align-items: center ;
 	gap : 1px ;
 }
 
-.地震リスト > li > span
+.地震リスト > li > .cols
 {
-	background-color: hsl( 0, 0%, 100% );
-	padding-block: 0.2ex ;
+	display: flex ;
+	gap : 1px ;
+	flex-wrap: wrap ;
+}
+
+.地震リスト > li .col
+{
+	border-bottom: 0px dotted hsl( 0, 0%, 75% );
+	background-color: hsl( 45, 3%, 95% ) ;
 	text-align: center ;
 }
 
+.JSONモニタ
+{
+	overflow: auto ;
+}
 
 </style>
 </head>
