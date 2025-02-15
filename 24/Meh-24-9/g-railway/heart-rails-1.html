@@ -14,6 +14,11 @@ body
 ul { display : flex ; flex-wrap : wrap ; gap : 1em ; }
 li { word-break : keep-all ; }
 
+.part-list
+{
+	background-color: hsl( 0, 0%, 100% ) ;
+}
+
 .part-list a
 {
 	border-radius: 0.3ex ;
@@ -39,12 +44,19 @@ li { word-break : keep-all ; }
 .station ._main
 {
 	background: none ;
-	padding-block : 0.7em ;
+	padding-block : calc( 0.45em + 1vh ) ;
 	text-align : center ;
 	white-space : nowrap ;
 	font-size : 12vw ;
 }
 .station h2 { width : 100% ; }
+
+.station .part-list
+{
+	max-height: 35vh ;
+	overflow: auto ;
+	font-size: 0.89em ;
+}
 
 .Ranges { gap : 2px ; }
 
