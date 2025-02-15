@@ -1,4 +1,4 @@
-import { leaf , dom , ef , log } from "../meh/index.js" ;
+import { leaf , Renn , dom , ef , log } from "../meh/index.js" ;
 
 namespace VM
 {

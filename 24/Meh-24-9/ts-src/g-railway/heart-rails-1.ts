@@ -1,4 +1,5 @@
 import { leaf , ksel , navi , ef , each , sw , dom , log } from "../meh/index.js" ;
+import { vm } from "../q1/q-hsl.js";
 import { ClockA } from "../widjet/widjet.js" ;
 
 
@@ -10,7 +11,7 @@ namespace VM
 	const navi_def : navi =
 	{
 		title : "Heart Rails - 1" ,
-		root : ( app ) => new Root ( app ) ,
+		root : ( app ) => new HeartRails.RootIndex ( app ) ,
 
 		make_url_from_index ( index )
 		{
@@ -33,30 +34,40 @@ namespace VM
 	export class App
 	{
 		public readonly navi = new navi.Application ( navi_def ) ;
-		public readonly cs = root_cs () ;
-		public readonly station_cs = new Map < Line , ksel < Station > > ;
+		public readonly station_cs = new Map < HeartRails.LineIndex , ksel < HeartRails.StationIndex > > ;
 
 		constructor ()
 		{
 			this.navi.init () ;
-
-			this.cs.make_item ( "Full" ) .select () ;
 		}
 	}
 
-	const root_cs = () =>
+	type space_shrink =
 	{
-		return ksel < root_cs > ( "" ) ;
+		letterSpacing : string ;
+		transform : string ;
+		marginRight : string ;
 	}
 
+	export const calc_space_shrink = ( letter : string ) : space_shrink =>
+	{
+		const max = 6.5 ;
+		const len = letter.length ;
 
-	/**
-	 *     ( TypeA | TypeB )
-	 *     
-	 */
+		const space = ( { 2 : 0.8 , 3 : 0.24 , 4 : 0.05 , 5 : 0.01 } ) [ len ] ?? 0 ;
+		const shrink = Math.min ( 1 , max / ( len || 1 ) ) ;
+		
+		return null ||
+		{
+			letterSpacing : space + "em" ,
+			transform : `scale( ${ shrink } , 1 )` ,
+			marginRight : - space + "em"
+		} ;
+	}
+}
 
-	type root_cs = "" | "Full" | "Stations" ;
-
+namespace HeartRails
+{
 	//   areas      https://express.heartrails.com/api/json?method=getAreas
 	//   prefs      https://express.heartrails.com/api/json?method=getPrefectures&area=関東
 	//   lines      https://express.heartrails.com/api/json?method=getLines&prefecture=埼玉県
@@ -88,7 +99,7 @@ namespace VM
 
 	export abstract class ListIndex < res_t > extends RailIndex < res_t > {}
 
-	export class Root extends ListIndex < res_types.areas >
+	export class RootIndex extends ListIndex < res_types.areas >
 	{
 		constructor ( nav : navi.Application )
 		{
@@ -98,11 +109,11 @@ namespace VM
 
 		create_parts ( data : res_types.areas )
 		{
-			return data.response.area.map ( area => new Area ( this.app , this , area ) );
+			return data.response.area.map ( area => new AreaIndex ( this.app , this , area ) );
 		}
 	}
 
-	export class Area extends ListIndex < res_types.prefs >
+	export class AreaIndex extends ListIndex < res_types.prefs >
 	{
 		override fetch_query : string ;
 
@@ -114,11 +125,11 @@ namespace VM
 
 		create_parts ( data : res_types.prefs )
 		{
-			return data.response.prefecture.map ( pref => new Pref ( this.app , this , pref ) )
+			return data.response.prefecture.map ( pref => new PrefIndex ( this.app , this , pref ) )
 		}
 	}
 
-	export class Pref extends ListIndex < res_types.lines >
+	export class PrefIndex extends ListIndex < res_types.lines >
 	{
 		constructor ( nav : navi.Application , com : navi.Index , name : string )
 		{
@@ -128,11 +139,11 @@ namespace VM
 
 		create_parts ( data : res_types.lines )
 		{
-			return data.response.line.map ( line => new Line ( this.app , this , line ) )
+			return data.response.line.map ( line => new LineIndex ( this.app , this , line ) )
 		}
 	}
 
-	export class Line extends ListIndex < res_types.stations >
+	export class LineIndex extends ListIndex < res_types.stations >
 	{
 		constructor ( app : navi.Application , com : navi.Index , name : string )
 		{
@@ -142,11 +153,11 @@ namespace VM
 
 		create_parts ( data : res_types.stations )
 		{
-			return data.response.station.map ( station => new Station ( this.app , this , station ) )
+			return data.response.station.map ( station => new StationIndex ( this.app , this , station ) )
 		}
 	}
 
-	export class Station extends navi.Index
+	export class StationIndex extends navi.Index
 	{
 		constructor ( app : navi.Application , com : navi.Index , i : station )
 		{
@@ -191,8 +202,8 @@ namespace VC
 
 	export const root = ( index ? : navi.Index ) =>
 	{
-		if ( index instanceof VM.ListIndex )  return list_page ( index ) ;
-		if ( index instanceof VM.Station )  return station ( index ) ;
+		if ( index instanceof HeartRails.ListIndex )  return list_page ( index ) ;
+		if ( index instanceof HeartRails.StationIndex )  return station ( index ) ;
 
 		return ef.article
 		(
@@ -208,7 +219,7 @@ namespace VC
 		) ;
 	}
 
-	const list_page = ( index : VM.ListIndex < any > ) =>
+	const list_page = ( index : HeartRails.ListIndex < any > ) =>
 	{
 		index.fetch_parts () ;
 
@@ -230,9 +241,11 @@ namespace VC
 	}
 
 	
-	const station = ( index : VM.Station ) =>
+	const station = ( index : HeartRails.StationIndex ) =>
 	{
 		const com = index.com ;
+		
+		const ss = VM.calc_space_shrink ( index.title.value ) ;
 
 		return ef.article
 		(
@@ -240,7 +253,7 @@ namespace VC
 
 			ef.section
 			(
-				{ class : "_main" } ,
+				{ class : "_main" , style : ss } ,
 				index.name
 			) ,
 
