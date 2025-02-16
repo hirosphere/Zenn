@@ -27,7 +27,7 @@ namespace VM
 
 		containers :
 		{
-			index : ( current ) => ef.div ( sw ( current , index => VC.root ( index ) ) ) ,
+			index : ( current ) => ef.div ( sw ( current , index => VC.Root ( index ) ) ) ,
 		}
 	}
 
@@ -60,7 +60,7 @@ namespace VM
 		{
 			1 : [ 0 , 1.15 ] ,
 			2 : [ 0.75 , 1.05 ] ,
-			3 : [ 0.19 , 1.03 ] ,
+			3 : [ 0.185 , 1.03 ] ,
 			4 : [ 0.06 , 1.02 ] ,
 			5 : [ 0.04 , 0.96 ],
 			6 : [ 0.03 , 0.91 ]
@@ -170,7 +170,7 @@ namespace HeartRails
 
 	export class StationIndex extends navi.Index
 	{
-		constructor ( app : navi.Application , com : navi.Index , i : station )
+		constructor ( app : navi.Application , com : navi.Index , public readonly i : station )
 		{
 			super ( app , com , { name : i.name , title : i.name } ) ;
 		}
@@ -206,15 +206,19 @@ namespace VC
 	{
 		return ef.div
 		(
-			ef.div ( sw ( vm.navi.current_index , index => root ( index ) ) ) ,
+			ef.div
+			(
+				{ class : "app" } ,
+				sw ( vm.navi.current_index , index => Root ( index ) )
+			) ,
 			ClockA () ,
 		)
 	}
 
-	export const root = ( index ? : navi.Index ) =>
+	export const Root = ( index ? : navi.Index ) =>
 	{
-		if ( index instanceof HeartRails.ListIndex )  return list_page ( index ) ;
-		if ( index instanceof HeartRails.StationIndex )  return station ( index ) ;
+		if ( index instanceof HeartRails.ListIndex )  return ListPage ( index ) ;
+		if ( index instanceof HeartRails.StationIndex )  return StationPage ( index ) ;
 
 		return ef.article
 		(
@@ -222,50 +226,36 @@ namespace VC
 		);
 	}
 
-	export const station_container = ( index : navi.Index ) =>
-	{
-		return ef.article
-		(
-
-		) ;
-	}
-
-	const list_page = ( index : HeartRails.ListIndex < any > ) =>
+	const ListPage = ( index : HeartRails.ListIndex < any > ) =>
 	{
 		index.fetch_parts () ;
 
-		const com_link =
-		(
-			index.com && [ navi.link ( index.com , index.com ?.title ) , ">" ] || [ "" ]
-		) ;
+		const path_links = index.com && navi.link ( index.com ) || "" ;
 
 		return ef.article
 		(
+			PathLink ( index ) ,
 			ef.h1
 			(
-				ef.span ( ... com_link ),
 				ef.span ( navi.link ( index , index.title ) ) ,
 			) ,
-			list ( index ) ,
-			ef.p ( "list_page" )
+			ItemList ( index ) ,
 		)
 	}
 
 	
-	const station = ( index : HeartRails.StationIndex ) =>
+	const StationPage = ( index : HeartRails.StationIndex ) =>
 	{
 		const com = index.com ;
 		
 		const ss = VM.calc_space_shrink ( index.title.value ) ;
+		const postal = index.i.postal.slice ( 0 , 3 ) + "-" + index.i.postal.slice ( 3 , 7 ) ;
 
 		return ef.article
 		(
 			{ class : "station" } ,
 
-			ef.h2
-			(
-				com && navi.link ( com ) || undefined
-			) ,
+			PathLink ( index ) ,
 			
 			ef.section
 			(
@@ -273,26 +263,39 @@ namespace VC
 				index.name
 			) ,
 
-			com && list ( com ) || undefined ,
+			// ef.h2 ( com?.title ) ,
+
+			ef.section
+			(
+				{ class : "info" } ,
+				ef.span ( "北緯" , index.i.y , "度" ) ,
+				ef.span ( "東経" , index.i.x , "度" ) ,
+				ef.span ( "〒" , postal ) ,
+			) ,
+
+			com && ItemList ( com ) || undefined ,
 		)
 	}
 
-	const com_link = ( index : navi.Index ) =>
+	const PathLink = ( index : navi.Index ) =>
 	{
-		const com = index.com ;
+		if ( ! index.com ) return ;
 
-		return com && ef.h2
+		return ef.nav
 		(
-			navi.link ( com , index.title )
-		)
-		|| undefined ;
+			{ class : "path-navi" } ,
+			ef.ul
+			(
+				each ( index.com.path , o => ef.li ( navi.link ( o.target ) ) )
+			) ,
+		) ;
 	}
 
-	const list = ( index : navi.Index ) =>
+	const ItemList = ( index : navi.Index ) =>
 	(
 		ef.ul
 		(
-			{ class : "part-list fl-row" } ,
+			{ class : "ITEM_LIST" } ,
 			each
 			(
 				index.parts ,

@@ -6,27 +6,56 @@
 	<link rel="stylesheet" href="../res/main.css" />
 <style>
 
+/*  */
+
+a { background: none; }
+
+/*  */
+
 body
 {
 	max-width: 100% ;
 }
 
-ul { display : flex ; flex-wrap : wrap ; gap : 1em ; }
-li { word-break : keep-all ; }
-
-.part-list
+.app
 {
 	background-color: hsl( 0, 0%, 100% ) ;
 }
 
-.part-list a
+.path-navi
 {
-	border-radius: 0.3ex ;
-	padding : 0.8em 1.0em ;
-	line-height : 4em ;
+	display: flex ;
+	flex-direction: row ;
+	justify-content: center ;
+	background-color: hsl( 30, 10%, 0% , 0% );
 }
+.path-navi ul
+{
+	display: flex ;
+	flex-direction: row ;
+	flex-wrap: wrap ;
+}
+.path-navi li { white-space: nowrap; }
+.path-navi li:not(:last-child)::after { padding-inline-start: 0.2ex ; content: ">" ; }
 
-.part-list li.selected a
+.ITEM_LIST
+{
+	display: flex ;
+	flex-direction : row ;
+	flex-wrap: wrap ;
+	justify-content : center ;
+	gap : 0.4ex 0.25ex ;
+	background-color: hsl( 0, 0%, 100% ) ;
+}
+.ITEM_LIST li { word-break : keep-all ; }
+.ITEM_LIST a
+{
+	display : block ;
+	border-radius: 0.3ex ;
+	padding : 0.75em 1.0em ;
+	background-color: hsl( 0, 0%, 0% , 8% ) ;
+}
+.ITEM_LIST li.selected a
 {
 	background-color: hsl( 0, 0%, 8% ) ;
 	color: hsl( 0, 0%, 90% ) ;
@@ -44,14 +73,22 @@ li { word-break : keep-all ; }
 .station ._main
 {
 	background: none ;
-	padding-block : calc( 0.45em + 1vh ) ;
+	padding-block : calc( 20px + 4vw ) ;
 	text-align : center ;
 	white-space : nowrap ;
 	font-size : 12vw ;
 }
-.station h2 { width : 100% ; padding : 0 ; }
-
-.station .part-list
+.station .info
+{
+	width: 100% ;
+	display: flex ;
+	flex-direction: row ;
+	flex-wrap: wrap ;
+	justify-content: center ;
+	gap : 0 1.3em ;
+	background-color: hsl( 0, 0%, 0% , 8% );
+}
+.station .ITEM_LIST
 {
 	max-height: 35vh ;
 	overflow: auto ;

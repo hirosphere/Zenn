@@ -155,6 +155,7 @@ export namespace navi
 		public readonly name ;
 		public readonly title ;
 		public readonly parts : Renn < Index > ;
+		public readonly path : Renn < Index > = new Renn ;
 
 		protected p_part_list = new Map < string , Index > ;
 	
@@ -186,6 +187,7 @@ export namespace navi
 			this.parts.add_ref ( ref ) ;
 
 			this.container_type = i.container_type ?? "" ;
+			this.update_path () ;
 		}
 
 		public get link () : string
@@ -207,7 +209,7 @@ export namespace navi
 		{
 			await this.fetch_parts () ;
 
-			log ( "FETCH PATH INDEX" , part_path .join ( "/" ) ) ;
+			log ( "Fetch" , part_path .join ( "/" ) ) ;
 
 			const part = this.p_part_list.get ( part_path [ 0 ] ) ;
 			
@@ -217,7 +219,23 @@ export namespace navi
 		}
 
 		public async fetch_parts () {}
+
+		/* */
+
+		protected update_path ()
+		{
+			const path : Index [] = [ this ] ;
+			for ( let i = this.com ; i ; i = i.com ) i && path.unshift ( i ) ;
+			
+			// log ( path.map ( i => i.title.value ) .join ( "/" ) ) ;
+
+			this.path.new ( path ) ;
+		}
 	}
+
+
+
+	/* */
 
 	export function link ( index : Index , ... content : defs.parts )
 	{
