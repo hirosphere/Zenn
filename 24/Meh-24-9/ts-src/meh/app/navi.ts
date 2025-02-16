@@ -176,8 +176,6 @@ export namespace navi
 				src_add_orders : ( range ) =>
 				{
 					range.items.forEach ( o => this.p_part_list.set ( o.target.name.value , o.target ) ) ;
-
-					this.p_part_list.size && log ( this.p_part_list.keys () ) ;
 				},
 
 				src_remove_orders : ( range ) =>

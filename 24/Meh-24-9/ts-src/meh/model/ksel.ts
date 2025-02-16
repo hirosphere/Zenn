@@ -15,13 +15,15 @@ export namespace ksel
 	{
 		public readonly current : leaf < K > ;
 		protected items = new Map < K , Item < K > > ;
-		protected state_source = { false : leaf ( false ) , true : leaf ( true ) } ;
+		protected state_source : leaf.bool ;
 
 		constructor
 		(
 			init : leaf.ll < K > ,
+			com_state ? : leaf.bool
 		)
 		{
+			this.state_source = com_state ?? state_source.true
 			this.current = leaf.ll.make ( init ) ;
 
 			const key_change : leaf.update < K > = ( new_k , old_k ) =>
@@ -29,8 +31,8 @@ export namespace ksel
 				const old_i = old_k !== undefined && this.items.get ( old_k );
 				const new_i = this.items.get ( new_k );
 
-				if( old_i ) old_i.src = this.state_source.false ;
-				if( new_i ) new_i.src = this.state_source.true ;
+				if( old_i ) old_i.src = state_source.false ;
+				if( new_i ) new_i.src = this.state_source ;
 			};
 
 			leaf.ref < K > ( this.current , key_change ) ;
@@ -43,15 +45,13 @@ export namespace ksel
 			{
 				item = new Item ( this , key , this.get_stat_src ( key ) ) ;
 				this.items.set ( key , item ) ;
-
-				log ( item.value )
 			}
 			return item ;
 		}
 
 		protected get_stat_src ( key : K ) : leaf.bool
 		{
-			return ( key == this.current.value ) ? this.state_source.true : this.state_source.false ;
+			return ( key == this.current.value ) ? this.state_source : state_source.false ;
 		}
 	}
 
@@ -85,3 +85,9 @@ export namespace ksel
 
 	const cv = ( v : boolean ) => v ;
 }
+
+const state_source =
+{
+	false : leaf ( false ) ,
+	true : leaf ( true )
+} ;

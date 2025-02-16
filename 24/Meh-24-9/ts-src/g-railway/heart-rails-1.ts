@@ -51,12 +51,23 @@ namespace VM
 
 	export const calc_space_shrink = ( letter : string ) : space_shrink =>
 	{
+		// return { letterSpacing : "" , marginRight : "" , transform : "" } ;
+
 		const max = 6.5 ;
 		const len = letter.length ;
 
-		const space = ( { 2 : 0.8 , 3 : 0.24 , 4 : 0.05 , 5 : 0.01 } ) [ len ] ?? 0 ;
-		const shrink = Math.min ( 1 , max / ( len || 1 ) ) ;
-		
+		const [ space , shrink ] =
+		{
+			1 : [ 0 , 1.15 ] ,
+			2 : [ 0.75 , 1.09 ] ,
+			3 : [ 0.13 , 1.01 ] ,
+			4 : [ 0.03 , 1 ] ,
+			5 : [ 0.05 , 0.96 ],
+			6 : [ 0.04 , 0.9 ]
+		}
+		[ len ]
+		?? [ 0 , Math.min ( 1 , max / ( len || 1 ) ) ];
+
 		return null ||
 		{
 			letterSpacing : space + "em" ,
@@ -251,17 +262,17 @@ namespace VC
 		(
 			{ class : "station" } ,
 
+			ef.h2
+			(
+				com && navi.link ( com ) || undefined
+			) ,
+			
 			ef.section
 			(
 				{ class : "_main" , style : ss } ,
 				index.name
 			) ,
 
-			ef.h2
-			(
-				com && navi.link ( com ) || undefined
-			) ,
-			
 			com && list ( com ) || undefined ,
 		)
 	}
