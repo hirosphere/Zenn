@@ -190,6 +190,11 @@ export namespace navi
 			this.update_path () ;
 		}
 
+		public part ( name : string ) : Index | undefined
+		{
+			return this.p_part_list.get ( name ) ;
+		}
+
 		public get link () : string
 		{
 			return this.app.make_url_path ( this ) ;

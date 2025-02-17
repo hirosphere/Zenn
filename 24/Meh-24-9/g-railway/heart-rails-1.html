@@ -8,7 +8,7 @@
 
 /*  */
 
-a { background: none; }
+a:link { background: none; }
 
 /*  */
 
@@ -20,23 +20,35 @@ body
 .app
 {
 	background-color: hsl( 0, 0%, 100% ) ;
+	padding: 1px ;
 }
 
-.path-navi
+.PATH_NAVI
 {
+	width: 97% ;
+
 	display: flex ;
 	flex-direction: row ;
 	justify-content: center ;
+
+	border-bottom: 1px solid hsl( 210 , 0% , 30% , 20% ) ;
 	background-color: hsl( 30, 10%, 0% , 0% );
+	padding: 0.2ex 1em ;
+
+	font-size: clamp( 14px , 14px + ( 100vw - 360px ) * 0.01 , 16px );
 }
-.path-navi ul
+.PATH_NAVI ul
 {
 	display: flex ;
 	flex-direction: row ;
 	flex-wrap: wrap ;
+
+	padding: 0 ;
 }
-.path-navi li { white-space: nowrap; }
-.path-navi li:not(:last-child)::after { padding-inline-start: 0.2ex ; content: ">" ; }
+.PATH_NAVI li { white-space: nowrap; }
+.PATH_NAVI li:not(:last-child)::after { content: ">" ; }
+.PATH_NAVI li a { padding: 0.3ex ; }
+
 
 .ITEM_LIST
 {
@@ -44,11 +56,13 @@ body
 	flex-direction : row ;
 	flex-wrap: wrap ;
 	justify-content : center ;
-	gap : 0.4ex 0.25ex ;
+	gap : 1.0ex 0.63ex ;
+	
 	background-color: hsl( 0, 0%, 100% ) ;
+	padding: 1.0em ;
 }
 .ITEM_LIST li { word-break : keep-all ; }
-.ITEM_LIST a
+.ITEM_LIST a:link
 {
 	display : block ;
 	border-radius: 0.3ex ;
@@ -61,7 +75,7 @@ body
 	color: hsl( 0, 0%, 90% ) ;
 }
 
-.station
+.STATION
 {
 	display : flex ;
 	flex-direction: column ;
@@ -69,16 +83,17 @@ body
 	overflow: hidden ;
 
 	background-color : hsl( 0, 0%, 100% ) ;
+	padding: 0.2ex ;
 }
-.station ._main
+.STATION ._MAIN
 {
 	background: none ;
-	padding-block : calc( 20px + 4vw ) ;
+	padding-block : calc( 35px + 4vw ) ;
 	text-align : center ;
 	white-space : nowrap ;
 	font-size : 12vw ;
 }
-.station .info
+.STATION ._INFO
 {
 	width: 100% ;
 	display: flex ;
@@ -88,14 +103,14 @@ body
 	gap : 0 1.3em ;
 	background-color: hsl( 0, 0%, 0% , 8% );
 }
-.station .ITEM_LIST
+.STATION .ITEM_LIST
 {
 	max-height: 35vh ;
 	overflow: auto ;
 	font-size: clamp( 0.9em , 0.55rem + 1vw , 1.00rem ) ;
 }
 
-.Ranges { gap : 2px ; }
+a:hover { background-color: hsl( 0, 0%, 0% , 13% ); }
 
 </style>
 </head>

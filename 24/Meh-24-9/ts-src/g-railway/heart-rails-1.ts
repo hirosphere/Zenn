@@ -230,8 +230,6 @@ namespace VC
 	{
 		index.fetch_parts () ;
 
-		const path_links = index.com && navi.link ( index.com ) || "" ;
-
 		return ef.article
 		(
 			PathLink ( index ) ,
@@ -247,19 +245,23 @@ namespace VC
 	const StationPage = ( index : HeartRails.StationIndex ) =>
 	{
 		const com = index.com ;
+		const i = index.i ;
+
+		const next = com?.part ( i.next ?? "" ) ;
+		const prev = com?.part ( i.prev ?? "" ) ;
 		
 		const ss = VM.calc_space_shrink ( index.title.value ) ;
-		const postal = index.i.postal.slice ( 0 , 3 ) + "-" + index.i.postal.slice ( 3 , 7 ) ;
+		const postal = i.postal.slice ( 0 , 3 ) + "-" + i.postal.slice ( 3 , 7 ) ;
 
 		return ef.article
 		(
-			{ class : "station" } ,
+			{ class : "STATION" } ,
 
 			PathLink ( index ) ,
 			
 			ef.section
 			(
-				{ class : "_main" , style : ss } ,
+				{ class : "_MAIN" , style : ss } ,
 				index.name
 			) ,
 
@@ -267,7 +269,14 @@ namespace VC
 
 			ef.section
 			(
-				{ class : "info" } ,
+				{ class : "_INFO" } ,
+				ef.span ( prev && navi.link ( prev ) || "--" ) , " | " ,
+				ef.span ( next && navi.link ( next ) || "--" )
+			) ,
+
+			ef.section
+			(
+				{ class : "_INFO" } ,
 				ef.span ( "北緯" , index.i.y , "度" ) ,
 				ef.span ( "東経" , index.i.x , "度" ) ,
 				ef.span ( "〒" , postal ) ,
@@ -283,7 +292,7 @@ namespace VC
 
 		return ef.nav
 		(
-			{ class : "path-navi" } ,
+			{ class : "PATH_NAVI" } ,
 			ef.ul
 			(
 				each ( index.com.path , o => ef.li ( navi.link ( o.target ) ) )
