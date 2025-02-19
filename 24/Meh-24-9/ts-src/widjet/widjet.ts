@@ -70,7 +70,7 @@ const ThemeSelector = () =>
 {
 	return ef.section
 	(
-		{ class : "fl-row" } ,
+		{ class : "fl-row" , style : { overflow : "hidden" } } ,
 		... Object.entries( theme ).map ( ( [ key , value ] ) => ef.span ( key , " " , value.toString () ) )
 	)
 }

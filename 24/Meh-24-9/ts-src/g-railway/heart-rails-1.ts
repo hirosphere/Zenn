@@ -232,12 +232,12 @@ namespace VC
 
 		return ef.article
 		(
-			PathLink ( index ) ,
+			PathNavi ( index ) ,
 			ef.h1
 			(
 				ef.span ( navi.link ( index , index.title ) ) ,
 			) ,
-			ItemList ( index ) ,
+			ItemNavi ( index ) ,
 		)
 	}
 
@@ -257,7 +257,7 @@ namespace VC
 		(
 			{ class : "STATION" } ,
 
-			PathLink ( index ) ,
+			PathNavi ( index ) ,
 			
 			ef.section
 			(
@@ -282,11 +282,11 @@ namespace VC
 				ef.span ( "〒" , postal ) ,
 			) ,
 
-			com && ItemList ( com ) || undefined ,
+			com && ItemNavi ( com ) || undefined ,
 		)
 	}
 
-	const PathLink = ( index : navi.Index ) =>
+	const PathNavi = ( index : navi.Index ) =>
 	{
 		if ( ! index.com ) return ;
 
@@ -300,7 +300,7 @@ namespace VC
 		) ;
 	}
 
-	const ItemList = ( index : navi.Index ) =>
+	const ItemNavi = ( index : navi.Index ) =>
 	(
 		ef.ul
 		(

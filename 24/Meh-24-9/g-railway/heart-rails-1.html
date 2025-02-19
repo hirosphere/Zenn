@@ -31,27 +31,46 @@ body
 	flex-direction: row ;
 	justify-content: center ;
 
-	border-bottom: 1px solid hsl( 210 , 0% , 30% , 20% ) ;
+	border-bottom: 0px solid hsl( 210 , 0% , 30% , 20% ) ;
 	background-color: hsl( 30, 10%, 0% , 0% );
-	padding: 0.2ex 1em ;
+	padding: 0.4ex 1em ;
 
 	font-size: clamp( 14px , 14px + ( 100vw - 360px ) * 0.01 , 16px );
+	font-size : 16px ;
 }
 .PATH_NAVI ul
 {
 	display: flex ;
 	flex-direction: row ;
-	flex-wrap: wrap ;
+	flex-wrap: nowrap ;
 
 	padding: 0 ;
+	gap : 0 ;
 }
-.PATH_NAVI li { white-space: nowrap; }
-.PATH_NAVI li:not(:last-child)::after { content: ">" ; }
-.PATH_NAVI li a { padding: 0.3ex ; }
+.PATH_NAVI li
+{
+	white-space: nowrap ;
+	flex-shrink: 1 ;
+
+	padding : 0 ;
+}
+.PATH_NAVI li:not(:last-child)::after
+{
+	padding-inline : 0.3ex ;
+	content: ">" ;
+}
+.PATH_NAVI li a
+{
+	padding: 0.3ex ;
+	border-bottom : 1px solid black ;
+}
 
 
 .ITEM_LIST
 {
+	max-height: 70vh ;
+	overflow: auto ;
+
 	display: flex ;
 	flex-direction : row ;
 	flex-wrap: wrap ;

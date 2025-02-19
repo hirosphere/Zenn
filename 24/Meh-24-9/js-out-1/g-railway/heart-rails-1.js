@@ -135,7 +135,7 @@ var VC;
     };
     const ListPage = (index) => {
         index.fetch_parts();
-        return ef.article(PathLink(index), ef.h1(ef.span(navi.link(index, index.title))), ItemList(index));
+        return ef.article(PathNavi(index), ef.h1(ef.span(navi.link(index, index.title))), ItemNavi(index));
     };
     const StationPage = (index) => {
         const com = index.com;
@@ -144,16 +144,16 @@ var VC;
         const prev = com?.part(i.prev ?? "");
         const ss = VM.calc_space_shrink(index.title.value);
         const postal = i.postal.slice(0, 3) + "-" + i.postal.slice(3, 7);
-        return ef.article({ class: "STATION" }, PathLink(index), ef.section({ class: "_MAIN", style: ss }, index.name), 
+        return ef.article({ class: "STATION" }, PathNavi(index), ef.section({ class: "_MAIN", style: ss }, index.name), 
         // ef.h2 ( com?.title ) ,
-        ef.section({ class: "_INFO" }, ef.span(prev && navi.link(prev) || "--"), " | ", ef.span(next && navi.link(next) || "--")), ef.section({ class: "_INFO" }, ef.span("北緯", index.i.y, "度"), ef.span("東経", index.i.x, "度"), ef.span("〒", postal)), com && ItemList(com) || undefined);
+        ef.section({ class: "_INFO" }, ef.span(prev && navi.link(prev) || "--"), " | ", ef.span(next && navi.link(next) || "--")), ef.section({ class: "_INFO" }, ef.span("北緯", index.i.y, "度"), ef.span("東経", index.i.x, "度"), ef.span("〒", postal)), com && ItemNavi(com) || undefined);
     };
-    const PathLink = (index) => {
+    const PathNavi = (index) => {
         if (!index.com)
             return;
         return ef.nav({ class: "PATH_NAVI" }, ef.ul(each(index.com.path, o => ef.li(navi.link(o.target)))));
     };
-    const ItemList = (index) => (ef.ul({ class: "ITEM_LIST" }, each(index.parts, o => ef.li({ class: { selected: o.target.sel_item } }, navi.link(o.target)))));
+    const ItemNavi = (index) => (ef.ul({ class: "ITEM_LIST" }, each(index.parts, o => ef.li({ class: { selected: o.target.sel_item } }, navi.link(o.target)))));
 })(VC || (VC = {}));
 export const main = () => {
     dom.add(VC.App(), "body");
