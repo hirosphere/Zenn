@@ -51,8 +51,6 @@ namespace VM
 
 	export const calc_space_shrink = ( letter : string ) : space_shrink =>
 	{
-		// return { letterSpacing : "" , marginRight : "" , transform : "" } ;
-
 		const max = 6.5 ;
 		const len = letter.length ;
 
@@ -63,10 +61,10 @@ namespace VM
 			3 : [ 0.185 , 1.03 ] ,
 			4 : [ 0.06 , 1.02 ] ,
 			5 : [ 0.04 , 0.96 ],
-			6 : [ 0.03 , 0.91 ]
+			6 : [ 0.00 , 0.93 ]
 		}
 		[ len ]
-		?? [ 0 , Math.min ( 1 , max / ( len || 1 ) ) ];
+		?? [ 0.0 , Math.min ( 1 , max / ( len || 1 ) ) ];
 
 		return null ||
 		{
