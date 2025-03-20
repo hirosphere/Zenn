@@ -206,7 +206,7 @@ namespace VC
 		(
 			ef.div
 			(
-				{ class : "app" } ,
+				{ class : "APP" } ,
 				sw ( vm.navi.current_index , index => Root ( index ) )
 			) ,
 			ClockA () ,

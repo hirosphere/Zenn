@@ -123,7 +123,7 @@ var HeartRails;
 var VC;
 (function (VC) {
     VC.App = (vm = new VM.App) => {
-        return ef.div(ef.div({ class: "app" }, sw(vm.navi.current_index, index => VC.Root(index))), ClockA());
+        return ef.div(ef.div({ class: "APP" }, sw(vm.navi.current_index, index => VC.Root(index))), ClockA());
     };
     VC.Root = (index) => {
         if (index instanceof HeartRails.ListIndex)
