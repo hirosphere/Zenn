@@ -11,14 +11,14 @@ namespace VM
 	const navi_def : navi =
 	{
 		title : "Heart Rails - 1" ,
-		root : ( app ) => new HeartRails.RootIndex ( app ) ,
+		create_root_index : ( navi ) => new HeartRails.RootIndex ( navi ) ,
 
-		make_url_from_index ( index )
+		index_to_url ( index )
 		{
 			return `?page=${ index.url_path .splice ( 1 ) .join ( "/" ) }` ;	
 		},
 
-		make_path_from_url ( { root , params } )
+		url_to_path_array ( { root , params } )
 		{
 			const page_path = params.get ( "page" ) ?.split ( "/" ) ?? [] ;
 			log ( "page_path" , page_path ) ;

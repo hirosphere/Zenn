@@ -23,11 +23,11 @@ namespace VM
 	const navi_def : navi =
 	{
 		title : "Station-1" ,
-		make_url_from_index ( index )
+		index_to_url ( index )
 		{
 			return `?p=${ index.name.value }` ;
 		},
-		root :
+		create_root_index :
 		{
 			name : "" ,
 			title : "駅名表示" ,

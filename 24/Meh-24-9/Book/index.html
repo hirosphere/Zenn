@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+* { box-sizing: border-box ; margin: 0 ; padding: 0 ; }
+a { text-decoration: dotted; color : hsl( 0 , 0% , 20% ) ; }
+
+.APP
+{
+	height : 100vh ;
+	overflow : auto ;
+	padding: 1.25ex ;
+	display : grid ;
+	grid-template-rows : 1fr auto ;
+	gap : 1.2ex ;
+	background-color: hsl( 210 , 75% , 75% ) ;
+}
+
+.APP_NAVI ,
+.APP_CONTENT
+{
+	border-radius : 1ex ;
+	background-color: hsl( 0 , 0% , 100% );
+}
+
+.APP_NAVI
+{
+	padding : 1ex ;
+
+	display : flex ;
+	flex-direction : column ;
+	gap : 1ex ;
+	overflow: auto;
+}
+
+.APP_NAVI > ul
+{
+	display: flex;
+	flex-direction: row;
+	list-style: none;
+	gap: 0.35ex;
+}
+
+.APP_NAVI li
+{
+}
+
+.NAVI_LINK
+{
+	border-radius: 0.75ex ;
+	border: 1px solid hsl( 0 , 0% , 50% );
+	display: block;
+	padding : 0.55ex 1.1ex ;
+}
+
+.NAVI_LINK:hover
+{
+	background-color: hsl( 0 , 0% , 90% );
+}
+
+.NAVI_LINK.SELECTED
+{
+	background-color: hsl( 0 , 0% , 0% ) ;
+	color : hsl( 0 , 0% , 100% ) ;
+}
+
+
+.APP_CONTENT
+{
+	flex-grow : 1 ;
+}
+
+</style>
+</head>
+<body>
+	<script type="module">
+		import { main } from "../js-out-1/Book/App.js" ;
+		main () ;
+	</script>		
+</body>
+</html>

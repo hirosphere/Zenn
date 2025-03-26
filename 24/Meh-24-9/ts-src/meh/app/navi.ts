@@ -7,12 +7,13 @@ import { MehElement , ef , defs } from "../dom/index.js" ;
 export type navi =
 {
 	title : string ;
-	root : navi.t.index | ( ( app : navi.Application ) => navi.Index ) ;
+	create_root_index : navi.t.index | ( ( app : navi.Application ) => navi.Index ) ;
 	
-	make_title ? : ( index : navi.Index ) => string ;
-	make_index_from_url ? ( args : make_index_from_url_args ) : navi.Index | undefined ;
-	make_path_from_url ? ( args : make_index_from_url_args ) : string [] ;
-	make_url_from_index ? : ( index : navi.Index ) => string ;
+	index_to_url ? : ( index : navi.Index ) => string ;
+	index_to_title ? : ( index : navi.Index ) => string ;
+
+	url_to_index ? ( args : make_index_from_url_args ) : navi.Index | undefined ;
+	url_to_path_array ? ( args : make_index_from_url_args ) : string [] ;
 	
 	containers ? : Record < string , navi.t.create_containner > ;
 }
@@ -47,6 +48,11 @@ export namespace navi
 
 		export type container_key = string | undefined ;
 		export type create_containner = ( current : leaf.r < navi.t.index_key > ) => defs.element ;
+
+		export type link = defs.ec < HTMLAnchorElement > &
+		{
+			index : Index ;
+		};
 	}
 	
 	
@@ -63,7 +69,7 @@ export namespace navi
 		constructor ( protected i : navi )
 		{
 			this.title = leaf.str ( i.title ) ;
-			this.root = ( typeof i.root == "function" && i.root ( this ) ) || new navi.Index ( this , null , i.root ) ;
+			this.root = ( typeof i.create_root_index == "function" && i.create_root_index ( this ) ) || new navi.Index ( this , null , i.create_root_index ) ;
 			this.current_index = leaf < t.index_key> ( undefined ) ;
 			this.current_index.add_ref ( { src_value_change : new_index => this.set_current ( new_index ) } ) ;
 			this.selector = ksel < t.index_key > ( this.current_index ) ;
@@ -81,9 +87,9 @@ export namespace navi
 
 			const index = await this.root.fetch_path_index
 			(
-				( this.i ?.make_path_from_url ?.( search_args ) ) ?? []
+				( this.i ?.url_to_path_array ?.( search_args ) ) ?? []
 			)
-				?? this.i ?.make_index_from_url ?. ( search_args )
+				?? this.i ?.url_to_index ?. ( search_args )
 			;
 
 			this.set_current ( index ?? default_index ) ;
@@ -110,7 +116,7 @@ export namespace navi
 		{
 			return index ?
 			(
-				this.i.make_title ?.( index ) ??
+				this.i.index_to_title ?.( index ) ??
 				index.title.value + " - " + this.title.value
 			)
 			: this.title.value ;
@@ -118,7 +124,7 @@ export namespace navi
 	
 		public make_url_path ( index : Index ) : string
 		{
-			return this.i.make_url_from_index ?. ( index ) ?? "" ;
+			return this.i.index_to_url ?. ( index ) ?? "" ;
 		}
 
 		protected make_container ( key : t.container_key ) : Container
@@ -242,8 +248,11 @@ export namespace navi
 
 	/* */
 
-	export function link ( index : Index , ... content : defs.parts )
+	export function link ( arg : Index | t.link , ... content : defs.parts )
 	{
+		const index = ( arg instanceof navi.Index ? arg : arg.index ) ;
+		const ec : defs.ec < HTMLAnchorElement > = ( arg instanceof navi.Index ? {} : arg )
+
 		const click = ( ev : MouseEvent ) =>
 		{
 			index.sel_item.select () ;
@@ -253,8 +262,9 @@ export namespace navi
 		return ef.a
 		(
 			{
-				attrs : { href : index.link } ,
-				active_acts : { click }
+				... ec ,
+				attrs : { href : index.link , ... ec.attrs } ,
+				active_acts : { click , ... ec.active_acts }
 			} ,
 			... ( content.length ? content : [ index.title ] )
 		) ;

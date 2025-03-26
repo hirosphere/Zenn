@@ -19,7 +19,7 @@ namespace vm
 
 		constructor ()
 		{
-			const n = new navi.Application ( { title : "Form Quest" , root : { name : "" , title : "Form Quest" } } ) ;
+			const n = new navi.Application ( { title : "Form Quest" , create_root_index : { name : "" , title : "Form Quest" } } ) ;
 			n.set_current ( n.root ) ;
 		}
 	}
