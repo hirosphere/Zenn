@@ -60,6 +60,7 @@ export namespace navi
 	{
 		public readonly title ;
 		public readonly root : Index ;
+		public readonly path : Renn < Index > ;
 		public readonly current_index ;
 		public readonly selector ;
 
@@ -69,7 +70,8 @@ export namespace navi
 		constructor ( protected i : navi )
 		{
 			this.title = leaf.str ( i.title ) ;
-			this.root = ( typeof i.create_root_index == "function" && i.create_root_index ( this ) ) || new navi.Index ( this , null , i.create_root_index ) ;
+			this.root = ( typeof i.create_root_index == "function" && i.create_root_index ( this ) ) || new navi.Index ( this , undefined , i.create_root_index ) ;
+			this.path = new Renn ( [ this.root ] ) ;
 			this.current_index = leaf < t.index_key> ( undefined ) ;
 			this.current_index.add_ref ( { src_value_change : new_index => this.set_current ( new_index ) } ) ;
 			this.selector = ksel < t.index_key > ( this.current_index ) ;
@@ -98,6 +100,8 @@ export namespace navi
 		public set_current( index : Index | undefined )
 		{
 			this.current_index [ set_value ] ( index );
+
+			index && this.path.replace ( index.path ) ;
 
 			const container = this.make_container ( index ?.type ) ;
 			container.current_index [ set_value ] ( index ) ;
@@ -161,14 +165,13 @@ export namespace navi
 		public readonly name ;
 		public readonly title ;
 		public readonly parts : Renn < Index > ;
-		public readonly path : Renn < Index > = new Renn ;
 
 		protected p_part_list = new Map < string , Index > ;
 	
 		constructor
 		(
 			public readonly app : Application ,
-			public readonly com : Index | null ,
+			public readonly com : Index | undefined ,
 			i : t.index
 		)
 		{
@@ -193,8 +196,14 @@ export namespace navi
 			this.parts.add_ref ( ref ) ;
 
 			this.container_type = i.container_type ?? "" ;
-			this.update_path () ;
 		}
+
+		public get path () : Index []
+		{
+			const path : Index [] = [ this ] ;
+			for ( let i = this.com ; i ; i = i.com ) i && path.unshift ( i ) ;
+			return path ;
+		} 
 
 		public part ( name : string ) : Index | undefined
 		{
@@ -230,18 +239,6 @@ export namespace navi
 		}
 
 		public async fetch_parts () {}
-
-		/* */
-
-		protected update_path ()
-		{
-			const path : Index [] = [ this ] ;
-			for ( let i = this.com ; i ; i = i.com ) i && path.unshift ( i ) ;
-			
-			// log ( path.map ( i => i.title.value ) .join ( "/" ) ) ;
-
-			this.path.new ( path ) ;
-		}
 	}
 
 

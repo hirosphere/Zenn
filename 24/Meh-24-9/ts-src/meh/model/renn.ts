@@ -27,17 +27,18 @@ export class Renn < S >
 		);
 	}
 
-	public clear ()
+	public replace ( targets : S [] ) : void
+	{
+		this.clear () ;
+		this.new ( targets ) ;
+	}
+
+	public clear () : void
 	{
 		this.remove ( 0, this.orders.length ) ;
 	}
 
-	public new
-	(
-		srcs : S [],
-		start ? : Order.value
-	)
-	: void
+	public new ( srcs : S [] , start ? : Order.value ) : void
 	{
 		start = pos_trim( start, this.orders ) ;
 
@@ -70,11 +71,7 @@ export class Renn < S >
 		this.length [ set_value ] ( this.orders.length ) ;
 	}
 
-	public remove
-	(
-		start : number ,
-		count : number = 1,
-	)
+	public remove ( start : number , count : number = 1 ) : void
 	{
 		const next = pos_trim
 		(

@@ -112,7 +112,7 @@ namespace HeartRails
 	{
 		constructor ( nav : navi.Application )
 		{
-			super ( nav , null , { type : "index" , name : "" , title : "Heart Rails" } ) ;
+			super ( nav , undefined , { type : "index" , name : "" , title : "Heart Rails" } ) ;
 			this.fetch_query = "method=getAreas" ;
 		}
 
@@ -293,7 +293,7 @@ namespace VC
 			{ class : "PATH_NAVI" } ,
 			ef.ul
 			(
-				each ( index.com.path , o => ef.li ( navi.link ( o.target ) ) )
+				... index.com.path.map ( index => ef.li ( navi.link ( index ) ) )
 			) ,
 		) ;
 	}

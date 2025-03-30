@@ -2,26 +2,24 @@ import { navi , ef , pl , dom , log } from "../meh/index.js" ;
 
 namespace VM
 {
-	const book_def_2 : navi.t.index =
+	const make_part_tree = ( level : number , com_title : string = "" , ) =>
 	{
-		name : "" , title : "Meh Root" ,
-		parts :
-		[
-			{ name : "1" , title : "Item 1" } ,
-			{ name : "2" , title : "Item 2" } ,
-			{ name : "3" , title : "Item 3" } ,
-			{ name : "4" , title : "Item 4" } ,
-		]
-	} ;
+		// log ( com_title ) ;
 
-	const make_part_tree = ( com_name : string = "" , level : number = 0 ) =>
-	{
 		const rt : navi.t.index [] = [] ;
+		if ( level <= 0 ) return rt ;
 
 		for ( let i = 1 ; i <= 10 ; i ++ )
 		{
-			const name = com_name + i ;
-			rt.push ( { name , title : `Item ${ name }` } ) ;
+			const title = com_title + i ;
+			rt.push
+			(
+				{
+					name : i.toString () ,
+					title : `Item ${ title }` ,
+					parts : make_part_tree ( level - 1 , title + "-" )
+				}
+			) ;
 		}
 
 		return rt ;
@@ -30,13 +28,13 @@ namespace VM
 	const book_def : navi.t.index =
 	{
 		name : "" , title : "Meh Root" ,
-		parts : make_part_tree () ,
+		parts : make_part_tree ( 3 ) ,
 	} ;
 
 	const navi_def : navi =
 	{
 		title : "Book" ,
-		create_root_index : ( app ) => new navi.Index ( app , null , book_def ) ,
+		create_root_index : ( app ) => new navi.Index ( app , undefined , book_def ) ,
 		index_to_url ( index )
 		{
 			return `?PAGE=${ index.url_path .splice ( 1 ) .join ( "/" ) }` ;
@@ -76,32 +74,53 @@ namespace VC
 			ef.nav
 			(
 				{ class : "APP_NAVI" } ,
+				pl.switch
+				(
+					vm.navi.current_index ,
+					index => LinkList ( index , "APP_NAVI_PARTS" )
+				) ,
+				pl.switch
+				(
+					vm.navi.current_index ,
+					index => LinkList ( index ?.com , "APP_NAVI_ISOS" )
+				) ,
 				ef.ul
 				(
+					{ class : "APP_NAVI_PATH" } ,
 					pl.each
 					(
-						vm.navi.root.parts ,
-						o => ef.li ( PageLink ( o.target ) )
+						vm.navi.path ,
+						o => ef.li ( PageLink ( o.target ) ) ,
 					) ,
-				) ,
-				ef.hr () ,
-				ef.ul
-				(
-					PageLink ( vm.navi.root ) ,
 				) ,
 			) ,
 		) ;
 	}
 
+	const LinkList = ( index : navi.Index | undefined , classname : string ) =>
+	{
+		return ef.ul
+		(
+			{ class : classname } ,
+			index && pl.each
+			(
+				index.parts ,
+				o => ef.li ( PageLink ( o.target ) ) ,
+			)
+		) ;
+	}
+
 	const PageLink = ( index : navi.Index ) =>
 	{
-		return navi.link
+		const link = navi.link
 		(
 			{
 				index ,
-				class : [ "NAVI_LINK" , { SELECTED : index.sel_item } ] ,
+				class : [ "APP_NAVI_LINK" , { SELECTED : index.sel_item } ] ,
 			}
 		) ;
+
+		return link ;
 	}
 }
 

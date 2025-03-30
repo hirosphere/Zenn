@@ -16,24 +16,24 @@ a { text-decoration: dotted; color : hsl( 0 , 0% , 20% ) ; }
 	padding: 1.25ex ;
 	display : grid ;
 	grid-template-rows : 1fr auto ;
-	gap : 1.2ex ;
-	background-color: hsl( 210 , 75% , 75% ) ;
+	gap : 0.6ex ;
+	background-color: hsl( 100 , 0% , 0% ) ;
 }
 
 .APP_NAVI ,
 .APP_CONTENT
 {
-	border-radius : 1ex ;
+	border-radius : 0.5ex ;
 	background-color: hsl( 0 , 0% , 100% );
 }
 
 .APP_NAVI
 {
-	padding : 1ex ;
+	padding : 0.2ex ;
 
 	display : flex ;
 	flex-direction : column ;
-	gap : 1ex ;
+	gap : 0.3ex ;
 	overflow: auto;
 }
 
@@ -42,27 +42,30 @@ a { text-decoration: dotted; color : hsl( 0 , 0% , 20% ) ; }
 	display: flex;
 	flex-direction: row;
 	list-style: none;
-	gap: 0.35ex;
+	gap: 0ex;
+
+	overflow : auto ;
 }
 
-.APP_NAVI li
+.APP_NAVI_PARTS
 {
+	font-size: 90% ;
 }
 
-.NAVI_LINK
+a.APP_NAVI_LINK
 {
-	border-radius: 0.75ex ;
+	border-radius: 0.3ex ;
 	border: 1px solid hsl( 0 , 0% , 50% );
 	display: block;
-	padding : 0.55ex 1.1ex ;
+	padding : 0.65ex 1.7ex ;
 }
 
-.NAVI_LINK:hover
+a.APP_NAVI_LINK:hover
 {
 	background-color: hsl( 0 , 0% , 90% );
 }
 
-.NAVI_LINK.SELECTED
+a.APP_NAVI_LINK.SELECTED
 {
 	background-color: hsl( 0 , 0% , 0% ) ;
 	color : hsl( 0 , 0% , 100% ) ;
