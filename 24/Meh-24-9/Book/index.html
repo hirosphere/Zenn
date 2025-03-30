@@ -37,7 +37,7 @@ a { text-decoration: dotted; color : hsl( 0 , 0% , 20% ) ; }
 	overflow: auto;
 }
 
-.APP_NAVI > ul
+.APP_NAVI ul
 {
 	display: flex;
 	flex-direction: row;
@@ -49,10 +49,31 @@ a { text-decoration: dotted; color : hsl( 0 , 0% , 20% ) ; }
 
 .APP_NAVI_PARTS
 {
-	font-size: 90% ;
+	padding : 1ex ;
 }
 
-a.APP_NAVI_LINK
+.APP_NAVI_ISOS
+{
+	font-size : 80% ;
+}
+
+.APP_NAVI li
+{
+	white-space: nowrap;
+}
+
+.APP_NAVI_PATH
+{
+	padding: 0.5ex ;
+}
+.APP_NAVI_PATH li:not(:last-child)::after
+{
+	padding-inline: 0.8ex ;
+	content: ">" ;
+}
+
+.APP_NAVI_ISOS a ,
+.APP_NAVI_PARTS a
 {
 	border-radius: 0.3ex ;
 	border: 1px solid hsl( 0 , 0% , 50% );

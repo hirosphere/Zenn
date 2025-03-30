@@ -1,4 +1,4 @@
-import { navi , ef , pl , dom , log } from "../meh/index.js" ;
+import { leaf , navi , ef , pl , dom , log } from "../meh/index.js" ;
 
 namespace VM
 {
@@ -74,16 +74,8 @@ namespace VC
 			ef.nav
 			(
 				{ class : "APP_NAVI" } ,
-				pl.switch
-				(
-					vm.navi.current_index ,
-					index => LinkList ( index , "APP_NAVI_PARTS" )
-				) ,
-				pl.switch
-				(
-					vm.navi.current_index ,
-					index => LinkList ( index ?.com , "APP_NAVI_ISOS" )
-				) ,
+				ListSwitch ( vm.navi.current_index , "APP_NAVI_PARTS" ) ,
+				ListSwitch ( vm.navi.current_com_index , "APP_NAVI_ISOS" ) ,
 				ef.ul
 				(
 					{ class : "APP_NAVI_PATH" } ,
@@ -94,6 +86,19 @@ namespace VC
 					) ,
 				) ,
 			) ,
+		) ;
+	}
+
+	const ListSwitch = ( key : leaf.r < navi.t.index_key > , classname : string ) =>
+	{
+		return ef.div
+		(
+			pl.switch
+			(
+				key ,
+				index => LinkList ( index , classname )
+			) ,
+	
 		) ;
 	}
 

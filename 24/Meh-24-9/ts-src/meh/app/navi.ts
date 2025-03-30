@@ -61,7 +61,8 @@ export namespace navi
 		public readonly title ;
 		public readonly root : Index ;
 		public readonly path : Renn < Index > ;
-		public readonly current_index ;
+		public readonly current_index : leaf < t.index_key>  ;
+		public readonly current_com_index : leaf < t.index_key>  ;
 		public readonly selector ;
 
 		public readonly current_container = leaf < Container | undefined > ( undefined ) ;
@@ -73,6 +74,7 @@ export namespace navi
 			this.root = ( typeof i.create_root_index == "function" && i.create_root_index ( this ) ) || new navi.Index ( this , undefined , i.create_root_index ) ;
 			this.path = new Renn ( [ this.root ] ) ;
 			this.current_index = leaf < t.index_key> ( undefined ) ;
+			this.current_com_index = leaf < t.index_key> ( undefined ) ;
 			this.current_index.add_ref ( { src_value_change : new_index => this.set_current ( new_index ) } ) ;
 			this.selector = ksel < t.index_key > ( this.current_index ) ;
 		}
@@ -99,7 +101,8 @@ export namespace navi
 
 		public set_current( index : Index | undefined )
 		{
-			this.current_index [ set_value ] ( index );
+			this.current_index [ set_value ] ( index ) ;
+			this.current_com_index [ set_value ] ( index ?.com ) ;
 
 			index && this.path.replace ( index.path ) ;
 
