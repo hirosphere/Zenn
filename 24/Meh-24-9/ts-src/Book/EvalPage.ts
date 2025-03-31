@@ -1,24 +1,50 @@
 import { leaf , Renn , ef , pl , dom } from "../meh/index.js" ;
 
 
+namespace VM
+{
+	export class App
+	{
+		current  : leaf < Item > ;
+		items = new Renn < Item >
+		(
+			Array( 8 ) .fill ( null ) .map ( ( i , n ) => new Item ( "Pad" + ( n + 1 ) ) )
+		) ;
+
+		constructor ()
+		{
+			this.current = leaf ( this .items .orders [ 0 ] .target ) ;
+		}
+	}
+
+	export class Item
+	{
+		code = leaf ( sample ) ;
+		output = leaf ( "" ) ;
+		input = leaf ( "" ) ;
+
+		constructor ( public title : string )
+		{}
+	}
+}
 
 export const EvalPage = () =>
 {
-	const tab_current = leaf ( 2 ) ;
+	const vm = new VM.App ;
 
 	return ef.main
 	(
 		{ class : "EVAL_PAGE" } ,
-		ef.p ( "Eval " , tab_current ) ,
+		ef.p ( "Eval " , vm.current .value .title ) ,
 		pl.switch
 		(
-			tab_current ,
+			vm.current ,
 			cur => Eval ( cur ) ,
 		) ,
 	)
 }
 
-const Eval = ( num : number ) =>
+const Eval = ( vm : VM.Item ) =>
 {
 	return ef.section
 	(
@@ -26,9 +52,9 @@ const Eval = ( num : number ) =>
 		ef.section
 		(
 			{ class : "EVAL_EDIT" } ,
-			ef.textarea ( { class : "EVAL_CODE" , binds : {  } , props : { value : sample } } ) ,
-			ef.textarea ( { class : "EVAL_OUTPUT" , binds : {  } } ) ,
-			ef.textarea ( { class : "EVAL_INPUT" , binds : {  } } ) ,
+			ef.textarea ( { class : "EVAL_CODE" , binds : {  } , props : { value : vm.code } } ) ,
+			ef.textarea ( { class : "EVAL_OUTPUT" , binds : {  } , props : { value : vm.output } } ) ,
+			ef.textarea ( { class : "EVAL_INPUT" , binds : {  } , props : { value : vm.input } } ) ,
 		) ,
 		ef.section ( { class : "EVAL_DISPLAY" , binds : {  } } ) ,
 	)
