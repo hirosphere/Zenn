@@ -33,10 +33,11 @@ namespace VM
 		[
 			{ type : "links" , name : "Links" ,  } ,
 			{ type : "eval" , name : "Eval" , title : "Eval" } ,
-			{ name : "labo" , parts :
+			{ name : "Labo" , parts :
 				[
-					{ name : "rail-data" } ,
-					{ name : "bosai" } ,
+					{ name : "Book-Props" } ,
+					{ name : "Rail-Data" } ,
+					{ name : "Bosai" } ,
 				]
 			} ,
 			{ type : "ui-g" , name : "UI" , title : "UI ギャラリー" ,
