@@ -47,6 +47,8 @@ export const next_place =
 	{
 		return new StaticPlace( w );
 	}
+
+	return undefined ;
 };
 
 

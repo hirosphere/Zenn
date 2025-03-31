@@ -1,4 +1,5 @@
 import { leaf , navi , ef , pl , dom , log } from "../meh/index.js" ;
+import { EvalPage } from "./EvalPage.js" ;
 
 namespace VM
 {
@@ -28,7 +29,30 @@ namespace VM
 	const book_def : navi.t.index =
 	{
 		name : "" , title : "Meh Root" ,
-		parts : make_part_tree ( 3 ) ,
+		parts :
+		[
+			{ type : "links" , name : "Links" ,  } ,
+			{ type : "eval" , name : "Eval" , title : "Eval" } ,
+			{ type : "ui-g" , name : "UI" , title : "UI ギャラリー" ,
+				parts :
+				[
+					{ name : "Slide" } ,
+					{ name : "HSL" } ,
+					{ name : "OKLCH" } ,
+					{ name : "Tabs" } ,
+				]
+			} ,
+			{ type : "rail" , name : "Rail" , title : "列車運転" } ,
+			{ name : "Tree" , title : "ツリーテスト" , parts : make_part_tree ( 3 ) } ,
+			{ type : "h-rails" , name : "H-Rail" , title : "Heart Rails",
+				parts :
+				[
+					{ name : "北海道・東北" , title : "北海道・東北" } ,
+					{ name : "関東" , title : "関東" } ,
+					{ name : "東海" , title : "東海" } ,
+				]
+			} ,
+		] ,
 	} ;
 
 	const navi_def : navi =
@@ -38,6 +62,13 @@ namespace VM
 		index_to_url ( index )
 		{
 			return `?PAGE=${ index.url_path .splice ( 1 ) .join ( "/" ) }` ;
+		},
+
+		url_to_path_array ( { root , params } )
+		{
+			const page_path = params.get ( "PAGE" ) ?.split ( "/" ) ?? [] ;
+			log ( "PAGE" , page_path ) ;
+			return page_path ;
 		},
 	}
 
@@ -62,20 +93,9 @@ namespace VC
 		return ef.div
 		(
 			{ class : "APP" } ,
-			pl.switch
-			(
-				vm.navi.current_index ,
-				index => ef.main
-				(
-					{ class : "APP_CONTENT" } ,
-					ef.h1 ( index?.title ?? "*** ?" )
-				) ,
-			) ,
 			ef.nav
 			(
 				{ class : "APP_NAVI" } ,
-				ListSwitch ( vm.navi.current_index , "APP_NAVI_PARTS" ) ,
-				ListSwitch ( vm.navi.current_com_index , "APP_NAVI_ISOS" ) ,
 				ef.ul
 				(
 					{ class : "APP_NAVI_PATH" } ,
@@ -86,28 +106,37 @@ namespace VC
 					) ,
 				) ,
 			) ,
-		) ;
-	}
-
-	const ListSwitch = ( key : leaf.r < navi.t.index_key > , classname : string ) =>
-	{
-		return ef.div
-		(
 			pl.switch
 			(
-				key ,
-				index => LinkList ( index , classname )
+				vm.navi.current_index ,
+				index => Content ( index ) ,
 			) ,
-	
+			ef.nav
+			(
+				{ class : "APP_NAVI" } ,
+				ListSwitch ( vm.navi.current_com_index , "APP_NAVI_ISOS" ) ,
+				// ListSwitch ( vm.navi.current_index , "APP_NAVI_PARTS" ) ,
+			) ,
 		) ;
 	}
 
-	const LinkList = ( index : navi.Index | undefined , classname : string ) =>
+	// navi 
+
+	const ListSwitch = ( key : leaf.r < navi.t.index_key > , class_name : string ) =>
+	{
+		return pl.switch
+		(
+			key ,
+			index => index  &&  PartList ( index , class_name )  ||  ef.p ( "???" )
+		) ;
+	}
+
+	const PartList = ( index : navi.Index , classname : string ) =>
 	{
 		return ef.ul
 		(
 			{ class : classname } ,
-			index && pl.each
+			pl.each
 			(
 				index.parts ,
 				o => ef.li ( PageLink ( o.target ) ) ,
@@ -126,6 +155,31 @@ namespace VC
 		) ;
 
 		return link ;
+	}
+
+	// content
+
+	const content_classes : { [ name : string ] : ( index : navi.Index ) => dom.defs.element } =
+	{
+		"eval" : EvalPage ,
+	}
+
+	const Content = ( index : navi.Index | undefined ) =>
+	{
+		if ( ! index )  return  undefined ;
+
+		const c = content_classes [ index.type ] ;
+
+		return c && c ( index ) ||
+		(
+			ef.main
+			(
+				{ class : "APP_CONTENT" } ,
+				ef.h1 ( index.title ) ,
+				ef.p ( index.path.map ( i => i.name.value ) .join ( "/" ) ),
+				PartList ( index , "APP_NAVI_PARTS" ) ,
+			)
+		) ;
 	}
 }
 

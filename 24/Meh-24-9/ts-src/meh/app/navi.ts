@@ -180,7 +180,7 @@ export namespace navi
 		{
 			this.type = i.type ?? "" ;
 			this.name = leaf.str ( i.name );
-			this.title = leaf.str ( i.title ?? "" );
+			this.title = leaf.str ( i.title ?? i.name );
 			const parts = i.parts ?.map( pi => new Index ( app , this , pi ) );
 			this.parts = new Renn ( parts );
 
