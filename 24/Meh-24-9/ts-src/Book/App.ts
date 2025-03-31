@@ -33,6 +33,12 @@ namespace VM
 		[
 			{ type : "links" , name : "Links" ,  } ,
 			{ type : "eval" , name : "Eval" , title : "Eval" } ,
+			{ name : "labo" , parts :
+				[
+					{ name : "rail-data" } ,
+					{ name : "bosai" } ,
+				]
+			} ,
 			{ type : "ui-g" , name : "UI" , title : "UI ギャラリー" ,
 				parts :
 				[
@@ -47,9 +53,13 @@ namespace VM
 			{ type : "h-rails" , name : "H-Rail" , title : "Heart Rails",
 				parts :
 				[
-					{ name : "北海道・東北" , title : "北海道・東北" } ,
-					{ name : "関東" , title : "関東" } ,
-					{ name : "東海" , title : "東海" } ,
+					{ name : "全国" } ,
+					{ name : "北海道・東北" } ,
+					{ name : "関東・甲信越" } ,
+					{ name : "東海・北陸" } ,
+					{ name : "近畿・山陰" } ,
+					{ name : "西日本" } ,
+					{ name : "九州" } ,
 				]
 			} ,
 		] ,
