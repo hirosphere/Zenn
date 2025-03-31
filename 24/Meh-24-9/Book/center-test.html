@@ -8,6 +8,11 @@
 
 * { box-sizing : border-box ; margin : 0 ; padding : 0 ; }
 
+body
+{
+	padding : 1ex ;
+}
+
 h1
 {
 	text-align: center;
@@ -81,5 +86,8 @@ li
 			<li>平和台</li>
 		</ul>	
 	</nav>
+	<p>インラインのリストアイテムを、コンテナに余白があるときは中央揃えにしたい。<br/>
+	しかし、直コンテナで「justify-content: center; 」でやるとオーバーフロー時に隠れたインラインスタート方向がスクロールしても出せない。</p>
+	<p>そこで、コンテナを二重にして外側でセンタリングして解決。</p>
 </body>
 </html>

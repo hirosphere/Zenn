@@ -35,6 +35,7 @@ namespace VM
 			{ type : "eval" , name : "Eval" , title : "Eval" } ,
 			{ name : "Labo" , parts :
 				[
+					{ name : "Font" } ,
 					{ name : "Book-Props" } ,
 					{ name : "Rail-Data" } ,
 					{ name : "Bosai" } ,

@@ -129,8 +129,6 @@ ul.APP_NAVI_PARTS
 	border: 1px solid hsl( 0 , 0% , 50% );
 	display: block;
 	padding : 0.85ex 1.7ex ;
-
-	background-color: hsl( 0 , 75% , 75% );
 }
 
 a.APP_NAVI_LINK:hover
@@ -175,20 +173,16 @@ a.APP_NAVI_LINK.SELECTED
 .EVAL_EDIT
 {
 	flex-grow : 1 ;
+	min-width : 600px ;
+
 	display : grid ;
 	grid-template-rows : 1fr 1fr 1fr ;
 	gap : 2px ;
 }
 
-.EVAL_DISPLAY
-{
-	width : calc( 200px + 20% ) ;
-	min-height : 5rem ;
-	background-color: hsl( 200 , 75% , 85% );
-}
-
 .EVAL_PAGE textarea
 {
+	resize : none ;
 	padding : 0.5ex ;
 
 	font-size: 1.15rem ;
@@ -196,6 +190,13 @@ a.APP_NAVI_LINK.SELECTED
 	color : hsl( 0 , 0% , 100% ) ;
 
 	tab-size : 4ex ;
+}
+
+.EVAL_DISPLAY
+{
+	flex-grow : 1 ;
+	min-width : 300px ;
+	background-color: hsl( 205 , 70% , 85% );
 }
 
 </style>

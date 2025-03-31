@@ -1,4 +1,4 @@
-import { leaf , Renn , ef , pl , dom } from "../meh/index.js" ;
+import { leaf , Renn , ef , pl , dom , log } from "../meh/index.js" ;
 
 
 namespace VM
@@ -15,6 +15,11 @@ namespace VM
 		{
 			this.current = leaf ( this .items .orders [ 0 ] .target ) ;
 		}
+
+		eval ()
+		{
+			log ( this.current.value.code.value )
+		}
 	}
 
 	export class Item
@@ -25,6 +30,18 @@ namespace VM
 
 		constructor ( public title : string )
 		{}
+
+		execute ()
+		{
+			try
+			{
+				this.output.value = eval ( this.code.value ) ;
+			}
+			catch ( err )
+			{
+				this.output.value = String ( err ) ;
+			}
+		}
 	}
 }
 
@@ -35,7 +52,15 @@ export const EvalPage = () =>
 	return ef.main
 	(
 		{ class : "EVAL_PAGE" } ,
-		ef.p ( "Eval " , vm.current .value .title ) ,
+		ef.section
+		(
+			"Eval " , vm.current .value .title ,
+			ef.button
+			(
+				{ acts : { click : () => vm.eval () } } ,
+				"Eval"
+			)
+		) ,
 		pl.switch
 		(
 			vm.current ,
@@ -52,7 +77,7 @@ const Eval = ( vm : VM.Item ) =>
 		ef.section
 		(
 			{ class : "EVAL_EDIT" } ,
-			ef.textarea ( { class : "EVAL_CODE" , binds : {  } , props : { value : vm.code } } ) ,
+			ef.textarea ( { class : "EVAL_CODE" , binds : { value_change : vm.code } } ) ,
 			ef.textarea ( { class : "EVAL_OUTPUT" , binds : {  } , props : { value : vm.output } } ) ,
 			ef.textarea ( { class : "EVAL_INPUT" , binds : {  } , props : { value : vm.input } } ) ,
 		) ,

@@ -41,7 +41,7 @@ export abstract class MehNode
 {
 	public abstract get node() : Node | undefined;
 
-	protected bind
+	protected bind_value
 	(
 		value : any ,
 		update : ( value : any ) => void ,
@@ -102,7 +102,7 @@ export class MehElement extends MehNode
 
 		if( attrs ) for( const [ name, value ] of Object.entries( attrs ) )
 		{
-			this.bind
+			this.bind_value
 			(
 				value,
 				value => set_attr( el , name , value , ns )
@@ -111,7 +111,7 @@ export class MehElement extends MehNode
 
 		if( props && el ) for( const [ name , value ] of Object.entries( props ) )
 		{
-			this.bind
+			this.bind_value
 			(
 				value,
 				value =>
@@ -121,31 +121,11 @@ export class MehElement extends MehNode
 			);
 		}
 
-		if
-		(
-			binds && binds.value
-		)
+		if ( binds )
 		{
-			this.bind ( binds.value.src , value => ( el as any ) [ "value" ] = value ) ;
-
-			log ( binds.value.action_type )
-
-			el.addEventListener
-			(
-				binds.value.action_type ,
-				ev =>
-				{
-					const is_target =
-					(
-						ev.target instanceof HTMLInputElement ||
-						ev.target instanceof HTMLTextAreaElement
-					);
-
-					if ( ! is_target )  return ;
-
-					binds.value?.src.set ( ev.target.value ) ;
-				}
-			)
+			if ( binds.value_change )  this.bind_bidir_value ( binds.value_change , "value" ,   "change" ) ;
+			if ( binds.value_input )   this.bind_bidir_value ( binds.value_input  , "value" ,   "input"  ) ;
+			if ( binds.checked )       this.bind_bidir_value ( binds.checked      , "checked" , "change" ) ;
 		}
 
 		if( acts ) for( const [ name, act ] of Object.entries < defs.act > ( acts ) )
@@ -200,7 +180,7 @@ export class MehElement extends MehNode
 
 		for( const [ name, value ] of Object.entries( def ) )
 		{
-			this.bind
+			this.bind_value
 			(
 				value,
 				value => e.classList.toggle( name, value )
@@ -212,12 +192,42 @@ export class MehElement extends MehNode
 	{
 		for( const [ name, value ] of Object.entries( def ) )
 		{
-			this.bind
+			this.bind_value
 			(
 				value,
 				value => ( e.style as any ) [ name ] = value
 			);
 		}
+	}
+
+	protected bind_bidir_value
+	(
+		lv : leaf < any > ,
+		prop_name : "value" | "checked" ,
+		event_name : "input" | "change" ,
+	)
+	{
+		if ( ! this.el )  return ;
+
+		this.bind_value
+		(
+			lv ,
+			new_v =>
+			{
+				( this.el as any ) [ prop_name ] = new_v ;
+				log ( event_name , prop_name , lv ) ;
+			}
+		) ;
+
+		this.el.addEventListener
+		(
+			event_name ,
+			( ev ) =>
+			{
+				const el = this.el as any ;
+				lv.value = el.value ;
+			}
+		) ;
 	}
 
 	public override _destruct()
@@ -260,7 +270,7 @@ export class MehText extends MehNode
 		super();
 
 		this._node_ = document.createTextNode( "" );
-		this.bind
+		this.bind_value
 		(
 			text,
 			value =>

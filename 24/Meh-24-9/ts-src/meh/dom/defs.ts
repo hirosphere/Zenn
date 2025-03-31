@@ -20,6 +20,8 @@ export namespace defs
 	export type binds =
 	{
 		value ? : { src : leaf.str , action_type : bind_acts } ;
+		value_input ? : leaf.str ;
+		value_change ? : leaf.str ;
 		checked ? : leaf.bool ;
 	}
 
