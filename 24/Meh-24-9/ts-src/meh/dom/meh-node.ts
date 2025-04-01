@@ -123,9 +123,9 @@ export class MehElement extends MehNode
 
 		if ( binds )
 		{
-			if ( binds.value_change )  this.bind_bidir_value ( binds.value_change , "value" ,   "change" ) ;
-			if ( binds.value_input )   this.bind_bidir_value ( binds.value_input  , "value" ,   "input"  ) ;
-			if ( binds.checked )       this.bind_bidir_value ( binds.checked      , "checked" , "change" ) ;
+			if ( binds.value_change )  this.bind_bidir_value ( el , binds.value_change , "value" ,   "change" ) ;
+			if ( binds.value_input )   this.bind_bidir_value ( el , binds.value_input  , "value" ,   "input"  ) ;
+			if ( binds.checked )       this.bind_bidir_value ( el , binds.checked      , "checked" , "change" ) ;
 		}
 
 		if( acts ) for( const [ name, act ] of Object.entries < defs.act > ( acts ) )
@@ -202,30 +202,27 @@ export class MehElement extends MehNode
 
 	protected bind_bidir_value
 	(
+		el : El ,
 		lv : leaf < any > ,
 		prop_name : "value" | "checked" ,
 		event_name : "input" | "change" ,
 	)
 	{
-		if ( ! this.el )  return ;
-
 		this.bind_value
 		(
 			lv ,
 			new_v =>
 			{
-				( this.el as any ) [ prop_name ] = new_v ;
-				log ( event_name , prop_name , lv ) ;
+				( el as any ) [ prop_name ] = new_v ;
 			}
 		) ;
 
-		this.el.addEventListener
+		el.addEventListener
 		(
 			event_name ,
 			( ev ) =>
 			{
-				const el = this.el as any ;
-				lv.value = el.value ;
+				lv.value = ( el as any ).value ;
 			}
 		) ;
 	}

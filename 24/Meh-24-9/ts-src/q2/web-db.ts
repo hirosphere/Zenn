@@ -123,11 +123,11 @@ namespace VC
 			
 			ef.input
 			(
-				{ class : "-title" , binds : { value : { src : vm.title , action_type : "input" } } }
+				{ class : "-title" , binds : { value_input : vm.title } }
 			) ,
 			ef.textarea
 			(
-				{ class : "-text" , binds : { value : { src : vm.text , action_type : "input" } } }
+				{ class : "-text" , binds : { value_input : vm.text } }
 			)
 		) ;
 	}
