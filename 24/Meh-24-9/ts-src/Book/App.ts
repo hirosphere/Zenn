@@ -1,5 +1,6 @@
 import { leaf , navi , ef , pl , dom , log } from "../meh/index.js" ;
 import { EvalPage } from "./EvalPage.js" ;
+import { Clock } from "./Clock.js" ;
 
 namespace VM
 {
@@ -33,6 +34,7 @@ namespace VM
 		[
 			{ type : "links" , name : "Links" ,  } ,
 			{ type : "eval" , name : "Eval" , title : "Eval" } ,
+			{ type : "clock" , name : "Clock" } ,
 			{ name : "Labo" , parts :
 				[
 					{ name : "Font" } ,
@@ -174,6 +176,7 @@ namespace VC
 	const content_classes : { [ name : string ] : ( index : navi.Index ) => dom.defs.element } =
 	{
 		"eval" : EvalPage ,
+		"clock" : Clock ,
 	}
 
 	const Content = ( index : navi.Index | undefined ) =>
