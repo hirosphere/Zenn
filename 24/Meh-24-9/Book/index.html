@@ -56,15 +56,13 @@ main
 
 .APP_NAVI
 {
-	width: 100% ;
 	padding : 0.08ex ;
 
 	display : flex ;
-	flex-direction : column ;
+	justify-content : center ;
 	gap : 0.6ex ;
 
 	overflow: auto ;
-	background-color :hsl( 0 , 0% , 86% ) ;
 }
 
 .APP_NAVI li
@@ -74,8 +72,7 @@ main
 
 ul.APP_NAVI_PATH
 {
-	width : 100% ;
-	display: inline-flex ;
+	display: flex ;
 	background-color :hsl( 0 , 0% , 100% ) ;
 	
 	padding : 0.8ex 1ex ;
@@ -99,9 +96,8 @@ ul.APP_NAVI_ISOS
 {
 	margin-top : -0.4ex ;
 
-	width : 100% ;
-	display : inline-flex ;
-	background-color :hsl( 0 , 0% , 100% ) ;
+	background-color: hsl( 90 , 0% , 100% );
+	display : flex ;
 	
 	padding : 0ex 1ex 0.08ex 1ex ;
 	overflow : auto ;
@@ -219,10 +215,14 @@ a.APP_NAVI_LINK.SELECTED
 	background-color: hsl( 205 , 70% , 85% );
 }
 
+.CLOCK_PAGE
+{
+	display: flex;
+	justify-content: center ;
+}
 .CLOCK_PAGE ._MAIN
 {
-	text-align: center;
-	font-size: 5vw;
+	font-size: calc( 8vw + 5px );
 }
 
 </style>

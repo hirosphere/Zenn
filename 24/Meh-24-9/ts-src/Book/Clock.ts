@@ -4,14 +4,14 @@ export const Clock = () =>
 {
 	const time = leaf ( "" ) ;
 
-	setInterval
-	(
-		() =>
-		{
-			time.value = new Date () .toLocaleString () ;
-		},
-		1000
-	) ;
+	const update = () =>
+	{
+		time.value = new Date () .toLocaleString () ;
+	}
+
+	setInterval ( update , 1000 ) ;
+
+	update () ;
 
 	return ef.main
 	(

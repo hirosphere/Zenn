@@ -91,4 +91,8 @@ const Eval = ( vm : VM.Item ) =>
 }
 
 const sample =
-`Math.random () * Math.pow ( 10 , 10 )`;
+`Math.round
+(
+	Math.random () * Math.pow ( 10 , 10 )
+)
+`;
