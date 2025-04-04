@@ -1,6 +1,7 @@
 import { leaf , navi , ef , pl , dom , log } from "../meh/index.js" ;
 import { EvalPage } from "./EvalPage.js" ;
 import { Clock } from "./Clock.js" ;
+import { OKLCH } from "./UIG/OKLCH.js" ;
 
 namespace VM
 {
@@ -48,13 +49,13 @@ namespace VM
 				[
 					{ name : "Slide" } ,
 					{ name : "HSL" } ,
-					{ name : "OKLCH" } ,
+					{ name : "OKLCH" , type : "uig-oklch" } ,
 					{ name : "Tabs" } ,
 				]
 			} ,
 			{ type : "rail" , name : "Rail" , title : "列車運転" } ,
 			{ name : "Tree" , title : "ツリーテスト" , parts : make_part_tree ( 3 ) } ,
-			{ type : "h-rails" , name : "H-Rail" , title : "Heart Rails",
+			{ type : "Eki" , name : "Eki" , title : "駅名表示",
 				parts :
 				[
 					{ name : "全国" } ,
@@ -177,6 +178,7 @@ namespace VC
 	{
 		"eval" : EvalPage ,
 		"clock" : Clock ,
+		"uig-oklch" : OKLCH
 	}
 
 	const Content = ( index : navi.Index | undefined ) =>

@@ -196,6 +196,12 @@ a.APP_NAVI_LINK.SELECTED
 	gap : 2px ;
 }
 
+.EVAL_EDIT textarea::selection
+{
+	background-color : hsl( 90 , 60% , 60% ) ;
+	color : hsl( 0 , 0% , 0% ) ;
+}
+
 .EVAL_PAGE textarea
 {
 	resize : none ;
@@ -222,7 +228,14 @@ a.APP_NAVI_LINK.SELECTED
 }
 .CLOCK_PAGE ._MAIN
 {
-	font-size: calc( 8vw + 5px );
+	font-size: min( 8vw + 5px , 42px );
+}
+
+.UIG_OKLCH
+{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 </style>
