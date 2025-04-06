@@ -55,16 +55,67 @@ namespace VM
 			} ,
 			{ type : "rail" , name : "Rail" , title : "列車運転" } ,
 			{ name : "Tree" , title : "ツリーテスト" , parts : make_part_tree ( 3 ) } ,
-			{ type : "Eki" , name : "Eki" , title : "駅名表示",
+			{ type : "駅" , name : "駅" , title : "駅名表示",
 				parts :
 				[
-					{ name : "全国" } ,
-					{ name : "北海道・東北" } ,
-					{ name : "関東・甲信越" } ,
-					{ name : "東海・北陸" } ,
-					{ name : "近畿・山陰" } ,
-					{ name : "西日本" } ,
-					{ name : "九州" } ,
+					{ name : "全国" , parts :
+						[
+							{ name : "" } ,
+						]
+					} ,
+					{ name : "北海道・東北" , parts :
+						[
+							{ name : "" } ,
+						] } ,
+					{ name : "関東" , parts :
+						[
+							{ name : "" } ,
+						]
+					} ,
+					{ name : "中部" , parts :
+						[
+							{ name : "" } ,
+						]
+					} ,
+					{ name : "近畿" , parts :
+						[
+							{ name : "滋賀県" } ,
+							{ name : "京都府" } ,
+							{ name : "奈良県" } ,
+							{ name : "大阪府" } ,
+							{ name : "兵庫県" } ,
+							{ name : "和歌山県" } ,
+						]
+					} ,
+					{ name : "中国" , parts :
+						[
+							{ name : "島根県" } ,
+							{ name : "鳥取県" } ,
+							{ name : "岡山県" } ,
+							{ name : "広島県" } ,
+							{ name : "山口県" } ,
+						]
+					} ,
+					{ name : "四国" , parts :
+						[
+							{ name : "香川県" } ,
+							{ name : "愛媛県" } ,
+							{ name : "徳島県" } ,
+							{ name : "高知県" } ,
+						]
+					} ,
+					{ name : "九州・沖縄" , parts :
+						[
+							{ name : "福岡県" } ,
+							{ name : "佐賀県" } ,
+							{ name : "長崎県" } ,
+							{ name : "熊本県" } ,
+							{ name : "大分県" } ,
+							{ name : "宮崎県" } ,
+							{ name : "鹿児島県" } ,
+							{ name : "沖縄県" } ,
+						]
+					 } ,
 				]
 			} ,
 		] ,

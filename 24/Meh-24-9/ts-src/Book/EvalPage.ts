@@ -29,6 +29,8 @@ namespace VM
 		input = leaf ( "" ) ;
 		e ? : Element ;
 
+		timer = new Timer ;
+
 		constructor ( public title : string )
 		{}
 
@@ -36,6 +38,9 @@ namespace VM
 		{
 			const input = this.input.value ;
 			const e = this.e ;
+			const timer = this.timer ;
+
+			timer.action = () => {} ;
 
 			try
 			{
@@ -45,6 +50,24 @@ namespace VM
 			{
 				this.output.value = String ( err ) ;
 			}
+		}
+	}
+
+	class Timer
+	{
+		p_action ? : () => boolean | void ;
+		iid = 0 ;
+
+		set action ( action : () => boolean | void | undefined )
+		{
+			this.p_action = action ;
+			
+			if ( this.iid )
+			{
+				clearInterval ( this.iid ) ;
+			}
+			
+			if ( action ) this.iid = setInterval ( action , 1000 ) ;
 		}
 	}
 }
@@ -91,8 +114,7 @@ const Eval = ( vm : VM.Item ) =>
 }
 
 const sample =
-`Math.round
-(
-	Math.random () * Math.pow ( 10 , 10 )
-)
+`const color = e.style.color = \`hsl( 0 , 0% , 0% , \${ 70 - Math.random() * 40 }% )\` ;
+e.style.fontSize = \`\${ 50 + Math.random() * 0 }px\` ;
+e.innerHTML = crypto.randomUUID () ;
 `;

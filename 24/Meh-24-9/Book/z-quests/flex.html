@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Flex</title>
+
+<style>
+
+*
+{
+	box-sizing: border-box;
+	margin : 0 ;
+	padding : 0 ;
+	line-height: 1;
+}
+
+body
+{
+	height : 100vh ;
+	background-color : oklch( 0.7 0.2 200 ) ;
+
+	display : flex ;
+	flex-direction : column ;
+	padding: 1ex ;
+	gap : 1ex ;
+}
+
+h1
+{
+	text-align : center ;
+}
+
+@media ( min-width: 950px )
+{
+	.CONTAINER
+	{
+		flex-grow: 1;
+
+		display : grid ;
+		grid-template-columns: 60fr 40fr;
+
+		gap : 0.5ex ;
+	}
+
+	.ITEM_A
+	{
+		display: flex ;
+		flex-direction: column;
+	}
+
+	.ITEM_A > textarea
+	{
+		flex-grow: 1;
+		flex-shrink: 1;
+		resize: vertical;
+		
+		padding: 0.5ex;
+	}
+
+	.ITEM_B
+	{
+	}
+}
+
+@media ( max-width: 950px )
+{
+	.CONTAINER
+	{
+		flex-grow: 1;
+
+		display : grid ;
+		grid-template-rows: 60fr 40fr;
+
+		gap : 0.5ex ;
+	}
+
+	.ITEM_A
+	{
+		display: flex ;
+		flex-direction: column;
+	}
+
+	.ITEM_A > textarea
+	{
+		flex-grow: 1;
+		flex-shrink: 1;
+		resize: vertical;
+		
+		padding: 0.5ex;
+	}
+
+	.ITEM_B
+	{
+	}
+}
+
+body > * ,
+.CONTAINER > *
+{
+	background-color : hsla( 0 , 0% , 100% , 30% ) ;
+	padding : 0.5rex ;
+}
+
+
+</style>
+
+
+</head>
+<body>
+	<h1>Flex</h1>
+	<section class="CONTAINER">
+		<section class="ITEM_A">
+			<textarea></textarea>
+			<textarea></textarea>
+			<textarea></textarea>
+		</section>
+		<section class="ITEM_B">Section B</section>
+	</section>
+</body>
+</html>
