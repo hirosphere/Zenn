@@ -42,11 +42,6 @@ namespace VM
 			const timer = this.timer ;
 			fontsets ;
 
-timer.action = () =>
-{
-
-}
-
 			try
 			{
 				this.output.value = eval ( this.code.value ) ;
@@ -75,6 +70,8 @@ timer.action = () =>
 			if ( action ) this.iid = setInterval ( action , 1000 ) ;
 		}
 	}
+
+	const arrnd = ( ar : Array < any > ) => ar [ Math.floor ( Math.random () * ar.length ) ] ;
 
 	const fontFamilies =
 	{
@@ -175,7 +172,15 @@ const Eval = ( vm : VM.Item ) =>
 }
 
 const sample =
-`const color = e.style.color = \`hsl( 0 , 0% , 0% , \${ 70 - Math.random() * 40 }% )\` ;
-e.style.fontSize = \`\${ 50 + Math.random() * 0 }px\` ;
-e.innerHTML = crypto.randomUUID () ;
+`const fn = () =>
+{
+	const color = e.style.color = \`hsl( 0 , 0% , 0% , \${ 70 - Math.random() * 40 }% )\` ;
+	const ff = e.style.fontFamily = arrnd ( fontsets ) ;
+	const sz = e.style.fontSize = \`\${ 30 + Math.random() * 40 }px\` ;
+	const uuid = e.innerHTML = crypto.randomUUID () ;
+
+	return [ ff , sz , uuid ] ;
+}
+
+fn() .join( "\\n" ) ;
 `;

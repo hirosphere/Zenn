@@ -7,7 +7,7 @@ import { MehElement , ef , defs } from "../dom/index.js" ;
 export type navi =
 {
 	title : string ;
-	create_root_index : navi.t.index | ( ( app : navi.Application ) => navi.Index ) ;
+	create_root_index : navi.types.index | ( ( app : navi.Application ) => navi.Index ) ;
 	
 	index_to_url ? : ( index : navi.Index ) => string ;
 	index_to_title ? : ( index : navi.Index ) => string ;
@@ -15,7 +15,7 @@ export type navi =
 	url_to_index ? ( args : make_index_from_url_args ) : navi.Index | undefined ;
 	url_to_path_array ? ( args : make_index_from_url_args ) : string [] ;
 	
-	containers ? : Record < string , navi.t.create_containner > ;
+	containers ? : Record < string , navi.types.create_containner > ;
 }
 
 type make_index_from_url_args =
@@ -33,21 +33,22 @@ export function navi ( i : navi )
 
 export namespace navi
 {
-	export namespace t
+	export namespace types
 	{
 		export type index < p extends Index = any > =
 		{
 			name : string ;
 			type ? : index_type ;
 			title ? : string ;
-			parts ? : index < p > [];
+			parts ? : index < p > [] ;
+			fetch_parts ? () : Promise < index < p > [] > ;
 			container_type ? : string ;
 		};
 		export type index_key = Index | undefined ;
 		export type index_type = string ;
 
 		export type container_key = string | undefined ;
-		export type create_containner = ( current : leaf.r < navi.t.index_key > ) => defs.element ;
+		export type create_containner = ( current : leaf.r < navi.types.index_key > ) => defs.element ;
 
 		export type link = defs.ec < HTMLAnchorElement > &
 		{
@@ -61,22 +62,22 @@ export namespace navi
 		public readonly title ;
 		public readonly root : Index ;
 		public readonly path : Renn < Index > ;
-		public readonly current_index : leaf < t.index_key>  ;
-		public readonly current_com_index : leaf < t.index_key>  ;
+		public readonly current_index : leaf < types.index_key>  ;
+		public readonly current_com_index : leaf < types.index_key>  ;
 		public readonly selector ;
 
 		public readonly current_container = leaf < Container | undefined > ( undefined ) ;
-		public readonly containers = new Map < t.container_key , Container > ;
+		public readonly containers = new Map < types.container_key , Container > ;
 	
 		constructor ( protected i : navi )
 		{
 			this.title = leaf.str ( i.title ) ;
 			this.root = ( typeof i.create_root_index == "function" && i.create_root_index ( this ) ) || new navi.Index ( this , undefined , i.create_root_index ) ;
 			this.path = new Renn ( [ this.root ] ) ;
-			this.current_index = leaf < t.index_key> ( undefined ) ;
-			this.current_com_index = leaf < t.index_key> ( undefined ) ;
+			this.current_index = leaf < types.index_key> ( undefined ) ;
+			this.current_com_index = leaf < types.index_key> ( undefined ) ;
 			this.current_index.add_ref ( { src_value_change : new_index => this.set_current ( new_index ) } ) ;
-			this.selector = ksel < t.index_key > ( this.current_index ) ;
+			this.selector = ksel < types.index_key > ( this.current_index ) ;
 		}
 
 		public async init ( default_index : Index = this.root )
@@ -134,7 +135,7 @@ export namespace navi
 			return this.i.index_to_url ?. ( index ) ?? "" ;
 		}
 
-		protected make_container ( key : t.container_key ) : Container
+		protected make_container ( key : types.container_key ) : Container
 		{
 			const container = this.containers.get ( key ) ;
 			if ( container ) return container ;
@@ -150,11 +151,11 @@ export namespace navi
 
 	class Container
 	{
-		public readonly current_index = leaf.r < t.index_key > ( undefined ) ;
+		public readonly current_index = leaf.r < types.index_key > ( undefined ) ;
 
 		constructor
 		(
-			public readonly def ? : t.create_containner
+			public readonly def ? : types.create_containner
 		)
 		{
 		}
@@ -164,7 +165,7 @@ export namespace navi
 	export class Index
 	{
 		public readonly container_type : string ;
-		public readonly type : t.index_type ; 
+		public readonly type : types.index_type ; 
 		public readonly name ;
 		public readonly title ;
 		public readonly parts : Renn < Index > ;
@@ -175,7 +176,7 @@ export namespace navi
 		(
 			public readonly app : Application ,
 			public readonly com : Index | undefined ,
-			i : t.index
+			i : types.index
 		)
 		{
 			this.type = i.type ?? "" ;
@@ -248,7 +249,7 @@ export namespace navi
 
 	/* */
 
-	export function link ( arg : Index | t.link , ... content : defs.parts )
+	export function link ( arg : Index | types.link , ... content : defs.parts )
 	{
 		const index = ( arg instanceof navi.Index ? arg : arg.index ) ;
 		const ec : defs.ec < HTMLAnchorElement > = ( arg instanceof navi.Index ? {} : arg )

@@ -9,7 +9,7 @@ namespace VM
 	{
 		// log ( com_title ) ;
 
-		const rt : navi.t.index [] = [] ;
+		const rt : navi.types.index [] = [] ;
 		if ( level <= 0 ) return rt ;
 
 		for ( let i = 1 ; i <= 10 ; i ++ )
@@ -28,7 +28,7 @@ namespace VM
 		return rt ;
 	}
 
-	const book_def : navi.t.index =
+	const book_def : navi.types.index =
 	{
 		name : "" , title : "Meh Root" ,
 		parts :
@@ -188,7 +188,7 @@ namespace VC
 
 	// navi 
 
-	const ListSwitch = ( key : leaf.r < navi.t.index_key > , class_name : string ) =>
+	const ListSwitch = ( key : leaf.r < navi.types.index_key > , class_name : string ) =>
 	{
 		return pl.switch
 		(
