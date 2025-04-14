@@ -71,7 +71,9 @@ namespace VM
 		}
 	}
 
-	const arrnd = ( ar : Array < any > ) => ar [ Math.floor ( Math.random () * ar.length ) ] ;
+	const arrand = ( ar : Array < any > ) => ar [ Math.floor ( Math.random () * ar.length ) ] ;
+
+	const fixrand = ( frac : number , max : number , min = 0 ) => ( Math.random () * ( max - min ) + min ) .toFixed ( frac ) ;
 
 	const fontFamilies =
 	{
@@ -167,20 +169,26 @@ const Eval = ( vm : VM.Item ) =>
 			ef.textarea ( { class : "EVAL_OUTPUT" , binds : { value_input : vm.output } } ) ,
 			ef.textarea ( { class : "EVAL_INPUT" , binds : { value_input : vm.input }  } ) ,
 		) ,
-		ef.section ( { class : "EVAL_DISPLAY" , hook : { init ( el ) { vm.e = el ; } } } ) ,
+		ef.section
+		(
+			{
+				class : "EVAL_DISPLAY" ,
+				hook : { init ( el ) { vm.e = el ; } }
+			}
+		) ,
 	)
 }
 
 const sample =
 `const fn = () =>
 {
-	const color = e.style.color = \`hsl( 0 , 0% , 0% , \${ 70 - Math.random() * 40 }% )\` ;
-	const ff = e.style.fontFamily = arrnd ( fontsets ) ;
-	const sz = e.style.fontSize = \`\${ 30 + Math.random() * 40 }px\` ;
+	const color = e.style.color = \`hsl( 0 , 0% , 0% , \${ fixrand ( 0 , 70 , 40 ) }% )\` ;
+	const ff = e.style.fontFamily = arrand ( fontsets ) ;
+	const sz = e.style.fontSize = \`\${ fixrand ( 0 , 76 , 26 ) }px\` ;
 	const uuid = e.innerHTML = crypto.randomUUID () ;
 
-	return [ ff , sz , uuid ] ;
+	return { ff , sz , color , uuid } ;
 }
 
-fn() .join( "\\n" ) ;
+JSON .stringify ( fn() , null , "\\t" ) ;
 `;

@@ -175,7 +175,7 @@ export function range ( m : range )
 
 	return ef.section
 	(
-		{ class : "Range range" } ,
+		{ class : "Range range RANGE" } ,
 		ef.label ( { class : "title" } , m.title ) ,
 		ef.input ( ec ) ,
 		ef.span

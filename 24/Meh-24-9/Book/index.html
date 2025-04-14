@@ -13,6 +13,7 @@
 	margin: 0 ;
 	padding: 0 ;
 
+	font-family: "Meiryo" , sans-serif ;
 	tab-size : 4ex ;
 }
 
@@ -177,13 +178,6 @@ a.APP_NAVI_LINK.SELECTED
 	font-size: min( 8vw + 5px , 42px );
 }
 
-.UIG_OKLCH
-{
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
 </style>
 
 
@@ -258,14 +252,85 @@ a.APP_NAVI_LINK.SELECTED
 	color : hsl( 0 , 0% , 0% ) ;
 }
 
+.EVAL_DISPLAY_CONTAINER
+{
+	overflow : hidden ;
+
+	padding : 1ex ;
+}
+
 .EVAL_DISPLAY
 {
 	flex-grow : 45 ;
 
-	background-color: hsl( 205 , 70% , 85% );
+	background-color: hsl( 205 , 70% , 75% );
+	height : 100% ;
+
+	display : flex ;
+	justify-content : center ;
+	align-items : center ;
+
 	overflow : auto ;
+
 	padding : 0.5ex ;
+
 }
+
+/* forms */
+
+.RANGE
+{
+	border-radius : 0.3ex ;
+	min-width : min( 100vw , 700px ) ;
+	background-color: hsl( 0 , 0% , 0% , 10% );
+
+	display : grid ;
+	grid-template-columns : 4em 1fr auto ;
+
+	padding : 0.4ex ;
+	gap : 1ex ;
+}
+
+.RANGE .value-unit
+{
+	display : grid ;
+	grid-template-columns : 5ex 1em ;
+}
+
+._RANGES
+{
+	display : flex ;
+	flex-direction : column ;
+	align-items : center ;
+	gap : 1px ;
+}
+
+/* UIG */
+
+.UIG_COLOR_1
+{
+	display : flex ;
+	flex-direction : column ;
+
+	background-color: hsl( 0 , 0% , 100% , 90% );
+
+	padding : 1px ;
+}
+
+.UIG_COLOR_1 ._DISPLAY
+{
+	border-radius : 0.3ex ;
+	height : 60vh ;
+	display : flex ;
+	flex-direction : column ;
+	justify-content : center ;
+	align-items : center ;
+}
+
+.UIG_COLOR_1 ._VALUE._W { color : hsl( 0 , 0% , 90% ) ; }
+.UIG_COLOR_1 ._VALUE._B { color : hsl( 0 , 0% , 10% ) ; }
+
+.UIG_COLOR_1 .RANGE { max-width : 500px ; }
 
 </style>
 
