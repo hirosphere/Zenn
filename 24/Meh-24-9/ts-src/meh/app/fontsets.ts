@@ -5,14 +5,15 @@ export const fontsets =
 	"'Merriweather', 'Georgia', 'Tisa', 'Roboto Slab', serif",
 	"'Times New Roman', 'Georgia', 'Palatino', 'Liberation Serif', serif",
 	"'Playfair Display', 'Merriweather', 'Lora', 'Roboto Slab', serif",
-	"'Meiryo', sans-serif",
-	"'Noto Serif JP', sans-serif",
+	"'Noto Serif JP', serif",
 
 	"Arial, Helvetica, Roboto, 'Noto Sans JP', Segoe UI, Ubuntu, Open Sans, sans-serif",
 	"'Helvetica Neue', 'Roboto', 'Open Sans', 'Inter', 'Noto Sans', sans-serif",
 	"'Roboto', 'Lato', 'Montserrat', 'Source Sans Pro', 'Poppins', sans-serif",
 	"'Helvetica Neue', 'Arial', 'Segoe UI', 'Ubuntu', 'Nunito', sans-serif",
 	"'Arial', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Segoe UI', sans-serif",
+	"'Meiryo', sans-serif",
+	"'Noto Sans JP', sans-serif",
 	
 	"Courier New, Menlo, Droid Sans Mono, Liberation Mono, monospace",
 	"'Fira Code', 'Source Code Pro', 'Inconsolata', 'Consolas', monospace",
