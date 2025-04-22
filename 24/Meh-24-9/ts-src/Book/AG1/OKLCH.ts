@@ -5,7 +5,7 @@ namespace DM
 	export const App = () =>
 	(
 		{
-			color : new OKLCH ( { l : 0.7 , c : 0.5 , h : 150 } ) ,
+			color : new OKLCH ( { l : 0.7 , c : 0.43 , h : 135 } ) ,
 		}
 	)
 

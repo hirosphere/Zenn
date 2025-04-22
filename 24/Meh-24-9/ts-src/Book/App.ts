@@ -1,7 +1,7 @@
 import { leaf , navi , ef , pl , dom , log } from "../meh/index.js" ;
 import { EvalPage } from "./EvalPage.js" ;
 import { Clock } from "./Clock.js" ;
-import { OKLCH } from "./UIG/OKLCH.js" ;
+import * as AG1 from "./AG1/index.js" ;
 
 namespace VM
 {
@@ -42,82 +42,23 @@ namespace VM
 					{ name : "Book-Props" } ,
 					{ name : "Rail-Data" } ,
 					{ name : "Bosai" } ,
+					{ name : "Tree" , title : "ツリーテスト" , parts : make_part_tree ( 3 ) } ,
 				]
 			} ,
-			{ type : "ui-g" , name : "UI" , title : "UI ギャラリー" ,
+			{ name : "AG1" ,
 				parts :
 				[
 					{ name : "Slide" } ,
 					{ name : "HSL" } ,
 					{ name : "OKLCH" , type : "uig-oklch" } ,
 					{ name : "Tabs" } ,
+					{ name : "UUID_Click" } ,
+					{ name : "EQ_List" , type : "EQ_LIST" } ,
+					{ name : "Serial" } ,
 				]
 			} ,
 			{ type : "rail" , name : "Rail" , title : "列車運転" } ,
-			{ name : "Tree" , title : "ツリーテスト" , parts : make_part_tree ( 3 ) } ,
-			{ type : "駅" , name : "駅" , title : "駅名表示",
-				parts :
-				[
-					{ name : "全国" , parts :
-						[
-							{ name : "" } ,
-						]
-					} ,
-					{ name : "北海道・東北" , parts :
-						[
-							{ name : "" } ,
-						] } ,
-					{ name : "関東" , parts :
-						[
-							{ name : "" } ,
-						]
-					} ,
-					{ name : "中部" , parts :
-						[
-							{ name : "" } ,
-						]
-					} ,
-					{ name : "近畿" , parts :
-						[
-							{ name : "滋賀県" } ,
-							{ name : "京都府" } ,
-							{ name : "奈良県" } ,
-							{ name : "大阪府" } ,
-							{ name : "兵庫県" } ,
-							{ name : "和歌山県" } ,
-						]
-					} ,
-					{ name : "中国" , parts :
-						[
-							{ name : "島根県" } ,
-							{ name : "鳥取県" } ,
-							{ name : "岡山県" } ,
-							{ name : "広島県" } ,
-							{ name : "山口県" } ,
-						]
-					} ,
-					{ name : "四国" , parts :
-						[
-							{ name : "香川県" } ,
-							{ name : "愛媛県" } ,
-							{ name : "徳島県" } ,
-							{ name : "高知県" } ,
-						]
-					} ,
-					{ name : "九州・沖縄" , parts :
-						[
-							{ name : "福岡県" } ,
-							{ name : "佐賀県" } ,
-							{ name : "長崎県" } ,
-							{ name : "熊本県" } ,
-							{ name : "大分県" } ,
-							{ name : "宮崎県" } ,
-							{ name : "鹿児島県" } ,
-							{ name : "沖縄県" } ,
-						]
-					 } ,
-				]
-			} ,
+			{ type : "HR" , name : "HR" , title : "HR" } ,
 		] ,
 	} ;
 
@@ -229,7 +170,8 @@ namespace VC
 	{
 		"eval" : EvalPage ,
 		"clock" : Clock ,
-		"uig-oklch" : OKLCH
+		"uig-oklch" : AG1.OKLCH ,
+		"EQ_LIST" : AG1.EQListApp
 	}
 
 	const Content = ( index : navi.Index | undefined ) =>

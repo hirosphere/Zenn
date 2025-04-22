@@ -1,4 +1,4 @@
-import { navi } from "../../meh/index.js" ;
+import { navi } from "../../../meh/index.js" ;
 
 const root_index : navi.types.index =
 {
