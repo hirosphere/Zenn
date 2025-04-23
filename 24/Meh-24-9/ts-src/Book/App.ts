@@ -184,9 +184,8 @@ namespace VC
 		(
 			ef.main
 			(
-				{ class : "APP_CONTENT" } ,
+				{ class : "AF0" } ,
 				ef.h1 ( index.title ) ,
-				ef.p ( index.path.map ( i => i.name.value ) .join ( "/" ) ),
 				PartList ( index , "APP_NAVI_PARTS" ) ,
 			)
 		) ;

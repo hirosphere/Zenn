@@ -115,7 +115,7 @@ export const OKLCH = () =>
 
 	return ef.main
 	(
-		{ class : "UIG_COLOR_1" } ,
+		{ class : "AF0 UIG_COLOR_1" } ,
 		ef.h1 ( "OKLCH" ) ,
 		Display ( vm.dm.color ) ,
 		Ranges ( vm.ranges ) ,

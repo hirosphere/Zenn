@@ -34,13 +34,15 @@ export const EQListApp = () =>
 
 	return ef.main
 	(
-		{ class : "" } ,
+		{ class : "AF0" } ,
 		ef.h1 ( "地震リスト" ) ,
 		List () ,
-		ef.section
+		ef.textarea
 		(
-			{ style : { display : "pre" } } ,
-			dm.list.datatext ,
+			{
+				style : { height : "20em" } ,
+				props : { value : dm.list.datatext }
+			} ,
 		) ,
 		ef.section
 		(
