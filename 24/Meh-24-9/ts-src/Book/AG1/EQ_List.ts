@@ -1,30 +1,11 @@
-import { leaf , ef , log } from "../../meh/index.js" ;
+import { leaf , Order , ef , pl , log } from "../../meh/index.js" ;
+import * as JMAQuake from "../data-api/jma-quake.js" ;
 
 namespace DM
 {
 	export class Applet
 	{
-		list = new List () ;
-	}
-
-	export class List
-	{
-		datatext = leaf ( "data .." ) ;
-
-		async load ()
-		{
-			const res = await fetch( "https://www.jma.go.jp/bosai/quake/data/list.json" );
-			if( res.status != 200 ) return ;
-	
-			const data = await res.json();
-
-			this.datatext.value = JSON.stringify ( data , null , "\t" )
-		}
-	}
-
-	export class Record
-	{
-		;
+		list = new JMAQuake.List () ;
 	}
 }
 
@@ -36,23 +17,53 @@ export const EQListApp = () =>
 	(
 		{ class : "AF0" } ,
 		ef.h1 ( "地震リスト" ) ,
-		List () ,
-		ef.textarea
+		List ( dm.list ) ,
+		ef.section
 		(
 			{
-				style : { height : "20em" } ,
-				props : { value : dm.list.datatext }
+				style : { height : "0em" , overflow : "auto" , whiteSpace : "pre" , } ,
 			} ,
+			// dm.list.datatext ,
 		) ,
 		ef.section
 		(
 			{  } ,
-			ef.button ( { acts : { click : () => dm.list.load () } } , "Load" )
+			ef.button ( { acts : { click : () => dm.list.update () } } , "Load" )
 		)
 	)
 }
 
-const List = () =>
+const List = ( dm : JMAQuake.List ) =>
 {
-	return ef.ul ()
+	return ef.ul
+	(
+		{
+			style :
+			{
+				height : "60vh" ,
+				overflow :  "auto",
+			}
+		} ,
+		pl.each ( dm.items , order => Item ( order ) ) ,
+	) ;
+}
+
+const Item = ( o : Order < JMAQuake.item > ) =>
+{
+	const i = o.target ;
+
+	return ef.li
+	(
+		{
+			style :
+			{
+				display : "flex" ,
+				gap : "1em" ,
+			}
+		} ,
+		ef.span ( o ) ,
+		ef.span ( i.anm ) ,
+		ef.span ( i.at ) ,
+		ef.span ( i.rdt ) ,
+	) ;
 }

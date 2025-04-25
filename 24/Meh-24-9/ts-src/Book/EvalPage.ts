@@ -184,7 +184,7 @@ const sample =
 {
 	const color = e.style.color = \`hsl( 0 , 0% , 0% , \${ fixrand ( 0 , 70 , 40 ) }% )\` ;
 	const ff = e.style.fontFamily = arrand ( fontsets ) ;
-	const sz = e.style.fontSize = \`\${ fixrand ( 0 , 76 , 26 ) }px\` ;
+	const sz = e.style.fontSize = \`\${ fixrand ( 0 , 72 , 9 ) }px\` ;
 	const uuid = e.textContent = crypto.randomUUID () ;
 
 	return { ff , sz , color , uuid } ;

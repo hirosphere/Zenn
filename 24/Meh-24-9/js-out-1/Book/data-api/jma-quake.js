@@ -1,0 +1,24 @@
+import { leaf, Renn } from "../../meh/index.js";
+export class List {
+    datatext = leaf("");
+    items = new Items;
+    async update() {
+        const res = await fetch("https://www.jma.go.jp/bosai/quake/data/list.json");
+        if (res.status != 200)
+            return;
+        const data = await res.json();
+        this.items.replace(data);
+        this.update_monitor(data);
+    }
+    update_monitor(data) {
+        this.datatext.value =
+            (cols.join("\t") + "\n" +
+                data.map((i, n) => (n + " " +
+                    cols.map(name => i[name]).join("\t"))).join("\n"));
+        // this.datatext.value = JSON.stringify ( data , null , "\t" ) ;
+    }
+}
+const cols = ["eid", "anm", "mag", "rdt"];
+export class Items extends Renn {
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiam1hLXF1YWtlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vdHMtc3JjL0Jvb2svZGF0YS1hcGkvam1hLXF1YWtlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBRSxJQUFJLEVBQUcsSUFBSSxFQUFFLE1BQU0sb0JBQW9CLENBQUU7QUFFbEQsTUFBTSxPQUFPLElBQUk7SUFFaEIsUUFBUSxHQUFHLElBQUksQ0FBRyxFQUFFLENBQUUsQ0FBRTtJQUN4QixLQUFLLEdBQUksSUFBSSxLQUFLLENBQUU7SUFFcEIsS0FBSyxDQUFDLE1BQU07UUFFWCxNQUFNLEdBQUcsR0FBRyxNQUFNLEtBQUssQ0FBRSxrREFBa0QsQ0FBRSxDQUFDO1FBQzlFLElBQUksR0FBRyxDQUFDLE1BQU0sSUFBSSxHQUFHO1lBQUcsT0FBUTtRQUVoQyxNQUFNLElBQUksR0FBRyxNQUFNLEdBQUcsQ0FBQyxJQUFJLEVBQWdCLENBQUU7UUFFN0MsSUFBSSxDQUFDLEtBQUssQ0FBQyxPQUFPLENBQUcsSUFBSSxDQUFFLENBQUE7UUFFM0IsSUFBSSxDQUFDLGNBQWMsQ0FBRyxJQUFJLENBQUUsQ0FBRTtJQUMvQixDQUFDO0lBRVMsY0FBYyxDQUFHLElBQWM7UUFFeEMsSUFBSSxDQUFDLFFBQVEsQ0FBQyxLQUFLO1lBQ25CLENBQ0MsSUFBSSxDQUFDLElBQUksQ0FBRyxJQUFJLENBQUUsR0FBRyxJQUFJO2dCQUN6QixJQUFJLENBQUMsR0FBRyxDQUFHLENBQUUsQ0FBQyxFQUFHLENBQUMsRUFBRyxFQUFFLENBQ3ZCLENBQ0MsQ0FBQyxHQUFHLEdBQUc7b0JBQ1AsSUFBSSxDQUFDLEdBQUcsQ0FBRyxJQUFJLENBQUMsRUFBRSxDQUFDLENBQUMsQ0FBRyxJQUFJLENBQUUsQ0FBRSxDQUFDLElBQUksQ0FBRyxJQUFJLENBQUUsQ0FBRSxDQUMvQyxDQUFFLElBQUksQ0FBRyxJQUFJLENBQUUsQ0FDaEIsQ0FBRTtRQUVILGdFQUFnRTtJQUNqRSxDQUFDO0NBQ0Q7QUFFRCxNQUFNLElBQUksR0FBdUIsQ0FBRSxLQUFLLEVBQUcsS0FBSyxFQUFHLEtBQUssRUFBRyxLQUFLLENBQUUsQ0FBRTtBQUVwRSxNQUFNLE9BQU8sS0FBTSxTQUFRLElBQWE7Q0FBRyJ9
