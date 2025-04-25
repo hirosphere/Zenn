@@ -1,4 +1,4 @@
-import { leaf , Order , ef , pl , log } from "../../meh/index.js" ;
+import { leaf , Order , ef , pl , defs , log } from "../../meh/index.js" ;
 import * as JMAQuake from "../data-api/jma-quake.js" ;
 
 namespace DM
@@ -15,7 +15,7 @@ export const EQListApp = () =>
 
 	return ef.main
 	(
-		{ class : "AF0" } ,
+		{ class : "AF0" , style : { background : "hsl( 200, 70%, 85% )" } } ,
 		ef.h1 ( "地震リスト" ) ,
 		List ( dm.list ) ,
 		ef.section
@@ -40,8 +40,12 @@ const List = ( dm : JMAQuake.List ) =>
 		{
 			style :
 			{
-				height : "60vh" ,
+				flexGrow : "1" ,
+				minHeight : "50vh" ,
 				overflow :  "auto",
+				display : "flex" ,
+				flexDirection : "column" ,
+				gap : "1px" ,
 			}
 		} ,
 		pl.each ( dm.items , order => Item ( order ) ) ,
@@ -57,13 +61,25 @@ const Item = ( o : Order < JMAQuake.item > ) =>
 		{
 			style :
 			{
+				background : "hsl( 0, 0%, 100% )" ,
+				borderRadius : "0.1ex" ,
+				padding : "0.3ex 0.8ex" ,
 				display : "flex" ,
-				gap : "1em" ,
+				columnGap : "1em" ,
+				flexWrap : "wrap" ,
 			}
 		} ,
-		ef.span ( o ) ,
-		ef.span ( i.anm ) ,
-		ef.span ( i.at ) ,
-		ef.span ( i.rdt ) ,
+		field ( ( o.value?.toString() ) + "" ) ,
+		field ( i.anm ) ,
+		field ( i.mag ) ,
+		field ( i.cod ) ,
+		// field ( i.at ) ,
+		field ( i.rdt ) ,
 	) ;
 }
+
+const field = ( t : string ) => ef.span
+(
+	{ style : { wordBreak : "keep-all" } } ,
+	t
+) ;
