@@ -13,11 +13,17 @@ export const EQListApp = () =>
 {
 	const dm = new DM.Applet ;
 
+	dm.list.update () ;
+
 	return ef.main
 	(
-		{ class : "AF0" , style : { background : "hsl( 200, 70%, 75% )" } } ,
-		ef.h1 ( "地震リスト" ) ,
-		List ( dm.list ) ,
+		{ class : "DV PPP" , style : { background : "hsl( 200, 70%, 70% )" } } ,
+		Graph.Main ( dm.list ) ,
+		ef.section
+		(
+			{ class : "FL BS DV AC OA" } ,
+			List ( dm.list )
+		) ,
 		ef.section
 		(
 			{
@@ -27,7 +33,7 @@ export const EQListApp = () =>
 		) ,
 		ef.section
 		(
-			{  } ,
+			{ class : "DH PPP BS JC" } ,
 			ef.button ( { acts : { click : () => dm.list.update () } } , "Load" )
 		)
 	)
@@ -38,15 +44,10 @@ const List = ( dm : JMAQuake.List ) =>
 	return ef.ul
 	(
 		{
+			class : "DV PXP" ,
 			style :
 			{
-				background : "hsl( 200 85% 85% )" ,
 				flexGrow : "1" ,
-				minHeight : "50vh" ,
-				overflow :  "auto",
-				display : "flex" ,
-				flexDirection : "column" ,
-				gap : "1px" ,
 			}
 		} ,
 		pl.each ( dm.items , order => Item ( order ) ) ,
@@ -60,11 +61,11 @@ const Item = ( o : Order < JMAQuake.item > ) =>
 	return ef.li
 	(
 		{
+			class : "BS" ,
 			style :
 			{
 				borderRadius : "0.1ex" ,
 				display : "flex" ,
-				columnGap : "1em" ,
 				flexWrap : "wrap" ,
 				gap : "1px" ,
 			}
@@ -84,7 +85,7 @@ const field = ( t : string , width : number , center ? : boolean , bold ? : bool
 		style :
 		{
 			background : "hsl( 0, 0%, 100% )" ,
-			flexBasis : `${ width }ex` ,
+			width : `${ width }ex` ,
 			padding : "0.2ex 0.7ex" ,
 			wordBreak : "keep-all" ,
 			textAlign : center ? "center" : "" ,
@@ -93,3 +94,33 @@ const field = ( t : string , width : number , center ? : boolean , bold ? : bool
 	} ,
 	t
 ) ;
+
+namespace Graph
+{
+	export const Main = ( dm : JMAQuake.List ) => ef.section
+	(
+		{
+			class : "BS" ,
+			style :
+			{
+				minHeight : "50vh" ,
+				flexGrow : "1" ,
+				overflow : "auto" ,
+			}
+		} ,
+		pl.each
+		(
+			dm.items ,
+			o => Item ( o.target )
+		)
+	);
+
+	const Item = ( dm : JMAQuake.item ) => ef.div
+	(
+		{
+			style :
+			{}
+		},
+		dm.cod
+	) ;
+}
