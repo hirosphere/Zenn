@@ -15,7 +15,7 @@ export const EQListApp = () =>
 
 	return ef.main
 	(
-		{ class : "AF0" , style : { background : "hsl( 200, 70%, 85% )" } } ,
+		{ class : "AF0" , style : { background : "hsl( 200, 70%, 75% )" } } ,
 		ef.h1 ( "地震リスト" ) ,
 		List ( dm.list ) ,
 		ef.section
@@ -40,6 +40,7 @@ const List = ( dm : JMAQuake.List ) =>
 		{
 			style :
 			{
+				background : "hsl( 200 85% 85% )" ,
 				flexGrow : "1" ,
 				minHeight : "50vh" ,
 				overflow :  "auto",
@@ -61,25 +62,34 @@ const Item = ( o : Order < JMAQuake.item > ) =>
 		{
 			style :
 			{
-				background : "hsl( 0, 0%, 100% )" ,
 				borderRadius : "0.1ex" ,
-				padding : "0.3ex 0.8ex" ,
 				display : "flex" ,
 				columnGap : "1em" ,
 				flexWrap : "wrap" ,
+				gap : "1px" ,
 			}
 		} ,
-		field ( ( o.value?.toString() ) + "" ) ,
-		field ( i.anm ) ,
-		field ( i.mag ) ,
-		field ( i.cod ) ,
+		field (  ( o.value?.toString() ) + "" , 5 , true , true ) ,
+		field (  i.anm , 22 ) ,
+		field (  i.mag , 5 , true ) ,
+		field ( i.cod , 24 ) ,
 		// field ( i.at ) ,
-		field ( i.rdt ) ,
+		field ( new Date ( i.rdt ) .toLocaleString () , 22 ) ,
 	) ;
 }
 
-const field = ( t : string ) => ef.span
+const field = ( t : string , width : number , center ? : boolean , bold ? : boolean ) => ef.span
 (
-	{ style : { wordBreak : "keep-all" } } ,
+	{
+		style :
+		{
+			background : "hsl( 0, 0%, 100% )" ,
+			flexBasis : `${ width }ex` ,
+			padding : "0.2ex 0.7ex" ,
+			wordBreak : "keep-all" ,
+			textAlign : center ? "center" : "" ,
+			fontWeight : bold ? "bold" : ""
+		}
+	} ,
 	t
 ) ;
