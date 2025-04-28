@@ -1,0 +1,13 @@
+export function beep() {
+    return new Beep();
+}
+class Beep {
+    quest() {
+        ;
+    }
+}
+(function (beep) {
+    ;
+})(beep || (beep = {}));
+/*  */
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYmVlcC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3RzLXNyYy9Cb29rL2xpYi9iZWVwLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUVBLE1BQU0sVUFBVSxJQUFJO0lBRW5CLE9BQU8sSUFBSSxJQUFJLEVBQUcsQ0FBRTtBQUNyQixDQUFDO0FBT0QsTUFBTSxJQUFJO0lBRVQsS0FBSztRQUVKLENBQUM7SUFDRixDQUFDO0NBQ0Q7QUFFRCxXQUFpQixJQUFJO0lBRXBCLENBQUM7QUFDRixDQUFDLEVBSGdCLElBQUksS0FBSixJQUFJLFFBR3BCO0FBRUQsTUFBTSJ9

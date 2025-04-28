@@ -4,6 +4,29 @@ import { leaf } from "../model/index.js" ;
 
 /* */
 
+export namespace t
+{
+	export type Input = Node | Connection ;
+
+	export type gain =
+	{
+		in : Node [] ;
+		gain : param ;
+	} ;
+	
+	export type osc =
+	{
+		freq ? : param ;
+		pitch ? : param ;
+		type ? : leaf.ll < OscillatorType > ;
+	} ;
+
+	export type param = number | Node | [ ( number | Node ) , ... Node [] ] ;
+}
+
+
+/* */
+
 export abstract class Node
 {
 	public abstract get core () : AudioNode | undefined ;
@@ -13,8 +36,8 @@ export abstract class Node
 		com ?.parts.add ( this ) ;
 	}
 
-	public abstract init ( ac : AudioContext ) : void ;
-	public abstract term () : void ;
+	public abstract initiate ( ac : AudioContext ) : void ;
+	public abstract terminate () : void ;
 }
 
 export abstract class Composition extends Node
@@ -27,12 +50,12 @@ export abstract class Composition extends Node
 		return this.output.core ;
 	}
 
-	public init ( ac : AudioContext ) : void
+	public initiate ( ac : AudioContext ) : void
 	{
-		this.parts.forEach ( node => node.init ( ac ) ) ;
+		this.parts.forEach ( node => node.initiate ( ac ) ) ;
 	}
 
-	public term () : void
+	public terminate () : void
 	{}
 }
 
@@ -62,12 +85,43 @@ abstract class Leaf extends Node
 		else if ( typeof src == "number" )  target.value = src ;
 	}
 
-	public term () : void
+	public terminate () : void
 	{
 		// this.src_nodes.forEach ( src  ) ;
 		this._core = undefined ;
 	}
 }
+
+/* */
+
+class Connection
+{
+	constructor
+	(
+		protected src : Node ,
+		protected dest : Node ,
+		protected src_channel : number = 0 ,
+		protected dest_channel : number = 0 ,
+	)
+	{}
+
+	public connect ()
+	{
+		this.dest?.core && this.src.core?.connect
+		(
+			this.dest.core ,
+			this.src_channel ,
+			this.dest_channel
+		) ;
+	}
+
+	public disconnect ()
+	{
+		this.dest.core && this.src.core ?.disconnect ( this.dest.core ) ;
+	}
+}
+
+/* */
 
 export class Gain extends Leaf
 {
@@ -78,7 +132,7 @@ export class Gain extends Leaf
 		super ( com ) ;
 	}
 
-	init ( ac : AudioContext ) : void
+	initiate ( ac : AudioContext ) : void
 	{
 		this._core = new GainNode ( ac ) ;
 	}
@@ -93,36 +147,17 @@ export class Osc extends Leaf
 		super ( com ) ;
 	}
 
-	init ( ac : AudioContext ) : void
+	initiate ( ac : AudioContext ) : void
 	{
 		this._core = new OscillatorNode ( ac ) ;
 		this._core.start () ;
 	}
 
-	public override term () : void
+	public override terminate () : void
 	{
 		this._core ?.stop () ;
-		super.term () ;
+		super.terminate () ;
 	}
-}
-
-/* */
-
-class Connection
-{
-	constructor ( src : Connection.Src )
-	{}
-
-	public release ()
-	{
-		;
-	}
-}
-
-namespace Connection
-{
-	export type Channel = { node : AudioNode , ch : number } ;
-	export type Src = AudioNode ;
 }
 
 /* */
@@ -139,28 +174,27 @@ export function osc ( com : Composition , args : t.osc ) : Node
 
 /* */
 
-export namespace t
-{
-	export type gain =
-	{
-		in : Node [] ;
-		gain : param ;
-	} ;
-	
-	export type osc =
-	{
-		freq ? : param ;
-		pitch ? : param ;
-		type ? : leaf.ll < OscillatorType > ;
-	} ;
+let trigger_registered = false ;
 
-	export type param = number | Node | [ ( number | Node ) , ... Node [] ] ;
+export const init = ( compo : Composition ) =>
+{
+	if ( ac ) compo.initiate ( ac ) ;
+	else
+	{
+		inits.add ( compo ) ;
+
+		if ( ! trigger_registered )
+		{
+			document.addEventListener ( "touchend" , start , { once : true } ) ;
+			document.addEventListener ( "mousedown" , start , { once : true } ) ;
+			document.addEventListener ( "keydown" , start , { once : true } ) ;
+			trigger_registered = true ;
+		}
+	}
 }
 
 
-/* */
-
-export const inits = new Set < Composition > ;
+const inits = new Set < Composition > ;
 let ac : AudioContext | undefined ;
 
 const start = async () =>
@@ -176,13 +210,9 @@ const start = async () =>
 		{
 			if ( ! ac )  return ;
 
-			compo.init ( ac ) ;
+			compo.initiate ( ac ) ;
 			compo.output.core ?.connect ( ac.destination ) ;
 		}
 	) ;
 }
-
-document.addEventListener ( "touchend" , start , { once : true } ) ;
-document.addEventListener ( "mousedown" , start , { once : true } ) ;
-document.addEventListener ( "keydown" , start , { once : true } ) ;
 

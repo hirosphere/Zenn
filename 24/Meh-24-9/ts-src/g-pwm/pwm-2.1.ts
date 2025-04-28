@@ -158,7 +158,7 @@ export const main = () =>
 	const dm = new DM.App ;
 	const vm = new VM.App ( dm ) ;
 
-	au.inits.add ( new AC.App ( dm ) ) ;
+	au.init ( new AC.App ( dm ) ) ;
 
 	dom.add
 	(
