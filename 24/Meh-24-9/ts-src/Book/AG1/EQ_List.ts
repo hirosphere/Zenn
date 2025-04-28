@@ -71,7 +71,7 @@ namespace List
 						gap : "1px" ,
 					}
 				} ,
-				field (  ( o.value?.toString() ) + "" , 5 , true , true ) ,
+				field (  ( o.count.value ) , 5 , true , true ) ,
 				field (  i.地域 , 22 ) ,
 				field (  new Date ( i.時刻 ) .toLocaleString () , 23 ) ,
 				field (  i.規模 , 6 , true ) ,
@@ -88,6 +88,8 @@ namespace List
 			{
 				style :
 				{
+					flexGrow : "1" ,
+
 					background : "hsl( 0, 0%, 100% )" ,
 					width : `${ width }ex` ,
 					padding : "0.2ex 0.7ex" ,
@@ -177,6 +179,7 @@ namespace Tabs
 		return ef.li
 		(
 			{
+				class : { SELECTED : sel_item } ,
 				active_acts :
 				{
 					click ( ev )
