@@ -38,23 +38,15 @@ namespace VM
 			{ type : "clock" , name : "Clock" } ,
 			{ name : "Labo" , parts :
 				[
-					{ name : "Font" } ,
-					{ name : "Book-Props" } ,
-					{ name : "Rail-Data" } ,
-					{ name : "Bosai" } ,
 					{ name : "Tree" , title : "ツリーテスト" , parts : make_part_tree ( 3 ) } ,
 				]
 			} ,
 			{ name : "AG1" ,
 				parts :
 				[
-					{ name : "Slide" } ,
-					{ name : "HSL" } ,
 					{ name : "OKLCH" , type : "uig-oklch" } ,
-					{ name : "Tabs" } ,
-					{ name : "UUID_Click" } ,
+					{ name : "UUID_Clock" } ,
 					{ name : "EQ_List" , type : "EQ_LIST" } ,
-					{ name : "Serial" } ,
 				]
 			} ,
 			{ type : "rail" , name : "Rail" , title : "列車運転" } ,
