@@ -127,7 +127,7 @@ namespace Graph
 
 		// const hue = 120 + ( ( dm.地点?.x ?? 110 ) - 110 ) * 0.5 ;
 
-		const hue = 0 + dm.相対時刻 % 30 / 30 * 360 ;
+		const hue = 120 + dm.相対時刻 % 30 / 30 * 360 ;
 
 		log ( { top , left } )
 
