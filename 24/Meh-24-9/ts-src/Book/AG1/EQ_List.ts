@@ -41,7 +41,8 @@ const List = ( dm : JMAQuake.List ) =>
 			class : "OA FV PPP" ,
 			style :
 			{
-				height : "30%" ,
+				height : "100vh" ,
+				flexShrink : "0" ,
 			}
 		} ,
 		pl.each ( dm.items , order => Item ( order ) ) ,
@@ -100,8 +101,9 @@ namespace Graph
 			class : "BS OA FV PXP" ,
 			style :
 			{
-				flexGrow : "1" ,
-				width : "60%" ,
+				flexShrink : "0" ,
+				width : "100%" ,
+				height : "100vh" ,
 				position : "relative" ,
 			}
 		} ,
@@ -117,12 +119,17 @@ namespace Graph
 		// const left = ( ( dm.地点?.x ?? 20 ) - 20 ) * 10 + "px" ;
 		// const top = ( - ( dm.地点?.y ?? 0 ) + 50 ) * 10 + "px" ;
 
-		const left = ( 30 - dm.相対時刻 ) * 400 + "px" ;
-		const top = ( 1 - dm.相対時刻 % 1 )  * 300  + "px" ;
+		const left = 100 + ( dm.相対時刻 ) * 400 + "px" ;
+		
+		const top = 100 + ( dm.相対時刻 % 1 )  * 400  + "px" ;
+		
+		// const top = 400 - ( 20 - ( dm.地点?.y ?? 20 ) )  * 1  + "px" ;
 
-		const hue = 0 + ( ( dm.地点?.x ?? 110 ) - 110 ) * 0.5 ;
+		// const hue = 120 + ( ( dm.地点?.x ?? 110 ) - 110 ) * 0.5 ;
 
-		// log ( { top , left } )
+		const hue = 0 + dm.相対時刻 % 30 / 30 * 360 ;
+
+		log ( { top , left } )
 
 		return ef.span
 		(
@@ -133,11 +140,11 @@ namespace Graph
 					cursor : "default" ,
 					transform : `scale( ${ dm.規模 } )` ,
 					color : `oklch( 0.6 0.5 ${ hue } / 0.1 )` ,
-					fontSize : "3.5em" ,
+					fontSize : "6.0em" ,
 				} ,
 				attrs :
 				{
-					title : `${ dm.地域 } M${ dm.規模 } ${ dm.時刻 }`
+					title : `${ dm.地域 } M${ dm.規模 } ${ dm.地点?.y } ${ new Date ( dm.時刻 ) .toLocaleString () }`
 				}
 			} ,
 			"●" ,
