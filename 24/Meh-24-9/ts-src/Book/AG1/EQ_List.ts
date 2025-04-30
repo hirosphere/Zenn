@@ -10,10 +10,29 @@ namespace DM
 	}
 }
 
+namespace VC
+{
+	const c = "" ;
+
+	export const List = () =>
+	{
+		Item () ;
+	}
+
+	const Item = () => {}
+}
+
+namespace VC
+{
+	const c = "" ;
+}
+
 export const EQListApp = () =>
 {
 	const dm = new DM.Applet ;
 	const content_sel = ksel ( 0 ) ;
+	const item_sel = ksel < JMAQuake.item | undefined > ( undefined ) ;
+	const cur_info = leaf ( "info" ) ;
 
 	dm.list.update () ;
 
@@ -25,16 +44,18 @@ export const EQListApp = () =>
 
 	return ef.main
 	(
-		{ class : "FV PPP" , style : { background : "hsl( 205, 70%, 75% )" } } ,
+		{ class : "FV PPP" , style : { background : "hsl( 90, 55%, 55% )" } } ,
 
 		pl.switch ( content_sel.current , key => contents [ key ] ) ,
 		
 		ef.section
 		(
-			{ class : "BS FH PPP JC" } ,
+			{ class : "BS FH PPX JC ACe" } ,
 			ef.button ( { acts : { click : () => dm.list.update () } } , "Load" ) ,
 
 			Tabs.Tabs ( content_sel , [ "グラフ" , "リスト" ] ) ,
+
+			ef.p ( cur_info ) ,
 		) ,
 	)
 }
@@ -42,64 +63,65 @@ export const EQListApp = () =>
 namespace List
 {
 	export const Main = ( dm : JMAQuake.List ) =>
-		{
-			return ef.ul
-			(
-				{
-					class : "OA FV PPP" ,
-					style :
-					{
-					}
-				} ,
-				pl.each ( dm.items , order => Item ( order ) ) ,
-			) ;
-		}
-		
-		const Item = ( o : Order < JMAQuake.item > ) =>
-		{
-			const i = o.target ;
-		
-			return ef.li
-			(
-				{
-					class : "BS" ,
-					style :
-					{
-						borderRadius : "0.1ex" ,
-						display : "flex" ,
-						flexWrap : "wrap" ,
-						gap : "1px" ,
-					}
-				} ,
-				field (  ( o.count.value ) , 5 , true , true ) ,
-				field (  i.地域 , 22 ) ,
-				field (  new Date ( i.時刻 ) .toLocaleString () , 23 ) ,
-				field (  i.規模 , 6 , true ) ,
-				field ( i.地点?.x , 7 , true ) ,
-				field ( i.地点?.y , 7 , true ) ,
-				field ( i.地点?.h , 10 , true ) ,
-				// field ( i.at ) ,
-				// field ( new Date ( i.rdt ) .toLocaleString () , 22 ) ,
-			) ;
-		}
-		
-		const field = ( t : string | number | undefined , width : number , center ? : boolean , bold ? : boolean ) => ef.span
+	{
+		return ef.ul
 		(
 			{
+				class : "OA FV PPP" ,
 				style :
 				{
-					flexGrow : "1" ,
-
-					background : "hsl( 0, 0%, 100% )" ,
-					width : `${ width }ex` ,
-					padding : "0.2ex 0.7ex" ,
-					wordBreak : "keep-all" ,
-					textAlign : center ? "center" : "" ,
-					fontWeight : bold ? "bold" : ""
+					background : "hsl( 50  3%  75% )" ,
 				}
 			} ,
-			t
-		) ;		
+			pl.each ( dm.items , order => Item ( order ) ) ,
+		) ;
+	}
+	
+	const Item = ( o : Order < JMAQuake.item > ) =>
+	{
+		const i = o.target ;
+	
+		return ef.li
+		(
+			{
+				class : "BS" ,
+				style :
+				{
+					borderRadius : "0.1ex" ,
+					display : "flex" ,
+					flexWrap : "wrap" ,
+					gap : "1px" ,
+				}
+			} ,
+			field (  ( o.count.value ) , 5 , true , true ) ,
+			field (  i.地域 , 22 ) ,
+			field (  new Date ( i.時刻 ) .toLocaleString () , 23 ) ,
+			field (  i.規模 , 6 , true ) ,
+			field ( i.地点?.x , 7 , true ) ,
+			field ( i.地点?.y , 7 , true ) ,
+			field ( i.地点?.h , 10 , true ) ,
+			// field ( i.at ) ,
+			// field ( new Date ( i.rdt ) .toLocaleString () , 22 ) ,
+		) ;
+	}
+	
+	const field = ( t : string | number | undefined , width : number , center ? : boolean , bold ? : boolean ) => ef.span
+	(
+		{
+			style :
+			{
+				flexGrow : "1" ,
+
+				background : "hsl( 0, 0%, 100% )" ,
+				width : `${ width }ex` ,
+				padding : "0.2ex 0.7ex" ,
+				wordBreak : "keep-all" ,
+				textAlign : center ? "center" : "" ,
+				fontWeight : bold ? "bold" : ""
+			}
+		} ,
+		t
+	) ;		
 }
 
 namespace Graph
@@ -136,8 +158,6 @@ namespace Graph
 		// const hue = 120 + ( ( dm.地点?.x ?? 110 ) - 110 ) * 0.5 ;
 
 		const hue = 120 + dm.相対時刻 % 30 / 30 * 360 ;
-
-		log ( { top , left } )
 
 		return ef.span
 		(
