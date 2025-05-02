@@ -146,18 +146,26 @@ namespace Graph
 
 	const Item = ( dm : JMAQuake.item ) =>
 	{
-		// const left = ( ( dm.地点?.x ?? 20 ) - 20 ) * 10 + "px" ;
-		// const top = ( - ( dm.地点?.y ?? 0 ) + 50 ) * 10 + "px" ;
+		const geo_x = ( ( dm.地点?.x ?? 20 ) - 20 ) ;
+		const geo_y = ( - ( dm.地点?.y ?? 0 ) + 50 ) ;
 
-		const left = 100 + ( dm.相対時刻 ) * 400 + "px" ;
+		const left =
+		(
+			( 100 + ( dm.相対時刻 ) * 400 )
+			+ ( geo_x * 10 )
 		
-		const top = 100 + ( dm.相対時刻 % 1 )  * 400  + "px" ;
+		) + "px" ;
 		
-		// const top = 400 - ( 20 - ( dm.地点?.y ?? 20 ) )  * 1  + "px" ;
-
-		// const hue = 120 + ( ( dm.地点?.x ?? 110 ) - 110 ) * 0.5 ;
+		const top =
+		(
+			( 100 + ( dm.相対時刻 % 1 )  * 400 )
+			+ ( geo_y * 10 )
+			
+		) + "px" ;
+		
 
 		const hue = 120 + dm.相対時刻 % 30 / 30 * 360 ;
+
 
 		return ef.span
 		(
@@ -168,14 +176,15 @@ namespace Graph
 					cursor : "default" ,
 					transform : `scale( ${ dm.規模 } )` ,
 					color : `oklch( 0.6 0.5 ${ hue } / 0.1 )` ,
-					fontSize : "6.0em" ,
+					fontSize : "5.0em" ,
+					// fontSize : "6.0em" ,
 				} ,
 				attrs :
 				{
 					title : `${ dm.地域 } M${ dm.規模 } ${ dm.地点?.y } ${ new Date ( dm.時刻 ) .toLocaleString () }`
 				}
 			} ,
-			"●" ,
+			"*" ,
 		) ;
 	}
 }
