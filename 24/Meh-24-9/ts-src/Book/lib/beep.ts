@@ -1,4 +1,5 @@
 import {  } from "../../meh/index.js" ;
+import {  } from "../../meh/audio/index.js" ;
 
 export function beep () : beep
 {

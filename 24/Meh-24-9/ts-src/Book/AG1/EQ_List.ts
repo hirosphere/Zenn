@@ -184,7 +184,7 @@ namespace Graph
 					title : `${ dm.地域 } M${ dm.規模 } ${ dm.地点?.y } ${ new Date ( dm.時刻 ) .toLocaleString () }`
 				}
 			} ,
-			"*" ,
+			"●" ,
 		) ;
 	}
 }

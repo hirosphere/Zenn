@@ -1,6 +1,7 @@
 import { leaf , navi , ef , pl , dom , log } from "../meh/index.js" ;
 import { EvalPage } from "./EvalPage.js" ;
-import { Clock } from "./Clock.js" ;
+import { Clock } from "./AG0/Clock.js" ;
+import { Links } from "./AG0/Links.js" ;
 import * as AG1 from "./AG1/index.js" ;
 
 namespace VM
@@ -33,7 +34,7 @@ namespace VM
 		name : "" , title : "Meh Root" ,
 		parts :
 		[
-			{ type : "links" , name : "Links" ,  } ,
+			{ type : "LINKS" , name : "Links" ,  } ,
 			{ type : "eval" , name : "Eval" , title : "Eval" } ,
 			{ type : "clock" , name : "Clock" } ,
 			{ name : "Labo" , parts :
@@ -41,11 +42,11 @@ namespace VM
 					{ name : "Tree" , title : "ツリーテスト" , parts : make_part_tree ( 3 ) } ,
 				]
 			} ,
-			{ name : "AG1" ,
+			{ name : "AG1" , type : "AG1" ,
 				parts :
 				[
 					{ name : "OKLCH" , type : "uig-oklch" } ,
-					{ name : "UUID_Clock" } ,
+					{ name : "UUID_Clock" , type : "UUID_CLOCK" } ,
 					{ name : "EQ_List" , type : "EQ_LIST" } ,
 				]
 			} ,
@@ -163,7 +164,10 @@ namespace VC
 		"eval" : EvalPage ,
 		"clock" : Clock ,
 		"uig-oklch" : AG1.OKLCH ,
-		"EQ_LIST" : AG1.EQListApp
+		"EQ_LIST" : AG1.EQListApp ,
+		"LINKS" : Links ,
+		"UUID_CLOCK" : AG1.UUID_Clock ,
+		"AG1" : AG1.Index ,
 	}
 
 	const Content = ( index : navi.Index | undefined ) =>

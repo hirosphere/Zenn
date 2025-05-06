@@ -1,0 +1,5 @@
+import { navi } from "../../meh/index.js";
+export class Index extends navi.Index {
+    ;
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaHItZWtpbWVpLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vdHMtc3JjL0Jvb2svZGF0YS1hcGkvaHItZWtpbWVpLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLE9BQU8sRUFBRSxJQUFJLEVBQUUsTUFBTSxvQkFBb0IsQ0FBRTtBQUUzQyxNQUFNLE9BQU8sS0FBTSxTQUFRLElBQUksQ0FBQyxLQUFLO0lBRXBDLENBQUM7Q0FDRCJ9

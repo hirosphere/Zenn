@@ -1,4 +1,4 @@
-import { leaf , Renn , ef , pl , dom , log } from "../meh/index.js" ;
+import { leaf , Renn , ef , pl , dom , log } from "../../meh/index.js" ;
 
 export const Clock = () =>
 {
