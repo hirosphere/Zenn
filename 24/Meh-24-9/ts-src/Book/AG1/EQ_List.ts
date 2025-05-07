@@ -1,6 +1,6 @@
 import { leaf , ksel , Order , ef , pl , defs , log } from "../../meh/index.js" ;
 import * as JMAQuake from "../data-api/jma-quake.js" ;
-import { beep } from "../lib/beep.js" ;
+import { Beep } from "../lib/beep.js" ;
 
 namespace DM
 {
@@ -10,22 +10,6 @@ namespace DM
 	}
 }
 
-namespace VC
-{
-	const c = "" ;
-
-	export const List = () =>
-	{
-		Item () ;
-	}
-
-	const Item = () => {}
-}
-
-namespace VC
-{
-	const c = "" ;
-}
 
 export const EQListApp = () =>
 {
@@ -33,6 +17,7 @@ export const EQListApp = () =>
 	const content_sel = ksel ( 0 ) ;
 	const item_sel = ksel < JMAQuake.item | undefined > ( undefined ) ;
 	const cur_info = leaf ( "info" ) ;
+	const beep = new Beep () ;
 
 	dm.list.update () ;
 
@@ -50,12 +35,11 @@ export const EQListApp = () =>
 		
 		ef.section
 		(
-			{ class : "BS FH PPX JC ACe" } ,
+			{ class : "BS FH JC AS PPP" } ,
 			ef.button ( { acts : { click : () => dm.list.update () } } , "Load" ) ,
-
+			ef.button ( { acts : { click () { beep.quest () ; } } } , "BEEP" ) ,
 			Tabs.Tabs ( content_sel , [ "グラフ" , "リスト" ] ) ,
-
-			ef.p ( cur_info ) ,
+			ef.p ( { class : "FH AC BH PXX" , style : { width : "16em" } } , cur_info ) ,
 		) ,
 	)
 }
@@ -151,20 +135,27 @@ namespace Graph
 
 		const left =
 		(
-			( 100 + ( dm.相対時刻 ) * 400 )
+			( 100 + ( dm.相対時刻 ) * 200 )
 			+ ( geo_x * 10 )
 		
 		) + "px" ;
 		
 		const top =
 		(
-			( 100 + ( dm.相対時刻 % 1 )  * 400 )
+			( 100 + ( dm.相対時刻 % 1 )  * 200 )
 			+ ( geo_y * 10 )
 			
 		) + "px" ;
 		
 
-		const hue = 120 + dm.相対時刻 % 30 / 30 * 360 ;
+		const yms = ( 365 * 24 * 3600 * 1000 ) ;
+		const year_hue = new Date () .getTime () % yms / yms * 360 ;
+
+		const hue =
+		(
+			120 + dm.相対時刻 % 30 / 30 * 360 +
+			year_hue
+		) ;
 
 
 		return ef.span
@@ -176,7 +167,7 @@ namespace Graph
 					cursor : "default" ,
 					transform : `scale( ${ dm.規模 } )` ,
 					color : `oklch( 0.6 0.5 ${ hue } / 0.1 )` ,
-					fontSize : "5.0em" ,
+					fontSize : "3.0em" ,
 					// fontSize : "6.0em" ,
 				} ,
 				attrs :
@@ -184,7 +175,7 @@ namespace Graph
 					title : `${ dm.地域 } M${ dm.規模 } ${ dm.地点?.y } ${ new Date ( dm.時刻 ) .toLocaleString () }`
 				}
 			} ,
-			"●" ,
+			"★" ,
 		) ;
 	}
 }
@@ -220,4 +211,12 @@ namespace Tabs
 			label
 		) ;
 	}
+}
+
+
+namespace CSSQuest
+{
+	const ss = new CSSStyleSheet (  ) ;
+
+	ss.insertRule ( ".fq43l { color : red }" )
 }

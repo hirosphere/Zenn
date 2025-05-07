@@ -88,6 +88,9 @@ export namespace leaf
 
 		/* value */
 
+		public get $ () : V { return this.value }
+		public set $ ( value : V ) { this.value = value ; }
+
 		public abstract get value () : V ;
 		public abstract set value ( value : V ) ;
 

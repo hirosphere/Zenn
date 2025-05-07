@@ -6,7 +6,7 @@ export const Index = ( index : navi.Index ) =>
 {
 	return ef.main
 	(
-		{ class : "AF0" } ,
+		{ class : "FV AC PXX" } ,
 		ef.h1 ( index.title ) ,
 		 ef.p ( "!````" ),
 		PartList ( index , "APP_NAVI_PARTS" ) ,
