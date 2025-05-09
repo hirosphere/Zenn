@@ -73,21 +73,41 @@ namespace List
 				{
 					borderRadius : "0.1ex" ,
 					display : "flex" ,
-					flexWrap : "wrap" ,
 					gap : "1px" ,
 				}
 			} ,
-			field (  ( o.count.value ) , 5 , true , true ) ,
-			field (  i.地域 , 22 ) ,
-			field (  new Date ( i.時刻 ) .toLocaleString () , 23 ) ,
-			field (  i.規模 , 6 , true ) ,
-			field ( i.地点?.x , 7 , true ) ,
-			field ( i.地点?.y , 7 , true ) ,
-			field ( i.地点?.h , 10 , true ) ,
-			// field ( i.at ) ,
-			// field ( new Date ( i.rdt ) .toLocaleString () , 22 ) ,
+
+			fieldset
+			(
+				"0" ,
+				field (  ( o.count.value ) , 5 , true , true ) ,
+			) ,
+
+			fieldset
+			(
+				"1" ,
+				field (  i.地域 , 22 , false , true ) ,
+				field (  new Date ( i.時刻 ) .toLocaleString () , 23 ) ,
+				field (  i.規模 , 6 , true ) ,
+				field ( i.地点?.x , 7 , true ) ,
+				field ( i.地点?.y , 7 , true ) ,
+				field ( i.地点?.h , 10 , true ) ,
+			) ,
 		) ;
 	}
+
+	const fieldset = ( flexGrow : string , ... content : defs.parts ) => ef.span
+	(
+		{
+			class : "FH WRAP AS" ,
+			style :
+			{
+				flexGrow ,
+				gap : "1px" ,
+			}
+		} ,
+		... content
+	) ;
 	
 	const field = ( t : string | number | undefined , width : number , center ? : boolean , bold ? : boolean ) => ef.span
 	(
@@ -96,12 +116,14 @@ namespace List
 			{
 				flexGrow : "1" ,
 
+				display : "flex" ,
+				alignItems : "center" ,
 				background : "hsl( 0, 0%, 100% )" ,
 				width : `${ width }ex` ,
-				padding : "0.2ex 0.7ex" ,
+				padding : "0.4ex 0.8ex" ,
 				wordBreak : "keep-all" ,
-				textAlign : center ? "center" : "" ,
-				fontWeight : bold ? "bold" : ""
+				justifyContent : center ? "center" : "" ,
+				fontWeight : bold ? "bold" : "" ,
 			}
 		} ,
 		t
@@ -130,20 +152,20 @@ namespace Graph
 
 	const Item = ( dm : JMAQuake.item ) =>
 	{
-		const geo_x = ( ( dm.地点?.x ?? 20 ) - 20 ) ;
+		const geo_x = ( ( dm.地点?.x ?? 20 ) - 120 ) ;
 		const geo_y = ( - ( dm.地点?.y ?? 0 ) + 50 ) ;
 
 		const left =
 		(
-			( 100 + ( dm.相対時刻 ) * 200 )
-			+ ( geo_x * 10 )
+			( 100 + ( dm.相対時刻 ) * 250 )
+			+ ( geo_x * 5 )
 		
 		) + "px" ;
 		
 		const top =
 		(
-			( 100 + ( dm.相対時刻 % 1 )  * 200 )
-			+ ( geo_y * 10 )
+			( 100 + ( dm.相対時刻 % 1 )  * 300 )
+			+ ( geo_y * 5 )
 			
 		) + "px" ;
 		
@@ -157,6 +179,10 @@ namespace Graph
 			year_hue
 		) ;
 
+		const rotate = geo_x * 10 ;
+
+		log ( rotate ) ;
+
 
 		return ef.span
 		(
@@ -165,8 +191,8 @@ namespace Graph
 				{
 					position : "absolute" ,left , top ,
 					cursor : "default" ,
-					transform : `scale( ${ dm.規模 } )` ,
-					color : `oklch( 0.6 0.5 ${ hue } / 0.1 )` ,
+					transform : `scale( ${ dm.規模 } ) rotate( ${ rotate }deg )` ,
+					color : `oklch( 0.6 0.5 ${ hue } / 0.20 )` ,
 					fontSize : "3.0em" ,
 					// fontSize : "6.0em" ,
 				} ,
@@ -175,7 +201,7 @@ namespace Graph
 					title : `${ dm.地域 } M${ dm.規模 } ${ dm.地点?.y } ${ new Date ( dm.時刻 ) .toLocaleString () }`
 				}
 			} ,
-			"★" ,
+			"☆" ,
 		) ;
 	}
 }

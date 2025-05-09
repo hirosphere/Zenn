@@ -61,15 +61,16 @@ button
 .FH { display : flex ;  flex-direction : row }
 .FV { display : flex ;  flex-direction : column }
 
+.FH.WRAP { flex-wrap : wrap ; }
+
 .JC { justify-content : center ; }
 .AC , .ACe { align-items : center ; }
-.ASt { align-items : stretch ; }
+.AS , .ASt { align-items : stretch ; }
 
 .PXX { padding : 1ex ; gap : 1ex ; }
 .PXP { padding : 1ex ; gap : 1px ; }
 .PPX { padding : 1px ; gap : 1ex ; }
 .PPP { padding : 1px ; gap : 1px ; }
-
 
 /* APP */
 
@@ -215,8 +216,9 @@ ul.TABS
 .TABS > li
 {
 	border : 1px solid hsl( 0  0%  40% ) ;
-	padding : 1ex ;
+	padding : 0.66ex 1ex ;
 	background-color : hsl( 0 , 0% , 100% ) ;
+	white-space : nowrap ;
 }
 
 .TABS .SELECTED
