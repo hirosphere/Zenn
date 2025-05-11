@@ -181,27 +181,23 @@ namespace Graph
 
 		const rotate = geo_x * 10 ;
 
-		log ( rotate ) ;
-
-
 		return ef.span
 		(
 			{
 				style :
 				{
-					position : "absolute" ,left , top ,
+					position : "absolute" , left , top ,
 					cursor : "default" ,
 					transform : `scale( ${ dm.規模 } ) rotate( ${ rotate }deg )` ,
 					color : `oklch( 0.6 0.5 ${ hue } / 0.20 )` ,
 					fontSize : "3.0em" ,
-					// fontSize : "6.0em" ,
 				} ,
 				attrs :
 				{
 					title : `${ dm.地域 } M${ dm.規模 } ${ dm.地点?.y } ${ new Date ( dm.時刻 ) .toLocaleString () }`
 				}
 			} ,
-			"☆" ,
+			"★" ,
 		) ;
 	}
 }
