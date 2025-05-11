@@ -179,7 +179,9 @@ namespace Graph
 			year_hue
 		) ;
 
-		const rotate = geo_x * 10 ;
+		// const rotate = ( ( dm.地点?.x ?? 135 ) - 135 ) / 50 * 500 ;
+
+		const rotate = ( dm.相対時刻 % 1 ) * 72 ;
 
 		return ef.span
 		(
