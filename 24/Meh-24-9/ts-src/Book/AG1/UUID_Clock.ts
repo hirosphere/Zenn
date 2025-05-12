@@ -1,9 +1,19 @@
-import { leaf , ef , log } from "../../meh/index.js" ;
+import { leaf , df , ef , log } from "../../meh/index.js" ;
 import { HeartRails } from "../data-api/hr-ekimei.js" ;
 
-namespace VM
+namespace VM.Eki
 {
-	export class Eki
+	export class App
+	{
+		items : Item [] ;
+
+		constructor ( lines : string [] )
+		{
+			this.items = lines.map ( ( name , i ) => new Item ( name , i ) ) ;
+		}
+	}
+
+	export class Item
 	{
 		name = leaf ( "えき" ) ;
 		current = leaf ( 0 ) ;
@@ -13,7 +23,7 @@ namespace VM
 		constructor ( line : string , public readonly phase : number )
 		{
 			this.init ( line ) ;
-			setInterval ( () => this.next () , 40 + phase * 0 ) ;
+			setInterval ( () => this.next () , 1200 + phase * 10 ) ;
 		}
 
 		protected async init ( line : string )
@@ -36,38 +46,65 @@ namespace VM
 	}
 }
 
+namespace VM.UUID
+{
+	export class App
+	{
+		datetime = leaf.str ( "" );
+
+		constructor ()
+		{
+			this.update () ;
+			
+			setInterval ( () => this.update () , 1000 )
+		}
+
+		update ()
+		{
+			this.datetime.$ = df ( "MMDDhhmmss" , new Date ) ;
+		}
+	}
+
+	export class Item
+	{
+		constructor
+		(
+			datetime : leaf.str ,
+			digit : number
+		)
+		{
+			datetime.conv ( t => t [ digit ] ) ;
+		}
+	}
+}
+
 namespace VC
 {
 	export const Applet = () =>
 	{
-		const sec = leaf ( "" ) ;
 		const vm =
 		{
-			eki : 
-			[
-				new VM.Eki ( "京成本線" , 0 ) ,
-				new VM.Eki ( "東武伊勢崎線" , 1 ) ,
-				new VM.Eki ( "東武東上本線" , 2 ) ,
-				new VM.Eki ( "西武池袋線" , 3 ) ,
-				new VM.Eki ( "西武新宿線" , 4 ) ,
-				new VM.Eki ( "JR山手線" , 5 ) ,
-				new VM.Eki ( "東京メトロ有楽町線" , 6 ) ,
-				new VM.Eki ( "東京メトロ千代田線" , 7 ) ,
-			]
+			uuid : new VM.UUID.App () ,
+			eki : new VM.Eki.App 
+			([
+				"東京メトロ銀座線" ,
+				"東京メトロ丸ノ内線" ,
+				"東京メトロ日比谷線" ,
+				"東京メトロ東西線" ,
+				"東京メトロ千代田線" ,			
+				"東京メトロ有楽町線" ,			
+				"東京メトロ半蔵門線" ,			
+				"東京メトロ南北線" ,			
+				"東京メトロ副都心線" ,
+				"都営浅草線" ,
+				"都営三田線" ,
+				"都営新宿線" ,
+				"都営大江戸線" ,
+				"日暮里・舎人ライナー" ,
+				"新交通ゆりかもめ",
+				"都電荒川線" ,
+			])
 		}
-
-		const uuid_update = () =>
-		{
-			sec.value = crypto.randomUUID () ;
-		}
-		uuid_update () ;
-		
-		const oninterval = () =>
-		{
-			uuid_update () ;
-		}
-
-		setInterval ( oninterval , 60000 ) ;
 
 		return ef.main
 		(
@@ -86,32 +123,35 @@ namespace VC
 						color : "oklch( 0.5  0  0 )" ,
 					}
 				} ,
-				sec
+				vm.uuid.datetime
 			) ,
 			ef.p
 			(
 				{
 					class : "FH WRAP JC" ,
-					style : { gap : "1em" , fontSize : "30px" ,
+					style :
+					{
+						gap : "1em" ,
+						fontSize : "calc( 30px + 2vw )" ,
 						lineHeight : "1em" ,
 					}
 				} ,
-				... vm.eki.map ( vm => Eki ( vm ) ) ,
+				... vm.eki.items.map ( vm => Eki ( vm ) ) ,
 			)
 		) ;
 	}
 
-	const Eki = ( vm : VM.Eki ) =>
+	const Eki = ( vm : VM.Eki.Item ) =>
 	{
 		return ef.span
 		(
 			{
 				style :
 				{
-					minWidth : "8em" ,
+					minWidth : "5em" ,
 					fontFamily : "sans serif" ,
 					textAlign : "center" ,
-					color : `hsl( ${ 80 + vm.phase * 360 / 20 } 50% 50% )` ,
+					color : `hsl( ${ 40 + vm.phase * 360 / 20 } 80% 40% )` ,
 				}
 			} ,
 			vm.name ,

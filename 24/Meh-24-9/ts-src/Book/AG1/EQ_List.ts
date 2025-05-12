@@ -191,7 +191,7 @@ namespace Graph
 					position : "absolute" , left , top ,
 					cursor : "default" ,
 					transform : `scale( ${ dm.規模 } ) rotate( ${ rotate }deg )` ,
-					color : `oklch( 0.6 0.5 ${ hue } / 0.20 )` ,
+					color : `oklch( 0.6 0.5 ${ hue } / 0.135 )` ,
 					fontSize : "3.0em" ,
 				} ,
 				attrs :
