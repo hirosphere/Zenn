@@ -132,7 +132,7 @@ namespace VC
 					style :
 					{
 						gap : "1em" ,
-						fontSize : "calc( 30px + 2vw )" ,
+						fontSize : "calc( 36px )" ,
 						lineHeight : "1em" ,
 					}
 				} ,
@@ -148,10 +148,15 @@ namespace VC
 			{
 				style :
 				{
-					minWidth : "5em" ,
+					width : "5em" ,
+					display : "flex" ,
+					overflow : "hidden" ,
+					padding : "0.6ex 1.0ex" ,
 					fontFamily : "sans serif" ,
 					textAlign : "center" ,
-					color : `hsl( ${ 40 + vm.phase * 360 / 20 } 80% 40% )` ,
+					whiteSpace : "nowrap" ,
+					backgroundColor : `hsl( ${ 120 + vm.phase * 360 / 60 } 30% 40% )` ,
+					color : "hsl( 0  0%  100% )" ,
 				}
 			} ,
 			vm.name ,
