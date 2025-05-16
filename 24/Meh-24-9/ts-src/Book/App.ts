@@ -46,6 +46,7 @@ namespace VM
 				parts :
 				[
 					{ name : "OKLCH" , type : "uig-oklch" } ,
+					{ name : "Rectia" , type : "Rectia" } ,
 					{ name : "UUID_Clock" , type : "UUID_CLOCK" } ,
 					{ name : "EQ_List" , type : "EQ_LIST" } ,
 				]
@@ -168,6 +169,7 @@ namespace VC
 		"LINKS" : Links ,
 		"UUID_CLOCK" : AG1.UUID_Clock ,
 		"AG1" : AG1.Index ,
+		"Rectia" : AG1.Rectia ,
 	}
 
 	const Content = ( index : navi.Index | undefined ) =>

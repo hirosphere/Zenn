@@ -1,5 +1,41 @@
-import { leaf , df , ef , log } from "../../meh/index.js" ;
+import { leaf , df , ef , log  , dom } from "../../meh/index.js" ;
 import { HeartRails } from "../data-api/hr-ekimei.js" ;
+
+namespace VM
+{
+	export class Applet
+	{
+		uuid : item = { make_label : () => crypto.randomUUID () } ;
+
+		clock : item = { make_label : () => df ( "YY.MM.DD (B) hh:mm:ss" ) }
+
+		eki = new VM.Eki.App
+		([
+			"東京メトロ銀座線" ,
+			"東京メトロ丸ノ内線" ,
+			"東京メトロ日比谷線" ,
+			"東京メトロ東西線" ,
+			"東京メトロ千代田線" ,			
+			"東京メトロ有楽町線" ,			
+			"東京メトロ半蔵門線" ,			
+			"東京メトロ南北線" ,			
+			"東京メトロ副都心線" ,
+			"都営浅草線" ,
+			"都営三田線" ,
+			"都営新宿線" ,
+			"都営大江戸線" ,
+			"日暮里・舎人ライナー" ,
+			"新交通ゆりかもめ",
+			"都電荒川線" ,
+		]) ;
+	}
+
+	export type item =
+	{
+		interval ? : number ;
+		make_label ? : () => string ;
+	}	
+}
 
 namespace VM.Eki
 {
@@ -46,65 +82,11 @@ namespace VM.Eki
 	}
 }
 
-namespace VM.UUID
-{
-	export class App
-	{
-		datetime = leaf.str ( "" );
-
-		constructor ()
-		{
-			this.update () ;
-			
-			setInterval ( () => this.update () , 1000 )
-		}
-
-		update ()
-		{
-			this.datetime.$ = df ( "MMDDhhmmss" , new Date ) ;
-		}
-	}
-
-	export class Item
-	{
-		constructor
-		(
-			datetime : leaf.str ,
-			digit : number
-		)
-		{
-			datetime.conv ( t => t [ digit ] ) ;
-		}
-	}
-}
-
 namespace VC
 {
 	export const Applet = () =>
 	{
-		const vm =
-		{
-			uuid : new VM.UUID.App () ,
-			eki : new VM.Eki.App 
-			([
-				"東京メトロ銀座線" ,
-				"東京メトロ丸ノ内線" ,
-				"東京メトロ日比谷線" ,
-				"東京メトロ東西線" ,
-				"東京メトロ千代田線" ,			
-				"東京メトロ有楽町線" ,			
-				"東京メトロ半蔵門線" ,			
-				"東京メトロ南北線" ,			
-				"東京メトロ副都心線" ,
-				"都営浅草線" ,
-				"都営三田線" ,
-				"都営新宿線" ,
-				"都営大江戸線" ,
-				"日暮里・舎人ライナー" ,
-				"新交通ゆりかもめ",
-				"都電荒川線" ,
-			])
-		}
+		const vm = new VM.Applet ;
 
 		return ef.main
 		(
@@ -112,19 +94,8 @@ namespace VC
 
 			ef.h1 ( "UUID_CLOCK" ) ,
 
-			ef.p
-			(
-				{
-					style :
-					{
-						fontSize : "4.0vw" ,
-						textAlign : "center" ,
-						fontFamily : "serif" ,
-						color : "oklch( 0.5  0  0 )" ,
-					}
-				} ,
-				vm.uuid.datetime
-			) ,
+			Item ( vm.clock ) ,
+			Item ( vm.uuid ) ,
 			ef.p
 			(
 				{
@@ -141,22 +112,49 @@ namespace VC
 		) ;
 	}
 
-	const Eki = ( vm : VM.Eki.Item ) =>
+	const Item = ( vm : VM.item ) : dom.MehElement =>
 	{
+		const label = leaf ( "" ) ;
+
+		const update = () =>
+		{
+			label.$ = vm.make_label ?.() ?? "" ;
+		}
+
+		update () ;
+
+		setInterval ( update , vm.interval ?? 1000 ) ;
+
 		return ef.span
 		(
 			{
 				style :
 				{
-					width : "5em" ,
+					fontSize : "20px" ,
+				}
+			} ,
+			label
+		) ;
+	}
+
+	const Eki = ( vm : VM.Eki.Item ) =>
+	{
+		const hue = 45 + vm.phase / 12 * 140 ;
+
+		return ef.span
+		(
+			{
+				style :
+				{
+					width : "8em" ,
 					display : "flex" ,
 					overflow : "hidden" ,
 					padding : "0.6ex 1.0ex" ,
 					fontFamily : "sans serif" ,
 					textAlign : "center" ,
 					whiteSpace : "nowrap" ,
-					backgroundColor : `hsl( ${ 120 + vm.phase * 360 / 60 } 30% 40% )` ,
-					color : "hsl( 0  0%  100% )" ,
+					backgroundColor : `hsl( ${ hue } 0% 0% )` ,
+					color : `hsl( ${ hue }  37%  75% )` ,
 				}
 			} ,
 			vm.name ,
