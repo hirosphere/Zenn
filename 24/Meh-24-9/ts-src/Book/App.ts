@@ -45,6 +45,7 @@ namespace VM
 			{ name : "AG1" , type : "AG1" ,
 				parts :
 				[
+					{ type : "AG1.Posts" , name : "Posts" } ,
 					{ name : "OKLCH" , type : "uig-oklch" } ,
 					{ name : "Rectia" , type : "Rectia" } ,
 					{ name : "UUID_Clock" , type : "UUID_CLOCK" } ,
@@ -96,7 +97,7 @@ namespace VC
 			{ class : "APP" } ,
 			ef.nav
 			(
-				{ class : "APP_NAVI" } ,
+				{ class : "APP_NAVI  BSS" } ,
 				ef.ul
 				(
 					{ class : "APP_NAVI_PATH" } ,
@@ -115,7 +116,7 @@ namespace VC
 			ef.nav
 			(
 				{ class : "APP_NAVI" } ,
-				ListSwitch ( vm.navi.current_com_index , "APP_NAVI_ISOS" ) ,
+				ListSwitch ( vm.navi.current_com_index , "APP_NAVI_ISOS  BSS" ) ,
 				// ListSwitch ( vm.navi.current_index , "APP_NAVI_PARTS" ) ,
 			) ,
 		) ;
@@ -162,13 +163,15 @@ namespace VC
 
 	const content_classes : { [ name : string ] : ( index : navi.Index ) => dom.defs.element } =
 	{
+		"LINKS" : Links ,
 		"eval" : EvalPage ,
 		"clock" : Clock ,
+
+		"AG1" : AG1.Index ,
+		"AG1.Posts" : AG1.Posts ,
 		"uig-oklch" : AG1.OKLCH ,
 		"EQ_LIST" : AG1.EQListApp ,
-		"LINKS" : Links ,
 		"UUID_CLOCK" : AG1.UUID_Clock ,
-		"AG1" : AG1.Index ,
 		"Rectia" : AG1.Rectia ,
 	}
 
@@ -182,9 +185,9 @@ namespace VC
 		(
 			ef.main
 			(
-				{ class : "AF0" } ,
+				{ class : "FV AC PXX BS" } ,
 				ef.h1 ( index.title ) ,
-				PartList ( index , "APP_NAVI_PARTS" ) ,
+				PartList ( index , "APP_NAVI_PARTS  BS" ) ,
 			)
 		) ;
 	}

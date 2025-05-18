@@ -29,7 +29,7 @@ export const EQListApp = () =>
 
 	return ef.main
 	(
-		{ class : "FV PPP" , style : { background : "hsl( 90, 55%, 55% )" } } ,
+		{ class : "FV PPP" } ,
 
 		pl.switch ( content_sel.current , key => contents [ key ] ) ,
 		
@@ -51,11 +51,7 @@ namespace List
 		return ef.ul
 		(
 			{
-				class : "OA FV PPP" ,
-				style :
-				{
-					background : "hsl( 50  3%  75% )" ,
-				}
+				class : "BSS OA FV PPP" ,
 			} ,
 			pl.each ( dm.items , order => Item ( order ) ) ,
 		) ;

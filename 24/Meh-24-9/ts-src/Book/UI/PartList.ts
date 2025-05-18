@@ -4,7 +4,7 @@ export const PartList = ( index : navi.Index , classname : string ) =>
 {
 	return ef.ul
 	(
-		{ class : classname } ,
+		{ class : [ classname , "BSS" ] } ,
 		pl.each
 		(
 			index.parts ,
