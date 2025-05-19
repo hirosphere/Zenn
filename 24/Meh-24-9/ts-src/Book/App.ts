@@ -50,6 +50,22 @@ namespace VM
 					{ name : "Rectia" , type : "Rectia" } ,
 					{ name : "UUID_Clock" , type : "UUID_CLOCK" } ,
 					{ name : "EQ_List" , type : "EQ_LIST" } ,
+					{ name : "物流" , title : "物流進捗管理" , parts :
+						[
+							{ name : "全体進捗" } ,
+							{ name : "グループ進捗" } ,
+							{ name : "製品情報" } ,
+							{ name : "店舗情報" } ,
+						]
+					} ,
+					{ name : "製造進捗管理" , parts :
+						[
+							{ name : "進捗" } ,
+							{ name : "実績記録" } ,
+							{ name : "プロジェクト情報" } ,
+							{ name : "工程情報" } ,
+						]
+					}
 				]
 			} ,
 			{ type : "rail" , name : "Rail" , title : "列車運転" } ,

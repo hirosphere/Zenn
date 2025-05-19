@@ -154,7 +154,7 @@ namespace VC
 					textAlign : "center" ,
 					whiteSpace : "nowrap" ,
 					backgroundColor : `hsl( ${ hue } 0% 0% )` ,
-					color : `hsl( ${ hue }  37%  75% )` ,
+					color : `hsl( ${ hue }  2%  80% )` ,
 				}
 			} ,
 			vm.name ,
