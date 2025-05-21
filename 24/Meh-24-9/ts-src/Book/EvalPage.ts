@@ -138,7 +138,7 @@ export const EvalPage = () =>
 
 	return ef.main
 	(
-		{ class : "EVAL_PAGE" } ,
+		{ class : "EVAL_PAGE BS" } ,
 		ef.section
 		(
 			{ class : "EVAL_PAGE_BAR" } ,
