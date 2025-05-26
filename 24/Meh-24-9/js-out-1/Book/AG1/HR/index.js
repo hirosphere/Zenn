@@ -1,6 +1,10 @@
-const root_index = {
-    name: "",
-    parts: [],
+import { ef } from "../../../meh/index.js";
+export const HRIndex = {
+    name: "HR駅名",
+    parts: [
+        { name: "東京", page: index => ef.h1("** ", index.title, " **") },
+        { name: "名古屋" },
+        { name: "大阪" },
+    ],
 };
-export {};
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi90cy1zcmMvQm9vay9BRzEvSFIvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBRUEsTUFBTSxVQUFVLEdBQ2hCO0lBQ0MsSUFBSSxFQUFHLEVBQUU7SUFDVCxLQUFLLEVBQUcsRUFBRTtDQUNWLENBQUEifQ==
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi90cy1zcmMvQm9vay9BRzEvSFIvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUFTLEVBQUUsRUFBRSxNQUFNLHVCQUF1QixDQUFFO0FBRW5ELE1BQU0sQ0FBQyxNQUFNLE9BQU8sR0FDcEI7SUFDQyxJQUFJLEVBQUcsTUFBTTtJQUNiLEtBQUssRUFBRztRQUNQLEVBQUUsSUFBSSxFQUFHLElBQUksRUFBRyxJQUFJLEVBQUcsS0FBSyxDQUFDLEVBQUUsQ0FBQyxFQUFFLENBQUMsRUFBRSxDQUFHLEtBQUssRUFBRyxLQUFLLENBQUMsS0FBSyxFQUFHLEtBQUssQ0FBRSxFQUFFO1FBQ3ZFLEVBQUUsSUFBSSxFQUFHLEtBQUssRUFBRTtRQUNoQixFQUFFLElBQUksRUFBRyxJQUFJLEVBQUU7S0FDZjtDQUNELENBQUEifQ==

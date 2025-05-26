@@ -1,13 +1,32 @@
 import { leaf , df , ef , log  , dom } from "../../meh/index.js" ;
 import { HeartRails } from "../data-api/hr-ekimei.js" ;
 
+
+namespace Qst
+{
+	const symbols =
+	[
+		"FLH" ,
+		"FLV" ,
+		"FLWR" ,
+		"BGS" ,
+		"BGH" ,
+		"PGX"
+	] as const ;
+
+	type symbols = typeof symbols [ number ] ;
+
+	const ss : symbols [] = [ "FLH" , "FLWR" , "PGX" ] ;
+
+}
+
 namespace VM
 {
 	export class Applet
 	{
-		uuid : item = { make_label : () => crypto.randomUUID () } ;
+		uuid : Item = { interval : 10000 , make_label : () => crypto.randomUUID () } ;
 
-		clock : item = { make_label : () => df ( "YY.MM.DD (B) hh:mm:ss" ) }
+		clock : Item = { make_label : () => df ( "Y.MM.DD (B) hh:mm:ss" ) }
 
 		eki = new VM.Eki.App
 		([
@@ -30,7 +49,7 @@ namespace VM
 		]) ;
 	}
 
-	export type item =
+	export type Item =
 	{
 		interval ? : number ;
 		make_label ? : () => string ;
@@ -51,7 +70,8 @@ namespace VM.Eki
 
 	export class Item
 	{
-		name = leaf ( "えき" ) ;
+		name = leaf ( "" ) ;
+		tranlate = leaf ( "" ) ;
 		current = leaf ( 0 ) ;
 
 		station_list : HeartRails.station [] = [] ;
@@ -59,7 +79,7 @@ namespace VM.Eki
 		constructor ( line : string , public readonly phase : number )
 		{
 			this.init ( line ) ;
-			setInterval ( () => this.next () , 1200 + phase * 10 ) ;
+			setInterval ( () => this.next () , 4000 + phase * 1 ) ;
 		}
 
 		protected async init ( line : string )
@@ -77,7 +97,34 @@ namespace VM.Eki
 
 		protected update ()
 		{
-			this.name.$ = this.station_list[ this.current.$ ]?.name ?? "--" ;
+			const stat = this.station_list[ this.current.$ ] ;
+			this.name.$ = stat ?.name ?? "--" ;
+
+			const x = ( stat ?.x - 139.7 ) * 220 ;
+			const y = ( 35.7 - stat ?.y ) * 220 ;
+
+			this.tranlate.$ = `${ x }ex  ${ y }ex`
+		}
+	}
+
+	class Spacer
+	{
+		css ;
+
+		constructor
+		(
+			public widthEm : leaf.num
+		)
+		{
+			const space = 0 ;
+			const shrink = 1 ;
+
+			this.css =
+			{
+				letterSpacing : space + "em" ,
+				transform : `scale( ${ shrink } , 1 )` ,
+				marginRight : - space + "em"	
+			}
 		}
 	}
 }
@@ -90,20 +137,22 @@ namespace VC
 
 		return ef.main
 		(
-			{ class : "FV PXX AC" } ,
-
-			ef.h1 ( "UUID_CLOCK" ) ,
+			{ class : "FV AS PMM" } ,
 
 			Item ( vm.clock ) ,
 			Item ( vm.uuid ) ,
-			ef.p
+			ef.section
 			(
 				{
-					class : "FH WRAP JC" ,
 					style :
 					{
-						gap : "1em" ,
-						fontSize : "calc( 36px )" ,
+						display : "grid" ,
+						height : "80vh" ,
+						padding : "1ex" ,
+						justifyContent : "center" ,
+						alignItems : "center" ,
+						gap : "0.7em" ,
+						fontSize : "calc( 16px )" ,
 						lineHeight : "1em" ,
 					}
 				} ,
@@ -112,7 +161,7 @@ namespace VC
 		) ;
 	}
 
-	const Item = ( vm : VM.item ) : dom.MehElement =>
+	const Item = ( vm : VM.Item ) : dom.MehElement =>
 	{
 		const label = leaf ( "" ) ;
 
@@ -125,12 +174,18 @@ namespace VC
 
 		setInterval ( update , vm.interval ?? 1000 ) ;
 
-		return ef.span
+		return ef.div
 		(
 			{
 				style :
 				{
-					fontSize : "20px" ,
+					borderRadius : "0.08ex" ,
+					background : "oklch( 100%  0%  0 / 50% )" ,
+					padding : "0.03ex 0.8ex" ,
+					textAlign : "center" ,
+					fontFamily : "Noto Sans JP" ,
+					fontSize : "36px" ,
+					color : "oklch( 20%  0%  0 / 70% )" ,
 				}
 			} ,
 			label
@@ -146,18 +201,33 @@ namespace VC
 			{
 				style :
 				{
+					gridArea : "1/1" ,
+					translate : vm.tranlate ,
+
 					width : "8em" ,
 					display : "flex" ,
 					overflow : "hidden" ,
-					padding : "0.6ex 1.0ex" ,
-					fontFamily : "sans serif" ,
-					textAlign : "center" ,
+					padding : "0.5ex 0.6ex 0.6ex" ,
+
 					whiteSpace : "nowrap" ,
-					backgroundColor : `hsl( ${ hue } 0% 0% )` ,
+					justifyContent : "center" ,
+					alignItems : "center" ,
+					
+					lineHeight : "1" ,
+					backgroundColor : `hsl( ${ hue } 0%  0% / 40% )` ,
 					color : `hsl( ${ hue }  2%  80% )` ,
 				}
 			} ,
-			vm.name ,
+			ef.span
+			(
+				{
+					style :
+					{
+						fontFamily : "Noto Sans JP , Meiryo , sans serif" ,
+					}
+				} ,
+				vm.name ,
+			) ,
 		) ;
 	}
 }

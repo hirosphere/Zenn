@@ -168,7 +168,7 @@ namespace HeartRails
 
 	export class StationIndex extends navi.Index
 	{
-		constructor ( app : navi.Application , com : navi.Index , public readonly i : station )
+		constructor ( app : navi.Application , com : navi.Index , public override readonly i : station )
 		{
 			super ( app , com , { name : i.name , title : i.name } ) ;
 		}

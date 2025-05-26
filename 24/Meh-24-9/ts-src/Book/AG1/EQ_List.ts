@@ -1,4 +1,4 @@
-import { leaf , ksel , Order , ef , pl , defs , log } from "../../meh/index.js" ;
+import { leaf , ksel , Order , ef , pl , defs , log , df } from "../../meh/index.js" ;
 import * as JMAQuake from "../data-api/jma-quake.js" ;
 import { Beep } from "../lib/beep.js" ;
 
@@ -14,7 +14,7 @@ namespace DM
 export const EQListApp = () =>
 {
 	const dm = new DM.Applet ;
-	const content_sel = ksel ( 0 ) ;
+	const content_sel = ksel ( 1 ) ;
 	const item_sel = ksel < JMAQuake.item | undefined > ( undefined ) ;
 	const cur_info = leaf ( "info" ) ;
 	const beep = new Beep () ;
@@ -35,7 +35,7 @@ export const EQListApp = () =>
 		
 		ef.section
 		(
-			{ class : "BS FH JC AS PPP" } ,
+			{ class : "BS FH JC AC PXP" } ,
 			ef.button ( { acts : { click : () => dm.list.update () } } , "Load" ) ,
 			ef.button ( { acts : { click () { beep.quest () ; } } } , "BEEP" ) ,
 			Tabs.Tabs ( content_sel , [ "グラフ" , "リスト" ] ) ,
@@ -64,38 +64,36 @@ namespace List
 		return ef.li
 		(
 			{
-				class : "BS" ,
+				class : "FH WRAP" ,
 				style :
 				{
 					borderRadius : "0.1ex" ,
-					display : "flex" ,
+					padding : "1ex" ,
 					gap : "1px" ,
 				}
 			} ,
 
-			fieldset
+			ef.span
 			(
-				"0" ,
-				field (  ( o.count.value ) , 5 , true , true ) ,
+				{ class : "BH FH JC AC FW_Bold" , style : { width : "3em" } } ,
+				o.count
 			) ,
 
-			fieldset
+			ef.span
 			(
-				"1" ,
-				field (  i.地域 , 22 , false , true ) ,
-				field (  new Date ( i.時刻 ) .toLocaleString () , 23 ) ,
-				field (  i.規模 , 6 , true ) ,
-				field ( i.地点?.x , 7 , true ) ,
-				field ( i.地点?.y , 7 , true ) ,
-				field ( i.地点?.h , 10 , true ) ,
+				{ class : "FH AS" , style : { gap : "1px" } } ,
+				ef.span ( { class : "BH FW_Bold" , style : { width : "16em" } } , i.地域 ) ,
+				ef.span ( { class : "BH" , style : { width : "5em" } } , i.規模 ) ,
+				ef.span ( { class : "BH" , style : { width : "14em" } } , df ( "YY-MM-DD hh:mm" , new Date ( i.時刻 ) ) ) ,
 			) ,
+
 		) ;
 	}
 
 	const fieldset = ( flexGrow : string , ... content : defs.parts ) => ef.span
 	(
 		{
-			class : "FH WRAP AS" ,
+			class : "FH AS" ,
 			style :
 			{
 				flexGrow ,

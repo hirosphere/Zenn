@@ -1,5 +1,5 @@
 import { leaf , navi , ef , pl , dom , log } from "../meh/index.js" ;
-import { EvalPage } from "./EvalPage.js" ;
+import { EvalPage } from "./AG0/EvalPage.js" ;
 import { Clock } from "./AG0/Clock.js" ;
 import { Links } from "./AG0/Links.js" ;
 import * as AG1 from "./AG1/index.js" ;
@@ -50,12 +50,14 @@ namespace VM
 					{ name : "Rectia" , type : "Rectia" } ,
 					{ name : "UUID_Clock" , type : "UUID_CLOCK" } ,
 					{ name : "EQ_List" , type : "EQ_LIST" } ,
+					AG1.HRIndex ,
 					{ name : "物流" , title : "物流進捗管理" , parts :
 						[
 							{ name : "全体進捗" } ,
 							{ name : "グループ進捗" } ,
 							{ name : "製品情報" } ,
 							{ name : "店舗情報" } ,
+							{ name : "看板" , type : "AG1.物流.看板" }
 						]
 					} ,
 					{ name : "製造進捗管理" , parts :
@@ -189,6 +191,7 @@ namespace VC
 		"EQ_LIST" : AG1.EQListApp ,
 		"UUID_CLOCK" : AG1.UUID_Clock ,
 		"Rectia" : AG1.Rectia ,
+		"AG1.物流.看板" : AG1.物流.看板
 	}
 
 	const Content = ( index : navi.Index | undefined ) =>
@@ -197,15 +200,17 @@ namespace VC
 
 		const c = content_classes [ index.type ] ;
 
-		return c && c ( index ) ||
-		(
-			ef.main
+		return index.page
+			|| c && c ( index )
+			||
 			(
-				{ class : "FV AC PXX BS" } ,
-				ef.h1 ( index.title ) ,
-				PartList ( index , "APP_NAVI_PARTS  BS" ) ,
-			)
-		) ;
+				ef.main
+				(
+					{ class : "FV AC PXX BS" } ,
+					ef.h1 ( index.title ) ,
+					PartList ( index , "APP_NAVI_PARTS  BS" ) ,
+				)
+			) ;
 	}
 }
 

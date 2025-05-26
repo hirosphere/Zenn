@@ -40,6 +40,9 @@ export namespace navi
 			name : string ;
 			type ? : index_type ;
 			title ? : string ;
+
+			page ? : ( index : Index ) => MehElement ;
+
 			parts ? : index < p > [] ;
 			fetch_parts ? () : Promise < index < p > [] > ;
 			container_type ? : string ;
@@ -176,7 +179,7 @@ export namespace navi
 		(
 			public readonly app : Application ,
 			public readonly com : Index | undefined ,
-			i : types.index
+			protected i : types.index
 		)
 		{
 			this.type = i.type ?? "" ;
@@ -201,6 +204,15 @@ export namespace navi
 
 			this.container_type = i.container_type ?? "" ;
 		}
+
+		/* */
+
+		public get page () : MehElement | undefined
+		{
+			return this.i.page?.( this ) ; 
+		}
+
+		/* */
 
 		public get path () : Index []
 		{
