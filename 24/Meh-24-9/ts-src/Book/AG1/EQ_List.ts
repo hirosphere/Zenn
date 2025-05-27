@@ -1,4 +1,4 @@
-import { leaf , ksel , Order , ef , pl , defs , log , df } from "../../meh/index.js" ;
+import { leaf , ksel , Order , ef , dom , pl , defs , log , df } from "../../meh/index.js" ;
 import * as JMAQuake from "../data-api/jma-quake.js" ;
 import { Beep } from "../lib/beep.js" ;
 
@@ -60,11 +60,12 @@ namespace List
 	const Item = ( o : Order < JMAQuake.item > ) =>
 	{
 		const i = o.target ;
+		const date = new Date ( i.時刻 ) ;
 	
 		return ef.li
 		(
 			{
-				class : "FH" ,
+				class : "FH AS" ,
 				style :
 				{
 					borderRadius : "0.1ex" ,
@@ -75,31 +76,68 @@ namespace List
 
 			ef.span
 			(
-				{ class : "BH FH JC AC FW_Bold" , style : { width : "4em" } } ,
+				{ class : "BH FH JC AC FW_Bold" , style : { width : "3em" , flexShrink : "0" } } ,
 				o.count
 			) ,
 
 			ef.span
 			(
-				{ class : "FH WRAP" , style : { gap : "1px" } } ,
-				ef.span
+				{ class : "FH WRAP AS" , style : { gap : "1px" , flexGrow : "1" } } ,
+				cols
 				(
-					{ class : "FH AS" , style : { gap : "1px" } } ,
-					ef.span ( { class : "BH FW_Bold" , style : { width : "10em" , padding : "0.3ex 1ex" } } , i.地域 ) ,
-					ef.span ( { class : "BH" , style : { width : "3em" , padding : "0 1ex" } } , i.規模 ) ,
-					ef.span ( { class : "BH" , style : { width : "13ex" , padding : "" , textAlign : "center" } } , df ( "Y/MM/DD" , new Date ( i.時刻 ) ) ) ,
-					ef.span ( { class : "BH" , style : { width : "8ex" , padding : "" , textAlign : "center" } } , df ( "hh:mm" , new Date ( i.時刻 ) ) ) ,
+					{ flexGrow : "1" , maxWidth : "110ex" , } ,
+					col ( i.地域 , { width : "18ex" , fontWeight : "bold" , justifyContent : "start" } ) ,
+					col ( df ( "Y年MM月DD日" , date ) , { width : "18ex" } ) ,
+					col ( df ( "hh時mm分" , date ) , { width : "11ex" } ) ,
 				) ,
-				ef.span
+				cols
 				(
-					{ class : "FH AS" , style : { gap : "1px" } } ,
-					ef.span ( { class : "BH" , style : { width : "8ex" , textAlign : "center" } } , i.地点?.x ) ,
-					ef.span ( { class : "BH" , style : { width : "8ex" , textAlign : "center" } } , i.地点?.y ) ,
-					ef.span ( { class : "BH" , style : { width : "12ex" , textAlign : "center" } } , i.地点?.h , ) ,
+					{ flexGrow : "1" , maxWidth : "60ex" } ,
+					col ( "M" + i.規模 , { width : "7ex" } ) ,
+					col ( i.地点 ?.x ?.toFixed ( 1 ) , { width : "7ex" } ) ,
+					col ( i.地点 ?.y ?.toFixed ( 1 ) , { width : "7ex" } ) ,
+					col ( i.地点 ?.h ?.toFixed ( 1 ) , { width : "10ex" } ) ,
 				) ,
+				col ( "" , { flexGrow : "10" } ) ,
 			) ,
 		) ;
 	}
+
+	const cols = ( style : dom.defs.style , ... items : dom.MehElement [] ) : dom.MehElement =>
+	{
+		return ef.span
+		(
+			{
+				class : "FH AS" ,
+				style :
+				{
+					height : "1.7em" ,
+					gap : "1px" ,
+					... style ,
+				}
+			} ,
+			... items ,
+		) ;
+	}
+
+	const col = ( text : string | number | undefined , p : dom.defs.style ) : dom.MehElement =>
+	{
+		return ef.span
+		(
+			{
+				class : "BH FH JC AC" ,
+				style :
+				{
+					paddingInline : "0.76ex" ,
+					flexGrow : "1" ,
+					whiteSpace : "nowrap" ,
+					... p
+				}
+			} ,
+			text ,
+		) ;
+	}
+
 }
 
 namespace Graph
@@ -130,14 +168,14 @@ namespace Graph
 		const left =
 		(
 			( 100 + ( dm.相対時刻 ) * 250 )
-			+ ( geo_x * 5 )
+			+ ( geo_x * 1 )
 		
 		) + "px" ;
 		
 		const top =
 		(
-			( 100 + ( dm.相対時刻 % 1 )  * 300 )
-			+ ( geo_y * 5 )
+			( 100 + ( ( dm.相対時刻 + ( 9 / 24 ) ) % 1 )  * 300 )
+			+ ( geo_y * 1 )
 			
 		) + "px" ;
 		
