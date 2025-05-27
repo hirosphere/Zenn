@@ -86,9 +86,9 @@ namespace List
 				cols
 				(
 					{ flexGrow : "1" , maxWidth : "110ex" , } ,
+					col ( df ( "Y-MM-DD" , date ) , { width : "14ex" , flexGrow : "0" } ) ,
+					col ( df ( "hh:mm" , date ) , { width : "8ex" , flexGrow : "0" } ) ,
 					col ( i.地域 , { width : "18ex" , fontWeight : "bold" , justifyContent : "start" } ) ,
-					col ( df ( "Y年MM月DD日" , date ) , { width : "18ex" } ) ,
-					col ( df ( "hh時mm分" , date ) , { width : "11ex" } ) ,
 				) ,
 				cols
 				(
@@ -96,9 +96,9 @@ namespace List
 					col ( "M" + i.規模 , { width : "7ex" } ) ,
 					col ( i.地点 ?.x ?.toFixed ( 1 ) , { width : "7ex" } ) ,
 					col ( i.地点 ?.y ?.toFixed ( 1 ) , { width : "7ex" } ) ,
-					col ( i.地点 ?.h ?.toFixed ( 1 ) , { width : "10ex" } ) ,
+					col ( i.地点 ?.h , { width : "10ex" } ) ,
 				) ,
-				col ( "" , { flexGrow : "10" } ) ,
+				col ( "" , { flexGrow : "5" } ) ,
 			) ,
 		) ;
 	}
