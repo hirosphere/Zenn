@@ -73,13 +73,14 @@ namespace VM.Eki
 		name = leaf ( "" ) ;
 		tranlate = leaf ( "" ) ;
 		current = leaf ( 0 ) ;
+		dir : "UP" | "DOWN" = "UP" ;
 
 		station_list : HeartRails.station [] = [] ;
 
 		constructor ( line : string , public readonly phase : number )
 		{
 			this.init ( line ) ;
-			setInterval ( () => this.next () , 4000 + phase * 1 ) ;
+			setInterval ( () => this.next () , 250 + phase * 1 ) ;
 		}
 
 		protected async init ( line : string )
@@ -90,8 +91,16 @@ namespace VM.Eki
 
 		next ()
 		{
-			const next = this.current.$ + 1 ;
-			this.current.$ = next < this.station_list.length ? next : 0 ;
+			let cur = this.current.$ ;
+			const end = this.station_list.length - 1 ;
+
+			switch ( this.dir )
+			{
+				case "UP" : if ( cur == end ) this.dir = "DOWN" ; else cur ++ ; break ;
+				case "DOWN" : if ( cur == 0 ) this.dir = "UP" ; else cur -- ; break ;
+			}
+
+			this.current.$ = cur ;
 			this.update () ;
 		}
 
@@ -100,7 +109,7 @@ namespace VM.Eki
 			const stat = this.station_list[ this.current.$ ] ;
 			this.name.$ = stat ?.name ?? "--" ;
 
-			const x = ( stat ?.x - 139.7 ) * 220 ;
+			const x = ( stat ?.x - 139.75 ) * 220 ;
 			const y = ( 35.7 - stat ?.y ) * 220 ;
 
 			this.tranlate.$ = `${ x }ex  ${ y }ex`
@@ -141,6 +150,7 @@ namespace VC
 
 			Item ( vm.clock ) ,
 			Item ( vm.uuid ) ,
+
 			ef.section
 			(
 				{
@@ -152,7 +162,7 @@ namespace VC
 						justifyContent : "center" ,
 						alignItems : "center" ,
 						gap : "0.7em" ,
-						fontSize : "calc( 16px )" ,
+						fontSize : "calc( 12px + 1.6vw )" ,
 						lineHeight : "1em" ,
 					}
 				} ,
@@ -214,7 +224,7 @@ namespace VC
 					alignItems : "center" ,
 					
 					lineHeight : "1" ,
-					backgroundColor : `hsl( ${ hue } 0%  0% / 40% )` ,
+					backgroundColor : `hsl( ${ hue } 0%  0% / 45% )` ,
 					color : `hsl( ${ hue }  2%  80% )` ,
 				}
 			} ,

@@ -64,64 +64,42 @@ namespace List
 		return ef.li
 		(
 			{
-				class : "FH WRAP" ,
+				class : "FH" ,
 				style :
 				{
 					borderRadius : "0.1ex" ,
-					padding : "1ex" ,
+					padding : "0ex" ,
 					gap : "1px" ,
 				}
 			} ,
 
 			ef.span
 			(
-				{ class : "BH FH JC AC FW_Bold" , style : { width : "3em" } } ,
+				{ class : "BH FH JC AC FW_Bold" , style : { width : "4em" } } ,
 				o.count
 			) ,
 
 			ef.span
 			(
-				{ class : "FH AS" , style : { gap : "1px" } } ,
-				ef.span ( { class : "BH FW_Bold" , style : { width : "16em" } } , i.地域 ) ,
-				ef.span ( { class : "BH" , style : { width : "5em" } } , i.規模 ) ,
-				ef.span ( { class : "BH" , style : { width : "14em" } } , df ( "YY-MM-DD hh:mm" , new Date ( i.時刻 ) ) ) ,
+				{ class : "FH WRAP" , style : { gap : "1px" } } ,
+				ef.span
+				(
+					{ class : "FH AS" , style : { gap : "1px" } } ,
+					ef.span ( { class : "BH FW_Bold" , style : { width : "10em" , padding : "0.3ex 1ex" } } , i.地域 ) ,
+					ef.span ( { class : "BH" , style : { width : "3em" , padding : "0 1ex" } } , i.規模 ) ,
+					ef.span ( { class : "BH" , style : { width : "13ex" , padding : "" , textAlign : "center" } } , df ( "Y/MM/DD" , new Date ( i.時刻 ) ) ) ,
+					ef.span ( { class : "BH" , style : { width : "8ex" , padding : "" , textAlign : "center" } } , df ( "hh:mm" , new Date ( i.時刻 ) ) ) ,
+				) ,
+				ef.span
+				(
+					{ class : "FH AS" , style : { gap : "1px" } } ,
+					ef.span ( { class : "BH" , style : { width : "8ex" , textAlign : "center" } } , i.地点?.x ) ,
+					ef.span ( { class : "BH" , style : { width : "8ex" , textAlign : "center" } } , i.地点?.y ) ,
+					ef.span ( { class : "BH" , style : { width : "12ex" , textAlign : "center" } } , i.地点?.h , ) ,
+				) ,
 			) ,
-
 		) ;
 	}
-
-	const fieldset = ( flexGrow : string , ... content : defs.parts ) => ef.span
-	(
-		{
-			class : "FH AS" ,
-			style :
-			{
-				flexGrow ,
-				gap : "1px" ,
-			}
-		} ,
-		... content
-	) ;
-	
-	const field = ( t : string | number | undefined , width : number , center ? : boolean , bold ? : boolean ) => ef.span
-	(
-		{
-			style :
-			{
-				flexGrow : "1" ,
-
-				display : "flex" ,
-				alignItems : "center" ,
-				background : "hsl( 0, 0%, 100% )" ,
-				width : `${ width }ex` ,
-				padding : "0.4ex 0.8ex" ,
-				wordBreak : "keep-all" ,
-				justifyContent : center ? "center" : "" ,
-				fontWeight : bold ? "bold" : "" ,
-			}
-		} ,
-		t
-	) ;		
 }
 
 namespace Graph

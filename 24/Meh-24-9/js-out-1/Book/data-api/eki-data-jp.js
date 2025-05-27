@@ -1,2 +1,22 @@
-"use strict";
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZWtpLWRhdGEtanAuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi90cy1zcmMvQm9vay9kYXRhLWFwaS9la2ktZGF0YS1qcC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiIn0=
+import { log } from "../../meh/index.js";
+export const EkiDataJP = (root_path) => {
+    const path = root_path + "Res/Eki/2025-05/";
+    const files = {
+        line: path + "company20250523.csv",
+    };
+    load(files.line).then(res => log(res));
+    return null ||
+        {
+            async load() {
+                await fetch(files.line);
+            }
+        };
+};
+const load = async (path) => {
+    log("load", path);
+    const res = await fetch(path);
+    if (!res.ok)
+        return "";
+    return await res.text();
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZWtpLWRhdGEtanAuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi90cy1zcmMvQm9vay9kYXRhLWFwaS9la2ktZGF0YS1qcC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQVMsR0FBRyxFQUFFLE1BQU0sb0JBQW9CLENBQUU7QUFFakQsTUFBTSxDQUFDLE1BQU0sU0FBUyxHQUFHLENBQUUsU0FBa0IsRUFBRyxFQUFFO0lBRWpELE1BQU0sSUFBSSxHQUFHLFNBQVMsR0FBRyxrQkFBa0IsQ0FBRTtJQUU3QyxNQUFNLEtBQUssR0FDWDtRQUNDLElBQUksRUFBRyxJQUFJLEdBQUcscUJBQXFCO0tBQ25DLENBQUE7SUFFRCxJQUFJLENBQUcsS0FBSyxDQUFDLElBQUksQ0FBRSxDQUFFLElBQUksQ0FBRyxHQUFHLENBQUMsRUFBRSxDQUFDLEdBQUcsQ0FBRyxHQUFHLENBQUUsQ0FBRSxDQUFFO0lBRWxELE9BQU8sSUFBSTtRQUNYO1lBQ0MsS0FBSyxDQUFDLElBQUk7Z0JBRVQsTUFBTSxLQUFLLENBQUcsS0FBSyxDQUFDLElBQUksQ0FBRSxDQUFFO1lBQzdCLENBQUM7U0FDRCxDQUFBO0FBQ0YsQ0FBQyxDQUFBO0FBRUQsTUFBTSxJQUFJLEdBQUcsS0FBSyxFQUFHLElBQWEsRUFBRyxFQUFFO0lBRXRDLEdBQUcsQ0FBRyxNQUFNLEVBQUcsSUFBSSxDQUFFLENBQUU7SUFFdkIsTUFBTSxHQUFHLEdBQUcsTUFBTSxLQUFLLENBQUcsSUFBSSxDQUFFLENBQUU7SUFDbEMsSUFBSyxDQUFFLEdBQUcsQ0FBQyxFQUFFO1FBQUksT0FBTyxFQUFFLENBQUU7SUFFNUIsT0FBTyxNQUFNLEdBQUcsQ0FBQyxJQUFJLEVBQUcsQ0FBRTtBQUMzQixDQUFDLENBQUEifQ==

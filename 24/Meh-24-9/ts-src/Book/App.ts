@@ -4,6 +4,12 @@ import { Clock } from "./AG0/Clock.js" ;
 import { Links } from "./AG0/Links.js" ;
 import * as AG1 from "./AG1/index.js" ;
 
+export const global =
+{
+	res_root : "" ,
+	quest : () => log ( "" )
+}
+
 namespace VM
 {
 	const make_part_tree = ( level : number , com_title : string = "" , ) =>
@@ -50,7 +56,7 @@ namespace VM
 					{ name : "Rectia" , type : "Rectia" } ,
 					{ name : "UUID_Clock" , type : "UUID_CLOCK" } ,
 					{ name : "EQ_List" , type : "EQ_LIST" } ,
-					AG1.HRIndex ,
+					AG1.EkiIndex ,
 					{ name : "物流" , title : "物流進捗管理" , parts :
 						[
 							{ name : "全体進捗" } ,
