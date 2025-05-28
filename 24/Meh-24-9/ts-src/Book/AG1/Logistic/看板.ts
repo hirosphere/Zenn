@@ -24,7 +24,7 @@ export const 看板 = () =>
 			{
 				style :
 				{
-					fontSize : "3em" ,
+					fontSize : "5vw" ,
 				}
 			} ,
 			dm.略コード
@@ -34,7 +34,7 @@ export const 看板 = () =>
 			{
 				style :
 				{
-					fontSize : "10em" ,
+					fontSize : "calc( 6px + 12vw )" ,
 					fontFamily : "Meiryo" ,
 				}
 			} ,
@@ -42,7 +42,9 @@ export const 看板 = () =>
 		) ,
 		ef.p
 		(
-			{} ,
+			{
+				style : { fontSize : "4vw" }
+			} ,
 			dm.よみ
 		) ,
 	)

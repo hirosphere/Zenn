@@ -51,6 +51,7 @@ namespace VM
 			{ name : "AG1" , type : "AG1" ,
 				parts :
 				[
+					{ name : "CSSOM" , page : () => AG1.CSSOM_Quest () } ,
 					{ type : "AG1.Posts" , name : "Posts" } ,
 					{ name : "OKLCH" , type : "uig-oklch" } ,
 					{ name : "Rectia" , type : "Rectia" } ,

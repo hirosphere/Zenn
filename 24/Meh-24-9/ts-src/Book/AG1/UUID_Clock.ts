@@ -1,4 +1,4 @@
-import { leaf , df , ef , log  , dom } from "../../meh/index.js" ;
+import { leaf , df , ef  , log  , dom } from "../../meh/index.js" ;
 import { HeartRails } from "../data-api/hr-ekimei.js" ;
 
 
@@ -60,15 +60,15 @@ namespace VM.Eki
 {
 	export class App
 	{
-		items : Item [] ;
+		items : Line [] ;
 
 		constructor ( lines : string [] )
 		{
-			this.items = lines.map ( ( name , i ) => new Item ( name , i ) ) ;
+			this.items = lines.map ( ( name , i ) => new Line ( name , i ) ) ;
 		}
 	}
 
-	export class Item
+	export class Line
 	{
 		name = leaf ( "" ) ;
 		tranlate = leaf ( "" ) ;
@@ -146,29 +146,12 @@ namespace VC
 
 		return ef.main
 		(
-			{ class : "FV AS PMM" } ,
+			{ class : "FV AS PPP OA" } ,
 
 			Item ( vm.clock ) ,
 			Item ( vm.uuid ) ,
-
-			ef.section
-			(
-				{
-					style :
-					{
-						display : "grid" ,
-						height : "80vh" ,
-						padding : "1ex" ,
-						justifyContent : "center" ,
-						alignItems : "center" ,
-						gap : "0.7em" ,
-						fontSize : "calc( 12px + 1.6vw )" ,
-						lineHeight : "1em" ,
-					}
-				} ,
-				... vm.eki.items.map ( vm => Eki ( vm ) ) ,
-			)
-		) ;
+			Lines ( vm.eki ) ,
+		)
 	}
 
 	const Item = ( vm : VM.Item ) : dom.MehElement =>
@@ -202,7 +185,28 @@ namespace VC
 		) ;
 	}
 
-	const Eki = ( vm : VM.Eki.Item ) =>
+	const Lines = ( vm : VM.Eki.App ) : dom.MehElement => ef.section
+	(
+		{
+			style :
+			{
+				overflow : "hidden" ,
+				display : "grid" ,
+				height : "80vh" ,
+				minHeight : "30em" ,
+				padding : "1ex" ,
+				justifyContent : "center" ,
+				alignItems : "center" ,
+				gap : "0.7em" ,
+				fontSize : "calc( 6px + 0.8vw )" ,
+				lineHeight : "1em" ,
+			}
+		} ,
+		... vm.items.map ( vm => Line ( vm ) ) ,
+	) ;
+
+
+	const Line = ( vm : VM.Eki.Line ) =>
 	{
 		const hue = 45 + vm.phase / 12 * 140 ;
 
