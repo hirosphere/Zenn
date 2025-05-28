@@ -48,6 +48,9 @@ export namespace defs
 		term ? ( el : Element ) : void ;
 	};
 
+	export type shadow =
+	{}
+
 	export type ec < E extends El > =
 	{
 		hook ? : hook < E > ;
@@ -57,6 +60,7 @@ export namespace defs
 		props ? : attrs < E > ;
 		binds ? : binds ;
 		acts ? : acts ;
+		shadow ? : shadow ;
 		active_acts ? : acts ;
 	};
 

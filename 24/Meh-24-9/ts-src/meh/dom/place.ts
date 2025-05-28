@@ -8,7 +8,7 @@ import { MehNode , MehText , MehElement } from "./meh-node.js";
 
 export const create_parts_place =
 (
-	ce : defs.El | undefined ,
+	ce : Element | DocumentFragment | undefined ,
 	def : defs.parts ,
 	rel_n ? : Node ,
 )
@@ -100,7 +100,7 @@ export abstract class Place
 
 export type work =
 {
-	ce : defs.El | undefined ;
+	ce : Element | DocumentFragment | undefined ;
 	def : defs.parts ;
 	pos : number ;
 } ;

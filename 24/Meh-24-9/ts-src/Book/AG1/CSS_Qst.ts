@@ -2,13 +2,20 @@ import { leaf , ef , dom , log } from "../../meh/index.js" ;
 
 namespace Qst
 {
-	export const main = () : void =>
+	export const css1 = () : CSSStyleSheet =>
 	{
 		const ss = new CSSStyleSheet () ;
 
-		ss.insertRule ( "main { background : hsl( 0  0%  50% ) ; }" ) ;
+		ss.replace
+		(
+`:host { background : hsl( 0  0%  40% ) ; }
+h1 { color : oklch( 90%  0%  0 ) ; }
+`
+		) ;
 
-		document.adoptedStyleSheets.push ( ss ) ;
+		log ( "css1" )
+
+		return ss ;
 	}
 }
 
@@ -16,31 +23,29 @@ namespace VC
 {
 	export const Applet = () : dom.MehElement =>
 	{
-		Qst.main () ;
-
 		const qstr = leaf ( "CSSOM Quest" ) ;
 
 		return ef.main
 		(
 			{
 				class : "FV AC",
-			} ,
-			ef.style
-			(
+				hook :
 				{
-					hook :
+					init ( el )
 					{
-						init ( e )
-						{
-							qstr.$ = `${ e.constructor.name } ${ ( e as HTMLStyleElement ).sheet }` ;
-						}
+						//const shadow = el.attachShadow ( { mode : "closed" } ) ;
+						//shadow.adoptedStyleSheets.push ( Qst.css1 () ) ;
 					}
 				},
-				"main { backgroun : hsl( 50%  0%  0 ) }"
-			) ,
+				shadow : { mode : "open" }
+			} ,
 
 			ef.h1 ( "CSSOM Quest" ) ,
 			ef.p ( qstr ) ,
+			ef.style
+			(
+				":host { color : blue } p { color : red }"
+			)
 		) ;
 	}
 }
