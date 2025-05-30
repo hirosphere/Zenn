@@ -2,12 +2,18 @@ import { leaf , navi , ef , pl , dom , log } from "../meh/index.js" ;
 import { EvalPage } from "./AG0/EvalPage.js" ;
 import { Clock } from "./AG0/Clock.js" ;
 import { Links } from "./AG0/Links.js" ;
-import * as AG1 from "./AG1/AG1.js" ;
+import * as AG1 from "./AG1/AG1_Index.js" ;
 
 export const global =
 {
 	res_root : "" ,
-	quest : () => log ( "" )
+	quest : () => log ( "" ),
+	css : 
+/* css */
+`
+
+
+`
 }
 
 namespace VM
@@ -113,7 +119,7 @@ namespace VC
 			ef.nav
 			(
 				{ class : "APP_NAVI" } ,
-				ListSwitch ( vm.navi.current_com_index , "APP_NAVI_ISOS  BSS" ) ,
+				NaviListSw ( vm.navi.current_com_index , "APP_NAVI_ISOS  BSS" ) ,
 				// ListSwitch ( vm.navi.current_index , "APP_NAVI_PARTS" ) ,
 			) ,
 		) ;
@@ -121,7 +127,7 @@ namespace VC
 
 	// navi 
 
-	const ListSwitch = ( key : leaf.r < navi.types.index_key > , class_name : string ) =>
+	const NaviListSw = ( key : leaf.r < navi.types.index_key > , class_name : string ) =>
 	{
 		return pl.switch
 		(

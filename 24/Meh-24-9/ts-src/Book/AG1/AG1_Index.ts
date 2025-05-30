@@ -9,6 +9,7 @@ import { EQListApp } from "./EQ_List.js" ;
 //export * as 物流 from "./Logistic/index.js" ;
 import { EkiIndex } from "./Eki/EkiIndex.js" ;
 import { CSSOM_Quest } from "./CSS_Qst.js" ;
+import { OKLCH } from "./OKLCH.js";
 
 /*
 
@@ -27,7 +28,7 @@ export const index = { name : "AG1" , type : "AG1" ,
 	[
 		{ name : "CSSOM" , page : () => CSSOM_Quest () } ,
 		{ type : "AG1.Posts" , name : "Posts" } ,
-		{ name : "OKLCH" , type : "uig-oklch" } ,
+		{ name : "OKLCH" , page : () =>  OKLCH () } ,
 		{ name : "Rectia" , type : "Rectia" } ,
 		{ name : "UUID_Clock" , type : "UUID_CLOCK" } ,
 		{ name : "EQ_List" , page : () => EQListApp () } ,
