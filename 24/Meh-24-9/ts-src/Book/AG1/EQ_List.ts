@@ -98,7 +98,7 @@ namespace List
 					col ( i.地点 ?.y ?.toFixed ( 1 ) , { width : "7ex" } ) ,
 					col ( i.地点 ?.h , { width : "10ex" } ) ,
 				) ,
-				col ( "" , { flexGrow : "5" } ) ,
+				col ( `${ i.s.ser } ${ i.s.eid }` , { flexGrow : "5" } ) ,
 			) ,
 		) ;
 	}

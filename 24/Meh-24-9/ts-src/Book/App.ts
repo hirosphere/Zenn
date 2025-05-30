@@ -2,7 +2,7 @@ import { leaf , navi , ef , pl , dom , log } from "../meh/index.js" ;
 import { EvalPage } from "./AG0/EvalPage.js" ;
 import { Clock } from "./AG0/Clock.js" ;
 import { Links } from "./AG0/Links.js" ;
-import * as AG1 from "./AG1/index.js" ;
+import * as AG1 from "./AG1/AG1.js" ;
 
 export const global =
 {
@@ -42,39 +42,11 @@ namespace VM
 		[
 			{ type : "LINKS" , name : "Links" ,  } ,
 			{ type : "eval" , name : "Eval" , title : "Eval" } ,
+			AG1.index ,
 			{ type : "clock" , name : "Clock" } ,
 			{ name : "Labo" , parts :
 				[
 					{ name : "Tree" , title : "ツリーテスト" , parts : make_part_tree ( 3 ) } ,
-				]
-			} ,
-			{ name : "AG1" , type : "AG1" ,
-				parts :
-				[
-					{ name : "CSSOM" , page : () => AG1.CSSOM_Quest () } ,
-					{ type : "AG1.Posts" , name : "Posts" } ,
-					{ name : "OKLCH" , type : "uig-oklch" } ,
-					{ name : "Rectia" , type : "Rectia" } ,
-					{ name : "UUID_Clock" , type : "UUID_CLOCK" } ,
-					{ name : "EQ_List" , type : "EQ_LIST" } ,
-					AG1.EkiIndex ,
-					{ name : "物流" , title : "物流進捗管理" , parts :
-						[
-							{ name : "全体進捗" } ,
-							{ name : "グループ進捗" } ,
-							{ name : "製品情報" } ,
-							{ name : "店舗情報" } ,
-							{ name : "看板" , type : "AG1.物流.看板" }
-						]
-					} ,
-					{ name : "製造進捗管理" , parts :
-						[
-							{ name : "進捗" } ,
-							{ name : "実績記録" } ,
-							{ name : "プロジェクト情報" } ,
-							{ name : "工程情報" } ,
-						]
-					}
 				]
 			} ,
 			{ type : "rail" , name : "Rail" , title : "列車運転" } ,
@@ -191,14 +163,6 @@ namespace VC
 		"LINKS" : Links ,
 		"eval" : EvalPage ,
 		"clock" : Clock ,
-
-		"AG1" : AG1.Index ,
-		"AG1.Posts" : AG1.Posts ,
-		"uig-oklch" : AG1.OKLCH ,
-		"EQ_LIST" : AG1.EQListApp ,
-		"UUID_CLOCK" : AG1.UUID_Clock ,
-		"Rectia" : AG1.Rectia ,
-		"AG1.物流.看板" : AG1.物流.看板
 	}
 
 	const Content = ( index : navi.Index | undefined ) =>

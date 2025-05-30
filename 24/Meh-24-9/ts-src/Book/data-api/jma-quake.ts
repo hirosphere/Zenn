@@ -68,6 +68,7 @@ export function item ( s : srcitem ) : item
 		地域 : s.anm ?? "" ,
 		地点 : cod && { y : cod[ 0 ] , x : cod[ 1 ] , h : cod[ 2 ] } ,
 		相対時刻 : ( s.rdt ? new Date ( s.rdt ) : new Date ) .getTime () / ( 24 * 60 * 60 * 1000 ) ,
+		s
 	}
 }
 
@@ -79,6 +80,7 @@ export type item =
 	地域 : string ;
 	地点 ? : cod ;
 	相対時刻 : number ;
+	s : srcitem ;
 }
 
 export type cod = { x : number ; y : number ; h : number } ;

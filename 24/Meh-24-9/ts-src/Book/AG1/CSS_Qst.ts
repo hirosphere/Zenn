@@ -40,11 +40,21 @@ namespace VC
 				shadow : { mode : "open" }
 			} ,
 
+			ef.template ( "ら。ら。ら") ,
+
 			ef.h1 ( "CSSOM Quest" ) ,
-			ef.p ( qstr ) ,
+			ef.p ( { class : "BH PMM" } , qstr ) ,
 			ef.style
 			(
-				":host { color : blue } p { color : red }"
+/*css */
+`
+p:hover
+{
+	background : oklch( 20%  0%  0 / 10% ) ;
+	cursor : default ;
+}
+
+`
 			)
 		) ;
 	}
