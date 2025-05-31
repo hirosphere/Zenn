@@ -1,18 +1,30 @@
-import { leaf , navi , ef , pl , dom , log } from "../meh/index.js" ;
-import { EvalPage } from "./AG0/EvalPage.js" ;
-import { Clock } from "./AG0/Clock.js" ;
-import { Links } from "./AG0/Links.js" ;
-import * as AG1 from "./AG1/AG1_Index.js" ;
+import { leaf , navi , ef , pl , dom , log } from "../../meh/index.js" ;
+
+import { PartList } from "./PartList.js" ;
+
+import { EvalPage } from "../AG0/EvalPage.js" ;
+import { Clock } from "../AG0/Clock.js" ;
+import { Links } from "../AG0/Links.js" ;
+import * as AG1 from "../AG1/AG1_Index.js" ;
 
 export const global =
 {
 	res_root : "" ,
 	quest : () => log ( "" ),
 	css : 
-/* css */
-`
+/* css */ `
+.Fv
+{
+	display : flex ;
+	flex-direction : vertical ;
+	background-color : oklch( 100%  0%  ${ 0 } ) ;
+}
 
-
+.Fh
+{
+	display : flex ;
+	flex-direction : horizontal ;
+}
 `
 }
 
@@ -20,8 +32,6 @@ namespace VM
 {
 	const make_part_tree = ( level : number , com_title : string = "" , ) =>
 	{
-		// log ( com_title ) ;
-
 		const rt : navi.types.index [] = [] ;
 		if ( level <= 0 ) return rt ;
 
@@ -41,29 +51,31 @@ namespace VM
 		return rt ;
 	}
 
-	const book_def : navi.types.index =
-	{
-		name : "" , title : "Meh Root" ,
-		parts :
-		[
-			{ type : "LINKS" , name : "Links" ,  } ,
-			{ type : "eval" , name : "Eval" , title : "Eval" } ,
-			AG1.index ,
-			{ type : "clock" , name : "Clock" } ,
-			{ name : "Labo" , parts :
-				[
-					{ name : "Tree" , title : "ツリーテスト" , parts : make_part_tree ( 3 ) } ,
-				]
-			} ,
-			{ type : "rail" , name : "Rail" , title : "列車運転" } ,
-			{ type : "HR" , name : "HR" , title : "HR" } ,
-		] ,
-	} ;
+	const create_book_def = () : navi.types.index =>
+	(
+		{
+			name : "" , title : "Meh Root" ,
+			parts :
+			[
+				{ type : "eval" , name : "Eval" , title : "Eval" } ,
+				{ type : "LINKS" , name : "Links" ,  } ,
+				AG1.index_def ,
+				{ type : "clock" , name : "Clock" } ,
+				{ name : "Labo" , parts :
+					[
+						{ name : "Tree" , title : "ツリーテスト" , parts : make_part_tree ( 3 ) } ,
+					]
+				} ,
+				{ type : "rail" , name : "Rail" , title : "列車運転" } ,
+				{ type : "HR" , name : "HR" , title : "HR" } ,
+			] ,
+		}
+	) ;
 
 	const navi_def : navi =
 	{
 		title : "Book" ,
-		create_root_index : ( app ) => new navi.Index ( app , undefined , book_def ) ,
+		create_root_index : ( app ) => new navi.Index ( app , undefined , create_book_def () ) ,
 		index_to_url ( index )
 		{
 			return `?PAGE=${ index.url_path .splice ( 1 ) .join ( "/" ) }` ;
@@ -83,6 +95,9 @@ namespace VM
 
 		constructor ()
 		{
+			log ( "VM.App" )
+			// log ( AG1.index_def .name ) ;
+
 			this.navi = navi ( navi_def ) ;
 			this.navi.init () ;
 		}
@@ -100,10 +115,9 @@ namespace VC
 			{ class : "APP" } ,
 			ef.nav
 			(
-				{ class : "APP_NAVI  BSS" } ,
+				{ class : "APP_NAVI_PATH  BSS" } ,
 				ef.ul
 				(
-					{ class : "APP_NAVI_PATH" } ,
 					pl.each
 					(
 						vm.navi.path ,
@@ -118,8 +132,8 @@ namespace VC
 			) ,
 			ef.nav
 			(
-				{ class : "APP_NAVI" } ,
-				NaviListSw ( vm.navi.current_com_index , "APP_NAVI_ISOS  BSS" ) ,
+				{ class : "APP_NAVI_ISOS" } ,
+				NaviListSw ( vm.navi.current_com_index , "BSS" ) ,
 				// ListSwitch ( vm.navi.current_index , "APP_NAVI_PARTS" ) ,
 			) ,
 		) ;
@@ -136,7 +150,7 @@ namespace VC
 		) ;
 	}
 
-	const PartList = ( index : navi.Index , classname : string ) =>
+	const PartList_ = ( index : navi.Index , classname : string ) =>
 	{
 		return ef.ul
 		(
@@ -185,7 +199,7 @@ namespace VC
 				(
 					{ class : "FV AC PXX BS" } ,
 					ef.h1 ( index.title ) ,
-					PartList ( index , "APP_NAVI_PARTS  BS" ) ,
+					PartList ( index , "APP_NAVI_PARTS  BSS" ) ,
 				)
 			) ;
 	}

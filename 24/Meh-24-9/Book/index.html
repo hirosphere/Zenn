@@ -54,8 +54,8 @@ button
 /* Container */
 
 .BH { background-color: hsl( 0 , 0% , 100% ); }
-.BS { background-color: hsl( 0 , 0% , 100% , 80% ); }
-.BSS { background-color: hsl( 0 , 0% , 100% , 50% ); }
+.BS { background-color: hsl( 0 , 0% , 100% , 50% ); }
+.BSS { background-color: hsl( 0 , 0% , 100% , 25% ); }
 
 .OA { overflow : auto ; }
 
@@ -83,76 +83,65 @@ button
 {
 	height : 100svh ;
 	overflow : auto ;
-	padding: 0.5ex ;
+	padding: 0.2ex ;
 	display : grid ;
-	grid-template-rows : 2.5rem 1fr 2.5rem ;
-	gap : 0.3ex ;
-	background-color: oklch( 80%  27%  200 ) ;
+	grid-template-rows : auto 1fr 2.1rem ;
+	gap : 0.2ex ;
+	background-color: oklch( 80%  22%  200 ) ;
 
 	font-family: sans-serif;
 }
 
 .APP > *
 {
-	border-radius : 0.5ex ;
+	border-radius : 0.1ex ;
 	overflow: auto;
 }
 
-.APP_NAVI
+.APP_NAVI_PATH
 {
-	border-radius : 0.5ex ;
-	overflow: auto;
-}
-
-.APP_NAVI
-{
-	padding : 0.08ex ;
-
 	display : flex ;
 	justify-content : center ;
-	gap : 0.6ex ;
-
-	overflow: auto ;
+	white-space : nowrap ;
 }
 
-.APP_NAVI li
-{
-	white-space: nowrap;
-}
-
-ul.APP_NAVI_PATH
+.APP_NAVI_PATH > ul
 {
 	display: flex ;
 	background-color :hsl( 0  0%  100% 50% ) ;
-	
 	padding : 0.8ex 1ex ;
 	overflow : auto ;
-	
 	list-style : none ;
 }
+
 .APP_NAVI_PATH li:not(:last-child)::after
 {
-	padding-inline: 0.6ex ;
+	padding-inline: 0.7ex ;
 	content: ">" ;
 	font-family: monospace ;
 }
+
 .APP_NAVI_PATH a
 {
-	padding : 0.2ex 0.6ex;
+	padding : 0.15ex 1.2ex;
 }
 
-
-ul.APP_NAVI_ISOS
+.APP_NAVI_ISOS
 {
-	width : 100% ;
+	display : flex ;
+	justify-content : center ;
+	white-space : nowrap ;
+}
 
+.APP_NAVI_ISOS > ul
+{
+	width : fit-content ;
 	margin-top : -0.4ex ;
 	display : flex ;
 	
 	padding : 0ex 1ex 0.08ex 1ex ;
 	overflow : auto ;
-	justify-content : center ;
-	gap : 0.5ex ;
+	gap : 0.2ex ;
 	
 	list-style : none ;
 	font-size : 88% ;
@@ -160,18 +149,19 @@ ul.APP_NAVI_ISOS
 
 .APP_NAVI_ISOS a
 {
-	border-radius: 0.5ex ;
+	border-radius: 0.2ex ;
 	border: 1px solid hsl( 0 , 0% , 40% );
 	display: block;
-	background-color : hsl( 0  0%  100% / 42% ) ;
-	padding : 0.9ex 1.7ex ;
+	padding : 0.7ex 1.9ex ;
 }
 
 ul.APP_NAVI_PARTS
 {
+	border : 0.2ex solid hsl( 0  0%  30% ) ;
+	border-radius : 1.0vw ;
+
 	width : fit-content ;
 	max-height : 90vh ;
-	border-radius : 1.0vw ;
 
 	display : inline-flex ;
 	flex-wrap : wrap ;
@@ -184,12 +174,18 @@ ul.APP_NAVI_PARTS
 	list-style : none ;
 }
 
+.APP_NAVI_PARTS li
+{
+	flex-grow : 1 ;
+}
+
 .APP_NAVI_PARTS a
 {
-	border-radius: 0.5ex ;
+	border-radius: 0.2ex ;
 	border: 1px solid hsl( 0 , 0% , 50% );
 	display: block;
 	padding : 1.2ex 1.8ex ;
+	text-align : center ;
 }
 
 a.APP_NAVI_LINK:hover
@@ -385,7 +381,7 @@ ul.TABS
 <body>
 	<script type="module">
 		
-		import { main , global } from "../js-out-1/Book/App.js" ;
+		import { main , global } from "../js-out-1/Book/App/Main.js" ;
 		
 		global.res_root = "../../../" ;
 		main () ;		

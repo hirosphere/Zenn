@@ -1,6 +1,6 @@
 import { navi , ef , dom } from "../../../meh/index.js" ;
 import { EkiDataJP } from "../../data-api/eki-data-jp.js" ;
-import { global } from "../../App.js" ;
+import { global } from "../../App/Main.js" ;
 
 export const EkiIndex : navi.types.index =
 {

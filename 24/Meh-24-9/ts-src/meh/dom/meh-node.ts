@@ -140,7 +140,16 @@ export class MehElement extends MehNode
 
 		if( parts )
 		{
-			const pcon = ( def.shadow ) ? el.attachShadow ( { mode : "open" } ) : el ;
+			const pcon =
+			(
+				def.shadow ?
+					el.attachShadow
+					(
+						{ mode : def.shadow.mode ?? "open" }
+					)
+					:
+					el
+			) ;
 			this.parts = create_parts_place( pcon, parts );
 		}
 

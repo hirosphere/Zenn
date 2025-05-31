@@ -15,7 +15,7 @@ export const Clock = () =>
 
 	return ef.main
 	(
-		{ class : "CLOCK_PAGE" } ,
+		{ class : "CLOCK_PAGE BS FV PXX JC AC" } ,
 		ef.section
 		(
 			{ class : "_MAIN" } ,

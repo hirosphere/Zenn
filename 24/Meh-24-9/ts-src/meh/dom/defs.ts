@@ -49,7 +49,10 @@ export namespace defs
 	};
 
 	export type shadow =
-	{}
+	{
+		mode ? : "open" | "closed" ;
+		css ? : string | CSSStyleSheet | ( string | CSSStyleSheet ) [] ;
+	}
 
 	export type ec < E extends El > =
 	{

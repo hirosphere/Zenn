@@ -71,7 +71,8 @@ namespace VM.Eki
 	export class Line
 	{
 		name = leaf ( "" ) ;
-		tranlate = leaf ( "" ) ;
+		translate = leaf ( "" ) ;
+		width = leaf ( "" ) ;
 		current = leaf ( 0 ) ;
 		dir : "UP" | "DOWN" = "UP" ;
 
@@ -80,7 +81,7 @@ namespace VM.Eki
 		constructor ( line : string , public readonly phase : number )
 		{
 			this.init ( line ) ;
-			setInterval ( () => this.next () , 250 + phase * 1 ) ;
+			setInterval ( () => this.next () , 5000 + phase * 10 ) ;
 		}
 
 		protected async init ( line : string )
@@ -107,12 +108,15 @@ namespace VM.Eki
 		protected update ()
 		{
 			const stat = this.station_list[ this.current.$ ] ;
-			this.name.$ = stat ?.name ?? "--" ;
+			const name = stat ?.name ?? "--" ;
+			this.name.$ = name ;
 
 			const x = ( stat ?.x - 139.75 ) * 220 ;
 			const y = ( 35.7 - stat ?.y ) * 220 ;
 
-			this.tranlate.$ = `${ x }ex  ${ y }ex`
+			this.translate.$ = `${ x }ex  ${ y }ex` ;
+
+			this.width.$ = Math.max ( 9 , name.length ) + "em" ;
 		}
 	}
 
@@ -191,6 +195,8 @@ namespace VC
 			style :
 			{
 				overflow : "hidden" ,
+				boxSizing : "content-box" ,
+				boxShadow : "1em 1em 1em hsl( 0 0% 40% )" ,
 				display : "grid" ,
 				height : "80vh" ,
 				minHeight : "30em" ,
@@ -198,7 +204,7 @@ namespace VC
 				justifyContent : "center" ,
 				alignItems : "center" ,
 				gap : "0.7em" ,
-				fontSize : "calc( 6px + 0.8vw )" ,
+				fontSize : "calc( ( 6px + 0.8vw ) * 1.6 )" ,
 				lineHeight : "1em" ,
 			}
 		} ,
@@ -216,20 +222,21 @@ namespace VC
 				style :
 				{
 					gridArea : "1/1" ,
-					translate : vm.tranlate ,
+					translate : vm.translate ,
+					transition : "all 4s" ,
 
-					width : "8em" ,
+					width : vm.width ,
 					display : "flex" ,
 					overflow : "hidden" ,
-					padding : "0.5ex 0.6ex 0.6ex" ,
+					padding : "0.5ex 1ex" ,
 
 					whiteSpace : "nowrap" ,
 					justifyContent : "center" ,
 					alignItems : "center" ,
 					
 					lineHeight : "1" ,
-					backgroundColor : `hsl( ${ hue } 0%  0% / 45% )` ,
-					color : `hsl( ${ hue }  2%  80% )` ,
+					backgroundColor : `hsl( ${ hue } 0%  0% / 60% )` ,
+					color : `hsl( ${ hue }  0%  100% / 70% )` ,
 				}
 			} ,
 			ef.span

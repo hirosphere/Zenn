@@ -2,7 +2,6 @@ import { leaf , Renn , ef , pl , dom , log } from "../../meh/index.js" ;
 import { fontsets } from "../../meh/app/fontsets.js" ;
 import { MehElement } from "../../meh/dom/meh-node.js";
 
-
 namespace VM
 {
 	export class App

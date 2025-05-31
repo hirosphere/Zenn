@@ -46,12 +46,19 @@ namespace VC
 			ef.p ( { class : "BH PMM" } , qstr ) ,
 			ef.style
 			(
-/*css */
-`
+
+/*css */ `
+
+p
+{
+	transition : all 1.0s 0.2s ease ;
+}
+
 p:hover
 {
-	background : oklch( 20%  0%  0 / 10% ) ;
+	background : oklch( 20%  0%  0 / 20% ) ;
 	cursor : default ;
+	padding : 1ex ;
 }
 
 `
