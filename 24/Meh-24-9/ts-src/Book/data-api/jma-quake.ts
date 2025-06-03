@@ -4,6 +4,7 @@ export class List
 {
 	datatext = leaf ( "" ) ;
 	items =  new Items ;
+	map = new Map < string , item > ;
 
 	async update ()
 	{
@@ -12,10 +13,19 @@ export class List
 
 		const src_data = await res.json() as srcitem [] ;
 
-		const items = src_data .map ( s => item ( s ) ) ;
-		const min_time = items.at ( -1 ) ?.相対時刻 ;
-		min_time && items.forEach ( i => i.相対時刻 -= min_time ) ;
-		this.items.replace ( items ) ;
+		const basetime = ( new Date().getTime() / daytick ) - 30 ;
+
+		const map = new Map < string , srcitem > ;
+
+		for ( const src of src_data )
+		{
+			const eid = src.eid ;
+			const iso = map.get ( eid ) ;
+			if ( ! iso )  map.set ( src.eid , src ) ;
+			else  if ( src.ser > iso.ser ) map.set ( eid , src )
+		}
+
+		this.items.replace ( Array.from ( map , ( [ key , src ] ) => item ( src , basetime ) ) ) ;
 
 		// this.update_monitor ( data ) ;
 	}
@@ -28,16 +38,18 @@ export class List
 	}
 }
 
+const daytick = ( 24 * 60 * 60 * 1000 ) ;
+
 export class Items extends Renn < item > {}
 
 export type srcitem =
 {
 	ctt ? : string ,
-	eid ? : string ,
+	eid : string ,
 	rdt ? : string ,
 	ttl ? : string ,
 	ift ? : string ,
-	ser ? : string ,
+	ser : string ,
 	at ? : string ,
 	anm ? : string ,
 	acd ? : string ,
@@ -50,7 +62,7 @@ export type srcitem =
 	en_anm ? : string ,
 }
 
-export function item ( s : srcitem ) : item
+export function item ( s : srcitem , basetime : number ) : item
 {
 	const cod = s.cod ?.match
 	(
@@ -63,14 +75,17 @@ export function item ( s : srcitem ) : item
 	return null ||
 	{
 		id : s.eid ?? "" ,
-		時刻 : s.rdt ?? "" ,
+		時刻 : s.eid ? s.eid.replace ( date_regex , data_cv ) : "" ,
 		規模 : s.mag ?? "" ,
 		地域 : s.anm ?? "" ,
 		地点 : cod && { y : cod[ 0 ] , x : cod[ 1 ] , h : cod[ 2 ] } ,
-		相対時刻 : ( s.rdt ? new Date ( s.rdt ) : new Date ) .getTime () / ( 24 * 60 * 60 * 1000 ) ,
+		相対時刻 : ( s.rdt ? new Date ( s.rdt ) : new Date ) .getTime () / daytick - basetime ,
 		s
 	}
 }
+
+const date_regex = /(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/ ;
+const data_cv : ( ... args : string [] ) => string = ( all , Y , M , D , h , m , s ) => `${ Y }-${ M }-${ D }T${ h }:${ m }:${ s }+09:00`
 
 export type item =
 {

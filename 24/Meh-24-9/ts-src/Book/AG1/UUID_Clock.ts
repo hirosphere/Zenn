@@ -2,24 +2,6 @@ import { leaf , df , ef  , log  , dom } from "../../meh/index.js" ;
 import { HeartRails } from "../data-api/hr-ekimei.js" ;
 
 
-namespace Qst
-{
-	const symbols =
-	[
-		"FLH" ,
-		"FLV" ,
-		"FLWR" ,
-		"BGS" ,
-		"BGH" ,
-		"PGX"
-	] as const ;
-
-	type symbols = typeof symbols [ number ] ;
-
-	const ss : symbols [] = [ "FLH" , "FLWR" , "PGX" ] ;
-
-}
-
 namespace VM
 {
 	export class Applet
@@ -30,6 +12,14 @@ namespace VM
 
 		eki = new VM.Eki.App
 		([
+			"JR上野東京ライン",
+			"JR山手線" ,
+			"JR総武線" ,
+			"JR京浜東北線" ,
+			"JR中央線" ,
+
+			"京成本線" ,
+
 			"東京メトロ銀座線" ,
 			"東京メトロ丸ノ内線" ,
 			"東京メトロ日比谷線" ,
@@ -81,7 +71,7 @@ namespace VM.Eki
 		constructor ( line : string , public readonly phase : number )
 		{
 			this.init ( line ) ;
-			setInterval ( () => this.next () , 5000 + phase * 10 ) ;
+			setInterval ( () => this.next () , 1000 + phase * 10 ) ;
 		}
 
 		protected async init ( line : string )
@@ -111,8 +101,8 @@ namespace VM.Eki
 			const name = stat ?.name ?? "--" ;
 			this.name.$ = name ;
 
-			const x = ( stat ?.x - 139.75 ) * 220 ;
-			const y = ( 35.7 - stat ?.y ) * 220 ;
+			const x = ( stat ?.x - 139.70 ) * 220 ;
+			const y = ( 35.8 - stat ?.y ) * 220 ;
 
 			this.translate.$ = `${ x }ex  ${ y }ex` ;
 
@@ -194,16 +184,15 @@ namespace VC
 		{
 			style :
 			{
-				overflow : "hidden" ,
-				boxSizing : "content-box" ,
-				boxShadow : "1em 1em 1em hsl( 0 0% 40% )" ,
-				display : "grid" ,
 				height : "80vh" ,
 				minHeight : "30em" ,
+
+				display : "grid" ,
+				overflow : "auto" ,
 				padding : "1ex" ,
-				justifyContent : "center" ,
+				justifyContent : "stretch" ,
 				alignItems : "center" ,
-				gap : "0.7em" ,
+
 				fontSize : "calc( ( 6px + 0.8vw ) * 1.6 )" ,
 				lineHeight : "1em" ,
 			}
@@ -222,21 +211,7 @@ namespace VC
 				style :
 				{
 					gridArea : "1/1" ,
-					translate : vm.translate ,
-					transition : "all 4s" ,
-
-					width : vm.width ,
-					display : "flex" ,
-					overflow : "hidden" ,
-					padding : "0.5ex 1ex" ,
-
-					whiteSpace : "nowrap" ,
-					justifyContent : "center" ,
-					alignItems : "center" ,
-					
-					lineHeight : "1" ,
-					backgroundColor : `hsl( ${ hue } 0%  0% / 60% )` ,
-					color : `hsl( ${ hue }  0%  100% / 70% )` ,
+					textAlign : "center" ,
 				}
 			} ,
 			ef.span
@@ -244,6 +219,25 @@ namespace VC
 				{
 					style :
 					{
+						boxSizing : "content-box" ,
+						boxShadow : "1ex 1ex 0.8ex hsl( 0  0%  0% / 60% )" ,
+	
+						width : vm.width ,
+						display : "inline-block" ,
+	
+						translate : vm.translate ,
+						transition : "all 1.4s" ,
+	
+						overflow : "hidden" ,
+						padding : "0.5ex 1ex" ,
+	
+						whiteSpace : "nowrap" ,
+						justifyContent : "center" ,
+						alignItems : "center" ,
+						
+						lineHeight : "1" ,
+						backgroundColor : `hsl( ${ hue } 0%  0% / 60% )` ,
+						color : `hsl( ${ hue }  0%  100% / 70% )` ,
 						fontFamily : "Noto Sans JP , Meiryo , sans serif" ,
 					}
 				} ,

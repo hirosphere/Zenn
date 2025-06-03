@@ -14,7 +14,7 @@ namespace DM
 export const EQListApp = () =>
 {
 	const dm = new DM.Applet ;
-	const content_sel = ksel ( 1 ) ;
+	const content_sel = ksel ( 0 ) ;
 	const item_sel = ksel < JMAQuake.item | undefined > ( undefined ) ;
 	const cur_info = leaf ( "info" ) ;
 	const beep = new Beep () ;
@@ -76,7 +76,7 @@ namespace List
 
 			ef.span
 			(
-				{ class : "BH FH JC AC FW_Bold" , style : { width : "3em" , flexShrink : "0" } } ,
+				{ class : "BH FH JC AC FW_Bold" , style : { width : "3em" , flexShrink : "0.2" } } ,
 				o.count
 			) ,
 
@@ -86,19 +86,20 @@ namespace List
 				cols
 				(
 					{ flexGrow : "1" , maxWidth : "110ex" , } ,
-					col ( df ( "Y-MM-DD" , date ) , { width : "14ex" , flexGrow : "0" } ) ,
-					col ( df ( "hh:mm" , date ) , { width : "8ex" , flexGrow : "0" } ) ,
-					col ( i.地域 , { width : "18ex" , fontWeight : "bold" , justifyContent : "start" } ) ,
+					col ( i.地域 , { width : "16ex" , justifyContent : "center" , fontWeight : "bold" } ) ,
+					col ( "M" + i.規模 , { width : "6ex" } ) ,
+					col ( df ( "YY/MM/DD" , date ) , { width : "12ex" , flexGrow : "0.3" , fontWeight : "normal" } ) ,
+					col ( df ( "hh:mm:ss" , date ) , { width : "9ex" , flexGrow : "0.3" , fontWeight : "normal" } ) ,
 				) ,
 				cols
 				(
 					{ flexGrow : "1" , maxWidth : "60ex" } ,
-					col ( "M" + i.規模 , { width : "7ex" } ) ,
-					col ( i.地点 ?.x ?.toFixed ( 1 ) , { width : "7ex" } ) ,
-					col ( i.地点 ?.y ?.toFixed ( 1 ) , { width : "7ex" } ) ,
-					col ( i.地点 ?.h , { width : "10ex" } ) ,
+					col ( i.地点 ?.x ?.toFixed ( 1 ) , { width : "5ex" } ) ,
+					col ( i.地点 ?.y ?.toFixed ( 1 ) , { width : "5ex" } ) ,
+					col ( i.地点 ?.h , { width : "7ex" } ) ,
 				) ,
-				col ( `${ i.s.ser } ${ i.s.eid }` , { flexGrow : "5" } ) ,
+				col ( `` , { flexGrow : "4" } ) ,
+				// col ( `${ i.s.ser } ${ i.s.eid } ${ i.s.rdt }` , { flexGrow : "5" } ) ,
 			) ,
 		) ;
 	}
@@ -111,7 +112,7 @@ namespace List
 				class : "FH AS" ,
 				style :
 				{
-					height : "1.7em" ,
+					height : "1.85em" ,
 					gap : "1px" ,
 					... style ,
 				}
@@ -151,6 +152,7 @@ namespace Graph
 				flexGrow : "1" ,
 				width : "100%" ,
 				position : "relative" ,
+				backgroundColor : "oklch( 25%  25%  300 )" ,
 			}
 		} ,
 		pl.each
@@ -168,14 +170,14 @@ namespace Graph
 		const left =
 		(
 			( 100 + ( dm.相対時刻 ) * 250 )
-			+ ( geo_x * 1 )
+			+ ( geo_x * 20 )
 		
 		) + "px" ;
 		
 		const top =
 		(
 			( 100 + ( ( dm.相対時刻 + ( 9 / 24 ) ) % 1 )  * 300 )
-			+ ( geo_y * 1 )
+			+ ( geo_y * 20 )
 			
 		) + "px" ;
 		
@@ -191,6 +193,7 @@ namespace Graph
 
 		// const rotate = ( ( dm.地点?.x ?? 135 ) - 135 ) / 50 * 500 ;
 
+		const scale = ( ( + dm.規模 / 6 ) ** 2.0 ) * 7 ;
 		const rotate = ( dm.相対時刻 % 1 ) * 72 ;
 
 		return ef.span
@@ -200,8 +203,8 @@ namespace Graph
 				{
 					position : "absolute" , left , top ,
 					cursor : "default" ,
-					transform : `scale( ${ dm.規模 } ) rotate( ${ rotate }deg )` ,
-					color : `oklch( 0.6 0.5 ${ hue } / 0.135 )` ,
+					transform : `scale( ${ scale } ) rotate( ${ rotate }deg )` ,
+					color : `oklch( 0.6 0.5 ${ hue } / 0.20 )` ,
 					fontSize : "3.0em" ,
 				} ,
 				attrs :
