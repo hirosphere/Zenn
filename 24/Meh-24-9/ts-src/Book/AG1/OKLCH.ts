@@ -115,7 +115,7 @@ export const OKLCH = () =>
 
 	return ef.main
 	(
-		{ class : "UIG_COLOR_1 BSS FV PXX" } ,
+		{ class : "UIG_COLOR_1 FV PXX" , style : { background : "oklch( 100%  0%  0 / 100% )" } } ,
 		ef.h1 ( "OKLCH" ) ,
 		Display ( vm.dm.color ) ,
 		Ranges ( vm.ranges ) ,

@@ -84,7 +84,7 @@ export class MehElement extends MehNode
 		super();
 
 		const { ns, type, parts } = def;
-		const { class: class_name, style, attrs, props , binds , acts, active_acts , hook } = def;
+		const { class: class_name, style, attrs, props , binds , acts, active_acts , focus , hook } = def;
 
 		let el =
 		(
@@ -138,19 +138,51 @@ export class MehElement extends MehNode
 			el.addEventListener( name, act as EventListener , { passive : false } );
 		}
 
+		if ( focus && focus.state )
+		{
+			const { state , tabindex } = focus ;
+			const ref = leaf.ref
+			(
+				state ,
+				state => state && this.el ?.focus () ,
+			) ;
+
+			if ( tabindex )
+			{
+				this.bind_value
+				(
+					state ,
+					state => this.el &&
+					(
+						this.el.tabIndex = state ?
+							tabindex [ 1 ] ?? 0 :
+							tabindex [ 0 ] ?? -1
+					)
+				) ;
+			}
+
+			this.srcs.add ( ref );
+		}
+
 		if( parts )
 		{
-			const pcon =
-			(
-				def.shadow ?
-					el.attachShadow
-					(
-						{ mode : def.shadow.mode ?? "open" }
-					)
-					:
-					el
-			) ;
-			this.parts = create_parts_place( pcon, parts );
+			const shadow = def.shadow ;
+
+			if ( shadow )
+			{
+				const mode = { mode : shadow.mode ?? "open" } ;
+				const shadow_root = el.attachShadow ( mode ) ;
+
+				if ( Array.isArray ( shadow.css ) ) shadow.css.forEach ( i => set_css ( shadow_root , i ) ) ;
+				else shadow.css && set_css ( shadow_root , shadow.css ) ;
+
+				this.parts = create_parts_place( shadow_root, parts );
+			}
+
+			else
+			{
+				this.parts = create_parts_place( el, parts );
+			}
 		}
 
 		if( hook )
@@ -269,6 +301,23 @@ const set_attr =
 	}
 	else e.setAttribute( name, value );
 }
+
+const set_css = ( sr : ShadowRoot , css : string | CSSStyleSheet ) : void =>
+{
+	if ( css instanceof CSSStyleSheet )
+	{
+		sr.adoptedStyleSheets.push ( css ) ;
+	}
+	else
+	{
+		const css_obj = new CSSStyleSheet ;
+		css_obj.replace ( css ) ;
+		sr.adoptedStyleSheets.push ( css_obj ) ;
+	}
+}
+
+
+/* */
 
 export class MehText extends MehNode
 {

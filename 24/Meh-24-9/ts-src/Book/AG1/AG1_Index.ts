@@ -1,28 +1,13 @@
 import { ef , navi } from "../../meh/index.js" ;
 import { PartList } from "../App/PartList.js" ;
 
-export * from "./Posts.js" ;
-export * from "./OKLCH.js" ;
+import { Posts } from "./Posts.js" ;
 import { EQListApp } from "./EQ_List.js" ;
 import { UUID_Clock } from "./UUID_Clock.js" ;
-//export * from "./Rectia.js" ;
-//export * as 物流 from "./Logistic/index.js" ;
 import { EkiIndex } from "./Eki/EkiIndex.js" ;
 import { CSSOM_Quest } from "./CSS_Qst.js" ;
 import { OKLCH } from "./OKLCH.js";
 import * as 製造 from "./製造管理/製造Index.js" ;
-
-/*
-
-"AG1" : AG1.Index ,
-"AG1.Posts" : AG1.Posts ,
-"uig-oklch" : AG1.OKLCH ,
-"EQ_LIST" : AG1.EQListApp ,
-"UUID_CLOCK" : AG1.UUID_Clock ,
-"Rectia" : AG1.Rectia ,
-"AG1.物流.看板" : AG1.物流.看板
-
-*/
 
 export const index_def : navi.types.index =
 {
@@ -30,7 +15,7 @@ export const index_def : navi.types.index =
 	parts :
 	[
 		{ name : "CSSOM" , page : () => CSSOM_Quest () } ,
-		{ type : "AG1.Posts" , name : "Posts" } ,
+		{ name : "Posts" , page : () => Posts () } ,
 		{ name : "OKLCH" , page : () =>  OKLCH () } ,
 		{ name : "Rectia" , type : "Rectia" } ,
 		{ name : "UUID_Clock" , page : () => UUID_Clock () } ,

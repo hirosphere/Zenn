@@ -33,8 +33,8 @@ namespace VC
 				{
 					init ( el )
 					{
-						//const shadow = el.attachShadow ( { mode : "closed" } ) ;
-						//shadow.adoptedStyleSheets.push ( Qst.css1 () ) ;
+					//	const shadow = el.attachShadow ( { mode : "closed" } ) ;
+					//	shadow.adoptedStyleSheets.push ( Qst.css1 () ) ;
 					}
 				},
 				shadow : { mode : "open" }

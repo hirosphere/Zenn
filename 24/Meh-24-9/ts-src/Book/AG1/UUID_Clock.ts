@@ -140,7 +140,7 @@ namespace VC
 
 		return ef.main
 		(
-			{ class : "FV AS PPP OA" } ,
+			{ class : "FV AS PPP" } ,
 
 			Item ( vm.clock ) ,
 			Item ( vm.uuid ) ,
@@ -184,10 +184,9 @@ namespace VC
 		{
 			style :
 			{
-				height : "80vh" ,
+				flexGrow : "1" ,
 				minHeight : "30em" ,
 
-				display : "grid" ,
 				overflow : "auto" ,
 				padding : "1ex" ,
 				justifyContent : "stretch" ,
@@ -197,7 +196,18 @@ namespace VC
 				lineHeight : "1em" ,
 			}
 		} ,
-		... vm.items.map ( vm => Line ( vm ) ) ,
+		ef.div
+		(
+			{
+				style :
+				{
+					width : "4000px" ,
+					height : "4000px" ,
+					position : "relative" ,
+				}
+			} ,
+			... vm.items.map ( vm => Line ( vm ) ) ,
+		) ,
 	) ;
 
 
@@ -210,8 +220,7 @@ namespace VC
 			{
 				style :
 				{
-					gridArea : "1/1" ,
-					textAlign : "center" ,
+					margin : "auto" ,
 				}
 			} ,
 			ef.span
@@ -225,7 +234,7 @@ namespace VC
 						width : vm.width ,
 						display : "inline-block" ,
 	
-						translate : vm.translate ,
+						// translate : vm.translate ,
 						transition : "all 1.4s" ,
 	
 						overflow : "hidden" ,

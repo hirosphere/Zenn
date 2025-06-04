@@ -1,0 +1,34 @@
+<htdon
+	title : "こんにちは、世界のDON"
+
+	vars : {
+		list : [ "浅草橋"  "両国"  "錦糸町"  "亀戸"  "平井"  "新小岩"  "小岩"  "市川"  "本八幡" ]
+	}
+
+	template : {
+		a :
+		<section
+			class : FV PGXX ;
+			style :
+			{
+				border :
+				{
+					inline : 1em ;
+				}
+				display : flex ;
+			}
+			<h aaa ; bbb ; ccc ; "ddd eee" >
+		>
+	}
+
+	main : <div
+		css :
+		{
+			
+		}
+		<nav  >
+		<main
+		>
+		<nav  >
+	>
+>

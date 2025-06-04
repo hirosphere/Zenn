@@ -1,4 +1,4 @@
-import { leaf , Renn , ef , defs , dom , log } from "../../meh/index.js" ;
+import { leaf , Renn , ef , pl , defs , dom , log } from "../../meh/index.js" ;
 
 namespace VM
 {
@@ -50,16 +50,187 @@ namespace VM
 	]
 }
 
+namespace DM
+{
+	export class PostApp
+	{
+		trees = new Renn < PostTree > ;
+
+		constructor ()
+		{}
+
+		async load ( perm_id : string ) : Promise < void >
+		{
+			const i : post_tree =
+			{
+				title : "ツリーポスト" ,
+				root :
+				{
+					title : "ルートにござる" ,
+					text : ""
+				}
+			}
+
+			const tree = new PostTree ( i ) ;
+			this.trees.new ( [ tree ] ) ;
+		}
+	}
+
+	export class PostTree
+	{
+		title = leaf ( "" ) ;
+		root : PostItem ;
+
+		constructor ( i : post_tree )
+		{
+			this.value = i ;
+			this.root = new PostItem ( i.root )
+		}
+
+		set value ( v : post_tree )
+		{
+			this.title.$ = v.title ;
+		}
+	}
+
+	export class PostItem
+	{
+		title ;
+		text ;
+
+		constructor ( i : post_item )
+		{
+			this.title = leaf ( i.title ) ;
+			this.text = leaf ( i.text ) ;
+		}
+	}
+
+	type post_tree =
+	{
+		title : string ;
+		root : post_item ;
+	}
+
+	type post_item =
+	{
+		title : string ;
+		text : string ;
+		parts ? : post_item [] ;
+	}
+}
+
+namespace VM
+{
+	export class App
+	{
+		doc = new DM.PostApp ;
+
+		constructor ()
+		{
+			this.doc.load ( "1" ) ;
+			this.doc.load ( "2" ) ;
+			this.doc.load ( "3" ) ;
+		}
+	}
+}
 
 namespace VC
 {
+	const css =
+
+/* css */ `
+
+
+* { box-sizing : border-box ; }
+
+h1 , h2 , h3 { margin : 0 ; text-align : center ; }
+
+h1 { background :  oklch( 0%  0%  0 / 14% ); }
+
+.TREES
+{
+	display : flex ;
+	justify-content : center ;
+	flex-wrap : wrap ;
+	gap : 1.36em ;
+}
+
+.TREE
+{
+	flex-grow : 1 ;
+
+	border-radius : 0.8em ;
+	background-color : oklch( 100%  0%  0 / 40% ) ;
+
+	width : 400px ;
+	min-height : 350px ;
+
+	padding : 1em 1.4em ;
+}
+
+.TITLE
+{
+	border : none ;
+	background : none ;
+	text-align : center ;
+	font-size : 2rem ;
+}
+
+.TITLE:focus
+{
+	background : white ;
+}
+
+
+` /*css*/ ;
+
 	export const Applet = () : dom.MehElement =>
 	{
+		const vm = new VM.App ;
+
 		return ef.main
 		(
-			{ class : "FV PXX" } ,
-			ef.h1 ( "Posts" ) ,
+			{
+				class : "FV PXX " ,
+				shadow : { css }
+			} ,
+			// ef.h1 ( "Posts" ) ,
+			ef.section
+			(
+				{ class : "TREES" } ,
+				pl.each
+				(
+					vm.doc.trees ,
+					o => Tree ( o.target ) ,
+				)
+			) ,
 		);
+	}
+
+	const Tree = ( dm : DM.PostTree ) =>
+	{
+		return ef.article
+		(
+			{ class : "TREE" } ,
+			ef.h2 ( ef.input ( { class : "TITLE" , binds : { value_input : dm.title } } ) ) ,
+			ef.section
+			(
+				{  } ,
+				Item ( dm.root ) ,
+			) ,
+		) ;
+	}
+
+	const Item = ( dm : DM.PostItem ) : dom.MehElement =>
+	{
+		return ef.section
+		(
+			ef.span
+			(
+				{} ,
+				dm.title ,
+			) ,
+		) ;
 	}
 }
 

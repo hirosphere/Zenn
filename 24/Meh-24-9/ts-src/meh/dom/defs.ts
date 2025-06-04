@@ -54,6 +54,12 @@ export namespace defs
 		css ? : string | CSSStyleSheet | ( string | CSSStyleSheet ) [] ;
 	}
 
+	export type focus =
+	{
+		state ? : leaf.bool ;
+		tabindex ? : [ number ? , number ? ] ;
+	}
+
 	export type ec < E extends El > =
 	{
 		hook ? : hook < E > ;
@@ -64,6 +70,7 @@ export namespace defs
 		binds ? : binds ;
 		acts ? : acts ;
 		shadow ? : shadow ;
+		focus ? : focus ;
 		active_acts ? : acts ;
 	};
 
