@@ -35,11 +35,11 @@ export const EQListApp = () =>
 		
 		ef.section
 		(
-			{ class : "BS FH JC AC PXP" } ,
+			{ class : "BS FH JC AS PPX" } ,
 			ef.button ( { acts : { click : () => dm.list.update () } } , "Load" ) ,
 			ef.button ( { acts : { click () { beep.quest () ; } } } , "BEEP" ) ,
 			Tabs.Tabs ( content_sel , [ "グラフ" , "リスト" ] ) ,
-			ef.p ( { class : "FH AC BH PXX" , style : { width : "16em" } } , cur_info ) ,
+			ef.p ( { class : "FH AC BH PPP" , style : { width : "16em" } } , cur_info ) ,
 		) ,
 	)
 }

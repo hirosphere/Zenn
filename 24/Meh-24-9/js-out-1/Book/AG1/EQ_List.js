@@ -19,7 +19,7 @@ export const EQListApp = () => {
         Graph.Main(dm.list),
         List.Main(dm.list),
     ];
-    return ef.main({ class: "FV PPP" }, pl.switch(content_sel.current, key => contents[key]), ef.section({ class: "BS FH JC AC PXP" }, ef.button({ acts: { click: () => dm.list.update() } }, "Load"), ef.button({ acts: { click() { beep.quest(); } } }, "BEEP"), Tabs.Tabs(content_sel, ["グラフ", "リスト"]), ef.p({ class: "FH AC BH PXX", style: { width: "16em" } }, cur_info)));
+    return ef.main({ class: "FV PPP" }, pl.switch(content_sel.current, key => contents[key]), ef.section({ class: "BS FH JC AS PPX" }, ef.button({ acts: { click: () => dm.list.update() } }, "Load"), ef.button({ acts: { click() { beep.quest(); } } }, "BEEP"), Tabs.Tabs(content_sel, ["グラフ", "リスト"]), ef.p({ class: "FH AC BH PPP", style: { width: "16em" } }, cur_info)));
 };
 var List;
 (function (List) {
