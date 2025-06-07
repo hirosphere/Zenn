@@ -153,7 +153,7 @@ export namespace vc		// view components //
 		(
 			{
 				class : "post",
-				acts :
+				action :
 				{
 					submit( ev )
 					{
@@ -171,7 +171,7 @@ export namespace vc		// view components //
 					{
 						value : m.text
 					},
-					acts :
+					action :
 					{
 						input( ev )
 						{
@@ -208,7 +208,7 @@ export namespace vc		// view components //
 	{
 		return ef.button
 		(
-			{ acts : { click : act } },
+			{ action : { click : act } },
 			label
 		);
 	}
@@ -229,7 +229,7 @@ export namespace vc		// view components //
 				{
 					// checked : state
 				} ,
-				acts :
+				action :
 				{
 					change ( ev )
 					{
@@ -247,7 +247,7 @@ export namespace vc		// view components //
 		return ef.input({
 			attrs:{ type: "checkbox", autocomplete: "off" },
 			props: { checked: state },
-			acts: { change( ev ){
+			action: { change( ev ){
 				if( ev.target instanceof HTMLInputElement ){
 					state.value = ev.target.checked;
 				}

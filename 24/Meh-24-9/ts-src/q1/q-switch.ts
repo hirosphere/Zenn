@@ -95,7 +95,7 @@ export namespace vc
 	{
 		return ef.button
 		(
-			{ acts : { click() { sel.value = key ; } } } ,
+			{ action : { click() { sel.value = key ; } } } ,
 			String( title )
 		);
 	};

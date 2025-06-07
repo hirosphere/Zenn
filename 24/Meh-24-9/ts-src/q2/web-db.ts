@@ -118,7 +118,7 @@ namespace VC
 
 			ef.section ( { class : "fl-bar" , style : { gap : "1ex" } } ,
 				ef.h2 ( vm.id ) ,
-				ef.button ( { acts: { click () { vm.save () ; } } } , "保存" ) ,
+				ef.button ( { action: { click () { vm.save () ; } } } , "保存" ) ,
 			) ,
 			
 			ef.input
@@ -136,7 +136,7 @@ namespace VC
 	{
 		return ef.section
 		(
-			ef.button ( { acts : { click () {   ; } } } , "New" ) ,
+			ef.button ( { action : { click () {   ; } } } , "New" ) ,
 		)
 	}
 }

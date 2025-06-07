@@ -31,13 +31,13 @@ export const EQListApp = () =>
 	(
 		{ class : "FV PPP" } ,
 
-		pl.switch ( content_sel.current , key => contents [ key ] ) ,
+		pl.switch ( content_sel.current , key => key ? contents [ key ] : undefined ) ,
 		
 		ef.section
 		(
 			{ class : "BS FH JC AS PPX" } ,
-			ef.button ( { acts : { click : () => dm.list.update () } } , "Load" ) ,
-			ef.button ( { acts : { click () { beep.quest () ; } } } , "BEEP" ) ,
+			ef.button ( { action : { click : () => dm.list.update () } } , "Load" ) ,
+			ef.button ( { action : { click () { beep.quest () ; } } } , "BEEP" ) ,
 			Tabs.Tabs ( content_sel , [ "グラフ" , "リスト" ] ) ,
 			ef.p ( { class : "FH AC BH PPP" , style : { width : "16em" } } , cur_info ) ,
 		) ,
@@ -152,7 +152,7 @@ namespace Graph
 				flexGrow : "1" ,
 				width : "100%" ,
 				position : "relative" ,
-				backgroundColor : "oklch( 25%  25%  300 )" ,
+				backgroundColor : "oklch( 100%  0%  300 )" ,
 			}
 		} ,
 		pl.each
@@ -237,7 +237,7 @@ namespace Tabs
 		(
 			{
 				class : { SELECTED : sel_item } ,
-				active_acts :
+				aa :
 				{
 					click ( ev )
 					{

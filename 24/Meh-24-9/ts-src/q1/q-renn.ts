@@ -55,7 +55,7 @@ export namespace view
 
 	const bu = ( label : string , click : ( ev : MouseEvent ) => void ) => ef.button
 	(
-		{ acts : { click } } ,
+		{ action : { click } } ,
 		label
 	);
 
@@ -72,7 +72,7 @@ export namespace view
 
 		return ef.button
 		(
-			{ acts : { click } },
+			{ action : { click } },
 			"+"
 		)
 	}
@@ -91,7 +91,7 @@ export namespace view
 			ef.span
 			(
 				{
-					acts : { click () { p.remove () ; } } ,
+					action : { click () { p.remove () ; } } ,
 				} ,
 				"x"
 			),

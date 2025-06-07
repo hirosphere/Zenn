@@ -156,7 +156,7 @@ namespace VC
 			ef.section
 			(
 				{ class : "fl-row" } ,
-				ef.button ( { acts : { click () { vm.load () ; } } } , "更新" )
+				ef.button ( { action : { click () { vm.load () ; } } } , "更新" )
 			),
 
 			List ( vm.list ) ,
@@ -168,8 +168,8 @@ namespace VC
 			ef.section
 			(
 				{ class : "fl-row" } ,
-				ef.button ( { acts : { click () { vm.json_update () } } } , "JSON" ) ,
-				ef.button ( { acts : { click () { vm.json.value = "" } } } , "消去" ) ,
+				ef.button ( { action : { click () { vm.json_update () } } } , "JSON" ) ,
+				ef.button ( { action : { click () { vm.json.value = "" } } } , "消去" ) ,
 			) ,
 			ef.section
 			(

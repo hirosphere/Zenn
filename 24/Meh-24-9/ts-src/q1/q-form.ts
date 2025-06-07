@@ -82,7 +82,7 @@ namespace vc
 			(
 				{ class : "fl-bar" },
 				... radios ( name , m , sel ),
-				ef.b ( { style : { width : "5em" } } , "[ " , sel.current , " ]" ),
+				ef.b ( { style : { width : "5em" } } , "[ " , sel.current.mk_str () , " ]" ),
 				// ef.input ( { props : { value : sel.current } } ) ,
 				select ( m , sel ) ,
 			)
@@ -115,7 +115,7 @@ namespace vc
 				{
 					checked : m ,
 				} ,
-				acts :
+				action :
 				{
 					change()
 					{
@@ -136,7 +136,7 @@ namespace vc
 		(
 			{
 				attrs : { autocomplete : "off" } ,
-				acts :
+				action :
 				{
 					input ( ev )
 					{

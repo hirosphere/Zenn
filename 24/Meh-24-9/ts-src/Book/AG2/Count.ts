@@ -4,13 +4,18 @@ namespace VM
 {
 	export class Applet
 	{
-		counters = [ new Counter () , ] ;
+		counters = Array.from ( { length : 5 } , i => new Counter () ) ;
 	}
 
 	export class Counter
 	{
 		count = leaf ( 0 ) ;
 		step = leaf ( "120" ) ;
+
+		constructor ()
+		{
+			this.count.$ = + this.step.$ * Math.floor ( Math.random () * 20 )
+		}
 
 		add ()
 		{
@@ -21,9 +26,16 @@ namespace VM
 
 export namespace VC
 {
+	/* CSS */
+
 	const css = /* css */ `
 
 	.FV { display : flex ; flex-direction : column ; }
+	.FH { display : flex ; }
+	.PGX { padding : 1ex ; gap : 1ex ; }
+	.FWR { flex-wrap : wrap ; }
+	.JC { justify-content : center ; }
+	.AC { align-items : center ; }
 
 	button
 	{
@@ -31,6 +43,11 @@ export namespace VC
 		min-width : 5em ;
 		height : 3em ;
 		padding-inline : 1ex ;
+	}
+
+	button:focus
+	{
+		border : 2px  solid  oklch( 65%  50%  135 ) ;
 	}
 
 	:host
@@ -52,7 +69,7 @@ export namespace VC
 	.Counter .display
 	{
 		width : 6em ;
-		padding-block : 1ex ;
+		padding-block : 1.4ex ;
 		text-align : center ;
 		font-size : 48px ;
 	}
@@ -73,6 +90,8 @@ export namespace VC
 
 	` ;
 
+	/* */
+
 	export const Applet = ( vm : VM.Applet = new VM.Applet ) =>
 	{
 		return ef.main
@@ -81,7 +100,11 @@ export namespace VC
 
 			ef.h1 ( "実績カウンタ" ) ,
 			
-			... vm.counters.map ( i => Counter ( i ) ) ,
+			ef.section
+			(
+				{ class : "FH FWR PGX JC" } ,
+				... vm.counters.map ( i => Counter ( i ) ) ,
+			) ,
 		) ;
 	}
 
@@ -98,8 +121,8 @@ export namespace VC
 				{ class : "bar" } ,
 
 				ef.input ( { style : { width : "5ex" } , binds : { value_input : vm.step } } ) ,
-				ef.button ( { acts : { click () { vm.add () ; } } } , "追加" ) ,
-				ef.button ( { acts : { click () { vm.count.$ = 0 ; } } } , "リセット" ) ,
+				ef.button ( { action : { click () { vm.add () ; } } } , "追加" ) ,
+				ef.button ( { action : { click () { vm.count.$ = 0 ; } } } , "リセット" ) ,
 			)
 		) ;
 	}

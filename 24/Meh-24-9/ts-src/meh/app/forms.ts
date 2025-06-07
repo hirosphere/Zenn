@@ -90,9 +90,9 @@ function input_ec
 			... ( ec?.props ?? {} )
 		} ,
 
-		acts :
+		action :
 		{
-			... ( ec ?.acts ?? {} ) ,
+			... ( ec ?.action ?? {} ) ,
 
 			input ( ev )
 			{
@@ -119,9 +119,9 @@ function textarea_ec
 			... ( ec?.props ?? {} )
 		} ,
 
-		acts :
+		action :
 		{
-			... ( ec ?.acts ?? {} ) ,
+			... ( ec ?.action ?? {} ) ,
 
 			input ( ev )
 			{
@@ -163,7 +163,7 @@ export function range ( m : range )
 		value : m.value.mk_str () ,
 	}
 
-	ec.acts =
+	ec.action =
 	{
 		input ( ev )
 		{

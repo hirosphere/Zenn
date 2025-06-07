@@ -57,7 +57,6 @@ export namespace defs
 	export type focus =
 	{
 		state ? : leaf.bool ;
-		tabindex ? : [ number ? , number ? ] ;
 	}
 
 	export type ec < E extends El > =
@@ -68,10 +67,10 @@ export namespace defs
 		attrs ? : attrs < E > ;
 		props ? : attrs < E > ;
 		binds ? : binds ;
-		acts ? : acts ;
+		action ? : acts ;
 		shadow ? : shadow ;
 		focus ? : focus ;
-		active_acts ? : acts ;
+		aa ? : acts ;
 	};
 
 	//  //

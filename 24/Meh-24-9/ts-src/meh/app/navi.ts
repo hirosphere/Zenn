@@ -277,7 +277,7 @@ export namespace navi
 			{
 				... ec ,
 				attrs : { href : index.link , ... ec.attrs } ,
-				active_acts : { click , ... ec.active_acts }
+				aa : { click , ... ec.aa }
 			} ,
 			... ( content.length ? content : [ index.title ] )
 		) ;

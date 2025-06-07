@@ -4,25 +4,49 @@ namespace VM
 {
 	export class Applet
 	{
-		listsel_1 = listsel
+		listsel_1 = new FocusList
 		(
-			[ "秋葉原" , "浅草橋" , "両国" , "錦糸町" , "亀戸" , "平井" , "新小岩" , "小岩" , "市川" , "本八幡" ]
+			[ undefined , "秋葉原" , "浅草橋" , "両国" , "錦糸町" , "亀戸" , "平井" , "新小岩" , "小岩" , "市川" , "本八幡" ]
 		) ;
 
-		listsel_2 = listsel
+		listsel_2 = new FocusList
 		(
-			[ "上中里" , "田端" , "西日暮里" , "日暮里" , "鶯谷" , "上野" , "御徒町" , "秋葉原" , "神田" , "東京" ]
+			[ undefined , "上中里" , "田端" , "西日暮里" , "日暮里" , "鶯谷" , "上野" , "御徒町" , "秋葉原" , "神田" , "東京" ]
 		) ;
 	}
 
-	export type listsel = { items : string [] ; sel : ksel < number > } ;
-
-	const listsel = ( items : string [] ) =>
+	export class FocusList
 	{
-		return null ||
+		items : FocusItem [] ;
+		selection = new ksel.Selector < FocusItem > () ;
+		focus = new ksel.Selector < FocusItem > () ;
+
+		constructor ( titles : ( string | undefined ) [] )
 		{
-			items ,
-			sel : ksel ( -1 ) ,
+			let prev : FocusItem ;
+			this.items = titles.map ( title => prev = new FocusItem ( this , title , prev ) ) ;
+
+			this.items [ 0 ] ?.selected .select () ;
+			this.items [ 0 ] ?.focuced .select () ;
+		}
+	};
+
+	export class FocusItem
+	{
+		selected : ksel.Item < FocusItem > ;
+		focuced : ksel.Item < FocusItem > ;
+		next ? : FocusItem ;
+
+		constructor
+		(
+			list : FocusList ,
+			public target : string | undefined ,
+			public prev ? : FocusItem ,
+		)
+		{
+			this.selected = list.selection.make_item ( this ) ;
+			this.focuced = list.focus.make_item ( this ) ;
+			prev && ( prev.next = this ) ;
 		}
 	}
 }
@@ -32,24 +56,53 @@ namespace VC
 {
 	const css = /* css */ `
 
+	* { box-sizing : border-box ; margin : 0 ; padding : 0 ; }
+
 	:host
 	{
 		display : flex ;
 		flex-direction : column ;
 		align-items : center ;
-		gap : 1ex ;
 	}
 
 	button
 	{
 		height : 3em ;
 		padding : 0 1em ;
+		white-space : nowrap ;
+		font-size : 16px ;
+	}
+
+	.UNITS
+	{
+		display : flex ;
+		flex-direction : column ;
+		align-items : stretch ;
+		gap : 1ex ;
+	}
+
+	.UNIT
+	{
+		width : 600px ;
+
+		border : 2px solid oklch( 60%  0%  0 ) ;
+		border-radius : 1ex ;
+
+		display : flex ;
+		flex-direction : column ;
+		padding : 1ex ;
+		gap : 1ex ;
+		align-items : stretch ;
 	}
 
 	.SELECTOR
 	{
+		background : oklch( 90%  0%  150 ) ;
+		padding : 1em ;
+
 		display : flex ;
 		gap : 0.1ex ;
+		overflow : auto ;
 	}
 	
 	.SELECTED
@@ -60,9 +113,9 @@ namespace VC
 
 	.CONTENT
 	{
-		max-width : 800px ;
-		width : 100% ;
 		background : oklch( 100%  0%  0 ) ;
+
+		padding : 1em ;
 		text-align : center ;
 		font-size : 36px ;
 	}
@@ -73,70 +126,74 @@ namespace VC
 	{
 		return ef.main
 		(
-			{ shadow : { css } } ,
+			{ class : "BS" , shadow : { css } } ,
 
 			ef.h1 ( "Curr Focus" ) ,
-			Selector ( vm.listsel_1 ) ,
-			ContentSwitch ( vm.listsel_1 ) ,
 
-			Selector ( vm.listsel_2 ) ,
-			ContentSwitch ( vm.listsel_2 ) ,
+			ef.section
+			(
+				{ class : "UNITS" } ,
+				Unit ( vm.listsel_1 ) ,
+				Unit ( vm.listsel_2 ) ,	
+			) ,
 		) ;
 	}
 
 	/* */
 
-	const Selector = ( vm : VM.listsel ) : MehElement => ef.section
+	const Unit = ( vm : VM.FocusList ) : MehElement => ef.section
+	(
+		{ class : "UNIT" } ,
+
+		List ( vm ) ,
+		ContentSwitch ( vm ) ,
+	) ;
+
+	const List = ( vm : VM.FocusList ) : MehElement => ef.section
 	(
 		{} ,
 		ef.section
 		(
 			{ class : "SELECTOR" } ,
-			SelItem ( vm , -1 ) ,
-			... vm.items.map ( ( label , key ) => SelItem ( vm , key ) )
+			... vm.items.map ( item_vm => Item ( item_vm ) )
 		) ,
 	) ;
 
-	const SelItem = ( vm : VM.listsel , key : number ) : MehElement =>
+	const Item = ( vm : VM.FocusItem ) : MehElement =>
 	{
-		const self = vm.sel.make_item ( key ) ;
-		const next = ( key < vm.items.length - 1 ) ? vm.sel.make_item ( key + 1 ) : undefined ;
-		const prev = ( key >= 0 ) ? vm.sel.make_item ( key - 1 ) : undefined ;
-
-		const label = vm.items [ key ] ?? ".." ;
-
-		const click = ( ev : MouseEvent ) => self.select () ;
-
 		const keydown = ( ev : KeyboardEvent ) =>
 		{
-			log ( label , ev.code ) ;
+			log ( vm.target , ev.code ) ;
 			switch ( ev.code )
 			{
-				case "ArrowRight" : next?.select () ; break ;
-				case "ArrowLeft" : prev?.select () ; break ;
+				case "ArrowRight" : vm.next ?.focuced.select () ; break ;
+				case "ArrowLeft" : vm.prev ?.focuced.select () ; break ;
+				default : return ;
 			}
+			ev.preventDefault () ;
 		}
 
 		return  ef.button
 		(
 			{
-				class : { SELECTED : self } ,
-				focus : { state : self , tabindex : [ , 0 ] },
-				acts : { click , keydown }
+				class : { SELECTED : vm.selected } ,
+				focus : { state : vm.focuced },
+				action : { click () { log ( vm.target , "click" )  ;  vm.selected.select () } } ,
+				aa : { keydown }
 			} ,
-			label
+			vm.target ?? ".."
 		) ;
 	}
 
-	const ContentSwitch = ( vm : VM.listsel ) : MehElement =>
+	const ContentSwitch = ( vm : VM.FocusList ) : MehElement =>
 	{
 		return ef.section
 		(
 			{ class : "CONTENT" } ,
 			pl.switch
 			(
-				vm.sel.current ,
-				key => key >= 0 ? ef.p ( vm.items [ key ] )  :  undefined
+				vm.selection.current ,
+				item => item?.target ? ef.span ( item.target  ) : undefined
 			)
 		) ;
 	}

@@ -1,9 +1,10 @@
 import { leaf , navi , ef , pl , dom , log } from "../../meh/index.js" ;
 
+import { Clock } from "./Clock.js" ;
 import { PartList } from "./PartList.js" ;
 
+
 import { EvalPage } from "../AG0/EvalPage.js" ;
-import { Clock } from "../AG0/Clock.js" ;
 import { Links } from "../AG0/Links.js" ;
 import * as AG1 from "../AG1/AG1_Index.js" ;
 import * as AG2 from "../AG2/AG2_Index.js" ;
@@ -62,14 +63,7 @@ namespace VM
 				{ type : "LINKS" , name : "Links" ,  } ,
 				AG1.index_def ,
 				AG2.index_def ,
-				{ type : "clock" , name : "Clock" } ,
-				{ name : "Labo" , parts :
-					[
-						{ name : "Tree" , title : "ツリーテスト" , parts : make_part_tree ( 3 ) } ,
-					]
-				} ,
-				{ type : "rail" , name : "Rail" , title : "列車運転" } ,
-				{ type : "HR" , name : "HR" , title : "HR" } ,
+				{ name : "Tree" , title : "ツリーテスト" , parts : make_part_tree ( 3 ) } ,
 			] ,
 		}
 	) ;
@@ -132,11 +126,11 @@ namespace VC
 				vm.navi.current_index ,
 				index => Content ( index ) ,
 			) ,
+			Clock () ,
 			ef.nav
 			(
-				{ class : "APP_NAVI_ISOS" } ,
+				{ class : "APP_NAVI_ISOS FH WRAP" , style : { columnGap : "1em" } } ,
 				NaviListSw ( vm.navi.current_com_index , "BSS" ) ,
-				// ListSwitch ( vm.navi.current_index , "APP_NAVI_PARTS" ) ,
 			) ,
 		) ;
 	}
@@ -184,7 +178,6 @@ namespace VC
 	{
 		"LINKS" : Links ,
 		"eval" : EvalPage ,
-		"clock" : Clock ,
 	}
 
 	const Content = ( index : navi.Index | undefined ) =>

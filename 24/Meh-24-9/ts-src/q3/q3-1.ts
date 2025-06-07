@@ -50,7 +50,7 @@ namespace VC
 			ef.section
 			(
 				{ class : "fl-bar" } ,
-				ef.button ( { acts : { click () { m.update () ; } } } , "更新" ) ,
+				ef.button ( { action : { click () { m.update () ; } } } , "更新" ) ,
 			)
 		) ;
 	}

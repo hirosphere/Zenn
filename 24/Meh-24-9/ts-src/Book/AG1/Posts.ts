@@ -128,8 +128,6 @@ namespace VM
 		constructor ()
 		{
 			this.doc.load ( "1" ) ;
-			this.doc.load ( "2" ) ;
-			this.doc.load ( "3" ) ;
 		}
 	}
 }

@@ -8,6 +8,7 @@ import { EkiIndex } from "./Eki/EkiIndex.js" ;
 import { CSSOM_Quest } from "./CSS_Qst.js" ;
 import { OKLCH } from "./OKLCH.js";
 import * as 製造 from "./製造管理/製造Index.js" ;
+import * as Com_Port from "./Com_Port.js" ;
 
 export const index_def : navi.types.index =
 {
@@ -31,5 +32,6 @@ export const index_def : navi.types.index =
 			]
 		} ,
 		製造.index ,
+		{ name : "Com_Port" , page : () => Com_Port.VC.Applet () } ,
 	]
 }

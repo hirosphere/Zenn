@@ -11,7 +11,7 @@ namespace VM
 		clk ()
 		{
 			const l = this.phase.current ;
-			l.value = ( l.value + 1 ) % 10 ;
+			l.value = ( l.value ?? 0 + 1 ) % 10 ;
 		}
 
 		play ()
@@ -43,8 +43,8 @@ namespace VC
 			ef.section
 			(
 				{ class : "fl-bar" } ,
-				ef.button ( { acts : { click () { vm.clk () ; } } } , "CLK" ) ,
-				ef.button ( { acts : { click () { vm.play () ; } } } , "Play" ) ,
+				ef.button ( { action : { click () { vm.clk () ; } } } , "CLK" ) ,
+				ef.button ( { action : { click () { vm.play () ; } } } , "Play" ) ,
 			) ,
 			ef.section ( { class : "fl-bar" } , ... lamps ) ,
 			ClockA () ,

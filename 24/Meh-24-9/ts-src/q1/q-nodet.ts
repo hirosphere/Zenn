@@ -134,7 +134,7 @@ namespace view
 
 	const v_button = ( label : string, leaf : leaf.str, value : string ) => ef.button
 	(
-		{ acts: { click() { leaf.value = value ; } } },
+		{ action: { click() { leaf.value = value ; } } },
 		label,
 	);
 
@@ -150,7 +150,7 @@ namespace view
 					checked: leaf.value,
 				},
 				// props: { checked: leaf, },
-				acts:
+				action:
 				{
 					change( ev )
 					{

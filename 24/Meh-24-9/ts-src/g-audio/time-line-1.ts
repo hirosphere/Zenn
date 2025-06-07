@@ -52,9 +52,9 @@ namespace VC
 		return ef.section
 		(
 			{ class : "DISPLAY_A" } ,
-			ef.button ( { acts : { click () { tl.stop () ; } } } , "終止" ) ,
-			ef.button ( { acts : { click () { tl.togglecontinue () ; } } } , tl.state.conv ( v => v ? "停止" : "再開" ) ) ,
-			ef.button ( { acts : { click () { tl.start () ; } } } , "開始" ) ,
+			ef.button ( { action : { click () { tl.stop () ; } } } , "終止" ) ,
+			ef.button ( { action : { click () { tl.togglecontinue () ; } } } , tl.state.conv ( v => v ? "停止" : "再開" ) ) ,
+			ef.button ( { action : { click () { tl.start () ; } } } , "開始" ) ,
 			ef.span ( { class : "ITEM" , style : { width : "12ex" } } , tl.current.conv ( v => ( v / 960 ).toFixed ( 0 ) ) ) ,
 			ef.span ( { class : "ITEM TEMPO" , style : { width : "6ex" } } , tl.tempo.conv ( v => ( v ).toFixed ( 0 ) ) ) ,
 		)

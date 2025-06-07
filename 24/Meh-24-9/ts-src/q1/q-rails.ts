@@ -127,7 +127,7 @@ export namespace vc
 			{
 				class : "link" ,
 				attrs : { href : node.url } ,
-				acts :
+				action :
 				{
 					click ( ev : MouseEvent )
 					{

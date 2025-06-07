@@ -84,7 +84,7 @@ export class MehElement extends MehNode
 		super();
 
 		const { ns, type, parts } = def;
-		const { class: class_name, style, attrs, props , binds , acts, active_acts , focus , hook } = def;
+		const { class: class_name, style, attrs, props , binds , action: acts, aa: active_acts , focus , hook } = def;
 
 		let el =
 		(
@@ -140,28 +140,22 @@ export class MehElement extends MehNode
 
 		if ( focus && focus.state )
 		{
-			const { state , tabindex } = focus ;
-			const ref = leaf.ref
+			const { state } = focus ;
+			// const ref = leaf.ref
+			// (
+			// 	state ,
+			// 	state => state && this.el ?.focus () ,
+			// ) ;
+
+			this.bind_value
 			(
 				state ,
-				state => state && this.el ?.focus () ,
+				state =>
+				{
+					this.el && ( this.el.tabIndex = state ? 0 : -1 ) ;
+					state && ( this.el ?.focus () ) ;
+				}
 			) ;
-
-			if ( tabindex )
-			{
-				this.bind_value
-				(
-					state ,
-					state => this.el &&
-					(
-						this.el.tabIndex = state ?
-							tabindex [ 1 ] ?? 0 :
-							tabindex [ 0 ] ?? -1
-					)
-				) ;
-			}
-
-			this.srcs.add ( ref );
 		}
 
 		if( parts )

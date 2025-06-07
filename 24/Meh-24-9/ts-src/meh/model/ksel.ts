@@ -3,7 +3,7 @@ import { leaf } from "./leaf.js" ;
 
 export type ksel < K > = ksel.Selector < K > ;
 
-export function ksel < K > ( init : leaf.ll < K > )
+export function ksel < K > ( init : leaf.ll < K | undefined > )
 {
 	return new ksel.Selector < K > ( init ) ;
 }
@@ -13,20 +13,20 @@ export namespace ksel
 
 	export class Selector < K >
 	{
-		public readonly current : leaf < K > ;
-		protected items = new Map < K , Item < K > > ;
+		public readonly current : leaf < K | undefined > ;
+		protected items = new Map < K | undefined , Item < K > > ;
 		protected state_source : leaf.bool ;
 
 		constructor
 		(
-			init : leaf.ll < K > ,
+			init : leaf.ll < K | undefined > = undefined ,
 			com_state ? : leaf.bool
 		)
 		{
 			this.state_source = com_state ?? state_source.true
 			this.current = leaf.ll.make ( init ) ;
 
-			const key_change : leaf.update < K > = ( new_k , old_k ) =>
+			const key_change : leaf.update < K | undefined > = ( new_k , old_k ) =>
 			{
 				const old_i = old_k !== undefined && this.items.get ( old_k );
 				const new_i = this.items.get ( new_k );
@@ -35,7 +35,7 @@ export namespace ksel
 				if( new_i ) new_i.src = this.state_source ;
 			};
 
-			leaf.ref < K > ( this.current , key_change ) ;
+			leaf.ref < K | undefined > ( this.current , key_change ) ;
 		}
 
 		public make_item ( key : K ) : Item < K >

@@ -194,7 +194,7 @@ export namespace vc
 			{
 				class : "color_display" ,
 				style : { backgroundColor : m.doc.color_1.css } ,
-				acts : { dblclick : toggle_fs },
+				action : { dblclick : toggle_fs },
 				hook
 			} ,
 
@@ -211,7 +211,7 @@ export namespace vc
 		{
 			class : "color-input " + subclass ,
 			props : { value : color } ,
-			acts : { click ( ev ) { ev.stopPropagation () ; } }
+			action : { click ( ev ) { ev.stopPropagation () ; } }
 		}
 	);
 
@@ -254,7 +254,7 @@ export namespace vc
 				// value : m.value.mk_str () ,
 				value : m.value.conv ( v => String ( v ) )
 			} ,
-			acts :
+			action :
 			{
 				input ( ev )
 				{

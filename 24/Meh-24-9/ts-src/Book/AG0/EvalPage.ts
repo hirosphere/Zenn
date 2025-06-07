@@ -91,7 +91,7 @@ export const EvalPage = () =>
 			"Eval " , vm.current .value .title ,
 			ef.button
 			(
-				{ acts : { click : () => vm.execute () } } ,
+				{ action : { click : () => vm.execute () } } ,
 				"Eval"
 			)
 		) ,
@@ -159,7 +159,7 @@ const textarea = ( classname : string , src : leaf.str , vm : VM.Item ) : MehEle
 		{
 			class : classname ,
 			binds : { value_input : src } ,
-			active_acts : { keydown } ,
+			aa : { keydown } ,
 			props : { autocomplete : "off" }
 		}
 	) ;
