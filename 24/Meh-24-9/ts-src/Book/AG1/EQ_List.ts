@@ -14,7 +14,7 @@ namespace DM
 export const EQListApp = () =>
 {
 	const dm = new DM.Applet ;
-	const content_sel = ksel ( 0 ) ;
+	const content_sel = ksel ( 1 ) ;
 	const item_sel = ksel < JMAQuake.item | undefined > ( undefined ) ;
 	const cur_info = leaf ( "info" ) ;
 	const beep = new Beep () ;
@@ -32,12 +32,12 @@ export const EQListApp = () =>
 		{ class : "FV PPP" } ,
 
 		pl.switch ( content_sel.current , key => key ? contents [ key ] : undefined ) ,
-		
+
 		ef.section
 		(
 			{ class : "BS FH JC AS PPX" } ,
 			ef.button ( { action : { click : () => dm.list.update () } } , "Load" ) ,
-			ef.button ( { action : { click () { beep.quest () ; } } } , "BEEP" ) ,
+			// ef.button ( { action : { click () { beep.quest () ; } } } , "BEEP" ) ,
 			Tabs.Tabs ( content_sel , [ "グラフ" , "リスト" ] ) ,
 			ef.p ( { class : "FH AC BH PPP" , style : { width : "16em" } } , cur_info ) ,
 		) ,

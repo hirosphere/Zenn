@@ -66,8 +66,7 @@ namespace VM
 		[ len ]
 		?? [ 0.0 , Math.min ( 1 , max / ( len || 1 ) ) ];
 
-		return null ||
-		{
+		return {
 			letterSpacing : space + "em" ,
 			transform : `scale( ${ shrink } , 1 )` ,
 			marginRight : - space + "em"

@@ -11,8 +11,7 @@ export const EkiDataJP = ( root_path : string ) =>
 
 	load ( files.line ) .then ( res => log ( res ) ) ;
 
-	return null ||
-	{
+	return {
 		async load ()
 		{
 			await fetch ( files.line ) ;

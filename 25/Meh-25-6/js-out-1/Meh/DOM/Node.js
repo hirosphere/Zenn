@@ -1,0 +1,7 @@
+export class Node {
+}
+export class Text {
+}
+export class Element {
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiTm9kZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3RzLXNyYy9NZWgvRE9NL05vZGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0EsTUFBTSxPQUFPLElBQUk7Q0FDZjtBQUVGLE1BQU0sT0FBTyxJQUFJO0NBQ2Y7QUFFRixNQUFNLE9BQU8sT0FBTztDQUNsQiJ9

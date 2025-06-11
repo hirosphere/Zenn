@@ -72,8 +72,7 @@ export function item ( s : srcitem , basetime : number ) : item
 		i => Number ( i )
 	) ;
 
-	return null ||
-	{
+	return {
 		id : s.eid ?? "" ,
 		時刻 : s.eid ? s.eid.replace ( date_regex , data_cv ) : "" ,
 		規模 : s.mag ?? "" ,

@@ -141,11 +141,6 @@ export class MehElement extends MehNode
 		if ( focus && focus.state )
 		{
 			const { state } = focus ;
-			// const ref = leaf.ref
-			// (
-			// 	state ,
-			// 	state => state && this.el ?.focus () ,
-			// ) ;
 
 			this.bind_value
 			(
@@ -154,7 +149,9 @@ export class MehElement extends MehNode
 				{
 					this.el && ( this.el.tabIndex = state ? 0 : -1 ) ;
 					state && ( this.el ?.focus () ) ;
+					this.el ?.scrollIntoView ( { block : "center" } ) ;
 				}
+				
 			) ;
 		}
 

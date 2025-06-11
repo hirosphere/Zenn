@@ -87,8 +87,7 @@ namespace VM
 	{
 		const dm = DM.App () ;
 
-		return null ||
-		{
+		return {
 			dm ,
 			ranges : Ranges ( dm.color ) ,
 		}

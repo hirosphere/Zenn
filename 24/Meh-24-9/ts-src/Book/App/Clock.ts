@@ -11,7 +11,7 @@ class ClockModel
 
 	update ()
 	{
-		this.datetime.$ = df ( "Y-MM-DD (B) hh:mm:ss" ) ;
+		this.datetime.$ = df ( "Y-MM-DD (B) hh:mm" ) ;
 	}
 }
 

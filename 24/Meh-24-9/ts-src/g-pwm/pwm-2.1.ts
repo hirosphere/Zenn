@@ -65,14 +65,14 @@ namespace VM    /*  View Models  */
 		}
 	}
 
-	const pc = ( min = 0 ) => null ||
+	const pc = ( min = 0 ) => (
 	{
 		step : 0.002 ,
 		max : 1 ,
 		min ,
 		to_lv : ( v : number ) => ( v * 100 ) .toFixed ( 1 ) ,
 		unit : "%"
-	}
+	});
 
 	const pw : forms.range.p =
 	{

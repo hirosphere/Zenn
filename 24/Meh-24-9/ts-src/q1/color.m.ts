@@ -20,8 +20,8 @@ export class HSL
 
 	public get value() : HSL.value
 	{
-		return null ||
-		{
+		return {
+			
 			hue: this.hue.value,
 			sat: this.sat.value,
 			light: this.light.value

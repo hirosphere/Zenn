@@ -6,12 +6,12 @@ namespace VM
 	{
 		listsel_1 = new FocusList
 		(
-			[ undefined , "秋葉原" , "浅草橋" , "両国" , "錦糸町" , "亀戸" , "平井" , "新小岩" , "小岩" , "市川" , "本八幡" ]
+			[ "秋葉原" , "浅草橋" , "両国" , "錦糸町" , "亀戸" , "平井" , "新小岩" , "小岩" , "市川" , "本八幡" ]
 		) ;
 
 		listsel_2 = new FocusList
 		(
-			[ undefined , "上中里" , "田端" , "西日暮里" , "日暮里" , "鶯谷" , "上野" , "御徒町" , "秋葉原" , "神田" , "東京" ]
+			[ "上中里" , "田端" , "西日暮里" , "日暮里" , "鶯谷" , "上野" , "御徒町" , "秋葉原" , "神田" , "東京" ]
 		) ;
 	}
 
@@ -62,9 +62,54 @@ namespace VC
 	{
 		display : flex ;
 		flex-direction : column ;
+		padding : 1ex ;
 		align-items : center ;
 	}
 
+	.UNITS
+	{
+		max-width : 1000px ;
+		width : 100% ;
+		padding : 1ex ;
+		border : 2px solid gray ;
+		display : flex ;
+		flex-direction : column ;
+		align-items : center ;
+		gap : 1ex ;
+	}
+
+	.UNIT
+	{
+		width : 100% ;
+		border : 2px solid oklch( 60%  0%  0 ) ;
+		border-radius : 1ex ;
+
+		display : flex ;
+		flex-direction : column ;
+		padding : 1ex ;
+		gap : 1ex ;
+		align-items : center ;
+	}
+
+	.LIST
+	{
+		background : oklch( 70%  0%  150 ) ;
+
+		width : 100% ;
+		display : flex ;
+		justify-content : center ;
+
+		padding : 3px ;
+	}
+
+	.LIST .ITEMS
+	{
+		display : flex ;
+		overflow : auto ;
+		padding : 0.75ex ;
+		gap : 0.3ex ;
+	}
+	
 	button
 	{
 		height : 3em ;
@@ -73,48 +118,23 @@ namespace VC
 		font-size : 16px ;
 	}
 
-	.UNITS
+	button:focus
 	{
-		display : flex ;
-		flex-direction : column ;
-		align-items : stretch ;
-		gap : 1ex ;
+		outline : solid 2px oklch( 75%  60%  55 ) ;
 	}
 
-	.UNIT
-	{
-		width : 600px ;
-
-		border : 2px solid oklch( 60%  0%  0 ) ;
-		border-radius : 1ex ;
-
-		display : flex ;
-		flex-direction : column ;
-		padding : 1ex ;
-		gap : 1ex ;
-		align-items : stretch ;
-	}
-
-	.SELECTOR
-	{
-		background : oklch( 90%  0%  150 ) ;
-		padding : 1em ;
-
-		display : flex ;
-		gap : 0.1ex ;
-		overflow : auto ;
-	}
-	
 	.SELECTED
 	{
-		background : oklch( 50%  0%  0 ) ;
+		background : oklch( 20%  0%  270 ) ;
 		color : oklch( 100%  0%  0 ) ;
 	}
 
 	.CONTENT
 	{
+		width : 100% ;
 		background : oklch( 100%  0%  0 ) ;
 
+		overflow : auto ;
 		padding : 1em ;
 		text-align : center ;
 		font-size : 36px ;
@@ -126,7 +146,7 @@ namespace VC
 	{
 		return ef.main
 		(
-			{ class : "BS" , shadow : { css } } ,
+			{ class : "BS PXX" , shadow : { css } } ,
 
 			ef.h1 ( "Curr Focus" ) ,
 
@@ -151,10 +171,10 @@ namespace VC
 
 	const List = ( vm : VM.FocusList ) : MehElement => ef.section
 	(
-		{} ,
+		{ class : "LIST" } ,
 		ef.section
 		(
-			{ class : "SELECTOR" } ,
+			{ class : "ITEMS" } ,
 			... vm.items.map ( item_vm => Item ( item_vm ) )
 		) ,
 	) ;
@@ -163,7 +183,8 @@ namespace VC
 	{
 		const keydown = ( ev : KeyboardEvent ) =>
 		{
-			log ( vm.target , ev.code ) ;
+			// log ( vm.target , ev.code ) ;
+			
 			switch ( ev.code )
 			{
 				case "ArrowRight" : vm.next ?.focuced.select () ; break ;
@@ -178,7 +199,7 @@ namespace VC
 			{
 				class : { SELECTED : vm.selected } ,
 				focus : { state : vm.focuced },
-				action : { click () { log ( vm.target , "click" )  ;  vm.selected.select () } } ,
+				action : { click () { vm.selected.select () } } ,
 				aa : { keydown }
 			} ,
 			vm.target ?? ".."
@@ -189,7 +210,7 @@ namespace VC
 	{
 		return ef.section
 		(
-			{ class : "CONTENT" } ,
+			{ class : "CONTENT BH" } ,
 			pl.switch
 			(
 				vm.selection.current ,

@@ -126,12 +126,12 @@ namespace VC
 				vm.navi.current_index ,
 				index => Content ( index ) ,
 			) ,
-			Clock () ,
 			ef.nav
 			(
 				{ class : "APP_NAVI_ISOS FH WRAP" , style : { columnGap : "1em" } } ,
 				NaviListSw ( vm.navi.current_com_index , "BSS" ) ,
 			) ,
+			Clock () ,
 		) ;
 	}
 

@@ -37,6 +37,8 @@ namespace VM
 		open ()
 		{
 			navigator.serial.requestPort () ;
+
+			TextEncoder ;
 		}
 
 		close ()

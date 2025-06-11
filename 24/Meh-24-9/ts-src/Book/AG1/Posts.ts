@@ -52,6 +52,8 @@ namespace VM
 
 namespace DM
 {
+	Navigator ;
+
 	export class PostApp
 	{
 		trees = new Renn < PostTree > ;

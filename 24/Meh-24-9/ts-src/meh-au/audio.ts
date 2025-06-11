@@ -107,8 +107,8 @@ export const pil = ( freq : number , ac : AC ) =>
 	const node = new OscillatorNode ( ac , { frequency : freq } ) ;
 	node.start () ;
 
-	return null ||
-	{
+	return {
+		
 		node ,
 		... new_an ()
 	}
