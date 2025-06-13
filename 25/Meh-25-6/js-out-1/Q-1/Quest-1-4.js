@@ -1,3 +1,0 @@
-import { DOM } from "../Meh/Meh.js";
-DOM.add("メェhhh", "body");
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiUXVlc3QtMS00LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vdHMtc3JjL1EtMS9RdWVzdC0xLTQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0EsT0FBTyxFQUFFLEdBQUcsRUFBTyxNQUFNLGVBQWUsQ0FBRTtBQUUxQyxHQUFHLENBQUMsR0FBRyxDQUFHLE9BQU8sRUFBRyxNQUFNLENBQUUsQ0FBRSJ9
