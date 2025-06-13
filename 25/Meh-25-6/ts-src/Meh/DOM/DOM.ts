@@ -1,5 +1,5 @@
 
-export * as Defs from "./Definition.js" ;
-export { MI } from "./Definition.js" ;
+export * as DD from "./DD.js" ;
+export { MI } from "./DD.js" ;
 export * from "./Factory.js" ;
-export * from "./Node.js" ;
+export * from "./MehNode.js" ;

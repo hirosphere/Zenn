@@ -1,11 +1,9 @@
-import { Existence } from "./Existence.js" ;
+import { Life } from "./Life.js" ;
 
 export const setValue = Symbol () ;
 
-export interface Leafr < V > extends Existence
+export interface Leafr < V > extends Life
 {
-	set vch ( vch : Leafr.vch < V > ) ;
-	
 	get $ () : V ;
 
 	[ setValue ] ( new_v : V , notify : boolean ) : void ;
@@ -25,24 +23,14 @@ export namespace Leafr
 
 	/* */
 
-	export abstract class Base < V >  extends Existence  implements Leafr < V >
+	export abstract class Base < V >  extends Life < Leafr.Ref < V > >  implements Leafr < V >
 	{
-		protected p_vch = new Set < vch < V > > ;
-
-		public set vch ( vch : Leafr.vch < V > ) { this.p_vch.add ( vch ) ; }
-
 		public abstract get $ () : V ;
 		public abstract [ setValue ] ( new_v : V , notify : boolean ) : void ;
 
 		public cvr < R > ( stor : ( srcv : V ) => R , rtos ? : ( refv : R ) => V ) : Converter < R , V >
 		{
 			return new Converter < R , V > ( this , stor , rtos ) ;
-		}
-
-		public override terminate() : void
-		{
-			this.p_vch.clear () ;
-			super.terminate () ;
 		}
 	}
 
@@ -68,9 +56,9 @@ export namespace Leafr
 			this.p_value = new_v ;
 
 			notify &&
-			this.p_vch.forEach
+			this.p_refs.forEach
 			(
-				vch => vch ( new_v , old_v , this )
+				ref => ref.vchan ( new_v , old_v )
 			) ;
 		}
 	}
@@ -88,12 +76,21 @@ export namespace Leafr
 		{
 			super () ;
 
-			source.vch = ( new_v , old_v ) =>
+			const ref : Ref < S > =
 			{
-				const r_new_v = this.SR ( new_v ) ;
-				const r_old_v = old_v !== undefined ? this.SR ( old_v ) : undefined ;
-				this.p_vch.forEach ( vch => vch ( r_new_v , r_old_v , this ) ) ;
+				lterm : () => this.terminate () ,
+				vchan : ( s_new , s_old ) =>
+				{
+					const r_new = this.SR ( s_new ) ;
+					const r_old = s_old !== undefined ? this.SR ( s_old ) : undefined ;
+					this.p_refs.forEach
+					(
+						ref => ref.vchan ( r_new , r_old )
+					)
+				}
 			}
+
+			source.addRef ( ref ) ;
 		}
 
 		public get $ () : V
@@ -113,13 +110,10 @@ export namespace Leafr
 
 	/* */
 
-	export type vch < V > =
-	(
-		new_v : V ,
-		old_v : V | undefined ,
-		source : Leafr < V >
-	
-	) => void ;
+	export interface Ref < V > extends Life.Ref
+	{
+		vchan ( newV : V , oldV ? : V ) : void ;
+	}
 }
 
 export type cv < S , R > = ( value : S ) => R ;

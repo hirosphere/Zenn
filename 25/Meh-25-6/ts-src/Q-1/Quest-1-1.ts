@@ -1,25 +1,21 @@
 import * as Meh from "../Meh/Meh.js" ;
-import { Existence , Leafr , Leaf , setValue , ru , log } from "../Meh/Meh.js" ;
+import { Life , Leafr , Leaf , setValue , ru , log } from "../Meh/Meh.js" ;
 
 console.log ( "Meh-25-6" ) ;
 
 Meh.log ;
 
 
-( ex : Meh.Model.Existence ) =>
+const addlog = ( lr : Leafr < any > ) =>
 {
-	ex.xt = () => log ( "xt" ) ;
-} ;
+	const ref : Leafr.Ref < any > =
+	{
+		lterm : () => log ( `${ lr [ ru ] } lterm` ) ,
+		vchan : ( n , o ) => log ( `${ lr [ ru ] } vchan ${ o } => ${ n }` ) 
+	}
 
-const xlog = ( ex : Existence ) =>
-(
-	log ( `${ ex [ ru ] } xt` )
-) ;
-
-const vlog = ( new_v : any , old_v : any , ex : Existence ) =>
-(
-	log ( `${ ex [ ru ] } vc ${ new_v } ${ old_v }` )
-) ;
+	lr.addRef( ref ) ;
+}
 
 const sep = ( t : string ) => log ( `\t** ${ t } **\t` ) ;
 
@@ -28,9 +24,8 @@ sep ( "LR" ) ;
 
 {
 	const lr = Leafr.create ( 111 ) ;
-	
-	lr.xt = xlog ;
-	lr.vch = vlog ;
+
+	addlog ( lr ) ;
 
 	lr [ setValue ] ( 222 ) ;
 	lr [ setValue ] ( 444 ) ;
@@ -43,8 +38,8 @@ sep ( "LR Conv" ) ;
 
 {
 	const lr = Leafr.create ( 0 ) ;
-	lr.xt = xlog ;
-	lr.vch = vlog ;
+
+	addlog ( lr ) ;
 	
 	const cr = lr.cvr < string >
 	(
@@ -52,8 +47,7 @@ sep ( "LR Conv" ) ;
 		r => ( parseFloat ( r ) ?? 0 ) / 100
 	) ;
 
-	cr.xt = xlog ;
-	cr.vch = vlog ;
+	addlog ( cr ) ;
 
 	lr [ setValue ] ( 0.0555 ) ;
 	lr [ setValue ] ( 0.555 ) ;
@@ -70,9 +64,8 @@ sep ( "L" ) ;
 
 {
 	const l = Leaf.create ( 111 ) ;
-	
-	l.xt = xlog ;
-	l.vch = vlog ;
+
+	addlog ( l ) ;
 	
 	l.$ = 555 ;
 	l.$ = 777 ;
@@ -85,9 +78,8 @@ sep ( "L Conv" ) ;
 
 {
 	const l = Leaf.create ( 1 ) ;
-	
-	l.xt = xlog ;
-	l.vch = vlog ;
+
+	addlog ( l ) ;
 
 	const c = l.cv
 	(
@@ -95,7 +87,7 @@ sep ( "L Conv" ) ;
 		r => r.length
 	)
 
-	c.vch = vlog ;
+	addlog ( c ) ;
 	
 	l.$ = 5 ;
 	l.$ = 10 ;
