@@ -23,7 +23,7 @@ const sep = ( t : string ) => log ( `\t** ${ t } **\t` ) ;
 sep ( "LR" ) ;
 
 {
-	const lr = Leafr.create ( 111 ) ;
+	const lr = Leafr ( 111 ) ;
 
 	addlog ( lr ) ;
 
@@ -37,7 +37,7 @@ sep ( "LR" ) ;
 sep ( "LR Conv" ) ;
 
 {
-	const lr = Leafr.create ( 0 ) ;
+	const lr = Leafr ( 0 ) ;
 
 	addlog ( lr ) ;
 	
@@ -63,7 +63,7 @@ sep ( "LR Conv" ) ;
 sep ( "L" ) ;
 
 {
-	const l = Leaf.create ( 111 ) ;
+	const l = Leaf ( 111 ) ;
 
 	addlog ( l ) ;
 	
@@ -77,7 +77,7 @@ sep ( "L" ) ;
 sep ( "L Conv" ) ;
 
 {
-	const l = Leaf.create ( 1 ) ;
+	const l = Leaf ( 1 ) ;
 
 	addlog ( l ) ;
 

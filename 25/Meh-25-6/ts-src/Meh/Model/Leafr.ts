@@ -2,11 +2,16 @@ import { Life } from "./Life.js" ;
 
 export const setValue = Symbol () ;
 
+export function Leafr < V > ( iv : V ) : Leafr < V >
+{
+	return new Leafr.Source ( iv ) ;
+}
+
 export interface Leafr < V > extends Life
 {
 	get $ () : V ;
 
-	[ setValue ] ( new_v : V , notify : boolean ) : void ;
+	[ setValue ] ( new_v : V , notify ? : boolean ) : void ;
 
 	cvr < R >
 	(
@@ -19,8 +24,6 @@ export interface Leafr < V > extends Life
 
 export namespace Leafr
 {
-	export const create = < V > ( iv : V ) : Source < V > => new Source ( iv ) ;
-
 	/* */
 
 	export abstract class Base < V >  extends Life < Leafr.Ref < V > >  implements Leafr < V >

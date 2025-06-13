@@ -1,22 +1,45 @@
+import { log } from "../Util.js" ;
+import { Leafr } from "../Model/Model.js" ;
 import * as DD from "./DD.js" ;
 
-export class MehNode
+export abstract class MehNode
 {
-	protected bindValue ( value : DD.Primitive ) : void
+	public abstract node : Node ;
+
+	protected bindValue ( ll : DD.Text , update : ( new_v : DD.Literal ) => void ) : void
 	{
-		;
+		if ( ! ( ll instanceof Object ) )
+		{
+			update ( ll ) ;
+		}
+
+		else if ( ll instanceof Leafr.Base )
+		{
+			ll.addRef ( { vchan : update } ) ;
+		}
 	}
 }
 
 export class MehText extends MehNode
 {
-	constructor ( arg : DD.Primitive )
+	protected p_node : Node ;
+
+	constructor ( arg : DD.Text )
 	{
 		super () ;
-		
-		this.bindValue ( arg ) ;
+
+		this.p_node = document.createTextNode ( "" ) ;
+
+		this.bindValue ( arg , new_v => this.p_node.nodeValue = String ( new_v ) ) ;
+	}
+
+	public get node () : Node
+	{
+		return this.p_node ;
 	}
 }
 
-export class MehElement extends MehNode
-{}
+export class MehElement
+{
+
+}

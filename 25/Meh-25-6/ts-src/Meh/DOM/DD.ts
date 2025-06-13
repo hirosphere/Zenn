@@ -1,19 +1,17 @@
 import { Leafr } from "../Model/Model.js" ;
 import { MehElement } from "./MehNode.js";
 
+export type Literal = string | number | boolean | bigint | null ;
 
-export type Primitive =
+export type Text =
 (
-	string | number | boolean | bigint | null | undefined |
+	Literal |
 	Leafr < string > | Leafr < number > | Leafr < boolean > | Leafr < bigint >
 ) ;
 
 
-type Part = Primitive | MehElement ;
+type Part = Text | MehElement ;
 
 type PartPlace =   [] ;
 
-/* MI : Meh DOM Item */
-export type MI = Primitive ;
-
-const mi : MI = 55555 ;
+export type Node = Text ;

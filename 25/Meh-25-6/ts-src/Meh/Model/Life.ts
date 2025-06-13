@@ -15,7 +15,7 @@ export class Life < Ref extends Life.Ref = any >
 	{
 		this.p_refs .forEach
 		(
-			ref => ref.lterm ( this )
+			ref => ref.lterm ?. ( this )
 		) ;
 	}
 
@@ -27,6 +27,6 @@ export namespace Life
 	export interface Ref
 	{
 		source ? : Life ;
-		lterm : ( source : Life ) => void
+		lterm ? : ( source : Life ) => void
 	}
 }

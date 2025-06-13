@@ -1,5 +1,10 @@
 import { Leafr , setValue } from "./Leafr.js" ;
 
+export function Leaf < V > ( iv : V ) : Leaf < V >
+{
+	return new Leaf.Source ( iv ) ;
+}
+
 export interface Leaf < V > extends Leafr < V >
 {
 	set $ ( new_v : V ) ;
@@ -16,8 +21,6 @@ export interface Leaf < V > extends Leafr < V >
 
 export namespace Leaf
 {
-	export const create = < V > ( iv : V ) : Leaf < V > => new Source ( iv ) ;
-
 	/* */
 
 	export class Source < V >  extends Leafr.Source < V >  implements Leaf < V >
