@@ -1,5 +1,5 @@
 import * as Meh from "../Meh/Meh.js" ;
-import { Life , Leafr , Leaf , setValue , ru , log } from "../Meh/Meh.js" ;
+import { Life , Leafr , Leaf , ru , log } from "../Meh/Meh.js" ;
 
 console.log ( "Meh-25-6" ) ;
 
@@ -19,21 +19,21 @@ const addlog = ( lr : Leafr < any > ) =>
 
 const sep = ( t : string ) => log ( `\t** ${ t } **\t` ) ;
 
-sep ( "LR" ) ;
+sep ( "R" ) ;
 
 {
 	const lr = Leafr ( 111 ) ;
 
 	addlog ( lr ) ;
 
-	lr [ setValue ] ( 222 ) ;
-	lr [ setValue ] ( 444 ) ;
-	lr [ setValue ] ( 666 ) ;
+	lr [ Leafr.setValue ] ( 222 ) ;
+	lr [ Leafr.setValue ] ( 444 ) ;
+	lr [ Leafr.setValue ] ( 666 ) ;
 
 	lr.terminate () ;
 }
 
-sep ( "LR Conv" ) ;
+sep ( "R Conv" ) ;
 
 {
 	const lr = Leafr ( 0 ) ;
@@ -48,18 +48,18 @@ sep ( "LR Conv" ) ;
 
 	addlog ( cr ) ;
 
-	lr [ setValue ] ( 0.0555 ) ;
-	lr [ setValue ] ( 0.555 ) ;
-	lr [ setValue ] ( 5.55 ) ;
+	lr [ Leafr.setValue ] ( 0.0555 ) ;
+	lr [ Leafr.setValue ] ( 0.555 ) ;
+	lr [ Leafr.setValue ] ( 5.55 ) ;
 
-	cr [ setValue ] ( "777" ) ;
-	cr [ setValue ] ( "77.7" ) ;
-	cr [ setValue ] ( "7.7" ) ;
+	cr [ Leafr.setValue ] ( "777" ) ;
+	cr [ Leafr.setValue ] ( "77.7" ) ;
+	cr [ Leafr.setValue ] ( "7.7" ) ;
 
 	lr.terminate () ;
 }
 
-sep ( "L" ) ;
+sep ( "RW" ) ;
 
 {
 	const l = Leaf ( 111 ) ;
@@ -73,7 +73,7 @@ sep ( "L" ) ;
 	l.terminate () ;
 }
 
-sep ( "L Conv" ) ;
+sep ( "RW Conv" ) ;
 
 {
 	const l = Leaf ( 1 ) ;

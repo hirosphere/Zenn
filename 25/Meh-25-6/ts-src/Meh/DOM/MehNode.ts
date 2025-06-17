@@ -1,6 +1,7 @@
 import { log } from "../Util.js" ;
 import { Leafr } from "../Model/Model.js" ;
 import * as DD from "./DD.js" ;
+import { PartsPlace } from "./PartsPlace.js" ;
 
 export abstract class MehNode
 {
@@ -20,17 +21,24 @@ export abstract class MehNode
 	}
 }
 
+
+
+/**  */
+
 export class MehText extends MehNode
 {
 	protected p_node : Node ;
-
-	constructor ( arg : DD.Text )
+	constructor ( text : DD.Text )
 	{
 		super () ;
 
 		this.p_node = document.createTextNode ( "" ) ;
 
-		this.bindValue ( arg , new_v => this.p_node.nodeValue = String ( new_v ) ) ;
+		this.bindValue
+		(
+			text ,
+			new_v => this.p_node.nodeValue = String ( new_v )
+		) ;
 	}
 
 	public get node () : Node
@@ -39,7 +47,43 @@ export class MehText extends MehNode
 	}
 }
 
-export class MehElement
-{
 
+/*  */
+
+export class MehElement extends MehNode
+{
+	public readonly el : Element ;
+
+	protected p_parts : PartsPlace | null = null ;
+
+
+	constructor
+	(
+		ns : string ,
+		type : string ,
+		dec : DD.Element ,
+		parts : DD.Part [] ,
+	)
+	{
+		super () ;
+
+		const { target } = dec ;
+
+		this.el =
+		(
+			target instanceof Element ? target :
+			document.createElement ( type )
+		) ;
+
+		/* parts */
+
+		log ( type , parts )
+
+		if ( parts ) this.p_parts = PartsPlace.create ( parts , this.el ) ;
+	}
+
+	public get node () : Node
+	{
+		return this.el ;
+	}
 }

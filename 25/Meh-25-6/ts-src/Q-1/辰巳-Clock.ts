@@ -2,7 +2,7 @@ import { Leaf , DOM , log } from "../Meh/Meh.js" ;
 
 
 
-const anm = [ "🐭", "🐄" ,"🐯" , "🐇", "🐉", "🐍", "🐎", "🐏", "🐵", "🐓", "🐶", "🐗" ] ;
+const anm = [ "🐭", "🐄" ,"🐯" , "🐇", "🐉", "🐍", "🐎", "🐏", "🐒", "🐓", "🐶", "🐗" ] ;
 const to_anm = ( s : string ) : string =>
 (
 	s.replace ( /\d/g , m => anm [ + m ] ?? m )
@@ -21,7 +21,7 @@ const 辰巳 = () : string =>
 		r12 ( dayphase , 3 ) ,
 		r12 ( dayphase , 4 ) ,
 	
-	] .join ( "" ) ;	
+	] .join ( ":" ) ;	
 }
 
 const r12 = ( dayphase : number , scale : number ) : string =>
@@ -44,7 +44,7 @@ const step = () =>
 
 requestAnimationFrame ( step ) ;
 
-DOM.add ( time , "#Mehhh" ) ;
+// DOM.add ( time , "#Mehhh" ) ;
 // DOM.add ( anmtime , "#Mehhh" ) ;
 DOM.add ( shintime , "#Mehhh" ) ;
 

@@ -1,122 +1,109 @@
 import { Life } from "./Life.js" ;
 
-export const setValue = Symbol () ;
-
-export function Leafr < V > ( iv : V ) : Leafr < V >
+export function Leafr < V > ( new_v : V , branch ? : () => void ) : Leafr.Entity < V >
 {
-	return new Leafr.Source ( iv ) ;
+	return new Leafr.Entity ( new_v , branch ) ;
 }
 
-export interface Leafr < V > extends Life
+export interface Leafr < V >  extends Life < Leafr.Ref < V > >
 {
+	[ Leafr.LeafrTag ] : Symbol ;
 	get $ () : V ;
-
-	[ setValue ] ( new_v : V , notify ? : boolean ) : void ;
-
-	cvr < R >
-	(
-		stor : ( srcv : V ) => R ,
-		rtos ? : ( refv : R ) => V
-	
-	) : Leafr.Converter < R , V > ;
+	[ Leafr.setValue ] ( new_v : V , isBranch ? : boolean ) : void ;
+	addRef ( ref : Leafr.Ref < V > ) : void ;
+	cvr < R > ( vtor : ( v : V ) => R , rtov ? : ( r : R ) => V ) : Leafr < R > ;
 }
 
 
 export namespace Leafr
 {
+	export const setValue = Symbol () ;
+	export const LeafrTag = Symbol () ;
+
 	/* */
 
-	export abstract class Base < V >  extends Life < Leafr.Ref < V > >  implements Leafr < V >
+	export abstract class Base < V > extends Life < Ref < V > > implements Leafr < V >
 	{
-		public abstract get $ () : V ;
-		public abstract [ setValue ] ( new_v : V , notify : boolean ) : void ;
+		public readonly [ LeafrTag ] = LeafrTag ;
 
-		public cvr < R > ( stor : ( srcv : V ) => R , rtos ? : ( refv : R ) => V ) : Converter < R , V >
+		public abstract get $ () : V ;
+		public abstract [ setValue ] ( new_v : V , isBranch : boolean ) : void ;
+
+		public override addRef ( ref : Leafr.Ref < V > ) : void
 		{
-			return new Converter < R , V > ( this , stor , rtos ) ;
+			super.addRef ( ref ) ;
+			ref.vchan ( this.$ ) ;
+		}
+
+		public cvr < R > ( vtor : ( v : V ) => R , rtov ? : ( r : R ) => V ) : Leafr < R >
+		{
+			return new Converter ( this , vtor , rtov ) ;
 		}
 	}
 
-	/* */
-
-	export class Source < V > extends Base < V >
+	export class Entity < V > extends Base < V >
 	{
-		constructor ( protected p_value : V )
+		constructor ( protected p_value : V , protected p_branch ? : () => void )
 		{
 			super () ;
 		}
 
-		public get $ () : V
-		{
-			return this.p_value ;
-		}
+		public override get $ () : V { return this.p_value ; }
 
-		public [ setValue ] ( new_v : V , notify : boolean = true ) : void
+		public override [ setValue ] ( new_v : V , isBranch : boolean = false ) : void
 		{
 			if ( new_v === this.p_value )  return ;
-
 			const old_v = this.p_value ;
 			this.p_value = new_v ;
-
-			notify &&
-			this.p_refs.forEach
-			(
-				ref => ref.vchan ( new_v , old_v )
-			) ;
+			if( ! isBranch ) this.p_branch ?.() ;
+			this.p_refs.forEach ( ref => ref.vchan ( new_v , old_v ) ) ;
 		}
 	}
-
-	/* */
 
 	export class Converter < V , S > extends Base < V >
 	{
 		constructor
 		(
 			protected source : Leafr < S > ,
-			protected SR : ( value : S ) => V ,
-			protected RS ? : ( value : V ) => S
+			protected stov : ( v : S ) => V ,
+			protected vtos ? : ( v : V ) => S
 		)
 		{
 			super () ;
 
-			const ref : Ref < S > =
+			const ref =
 			{
-				lterm : () => this.terminate () ,
-				vchan : ( s_new , s_old ) =>
-				{
-					const r_new = this.SR ( s_new ) ;
-					const r_old = s_old !== undefined ? this.SR ( s_old ) : undefined ;
-					this.p_refs.forEach
-					(
-						ref => ref.vchan ( r_new , r_old )
-					)
-				}
+				lterm : () => this.terminate () , 
+				vchan : this.notify
 			}
-
 			source.addRef ( ref ) ;
 		}
 
-		public get $ () : V
+		public override [ setValue ] ( new_v : V , isBranch : boolean = false )
 		{
-			return this.SR ( this.source.$ ) ;
+			if ( this.vtos )  this.source [ setValue ] ( this.vtos ( new_v ) ) ;
 		}
 
-		public [ setValue ] ( new_v : V , notify : boolean = true ) : void
+		public override get $ () : V { return this.stov ( this.source.$ ) ; }
+
+		protected notify = ( s_new : S , s_old ? : S ) : void =>
 		{
-			if ( this.RS )  this.source [ setValue ]
-			(
-				this.RS ( new_v ) ,
-				notify
-			) ;
+			const new_v = this.stov ( s_new ) ;
+			const old_v = ( s_old !== undefined ? this.stov ( s_old ) : undefined ) ;
+
+			this.p_refs.forEach ( ref => ref.vchan ( new_v , old_v ) ) ;
 		}
 	}
 
-	/* */
+	export abstract class Branch < V >  extends Base < V >
+	{
+		;
+	}
+
+	/* Ref */
 
 	export interface Ref < V > extends Life.Ref
 	{
-		vchan ( newV : V , oldV ? : V ) : void ;
+		vchan : ( new_v : V , old_v ? : V ) => void ;
 	}
 }
-
-export type cv < S , R > = ( value : S ) => R ;

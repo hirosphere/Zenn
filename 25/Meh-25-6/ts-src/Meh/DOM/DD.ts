@@ -1,17 +1,43 @@
 import { Leafr } from "../Model/Model.js" ;
 import { MehElement } from "./MehNode.js";
 
-export type Literal = string | number | boolean | bigint | null ;
+
+/* Element */
+
+export type Element < E extends globalThis.Element = any > =
+{
+	target ? : E ;
+	style ? : Style ;
+}
+
+export type Style =
+{
+
+}
+
+
+/* Part */
+
+export type Literal = string | number | boolean | bigint | null | undefined ;
 
 export type Text =
 (
 	Literal |
-	Leafr < string > | Leafr < number > | Leafr < boolean > | Leafr < bigint >
+	
+	Leafr.Base < string > |
+	Leafr.Base < number > |
+	Leafr.Base < boolean > |
+	Leafr.Base < bigint >
 ) ;
 
 
-type Part = Text | MehElement ;
+const partPlaceTag = Symbol () ;
 
-type PartPlace =   [] ;
+export class PartPlace
+{
+	public readonly partPlaceTag = partPlaceTag ;
+}
 
-export type Node = Text ;
+export type StaticPart = Text | MehElement ;
+export type Part = StaticPart | PartPlace ;
+

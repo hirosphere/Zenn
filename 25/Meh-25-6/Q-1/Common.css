@@ -1,0 +1,44 @@
+* { box-sizing : border-box ; margin : 0 ; padding : 0 ; }
+
+.FV { display : flex ; flex-direction : column ; }
+.FH { display : flex ; flex-direction : row ; }
+
+.PGXX { padding : 1ex ; gap : 1ex ; }
+.JC { justify-content : center ; }
+.AC { align-items : center ; }
+
+.OA { overflow : auto ; }
+
+a { PADDING : 0.1ex 0.6ex ; text-decoration : none ; color : hsl( 0  0%  20% ) ; }
+a:hover { background-color : hsl( 0  0%  0 / 10% ) ; }
+
+html
+{
+	background-color : hsl( 215  88%  88% ) ;
+
+	padding-inline : 1vw ;
+	font-family : sans-serif ;
+}
+
+body
+{
+	margin-inline : auto ;
+	background-color : oklch( 100%  0%  0 ) ;
+	
+	max-width : 1200px ;
+	min-height : 100vh ;
+}
+
+main
+{
+	flex-grow : 1 ;
+}
+
+h1 { padding : 1ex ; }
+
+footer
+{
+	margin : 2px ;
+	background : hsl( 50  5%  93% ) ;
+	padding : 1em ;
+}

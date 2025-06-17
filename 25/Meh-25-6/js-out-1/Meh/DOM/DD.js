@@ -1,2 +1,5 @@
-export {};
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiREQuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi90cy1zcmMvTWVoL0RPTS9ERC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiIn0=
+const partPlaceTag = Symbol();
+export class PartPlace {
+    partPlaceTag = partPlaceTag;
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiREQuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi90cy1zcmMvTWVoL0RPTS9ERC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFpQ0EsTUFBTSxZQUFZLEdBQUcsTUFBTSxFQUFHLENBQUU7QUFFaEMsTUFBTSxPQUFPLFNBQVM7SUFFTCxZQUFZLEdBQUcsWUFBWSxDQUFFO0NBQzdDIn0=

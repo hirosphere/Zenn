@@ -1,89 +1,67 @@
-import { Leafr , setValue } from "./Leafr.js" ;
+import { Leafr } from "./Leafr.js" ;
 
-export function Leaf < V > ( iv : V ) : Leaf < V >
+export function Leaf < V > ( new_v : V , branch ? : () => void ) : Leaf.Entity < V >
 {
-	return new Leaf.Source ( iv ) ;
+	return new Leaf.Entity ( new_v , branch ) ;
 }
 
 export interface Leaf < V > extends Leafr < V >
 {
+	set ( new_v : V , isBranch : boolean ) : void ;
+	get () : V ;
 	set $ ( new_v : V ) ;
-
-	set ( new_v : V , notify : boolean ) : void ;
-
-	cv < R >
-	(
-		stor : ( srcv : V ) => R ,
-		rtos : ( refv : R ) => V
-	
-	) : Leaf.Converter < R , V > ;
+	get $ () : V ;
+	cv < R > ( vtor : ( v : V ) => R , rtov : ( r : R ) => V ) : Leaf < R > ;
 }
 
 export namespace Leaf
 {
 	/* */
 
-	export class Source < V >  extends Leafr.Source < V >  implements Leaf < V >
+	export abstract class Base < V >  extends Leafr.Base < V >  implements Leaf < V >
 	{
-		public override set $ ( new_v : V )
+		public override set $ ( new_v : V ) { this.set ( new_v , false ) ; }
+		public override get $ () : V { return this.get () ; }
+		public abstract set ( new_v : V , isBranch : boolean ) : void ;
+		public abstract get () : V ;
+		public [ Leafr.setValue ] ( new_v : V , isBranch : boolean = false ) : void
 		{
-			this [ setValue ] ( new_v ) ;
+			this.set ( new_v , isBranch ) ; 
 		}
 
-		public set ( new_v : V , notify : boolean = true )
+		public cv < R > ( vtor : ( v : V ) => R , rtov : ( r : R ) => V ) : Leaf < R >
 		{
-			this [ setValue ] ( new_v , notify ) ;
-		}
-
-		public cv < R >
-		(
-			stor : ( srcv : V ) => R ,
-			rtos : ( refv : R ) => V
-		
-		) : Converter < R , V >
-		{
-			return new Converter < R , V > ( this , stor , rtos ) ;
+			return new Converter ( this , vtor , rtov ) ;
 		}
 	}
 
-	/* */
-
-	export class Converter < V , S >  extends Leafr.Converter < V , S >  implements Leaf < V >
+	export class Entity < V > extends Leafr.Entity < V >  implements Leaf < V >
 	{
-		constructor
-		(
-			source : Leaf < S > ,
-			SR : ( value : S ) => V ,
-			RS : ( value : V ) => S
-		)
-		{
-			super ( source , SR , RS )
-		}
+		public set ( new_v : V , isBranch : boolean = false )  {  this [ Leafr.setValue ] ( new_v , isBranch )  }
+		public get () : V { return this.p_value ; }
 
-		public override set $ ( new_v : V )
-		{
-			this.set ( new_v ) ;
-		}
+		public override set $ ( new_v : V ) { this [ Leafr.setValue ] ( new_v ) ; }
+		public override get $ () : V { return this.p_value ; }
 
-		public set ( new_v : V , notify : boolean = true )
+		public cv < R > ( vtor : ( v : V ) => R , rtov : ( r : R ) => V ) : Leaf < R >
 		{
-			this.RS && this.source [ setValue ]
-			(
-				this.RS ( new_v ) ,
-				notify
-			) ;
-		}
-
-		public cv < R >
-		(
-			stor : ( srcv : V ) => R ,
-			rtos : ( refv : R ) => V
-		
-		) : Converter < R , V >
-		{
-			return new Converter < R , V > ( this , stor , rtos ) ;
+			return new Converter ( this , vtor , rtov ) ;
 		}
 
 	}
 
+	export class Converter < V , S > extends Leafr.Converter < V , S >  implements Leaf < V >
+	{
+		public set ( new_v : V , isBranch : boolean = false )  {  this [ Leafr.setValue ] ( new_v , isBranch )  }
+		public get () : V  { return super.$ ; }
+
+		public override set $ ( new_v : V ) { this [ Leafr.setValue ] ( new_v ) ; }
+		public override get $ () : V { return super.$ ; }
+
+		public cv < R > ( vtor : ( v : V ) => R , rtov : ( r : R ) => V ) : Leaf < R >
+		{
+			return new Converter ( this , vtor , rtov ) ;
+		}
+	}
 }
+
