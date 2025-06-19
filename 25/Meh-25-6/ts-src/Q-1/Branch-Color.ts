@@ -20,3 +20,13 @@ namespace DM
 		}
 	}
 }
+
+namespace VM.Menu
+{
+	const init =
+	{
+		ja : {} ,
+		en : {}
+	}
+}
+

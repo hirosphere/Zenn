@@ -44,7 +44,7 @@ const step = () =>
 
 requestAnimationFrame ( step ) ;
 
-// DOM.add ( time , "#Mehhh" ) ;
+DOM.add ( [ time , ] , "#Clock" ) ;
 // DOM.add ( anmtime , "#Mehhh" ) ;
 DOM.add ( shintime , "#Mehhh" ) ;
 

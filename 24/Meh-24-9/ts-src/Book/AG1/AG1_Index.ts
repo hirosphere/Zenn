@@ -18,7 +18,6 @@ export const index_def : navi.types.index =
 		{ name : "CSSOM" , page : () => CSSOM_Quest () } ,
 		{ name : "Posts" , page : () => Posts () } ,
 		{ name : "OKLCH" , page : () =>  OKLCH () } ,
-		{ name : "Rectia" , type : "Rectia" } ,
 		{ name : "UUID_Clock" , page : () => UUID_Clock () } ,
 		{ name : "EQ_List" , page : () => EQListApp () } ,
 		EkiIndex ,

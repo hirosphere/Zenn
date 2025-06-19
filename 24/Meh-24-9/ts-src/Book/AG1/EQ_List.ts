@@ -31,7 +31,14 @@ export const EQListApp = () =>
 	(
 		{ class : "FV PPP" } ,
 
-		pl.switch ( content_sel.current , key => key ? contents [ key ] : undefined ) ,
+		pl.switch
+		(
+			content_sel.current ,
+			key =>
+			{ 
+				return contents [ key ?? 0 ]
+			}
+		) ,	
 
 		ef.section
 		(

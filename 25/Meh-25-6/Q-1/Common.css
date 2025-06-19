@@ -3,7 +3,10 @@
 .FV { display : flex ; flex-direction : column ; }
 .FH { display : flex ; flex-direction : row ; }
 
-.PGXX { padding : 1ex ; gap : 1ex ; }
+.PGMM { padding : 1em ; gap : 1em ; }
+.PGMM { padding : 1em ; gap : 1em ; }
+.PM { padding : 1em ; }
+.GM {  gap : 1em ; }
 .JC { justify-content : center ; }
 .AC { align-items : center ; }
 
