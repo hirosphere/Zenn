@@ -9,7 +9,7 @@ namespace DM
 		l : number ;
 	}
 
-	export class HSL extends Leaf.Base < hsl >
+	export class HSL extends Leaf < hsl >
 	{
 		public set ( new_v : hsl )
 		{}

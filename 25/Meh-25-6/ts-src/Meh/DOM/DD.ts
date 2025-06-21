@@ -1,4 +1,4 @@
-import { Leafr } from "../Model/Model.js" ;
+import { Leaf } from "../Model/Model.js" ;
 import { MehElement } from "./MehNode.js";
 
 
@@ -24,10 +24,10 @@ export type Text =
 (
 	Literal |
 	
-	Leafr.Base < string > |
-	Leafr.Base < number > |
-	Leafr.Base < boolean > |
-	Leafr.Base < bigint >
+	Leaf < string > |
+	Leaf < number > |
+	Leaf < boolean > |
+	Leaf < bigint >
 ) ;
 
 

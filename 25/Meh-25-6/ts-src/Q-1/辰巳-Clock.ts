@@ -30,9 +30,9 @@ const r12 = ( dayphase : number , scale : number ) : string =>
 	return anm [ ch >= 12 ? 0 : ch ] ;
 }
 
-const time = Leaf ( "" ) ;
-const anmtime = time.cvr ( time => to_anm ( time ) ) ;
-const shintime = Leaf ( "" ) ;
+const time = Leaf.cr ( "" ) ;
+const anmtime = time.cv ( time => to_anm ( time ) ) ;
+const shintime = Leaf.cr ( "" ) ;
 
 const step = () =>
 {

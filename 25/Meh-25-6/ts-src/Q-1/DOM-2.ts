@@ -4,7 +4,7 @@ namespace VM
 {
 	const new_counter = ( time : number ) : Leaf.Entity < number > =>
 	{
-		const lf = Leaf ( 0 ) ;
+		const lf = Leaf.cr ( 0 ) ;
 
 		setInterval ( () => lf.$ ++ , time ) ;
 

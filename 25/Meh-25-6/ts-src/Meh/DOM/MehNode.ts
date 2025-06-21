@@ -1,5 +1,5 @@
 import { log } from "../Util.js" ;
-import { Leafr } from "../Model/Model.js" ;
+import { Leaf } from "../Model/Model.js" ;
 import * as DD from "./DD.js" ;
 import { PartsPlace } from "./PartsPlace.js" ;
 
@@ -14,7 +14,7 @@ export abstract class MehNode
 			update ( ll ) ;
 		}
 
-		else if ( ll instanceof Leafr.Base )
+		else if ( ll instanceof Leaf )
 		{
 			ll.addRef ( { vchan : update } ) ;
 		}
