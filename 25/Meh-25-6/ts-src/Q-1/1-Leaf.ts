@@ -4,35 +4,67 @@ import { Life , Leaf , ru , log } from "../Meh/Meh.js" ;
 console.log ( "Meh-25-6" ) ;
 
 
-const dlog_e = document.getElementById ( "log" ) ;
+const dlog_e = document.getElementById ( "log" ) as HTMLElement ;
 
-const ecr = ( com : Element | null , type : string , text ? : string ) : HTMLElement =>
+type ecr =
+{
+	class ? : string ,
+	text ? : string
+}
+
+const ecr = ( com : Element , type : string , p : ecr = {} ) : HTMLElement =>
 {
 	const e = document.createElement ( type ) ;
-	if ( text != null ) e.textContent = text ;
-	com?.appendChild ( e ) ;
+	if ( p.class ) e.className = p.class ;
+	if ( p.text != undefined ) e.textContent = p.text ;
+	com ?.appendChild ( e ) ;
 	return e ;
 }
 
-const dlog = ( title : string ) =>
+
+const flog_new = ( title : string ) =>
 {
-	const e = ecr ( dlog_e , "section" ) ;
-	ecr ( e , "h2" , title ) ;
-	
-	return ( leaf : Leaf < any > ) =>  leaf.addRef ( cr_ref ( e , leaf ) ) ;
+	const e = ecr ( dlog_e , "article" , {} ) ;
+	ecr ( e , "h2" , { text : title } ) ;
+	const ul = ecr ( e , "ul" ) ;
+
+	const add = ( lf : Leaf < any > ) =>
+	{
+		const ref =
+		{
+			vchan : ( v : any ) => vchan ( lf ) ,
+		}
+
+		lf.addRef ( ref ) ;
+	}
+
+	const vchan = ( lf : Leaf < any > ) =>
+	{
+		ecr ( e , "li" , { text : `${ lf [ ru ] } vchan ${ lf.$ }` } );
+	}
+
+	return { add }
 }
 
-const cr_ref = ( e : Element , lf : Leaf < any > ) =>
-({
-	vchan ( n : any , o : any ) { ecr ( e , "div" , `${ lf [ ru ] } vchan ${ n }` ) ; }
-}) ;
 
 {
-	const addlog = dlog ( "Leaf" ) ;
+	const flog = flog_new ( "vchan" ) ;
 
 	const lf = Leaf.cr ( 0 ) ;
-	addlog ( lf ) ;
+	flog.add ( lf ) ;
 
 	lf.$ ++ ;
 	lf.$ *= 10 ;
+	lf.$ *= 10 ;
+	lf.$ *= 10 ;
+
+	const cv = lf.cv ( v => `* ${ ( v / 7 ).toFixed ( 3 ) } *` ) ;
+	flog.add ( cv ) ;
+
+	lf.$ ++ ;
+	lf.$ *= 10 ;
+	lf.$ *= 10 ;
+	lf.$ *= 10 ;
+
+	lf.terminate () ;
 }

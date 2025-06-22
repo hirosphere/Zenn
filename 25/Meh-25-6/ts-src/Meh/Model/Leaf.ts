@@ -24,16 +24,12 @@ export abstract class Leaf < V >  extends Life < Leaf.Ref < V > >
 
 	public cv < R >
 	(
-		tor : ( v : V ) => R ,
-		tov ? : ( r : R ) => V
+		to_r : ( v : V ) => R ,
+		to_v ? : ( r : R ) => V
 	
-	) : Leaf.Rel < R >
+	) : Leaf < R >
 	{
-		return new Leaf.Rel < R >
-		(
-			() => tor ( this.get () ) ,
-			tov ? r => this.set ( tov ( r ) , false )  : undefined
-		) ;
+		return new Leaf.Conv ( this , to_r , to_v ) ;
 	}
 }
 
@@ -45,44 +41,68 @@ export namespace Leaf
 		(
 			protected p_value : V ,
 		)
-		{
-			super () ;
-		}
+		{ super () ; }
 
 		public override set ( new_v : V, is_branch: boolean ) : void
 		{
 			if ( new_v === this.p_value )  return ;
-
-			const old_v = this.p_value ;
 			this.p_value = new_v ;
-
-			this.p_refs.forEach
-			(
-				ref => ref.vchan ( new_v , old_v )
-			) ;
+			this.p_refs.forEach ( ref => ref.vchan ( new_v ) ) ;
 		}
 
 		public override get() : V {  return this.p_value ;  }
 	}
 
+	export const notify = Symbol () ;
+
 	export class Rel < V > extends Leaf < V >
 	{
 		constructor
 		(
-			protected from_s : () => V ,
-			protected to_s ? : ( new_v : V ) => void
+			protected get_s : () => V ,
+			protected set_s ? : ( new_v : V ) => void
 		)
 		{  super () ;  }
 
-		public override set ( new_v : V ) {  this.to_s ?. ( new_v ) ;  }
-		public override get ( ): V {  return this.from_s () ;  }
+		public override set ( new_v : V ) {  this.set_s ?. ( new_v ) ;  }
+		public override get ( ): V {  return this.get_s () ;  }
+
+		public [ notify ] () : void
+		{
+			const new_v = this.get_s () ;
+			this.p_refs.forEach ( ref => ref.vchan ( new_v ) ) ;
+		}
 	}
+
+	export class Conv < V , S >  extends Rel < V >
+	{
+		constructor
+		(
+			src : Leaf < S > ,
+			to_v : ( s : S ) => V ,
+			to_s ? : ( v : V ) => S
+		)
+		{
+			super
+			(
+				() => to_v ( src.$ ) ,
+				to_s ? v => src.$ = to_s ( v ) : undefined
+			) ;
+			const ref : Ref < S > =
+			{
+				vchan : () => this [ notify ] () ,
+				lterm : () => this.terminate ()
+			}
+			src.addRef ( ref ) ;
+		}
+	}
+
 
 	/* */
 
 	export interface Ref < V >  extends Life.Ref
 	{
-		vchan ( new_v : V , old_v ? : V ) : void ;
+		vchan ( new_v : V ) : void ;
 	}
 
 	/* */
