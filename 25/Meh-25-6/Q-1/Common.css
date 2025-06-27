@@ -4,9 +4,13 @@
 .FH { display : flex ; flex-direction : row ; }
 
 .PGMM { padding : 1em ; gap : 1em ; }
-.PGMM { padding : 1em ; gap : 1em ; }
+.PGXX { padding : 1ex ; gap : 1ex ; }
+
 .PM { padding : 1em ; }
 .GM {  gap : 1em ; }
+.PX { padding : 1ex ; }
+.GX {  gap : 1ex ; }
+
 .JC { justify-content : center ; }
 .AC { align-items : center ; }
 
@@ -14,6 +18,7 @@
 
 a { PADDING : 0.1ex 0.6ex ; text-decoration : none ; color : hsl( 0  0%  20% ) ; }
 a:hover { background-color : hsl( 0  0%  0 / 10% ) ; }
+button { padding: 1ex 1em ; }
 
 html
 {
@@ -37,7 +42,7 @@ main
 	flex-grow : 1 ;
 }
 
-h1 { padding : 1ex ; }
+h1 , h2 , h3 , h4 { padding : 0.75ex ; text-align: center; }
 
 footer
 {

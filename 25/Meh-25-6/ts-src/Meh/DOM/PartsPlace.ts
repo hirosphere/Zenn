@@ -54,7 +54,7 @@ class Reader
 
 	get next () : PartsPlace | null
 	{
-		if ( this.cur instanceof DD.PartPlace )
+		if ( this.cur instanceof PartsPlace )
 		{
 			this.pos ++ ;
 			return new DynamicPartsPlace ( this ) ;
@@ -66,11 +66,15 @@ class Reader
 		{
 			if
 			(
-				this.cur instanceof DD.PartPlace ||
+				this.cur instanceof DD.pl ||
 				this.pos >= this.dec.length
 			)
 			{
-				return  dec.length ?  new StaticPartPlace ( dec , this )  :  null ;
+				if ( dec.length )  return new StaticPartPlace ( dec , this ) ;
+				const pldec = this.cur ;
+				this.pos ++ ;
+				if ( pldec instanceof DD.pl.Free )  return new FreePartsPlace ( pldec , this ) ;
+				return null ;
 			}
 
 			dec.push ( this.cur ) ;
@@ -92,9 +96,16 @@ class StaticPartPlace extends PartsPlace
 	constructor ( dec : DD.StaticPart [] , rdr : Reader )
 	{
 		super ( rdr.cel , rdr.rel ) ;
-
 		dec.forEach( dec => this.makePart ( dec ) ) ;
+		this.next = rdr.next ;
+	}
+}
 
+class FreePartsPlace extends PartsPlace
+{
+	constructor ( dec : DD.pl.Free , rdr : Reader )
+	{
+		super ( rdr.cel , rdr.rel ) ;
 		this.next = rdr.next ;
 	}
 }

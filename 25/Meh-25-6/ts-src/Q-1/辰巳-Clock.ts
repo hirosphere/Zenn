@@ -30,9 +30,9 @@ const r12 = ( dayphase : number , scale : number ) : string =>
 	return anm [ ch >= 12 ? 0 : ch ] ;
 }
 
-const time = Leaf.cr ( "" ) ;
+const time = Leaf.new ( "" ) ;
 const anmtime = time.cv ( time => to_anm ( time ) ) ;
-const shintime = Leaf.cr ( "" ) ;
+const shintime = Leaf.new ( "" ) ;
 
 const step = () =>
 {
@@ -44,7 +44,7 @@ const step = () =>
 
 requestAnimationFrame ( step ) ;
 
-DOM.add ( [ time , ] , "#Clock" ) ;
+DOM.add ( [ time , ] , "#Clock" , ) ;
 // DOM.add ( anmtime , "#Mehhh" ) ;
 DOM.add ( shintime , "#Mehhh" ) ;
 

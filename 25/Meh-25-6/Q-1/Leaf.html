@@ -8,12 +8,18 @@
 
 <style>
 
+.FV { display: flex; flex-direction: column; }
+.FH { display: flex; flex-direction: row; }
+
+.PGXX { padding: 1ex; gap: 1ex; }
+
 #log
 {
 	padding : 1em ;
 	font-size : 18px ;
+	font-family: 'Arial' , monospace;
 	line-height : 1.3em ;
-	color : oklch( 16%  30%  240 ) ;
+	color : oklch( 25%  30%  240 ) ;
 }
 
 #log h2
@@ -26,6 +32,13 @@
 	list-style: none;
 }
 
+article
+{
+	display: flex;
+	flex-direction: column;
+	gap: 1ex;
+}
+
 </style>
 
 
@@ -34,7 +47,15 @@
 	<main class="FV PGX AC">
 		<h1>Q-1-1-Leaf</h1>
 		<p>Meh-25-6 あるべきコーディングスタイルへ。</p>
-		<pre id="log"></pre>
+
+		<article class="FV PGXX">
+			<section class="FH PGXX">
+				<button>*= 10</button>
+				<button>/= 10</button>
+			</section>
+		</article>
+
+		<div id="log"></div>
 	</main>
 	<footer>
 		<nav class="FH JC">

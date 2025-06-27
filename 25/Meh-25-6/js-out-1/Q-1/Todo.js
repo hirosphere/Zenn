@@ -1,0 +1,21 @@
+import { Leaf, Renn } from "../Meh/Meh.js";
+var DM;
+(function (DM) {
+    class ToDoApplet {
+    }
+    DM.ToDoApplet = ToDoApplet;
+    class ToDoList {
+        items = new Renn;
+    }
+    DM.ToDoList = ToDoList;
+    class ToDoItem {
+        title;
+        conpleted;
+        constructor(i) {
+            this.title = Leaf.new(i.title);
+            this.conpleted = Leaf.new(i.completed);
+        }
+    }
+    DM.ToDoItem = ToDoItem;
+})(DM || (DM = {}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiVG9kby5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3RzLXNyYy9RLTEvVG9kby50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsSUFBSSxFQUFHLElBQUksRUFBUSxNQUFNLGVBQWUsQ0FBRTtBQUVuRCxJQUFVLEVBQUUsQ0F1Qlg7QUF2QkQsV0FBVSxFQUFFO0lBRVgsTUFBYSxVQUFVO0tBQ3JCO0lBRFcsYUFBVSxhQUNyQixDQUFBO0lBRUYsTUFBYSxRQUFRO1FBRUosS0FBSyxHQUFHLElBQUksSUFBaUIsQ0FBRTtLQUMvQztJQUhZLFdBQVEsV0FHcEIsQ0FBQTtJQUVELE1BQWEsUUFBUTtRQUVKLEtBQUssQ0FBRTtRQUNQLFNBQVMsQ0FBRTtRQUUzQixZQUFjLENBQVk7WUFFekIsSUFBSSxDQUFDLEtBQUssR0FBRyxJQUFJLENBQUMsR0FBRyxDQUFHLENBQUMsQ0FBQyxLQUFLLENBQUUsQ0FBRTtZQUNuQyxJQUFJLENBQUMsU0FBUyxHQUFHLElBQUksQ0FBQyxHQUFHLENBQUcsQ0FBQyxDQUFDLFNBQVMsQ0FBRSxDQUFFO1FBQzVDLENBQUM7S0FDRDtJQVZZLFdBQVEsV0FVcEIsQ0FBQTtBQUdGLENBQUMsRUF2QlMsRUFBRSxLQUFGLEVBQUUsUUF1QlgifQ==

@@ -1,5 +1,12 @@
-const partPlaceTag = Symbol();
-export class PartPlace {
-    partPlaceTag = partPlaceTag;
+export class pl {
+    static free() { return new pl.Free(); }
 }
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiREQuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi90cy1zcmMvTWVoL0RPTS9ERC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFpQ0EsTUFBTSxZQUFZLEdBQUcsTUFBTSxFQUFHLENBQUU7QUFFaEMsTUFBTSxPQUFPLFNBQVM7SUFFTCxZQUFZLEdBQUcsWUFBWSxDQUFFO0NBQzdDIn0=
+(function (pl) {
+    class Free extends pl {
+        set contents(contents) {
+            ;
+        }
+    }
+    pl.Free = Free;
+})(pl || (pl = {}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiREQuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi90cy1zcmMvTWVoL0RPTS9ERC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFnRkEsTUFBTSxPQUFnQixFQUFFO0lBRWhCLE1BQU0sQ0FBQyxJQUFJLEtBQWdCLE9BQU8sSUFBSSxFQUFFLENBQUMsSUFBSSxFQUFHLENBQUEsQ0FBQyxDQUFDO0NBQ3pEO0FBRUQsV0FBaUIsRUFBRTtJQUVsQixNQUFhLElBQU0sU0FBUSxFQUFFO1FBRTVCLElBQUksUUFBUSxDQUFHLFFBQXlCO1lBRXZDLENBQUM7UUFDRixDQUFDO0tBQ0Q7SUFOWSxPQUFJLE9BTWhCLENBQUE7QUFDRixDQUFDLEVBVGdCLEVBQUUsS0FBRixFQUFFLFFBU2xCIn0=

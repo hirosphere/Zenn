@@ -3,27 +3,42 @@ import { Leaf } from "../Model/Model.js" ;
 import * as DD from "./DD.js" ;
 import { PartsPlace } from "./PartsPlace.js" ;
 
+export type TargetDOMElement = HTMLElement | SVGElement | MathMLElement ;
+
+
 export abstract class MehNode
 {
 	public abstract node : Node ;
+	protected p_srcs = new Set < Leaf.Ref < any > > ;
 
-	protected bindValue ( ll : DD.Text , update : ( new_v : DD.Literal ) => void ) : void
+	protected bindValue
+	(
+		text : any ,
+		update : ( new_v : any ) => void ,
+		lifeBind : boolean = false
+	
+	) : void
 	{
-		if ( ! ( ll instanceof Object ) )
+		if ( text instanceof Leaf )
 		{
-			update ( ll ) ;
+			const lterm = lifeBind ? () => this.terminate () : undefined ;
+			text.addRef ( { source : text , vchan : update , lterm } ) ;
 		}
 
-		else if ( ll instanceof Leaf )
-		{
-			ll.addRef ( { vchan : update } ) ;
-		}
+		else  update ( text ) ;
+	}
+
+	protected terminate ()
+	{
+		log ( "MehNode terminate" )
+		this.p_srcs.forEach ( ref => ref.source ?.removeRef ( ref ) ) ;
+		this.p_srcs.clear () ;
 	}
 }
 
 
 
-/**  */
+/*  */
 
 export class MehText extends MehNode
 {
@@ -52,7 +67,7 @@ export class MehText extends MehNode
 
 export class MehElement extends MehNode
 {
-	public readonly el : Element ;
+	public readonly el : TargetDOMElement ;
 
 	protected p_parts : PartsPlace | null = null ;
 
@@ -61,23 +76,23 @@ export class MehElement extends MehNode
 	(
 		ns : string ,
 		type : string ,
-		dec : DD.Element ,
+		dec : DD.ElementSpec ,
 		parts : DD.Part [] ,
 	)
 	{
 		super () ;
 
-		const { target } = dec ;
+		this.el = makeElement ( ns , type , dec ) ;
 
-		this.el =
-		(
-			target instanceof Element ? target :
-			document.createElement ( type )
-		) ;
+		/* bind props */
 
-		/* parts */
+		if ( dec.class )  this.bindClass ( dec.class ) ;
+		if ( dec.attrs )  this.bindAttrs ( dec.attrs , ns ) ;
+		if ( dec.style )  this.bindStyle ( dec.style ) ;
+		if ( dec.passive )  this.setActions ( dec.passive , true ) ;
+		if ( dec.active )  this.setActions ( dec.active , false ) ;
 
-		log ( type , parts )
+		/* build parts */
 
 		if ( parts ) this.p_parts = PartsPlace.create ( parts , this.el ) ;
 	}
@@ -86,4 +101,76 @@ export class MehElement extends MehNode
 	{
 		return this.el ;
 	}
+
+	/* */
+
+	protected bindClass ( dec : DD.Class ) : void
+	{
+		if ( Array.isArray ( dec ) )
+		{
+			dec.forEach ( dec => this.bindClass ( dec ) ) ;
+			return ;
+		}
+		
+		if ( typeof dec == "string" )
+		{
+			dec.split ( /\s+/g ).forEach
+			(
+				className => className && this.el.classList.toggle ( className , true )
+			) ;
+		}
+
+		else for ( const [ className , state ] of Object.entries ( dec ) )
+		{
+			this.bindValue
+			(
+				state ,
+				state => this.el.classList.toggle ( className , state )
+			) ;
+		}
+	}
+
+	protected bindStyle ( dec : DD.Style ) : void
+	{
+		for ( const [ name , value ] of Object.entries ( dec) )
+		{
+			this.bindValue
+			(
+				value ,
+				value => ( this.el.style as any ) [ name ] = value
+			);
+		}
+	}
+
+	protected bindAttrs ( dec : DD.Attributes < any > , ns : string ) : void
+	{
+		for ( const [ name , value ] of Object.entries ( dec ) )
+		{
+			this.bindValue ( value , value => setAttribute ( ns , this.el , name , value ) )
+		}
+	}
+
+	protected setActions ( dec : DD.Actions , passive : boolean ) : void
+	{
+		for ( const [ type , action ] of Object.entries ( dec ) )
+		{
+			this.el.addEventListener ( type , action as EventListener , { passive } ) ;
+		}
+	}
+}
+
+const makeElement = ( ns : string , type : string , dec : DD.ElementSpec ) : TargetDOMElement =>
+{
+	if ( dec.target )  return dec.target ;
+	return ns ? document.createElementNS ( ns , type ) as TargetDOMElement : document.createElement ( type );
+}
+
+const setAttribute = ( ns : string , el : Element , name : string , value : any ) : void =>
+{
+	if ( value == null )
+	{
+		ns ? el.removeAttributeNS ( ns , name ) : el.removeAttribute ( name ) ;
+	}
+
+	else  ns ? el.setAttributeNS ( ns, name , value ) : el.setAttribute ( name , value ) ;
 }

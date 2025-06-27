@@ -6,10 +6,8 @@ export class Life < Ref extends Life.Ref = any >
 {
 	protected p_refs = new Set < Ref > ;
 
-	public addRef ( ref : Ref )
-	{
-		this.p_refs.add ( ref ) ;
-	}
+	public addRef ( ref : Ref ) {  this.p_refs.add ( ref ) ;  }
+	public removeRef ( ref : Ref ) {  this.p_refs.delete ( ref ) ;  }
 
 	public terminate ()
 	{

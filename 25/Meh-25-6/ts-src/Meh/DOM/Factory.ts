@@ -9,12 +9,13 @@ export const add =
 (
 	dec : DD.Part | DD.Part [] ,	/* 追加したいエレメント/ノードの宣言 */
 	celq : Element | string ,		/* 追加先のエレメント/クエリー */
-	relq ? : Element | string		/* 追加したい位置の後に来るエレメント/クエリー */
+	relq ? : Node | string		/* 追加したい位置の後に来るエレメント/クエリー */
 
 ) : PartsPlace | null =>
 {
-	const cel = mak_el ( celq ) ;
-	const rel = relq && mak_el ( relq ) || null ;
+	const cel = typeof celq == "string" ? document.querySelector ( celq ) : celq ;
+	const rel = typeof relq == "string" ? document.querySelector ( relq ) : relq || null ;
+
 	if ( cel == null )  return null ;
 
 	return PartsPlace.create
@@ -23,13 +24,6 @@ export const add =
 		cel ,
 		rel
 	) ;
-}
-
-
-const mak_el = ( elq : Element | string ) : Element | null =>
-{
-	if ( elq instanceof Element )  return elq ;
-	return document.querySelector ( elq ) ;
 }
 
 
@@ -43,7 +37,7 @@ const create = < E extends Element = any >
 	ns : string ,
 	type : string ,
 
-	first : DD.Element | DD.Part | undefined ,
+	first : DD.ElementSpec | DD.Part | undefined ,
 	remain : DD.Part [] ,
 
 ) : MehElement =>
@@ -53,14 +47,14 @@ const create = < E extends Element = any >
 		if
 		(
 			first instanceof MehElement ||
-			first instanceof DD.PartPlace ||
+			first instanceof DD.pl ||
 			first instanceof Leaf
 		)
 		{			
 			return new MehElement ( ns , type , {} , [ first , ... remain ] ) ;
 		}
 
-		return new MehElement ( ns , type , first , remain ) ;
+		return new MehElement ( ns , type , first as DD.ElementSpec , remain ) ;
 	}
 
 	return new MehElement ( ns , type , {} , [ first , ... remain ] ) ;
@@ -69,7 +63,7 @@ const create = < E extends Element = any >
 
 type create < E extends Element > =
 (
-	first ? : DD.Element | DD.Part ,
+	first ? : DD.ElementSpec | DD.Part ,
 	... remain : DD.Part []
 )
 => MehElement ;

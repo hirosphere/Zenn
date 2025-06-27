@@ -1,12 +1,20 @@
-import { Life } from "./Life.js" ;
+import { log } from "../Util.js" ;
+import { Life , ru } from "./Life.js" ;
 
-export const set = Symbol () ;
+const update = Symbol () ;
 
 export abstract class Leaf < V >  extends Life < Leaf.Ref < V > >
 {
-	public static cr < V > ( new_v : V ) {  return new Leaf.Entity ( new_v ) ;  }
+	public static readonly update = update ;
+
+	public static new < V > ( new_v : V , branch ? : Leaf.Branch )
+	{
+		return new Leaf.Entity ( new_v , branch ) ;
+	}
 
 	/* */
+
+	constructor (  protected p_branch ? : Leaf.Branch  ) {  super () ;  }
 
 	public override addRef ( ref : Leaf.Ref < V > ) : void
 	{
@@ -17,21 +25,30 @@ export abstract class Leaf < V >  extends Life < Leaf.Ref < V > >
 	public set $ ( new_v : V )  {  this.set ( new_v , false ) ;  }
 	public get $ () : V  {  return this.get () ;  }
 
-	public [ set ]  ( new_v : V , is_branch : boolean ) : void  {  this.set ( new_v , is_branch ) ;  }
-
-	public abstract set ( new_v : V , is_branch : boolean ) : void ;
+	public abstract set ( new_v : V , is_branch ? : boolean ) : void ;
 	public abstract get () : V ;
 
-	public cv < R >
-	(
-		to_r : ( v : V ) => R ,
-		to_v ? : ( r : R ) => V
-	
-	) : Leaf < R >
+	public cv < R > ( cv : ( value : V ) => R ) : Leaf < R >
 	{
-		return new Leaf.Conv ( this , to_r , to_v ) ;
+		return new Leaf.Conv ( this , { get : cv } ) ;
 	}
+
+	public [ update ] () : void
+	{
+		log ( `update [ ${ this [ ru ] } ]` ) ;
+		this.p_notify ( this.$ ) ;
+	}
+
+	protected p_notify ( new_v : V , is_branch ? : boolean )
+	{
+		this.p_refs.forEach ( ref => ref.vchan ( new_v ) ) ;
+		! is_branch && this.p_branch ?. [ update ] () ;
+	}
+
+	public override toString () { return String ( this.$ ) }
 }
+
+type leaf < V > = Leaf < V > ;
 
 export namespace Leaf
 {
@@ -40,38 +57,30 @@ export namespace Leaf
 		constructor
 		(
 			protected p_value : V ,
+			branch ? : Branch
 		)
-		{ super () ; }
+		{ super ( branch ) ; }
 
-		public override set ( new_v : V, is_branch: boolean ) : void
+		public override set ( new_v : V, is_branch ? : boolean ) : void
 		{
 			if ( new_v === this.p_value )  return ;
 			this.p_value = new_v ;
-			this.p_refs.forEach ( ref => ref.vchan ( new_v ) ) ;
+			this.p_notify ( new_v , is_branch ) ;
 		}
 
 		public override get() : V {  return this.p_value ;  }
 	}
 
-	export const notify = Symbol () ;
-
 	export class Rel < V > extends Leaf < V >
 	{
 		constructor
 		(
-			protected get_s : () => V ,
-			protected set_s ? : ( new_v : V ) => void
+			protected acc : { get : () => V , set ? : ( v : V ) => void }
 		)
 		{  super () ;  }
 
-		public override set ( new_v : V ) {  this.set_s ?. ( new_v ) ;  }
-		public override get ( ): V {  return this.get_s () ;  }
-
-		public [ notify ] () : void
-		{
-			const new_v = this.get_s () ;
-			this.p_refs.forEach ( ref => ref.vchan ( new_v ) ) ;
-		}
+		public override set ( new_v : V ) {  this.acc.set ?. ( new_v ) ;  }
+		public override get ( ): V {  return this.acc.get () ;  }
 	}
 
 	export class Conv < V , S >  extends Rel < V >
@@ -79,24 +88,23 @@ export namespace Leaf
 		constructor
 		(
 			src : Leaf < S > ,
-			to_v : ( s : S ) => V ,
-			to_s ? : ( v : V ) => S
+			trans : trans < V , S >
 		)
 		{
 			super
-			(
-				() => to_v ( src.$ ) ,
-				to_s ? v => src.$ = to_s ( v ) : undefined
-			) ;
+			({
+				get : () => trans.get ( src.$ ) ,
+				set : trans.set ? v => trans.set && src.set ( trans.set ( v ) ) : undefined
+			}) ;
+			
 			const ref : Ref < S > =
 			{
-				vchan : () => this [ notify ] () ,
+				vchan : () => this.p_notify ( this.$ ) ,
 				lterm : () => this.terminate ()
 			}
 			src.addRef ( ref ) ;
 		}
 	}
-
 
 	/* */
 
@@ -107,10 +115,21 @@ export namespace Leaf
 
 	/* */
 
-	export interface r < V > extends Omit< Leaf < V > , "set" | "$" | "cv" >
+	export type cv < V , S > = ( srcValue : S ) => V ;
+	export type trans < V , S > =
+	{
+		get : ( value : S ) => V ;
+		set ? : ( value : V ) => S ;
+	}
+
+	export interface r < V > extends Omit< Leaf < V > , "set" | "$" >
 	{
 		get () : V ;
 		get $ () : V ;
-		cv < R > ( tor : ( v : V ) => R ) : void ;
+	}
+
+	export interface Branch
+	{
+		[ update ] () : void ;
 	}
 }

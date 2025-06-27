@@ -1,5 +1,6 @@
 import * as Meh from "../Meh/Meh.js" ;
 import { Life , Leaf , ru , log } from "../Meh/Meh.js" ;
+import { DM } from "./Branch-Color.js" ;
 
 console.log ( "Meh-25-6" ) ;
 
@@ -28,30 +29,35 @@ const flog_new = ( title : string ) =>
 	ecr ( e , "h2" , { text : title } ) ;
 	const ul = ecr ( e , "ul" ) ;
 
-	const add = ( lf : Leaf < any > ) =>
+	const addlf = ( lf : Leaf.r < any > ) =>
 	{
 		const ref =
 		{
-			vchan : ( v : any ) => vchan ( lf ) ,
+			vchan : () =>
+			{
+				const text = `${ lf [ ru ] } vchan ${ lf.toString () }` ;
+				ecr ( ul , "li" , { text } );
+			} ,
+
+			lterm : () =>
+			{
+				const text = `${ lf [ ru ] } lterm` ;
+				ecr ( ul , "li" , { text } );
+			} ,
 		}
 
 		lf.addRef ( ref ) ;
 	}
 
-	const vchan = ( lf : Leaf < any > ) =>
-	{
-		ecr ( e , "li" , { text : `${ lf [ ru ] } vchan ${ lf.$ }` } );
-	}
-
-	return { add }
+	return { addlf }
 }
 
 
 {
 	const flog = flog_new ( "vchan" ) ;
 
-	const lf = Leaf.cr ( 0 ) ;
-	flog.add ( lf ) ;
+	const lf = Leaf.new ( 0 ) ;
+	flog.addlf ( lf ) ;
 
 	lf.$ ++ ;
 	lf.$ *= 10 ;
@@ -59,7 +65,7 @@ const flog_new = ( title : string ) =>
 	lf.$ *= 10 ;
 
 	const cv = lf.cv ( v => `* ${ ( v / 7 ).toFixed ( 3 ) } *` ) ;
-	flog.add ( cv ) ;
+	flog.addlf ( cv ) ;
 
 	lf.$ ++ ;
 	lf.$ *= 10 ;
@@ -67,4 +73,42 @@ const flog_new = ( title : string ) =>
 	lf.$ *= 10 ;
 
 	lf.terminate () ;
+}
+
+
+{
+	/* リードオンリー検査 */
+
+	const lf1 = Leaf.new ( "ところざわ" ) ;
+
+	const rr : Leaf.r < any > = lf1 ;
+
+	lf1.$ += "*" ;
+	lf1.set ( "" ) ;
+	// rr.$ = "" ;
+	// rr.cv ( s => false , r => "" )
+
+	const lf2 = Leaf.new ( 5 ) ;
+
+}
+
+{
+	const flog = flog_new ( "HSL" ) ;
+
+	const cl = new DM.HSL ( { h:240 , s:0.5 , l:0.5 } ) ;
+
+	flog.addlf ( cl ) ;
+	flog.addlf ( cl.h ) ;
+	flog.addlf ( cl.s ) ;
+	flog.addlf ( cl.l ) ;
+	flog.addlf ( cl.css ) ;
+
+	cl.h.$ += 5 ;
+	cl.h.$ += 5 ;
+
+	cl.s.$ -= 0.1 ;
+	cl.s.$ -= 0.1 ;
+
+	cl.l.$ *= 0.8 ;
+	cl.l.$ *= 0.8 ;
 }
