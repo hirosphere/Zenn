@@ -87,7 +87,7 @@ namespace VC
 		(
 			{ class : "FV PGXX" } ,
 			ef.h2 ( "Monitor" ) ,
-			ef.section ( { class : "FH JC PX GX" } , ... buttons ) ,
+			ef.section ( { class : "FH JC PX GX FWR" } , ... buttons ) ,
 			ef.section ( { class : "PX" } , vm.refMon ) ,
 			ef.section ( { class : "PX" } , vm.ordersMon ) ,
 		)

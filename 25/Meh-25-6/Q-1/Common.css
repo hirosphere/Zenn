@@ -3,6 +3,8 @@
 .FV { display : flex ; flex-direction : column ; }
 .FH { display : flex ; flex-direction : row ; }
 
+.FWR { flex-wrap : wrap ; }
+
 .PGMM { padding : 1em ; gap : 1em ; }
 .PGXX { padding : 1ex ; gap : 1ex ; }
 
@@ -16,9 +18,16 @@
 
 .OA { overflow : auto ; }
 
+.Wnw { white-space : nowrap ; }
+
 a { PADDING : 0.1ex 0.6ex ; text-decoration : none ; color : hsl( 0  0%  20% ) ; }
 a:hover { background-color : hsl( 0  0%  0 / 10% ) ; }
-button { padding: 1ex 1em ; }
+button
+{
+	border-radius : 1ex ;
+	padding: 1ex 1em ;
+	white-space : nowrap ;
+}
 
 html
 {

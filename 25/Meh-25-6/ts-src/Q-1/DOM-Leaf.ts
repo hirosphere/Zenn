@@ -73,7 +73,7 @@ namespace VC
 		return ef.article
 		(
 			ef.h2 ( "Action" ) ,
-			ef.p ( "passiv と preventDefault() の動作確認。" ) ,
+			ef.p ( "passive と preventDefault() の動作確認。" ) ,
 
 			ef.a ( { attrs : { href : "./zz-index.html" , title: VM.ct1 } } , "Link" ) ,
 			ef.a
