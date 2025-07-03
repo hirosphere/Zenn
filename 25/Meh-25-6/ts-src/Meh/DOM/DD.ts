@@ -9,11 +9,12 @@ export type ElementSpec < E extends TargetDOMElement = any > =
 {
 	target ? : E ;
 	class ? : Class ;
+	style ? : Style ;
 	attrs ? : Attributes < E > ;
 	props ? : Attributes < E > ;
+	bibinds ? : BidirectionalBinds ;
 	passive ? : Actions ;
 	active ? : Actions ;
-	style ? : Style ;
 }
 
 export type Class =
@@ -46,11 +47,12 @@ export type Actions =
 export type Action < Ev extends Event = any > = ( ev : Ev ) => void ;
 
 
-export type Binds =
+export type BidirectionalBinds =
 {
 	vInp ? : Leaf < string > ;
 	vChan ? : Leaf < string > ;
-	chek ? : Leaf < boolean > ;
+	chInp ? : Leaf < boolean > ;
+	chChan ? : Leaf < boolean > ;
 }
 
 export type Hook < E extends TargetDOMElement > =

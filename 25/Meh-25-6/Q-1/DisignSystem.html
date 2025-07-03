@@ -132,8 +132,10 @@ const Item = ( m , i ) => ef.li
 	column ( m.station_cd , "4em" , "left" ) ,
 	column ( m.station_name , "12em" , "center" ) ,
 	column ( "〒" + m.post , "6em" , "left" ) ,
-	column ( m.pref , "4em" , "center" ) ,
+	// column ( m.pref , "4em" , "center" ) ,
 	column ( m.address , "16em" , "left" ) ,
+	column ( m.lat , "5em" , "left" ) ,
+	column ( m.lon , "7em" , "left" )
 ) ;
 
 const column = ( text , width , textAlign ) => ef.span
@@ -145,7 +147,7 @@ const column = ( text , width , textAlign ) => ef.span
 const main = async () =>
 {
 	const eki = await Eki () ;
-	DOM.add ( List ( "北海道" , eki.pref_stations.get ( "1" ) ) , "main" ) ;
+	DOM.add ( List ( "Pref" , eki.pref_stations.get ( "4" ) ) , "main" ) ;
 	window.scrollTo ( { top : 0 } ) ;
 }
 

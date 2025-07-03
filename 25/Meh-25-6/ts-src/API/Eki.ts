@@ -8,16 +8,6 @@ export async function Eki ( dataPath : string = "../../../" ) : Promise < Eki.Re
 
 export namespace Eki
 {
-	export interface Records
-	{
-		// areas : Area [] ;
-		// prefs : Pref [] ;
-
-		// conpany : Map < company_cd , Company > ;
-		// line : Map < line_cd , Line > ;
-		// station : Map < station_cd , Station > ;
-	}
-
 	const initiate = Symbol () ;
 
 	export const create = async ( dataPath : string ) : Promise < Records > =>
@@ -29,53 +19,48 @@ export namespace Eki
 
 	export class Records
 	{
-		public readonly pref_lines = new Maple < pref_cd , Line > ;
-		public readonly pref_stations = new Maple < pref_cd , Station > ;
+		public readonly pref_stations = new Maple < pref_cd , StationRecord > ;
 
-		public readonly line = new Map < line_cd , Line > ;
-		public readonly station = new Map < station_cd , Station > ;
+		public readonly line = new Map < line_cd , LineRecord > ;
+		public readonly station = new Map < station_cd , StationRecord > ;
 
 		public async [ initiate ] ( dataPath : string )
 		{
 			const dataRoot = dataPath + "DataSource/Eki/" ;
-			await this.initiate_lines ( dataRoot ) ;
-			await this.initiate_stations ( dataRoot ) ;
+			
+			( await fetchLines ( dataRoot + "line.csv" ) )
+			.forEach ( l => new LineRecord ( this , l.split ( "," ) ) ) ;
+			
+			( await fetchLines ( dataRoot + "station.csv" ) )
+			.forEach ( l => new StationRecord ( this , l.split ( "," ) ) ) ;
 		}
 
-		public async initiate_lines ( dataRoot : string ) : Promise < void >
+		protected async initiate_lines ( dataRoot : string ) : Promise < void >
 		{
-			const r = await fetch ( dataRoot + "line.csv" ) ;
-
-			if ( ! r.ok ) return ;
-
-			const csv = await r.text () ;
-			const ivs = csv.split ( "\n" ) ;
-			ivs.shift () ;
-			ivs.forEach ( l => new Line ( this , l.split ( "," ) ) ) ;
 		}
 
 		protected async initiate_stations ( dataRoot : string ) : Promise < void >
 		{
-			const r = await fetch ( dataRoot + "station.csv" ) ;
-
-			if ( ! r.ok ) return ;
-
-			const csv = await r.text () ;
-			const ivs = csv.split ( "\n" ) ;
-			ivs.shift () ;
-			ivs.forEach ( l => new Station ( this , l.split ( "," ) ) ) ;
-
-			log ( Array.from ( this.pref_stations.values() ) .length ) ;
 		}
+	}
+
+	const fetchLines = async ( filePath : string ) : Promise < string [] > =>
+	{
+		const r = await fetch ( filePath ) ;
+		if ( ! r.ok ) return [] ;
+		const csv = await r.text () ;
+		const lines = csv.split ( "\n" ) ;
+		lines.shift () ;
+		return lines ;
 	}
 
 	/**  */
 
-	export const line = new Map < line_cd , Line > ;
-	export const station = new Map < station_cd , Station > ;
+	export const line = new Map < line_cd , LineRecord > ;
+	export const station = new Map < station_cd , StationRecord > ;
 
-	export const pref_station = new Map < pref_cd , Station [] > ;
-	export const line_station = new Map < string , Station [] > ;
+	export const pref_station = new Map < pref_cd , StationRecord [] > ;
+	export const line_station = new Map < string , StationRecord [] > ;
 
 	type line_cd = string ;
 	type company_cd = string ;
@@ -83,24 +68,26 @@ export namespace Eki
 	type station_g_cd = string ;
 	type station_cd = string ;
 
-
-	class Area
+	interface Index
 	{
-		prefs = new Map < pref_cd , Pref > ;
-		lines = new Map < line_cd , Line > ;
+		get name () : string ;
+		get parts () : Index [] ;
 	}
 
-	class Pref
+	class AreaIndex
 	{
-		lines = new Map < line_cd , Line > ;
 	}
 
-	class Company
+	class PrefIndex
+	{
+	}
+
+	class CompanyIndex
 	{
 		;
 	}
 
-	class Line
+	class LineRecord
 	{
 		constructor ( records : Records , public iv : string [] )
 		{
@@ -124,7 +111,7 @@ export namespace Eki
 		readonly prefs : string [] = [] ;
 	}
 
-	class Station
+	class StationRecord
 	{
 		constructor ( protected records : Records , public iv : string [] )
 		{
