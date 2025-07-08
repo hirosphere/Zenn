@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>駅データ-1</title>
+<style>
+
+* {  box-sizing : border-box ;  margin : 0 ;  padding : 0 ; }
+
+body { padding : 1ex 1ex ; }
+
+h1 , h2 , h3 , h4 , h5
+{
+	padding : 1em 1ex ;
+}
+
+ul
+{
+	cursor : default ;
+	list-style : none ;
+	padding-inline-start : 1.618em ;
+}
+
+li
+{
+	border-bottom : 1px dotted oklch( 0.4  0.0  80 );
+}
+
+li:hover
+{
+	border-bottom : 1px solid oklch( 40%  40%  120 );
+}
+
+.BV
+{
+	display : flex ;
+	flex-direction : column ;
+	gap : 1ex ;
+}
+
+.BH_1P
+{
+	display : flex ;
+	gap : 1px ;
+}
+
+.ROW
+{
+	display : flex ;
+	gap : 1px ;
+}
+
+.COLUMNSET
+{
+	display : flex ;
+	flex-wrap : wrap ;
+	gap : 1px ;
+}
+
+.COLUMN
+{
+	background-color: oklch( 50%  1.0%  85 / 15% );
+	box-sizing : content-box ;
+	padding-inline : 1ex ;
+	white-space : nowrap ;
+}
+
+</style>
+
+</head>
+<body>
+	<main class="Box"></main>
+
+<script type="module">
+
+import { ef as $ , DOM , log } from "../js-out-1/Meh/Meh.js" ;
+import { Eki } from "../js-out-1/API/Eki.js" ;
+
+const Quest = new function ()
+{
+	this.Q1 = ( eki ) =>
+	{
+		const q = eki.qst () ;
+		return $.article
+		(
+			{ class : "BV" } ,
+
+			Line_Q ( eki.line.get ( "11302" ) ) ,
+			Line_Q ( eki.line.get ( "11305" ) ) ,
+			Line_Q ( eki.line.get ( "11229" ) ) ,
+			Line_Q ( eki.line.get ( "11327" ) ) ,
+			Line_Q ( eki.line.get ( "11503" ) ) ,
+			Line_Q ( eki.line.get ( "22001" ) ) ,
+			Line_Q ( eki.line.get ( "22007" ) ) ,
+
+			// ... Stat_Q ( eki ) ,
+		) ;
+	}
+
+	const Stat_Q = ( eki ) =>
+	{
+		const sl = [ "2200106" , "2200402" , "2200702" , "2200901" ] ;
+
+		return [
+
+			$.h3 ( "Station" ) ,
+			$.ul
+			(
+				... sl.map ( ( cd , i ) => Station ( eki.station.get ( cd ) , i ) )
+			) ,
+		] ;
+	}
+
+	const Line_Q = ( line ) =>
+	{
+		// return $.p ( line.stations.map ( m => m.station_name ) .join( " , " ) ) ;
+
+		return $.section
+		(
+			{  } ,
+			$.h2 ( line.line_cd + " " + line.line_name ) ,
+			$.ul
+			(
+				{  } ,
+				... line.stations.map ( ( m , i ) => Station ( m , i ) )
+			) ,
+		) ;
+	}
+
+}
+
+const Line = ( m , i ) => $.li
+(
+	{ class : "ROW" } ,
+
+	columnset
+	(
+		column ( i + 1 , { fontWeight : "bold" } ) ,
+	) ,
+
+	columnset
+	(
+		columnset
+		(
+			column ( m.line_cd ) ,
+			column ( m.line_name , { minWidth : "8em" , textAlign : "left" } ) ,
+		) ,
+	) ,
+) ;
+
+const Station = ( m , i ) =>
+{
+	const prev = m.prev.length ?  "← " + m .prev .map ( m => m.station_name ) .join ( ", " ) : "" ;
+	const next = m.next.length ?  m .next .map ( m => m.station_name ) .join ( ", " ) + " →" : "" ;
+	const sep = prev && next ? "|" : "\u00a0" ;
+
+	return $.li
+	(
+		{ class : "ROW" } ,
+		
+		columnset
+		(
+			column ( i + 1 , { minWidth : "3ex" , textAlign : "center" , fontWeight : "bold" } ) ,
+		) ,
+
+		columnset
+		(
+			columnset
+			(
+				column ( m.station_cd , {} , "cd" ) ,
+				column ( m.station_g_cd , {} , "g_cd" ) ,
+				column ( m.e_sort , {} , "sort" ) ,
+				column ( m.station_name , { width : "9em" , textAlign : "left" , overflow : "hidden" } ) ,
+			) ,
+
+			columnset
+			(
+				column ( "〒" + m.post ) ,
+				column ( m.pref ) ,
+				column ( m.address , { width : "14em" , overflow : "hidden" } ) ,
+			) ,
+
+			columnset
+			(
+				column ( m.lat , { minWidth : "9ex" } , "北緯" ) ,
+				column ( m.lon , { minWidth : "10ex" } , "東経" ) ,
+			) ,
+
+			columnset
+			(
+				column ( prev , { width : "8em" , overflow : "hidden" } ) ,
+				sep ,
+				column ( next , { width : "8em" , overflow : "hidden" } )
+			) ,
+		) ,
+	) ;
+}
+
+const columnset = ( ... parts ) => $.span ( { class : "COLUMNSET" } , ... parts ) ;
+const column = ( text , style , title ) => $.span ( { class : "COLUMN" , attrs : { title } , style } , text ) ;
+
+
+
+const main = async () =>
+{
+	const eki = await Eki () ;
+	DOM.add ( Quest.Q1 ( eki ) , "main" ) ;
+	window.scrollTo ( { top : 0 } ) ;
+}
+
+main () ;
+
+
+
+
+
+
+
+</script>
+
+
+</body>
+</html>

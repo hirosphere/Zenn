@@ -1,5 +1,20 @@
 const log = console.log ;
 
+/*
+	名称引きリスト
+	コード引きレコード
+		会社コード
+		路線コード
+		駅コード
+	インデックス
+		ルート
+			エリア (北海道・東北,関東・甲信越..)
+				エリア会社 (JR東日本,..)
+					路線
+						駅
+
+*/
+
 
 export async function Eki ( dataPath : string = "../../../" ) : Promise < Eki.Records >
 {
@@ -19,48 +34,99 @@ export namespace Eki
 
 	export class Records
 	{
-		public readonly pref_stations = new Maple < pref_cd , StationRecord > ;
+		/* インデックス */		
 
-		public readonly line = new Map < line_cd , LineRecord > ;
-		public readonly station = new Map < station_cd , StationRecord > ;
+		public readonly rootIndex = new Root ;
+
+
+		/* データ構築確認用データ */
+
+		public readonly pref_stations = new Maple < pref_cd , Station > ;
+		public readonly pref_companies = new Maple < pref_cd , Company >
+
+
+		/* レコード */
+
+		public readonly company = new Map < company_cd , Company > ;
+		public readonly line = new Map < line_cd , Line > ;
+		public readonly station = new Map < station_cd , Station > ;
+
+		public readonly join = new Maple < line_cd , [ station_cd , station_cd ] > ;
+
+		/* 処理 */
 
 		public async [ initiate ] ( dataPath : string )
 		{
 			const dataRoot = dataPath + "DataSource/Eki/" ;
 			
-			( await fetchLines ( dataRoot + "line.csv" ) )
-			.forEach ( l => new LineRecord ( this , l.split ( "," ) ) ) ;
+			/* 会社データをとりこみ */
+			( await fetchCSV ( dataRoot + "company.csv" ) )
+			.forEach ( records => new Company ( this , records ) ) ;
 			
-			( await fetchLines ( dataRoot + "station.csv" ) )
-			.forEach ( l => new StationRecord ( this , l.split ( "," ) ) ) ;
+			/* 路線データをとりこみ */
+			( await fetchCSV ( dataRoot + "line.csv" ) )
+			.forEach ( records => new Line ( this , records ) ) ;
+			
+			/* 駅データをとりこみ */
+			( await fetchCSV ( dataRoot + "station.csv" ) )
+			.forEach ( records => new Station ( this , records ) ) ;
+
+			/* 駅順序データをとりこみ */
+			( await fetchCSV ( dataRoot + "join.csv" ) )
+			.forEach ( i => this.set_station_rel ( i ) ) ;
+
+
+			/* 路線レコードの駅リストと都道府県リストを初期化 */
+			this.line.forEach ( rc => rc [ initiate ] ( this ) ) ;
 		}
 
-		protected async initiate_lines ( dataRoot : string ) : Promise < void >
+		protected set_station_rel ( [ line_cd , stat_cd , next_cd ] : string [] )
 		{
+			const stat = this.station.get ( stat_cd ) ;
+			const next = this.station.get ( next_cd ) ;
+			if ( ! stat || ! next )  return ;
+			stat.next.push ( next ) ;
+			next.prev.push ( stat ) ;
 		}
 
-		protected async initiate_stations ( dataRoot : string ) : Promise < void >
+		/* クエスト */
+
+		qst ()
 		{
+			const sn = ( scd : string ) => this.station.get ( scd )?.station_name ?? ".."
+
+			const line_cd = "11308" ;
+			const l = this.line.get ( line_cd ) ;
+			const rt =
+			{
+				name : l?.line_name ,
+				list : this.join.get ( line_cd ) ?.map ( i => sn( i[0] ) + " -> " + sn( i[1] ) )
+			}
+			return rt ;
 		}
 	}
 
-	const fetchLines = async ( filePath : string ) : Promise < string [] > =>
+	
+	/* テキストデータをフェッチして、行アレイとして得る */
+
+	const fetchCSV = async ( filePath : string ) : Promise < string [][] > =>
 	{
 		const r = await fetch ( filePath ) ;
 		if ( ! r.ok ) return [] ;
 		const csv = await r.text () ;
 		const lines = csv.split ( "\n" ) ;
 		lines.shift () ;
-		return lines ;
+		lines.pop () ;
+		return lines .map ( line => line.split ( "," ) );
 	}
 
-	/**  */
+	/*  */
 
-	export const line = new Map < line_cd , LineRecord > ;
-	export const station = new Map < station_cd , StationRecord > ;
+	export const line = new Map < line_cd , Line > ;
+	export const station = new Map < station_cd , Station > ;
 
-	export const pref_station = new Map < pref_cd , StationRecord [] > ;
-	export const line_station = new Map < string , StationRecord [] > ;
+	export const pref_station = new Map < pref_cd , Station [] > ;
+	export const line_station = new Map < string , Station [] > ;
 
 	type line_cd = string ;
 	type company_cd = string ;
@@ -68,31 +134,45 @@ export namespace Eki
 	type station_g_cd = string ;
 	type station_cd = string ;
 
-	interface Index
+	/* Index */
+
+	class Root
 	{
-		get name () : string ;
-		get parts () : Index [] ;
+		get name () { return "駅データ.jp" ; }
 	}
 
-	class AreaIndex
+	/* Real Index */
+
+	class Company
 	{
+		constructor ( records : Records , public iv : string [] )
+		{
+			records.company.set ( this.company_cd , this ) ;
+		}
+
+		public get name () { return this.company_name ; }
+
+		public get company_cd () : string { return this.iv [ 0 ] ; }
+		public get rr_cd () : string { return this.iv [ 1 ] ; }
+		public get company_name () : string { return this.iv [ 2 ] ; }
+		public get company_name_k () : string { return this.iv [ 3 ] ; }
+		public get company_name_h () : string { return this.iv [ 4 ] ; }
+		public get company_name_r () : string { return this.iv [ 5 ] ; }
+		public get company_url () : string { return this.iv [ 6 ] ; }
+		public get company_type () : string { return this.iv [ 7 ] ; }
+		public get e_status () : string { return this.iv [ 8 ] ; }
+		public get e_sort () : string { return this.iv [ 9 ] ; }
 	}
 
-	class PrefIndex
-	{
-	}
-
-	class CompanyIndex
-	{
-		;
-	}
-
-	class LineRecord
+	class Line
 	{
 		constructor ( records : Records , public iv : string [] )
 		{
 			records.line.set ( this.line_cd , this ) ;
 		}
+
+		readonly prefset = new Set < pref_cd > ;
+		readonly stations : Station [] = [] ;
 
 		get line_cd () {  return this.iv [ 0 ] ; }
 		get company_cd () {  return this.iv [ 1 ] ; }
@@ -108,19 +188,30 @@ export namespace Eki
 		get e_status () {  return this.iv [ 11 ] ; }
 		get e_sort () {  return this.iv [ 12 ] ; }
 
-		readonly prefs : string [] = [] ;
+		/* 駅リストと都道府県リストを初期化 */
+
+		[ initiate ] ( records : Records )
+		{
+		}
 	}
 
-	class StationRecord
+	class Station
 	{
 		constructor ( protected records : Records , public iv : string [] )
 		{
 			records.station.set ( this.station_cd , this ) ;
+			const line = records.line.get ( this.line_cd ) ;
+			line ?.stations.push ( this ) ;
+			line ?.prefset.add ( this.pref_cd ) ;
+
 			records.pref_stations.pushItem ( this.pref_cd , this ) ;
 		}
 
 		get pref ()  {  return pref [ this.pref_cd ] ;  }
 		get line ()  {  return this.records.line.get ( this.line_cd ) ?.line_name ?? ".."  }
+
+		readonly next : Station [] = [] ;
+		readonly prev : Station [] = [] ;
 
 		get station_cd () {  return this.iv [ 0 ] ; }
 		get station_g_cd () {  return this.iv [ 1 ] ; }
@@ -139,12 +230,7 @@ export namespace Eki
 		get e_sort () {  return this.iv [ 14 ] ; }
 	}
 
-	const pref : { [ cd : pref_cd ] : string } =
-	{
-		"1":"北海道","2":"青森県","3":"岩手県","4":"宮城県","5":"秋田県","6":"山形県","7":"福島県","8":"茨城県","9":"栃木県","10":"群馬県","11":"埼玉県","12":"千葉県","13":"東京都","14":"神奈川県","15":"新潟県","16":"富山県","17":"石川県","18":"福井県","19":"山梨県","20":"長野県","21":"岐阜県","22":"静岡県","23":"愛知県","24":"三重県","25":"滋賀県","26":"京都府","27":"大阪府","28":"兵庫県","29":"奈良県","30":"和歌山県","31":"鳥取県","32":"島根県","33":"岡山県","34":"広島県","35":"山口県","36":"徳島県","37":"香川県","38":"愛媛県","39":"高知県","40":"福岡県","41":"佐賀県","42":"長崎県","43":"熊本県","44":"大分県","45":"宮崎県","46":"鹿児島県","47":"沖縄県","99":"その他"
-	} ;
-	
-	const area_pref : { [ name : string ] : string [] } =
+	const areaTitleToPrefTitleList : { [ name : string ] : string [] } =
 	{
 		"北海道・東北" : [ "北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県", ] ,
 		"関東・甲信越" : [ "茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","山梨県","長野県","新潟県", ] ,
@@ -153,8 +239,15 @@ export namespace Eki
 		"中国・四国" : [ "鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県", ] ,
 		"九州・沖縄" : [ "福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県", ]
 	} ;
-	
+
+	const pref : { [ cd : pref_cd ] : string } =
+	{
+		"1":"北海道","2":"青森県","3":"岩手県","4":"宮城県","5":"秋田県","6":"山形県","7":"福島県","8":"茨城県","9":"栃木県","10":"群馬県","11":"埼玉県","12":"千葉県","13":"東京都","14":"神奈川県","15":"新潟県","16":"富山県","17":"石川県","18":"福井県","19":"山梨県","20":"長野県","21":"岐阜県","22":"静岡県","23":"愛知県","24":"三重県","25":"滋賀県","26":"京都府","27":"大阪府","28":"兵庫県","29":"奈良県","30":"和歌山県","31":"鳥取県","32":"島根県","33":"岡山県","34":"広島県","35":"山口県","36":"徳島県","37":"香川県","38":"愛媛県","39":"高知県","40":"福岡県","41":"佐賀県","42":"長崎県","43":"熊本県","44":"大分県","45":"宮崎県","46":"鹿児島県","47":"沖縄県","99":"その他"
+	} ;
+
+	const prefTitleToPrefCd = Object.fromEntries( Object.entries( pref ).map( ([ cd , title ]) => [ title , cd ] ) ) ;
 }
+
 
 class Maple < Key , Item > extends Map < Key , Item [] >
 {
@@ -166,7 +259,7 @@ class Maple < Key , Item > extends Map < Key , Item [] >
 	protected makeList ( key : Key ) : Array < Item >
 	{
 		let list = this.get ( key ) ?? [] ;
-		if ( ! this.has ( key) ) this.set ( key , list ) ;
+		if ( ! this.has ( key ) ) this.set ( key , list ) ;
 		return list ;
 	}
 }
