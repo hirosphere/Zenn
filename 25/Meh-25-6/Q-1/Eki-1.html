@@ -8,18 +8,23 @@
 
 * {  box-sizing : border-box ;  margin : 0 ;  padding : 0 ; }
 
-body { padding : 1ex 1ex ; }
+body
+{
+	padding : 1ex max( 1ex , 1vw ) ;
+	color : oklch( 35%  0%  80 ) ;
+}
 
 h1 , h2 , h3 , h4 , h5
 {
-	padding : 1em 1ex ;
+	padding : 2em 1ex ;
 }
+
+
 
 ul
 {
 	cursor : default ;
 	list-style : none ;
-	padding-inline-start : 1.618em ;
 }
 
 li
@@ -29,14 +34,14 @@ li
 
 li:hover
 {
-	border-bottom : 1px solid oklch( 40%  40%  120 );
+	border-bottom : 1px solid oklch( 50%  100%  150 );
 }
 
 .BV
 {
 	display : flex ;
 	flex-direction : column ;
-	gap : 1ex ;
+	gap : 0.38ex ;
 }
 
 .BH_1P
@@ -45,24 +50,35 @@ li:hover
 	gap : 1px ;
 }
 
+.FH { display : inline-flex ; }
+.AC { align-items : center ; }
+
 .ROW
 {
 	display : flex ;
 	gap : 1px ;
+	align-items: stretch ;
 }
 
 .COLUMNSET
 {
-	display : flex ;
+	display : inline-flex ;
 	flex-wrap : wrap ;
+	align-items : stretch ;
 	gap : 1px ;
 }
 
 .COLUMN
 {
-	background-color: oklch( 50%  1.0%  85 / 15% );
+	display : inline-flex ;
+	background-color: oklch( 50%  1.0%  85 / 10% );
 	box-sizing : content-box ;
-	padding-inline : 1ex ;
+
+	overflow : hidden ;
+	padding : 0.25ex 1.1ex ;
+	justify-content : center ;
+	align-items : center ;
+	
 	white-space : nowrap ;
 }
 
@@ -81,20 +97,15 @@ const Quest = new function ()
 {
 	this.Q1 = ( eki ) =>
 	{
+		// const lines = [ "11302" , "11311" ].map ( cd => eki.line.get ( cd ) ) ;
+		const lines = Array.from ( eki.line.values () ).splice ( 57 , 30 ) ;
+
 		const q = eki.qst () ;
 		return $.article
 		(
 			{ class : "BV" } ,
 
-			Line_Q ( eki.line.get ( "11302" ) ) ,
-			Line_Q ( eki.line.get ( "11305" ) ) ,
-			Line_Q ( eki.line.get ( "11229" ) ) ,
-			Line_Q ( eki.line.get ( "11327" ) ) ,
-			Line_Q ( eki.line.get ( "11503" ) ) ,
-			Line_Q ( eki.line.get ( "22001" ) ) ,
-			Line_Q ( eki.line.get ( "22007" ) ) ,
-
-			// ... Stat_Q ( eki ) ,
+			... lines.map ( line => Line_Q ( line ) ) ,
 		) ;
 	}
 
@@ -130,6 +141,11 @@ const Quest = new function ()
 
 }
 
+const Root = ( index ) => $.section
+(
+	$.h1 ( index.title ) ,
+) ;
+
 const Line = ( m , i ) => $.li
 (
 	{ class : "ROW" } ,
@@ -151,9 +167,8 @@ const Line = ( m , i ) => $.li
 
 const Station = ( m , i ) =>
 {
-	const prev = m.prev.length ?  "← " + m .prev .map ( m => m.station_name ) .join ( ", " ) : "" ;
-	const next = m.next.length ?  m .next .map ( m => m.station_name ) .join ( ", " ) + " →" : "" ;
-	const sep = prev && next ? "|" : "\u00a0" ;
+	const prev = m.prev.length ?  "← " + m .prev .map ( m => m.station_name ) .join ( "・" ) : "" ;
+	const next = m.next.length ?  m .next .map ( m => m.station_name ) .join ( "・" ) + " →" : "" ;
 
 	return $.li
 	(
@@ -161,43 +176,55 @@ const Station = ( m , i ) =>
 		
 		columnset
 		(
-			column ( i + 1 , { minWidth : "3ex" , textAlign : "center" , fontWeight : "bold" } ) ,
+			"0 0" ,
+			column ( i + 1 , { width : "3ex" , fontWeight : "bold" } ) ,
 		) ,
 
 		columnset
 		(
+			"1 1" ,
 			columnset
 			(
-				column ( m.station_cd , {} , "cd" ) ,
-				column ( m.station_g_cd , {} , "g_cd" ) ,
-				column ( m.e_sort , {} , "sort" ) ,
-				column ( m.station_name , { width : "9em" , textAlign : "left" , overflow : "hidden" } ) ,
+				"1 0 auto" ,
+				column ( m.station_cd , { flex : "1" } , "cd" ) ,
+				column ( m.station_g_cd , { flex : "1" } , "g_cd" ) ,
+				column ( m.e_sort , { flex : "1" } , "sort" ) ,
 			) ,
 
 			columnset
 			(
-				column ( "〒" + m.post ) ,
-				column ( m.pref ) ,
-				column ( m.address , { width : "14em" , overflow : "hidden" } ) ,
+				"1 0 auto" ,
+				column ( m.station_name , { flex : "1 0 15em" , } , m.station_name ) ,
 			) ,
 
 			columnset
 			(
-				column ( m.lat , { minWidth : "9ex" } , "北緯" ) ,
-				column ( m.lon , { minWidth : "10ex" } , "東経" ) ,
+				"1 0 auto" ,
+				column ( "〒" + m.post , { flex : "1 0 5em" } ) ,
+				column ( m.address , { flex : "1 0 14em" , justifyContent : "left" } , m.address ) ,
 			) ,
 
 			columnset
 			(
-				column ( prev , { width : "8em" , overflow : "hidden" } ) ,
-				sep ,
-				column ( next , { width : "8em" , overflow : "hidden" } )
+				"1 0 auto" ,
+				column ( prev , { flex : "1 0 8em" , justifyContent : "left" } , prev ) ,
+				column ( next , { flex : "1 0 8em" , justifyContent : "right" } , next )
 			) ,
+
+			columnset
+			(
+				"" ,
+				column ( m.lat , { width : "11ex" } , "北緯" ) ,
+				column ( m.lon , { width : "11ex" } , "東経" ) ,
+				column ( m.pref_name , { width : "4em" , textAlign : "center" } ) ,
+			) ,
+
+			column ( "" , { flex : "1" } ) ,
 		) ,
 	) ;
 }
 
-const columnset = ( ... parts ) => $.span ( { class : "COLUMNSET" } , ... parts ) ;
+const columnset = ( flex , ... parts ) => $.span ( { class : "COLUMNSET" , style : { flex } } , ... parts ) ;
 const column = ( text , style , title ) => $.span ( { class : "COLUMN" , attrs : { title } , style } , text ) ;
 
 
@@ -206,7 +233,7 @@ const main = async () =>
 {
 	const eki = await Eki () ;
 	DOM.add ( Quest.Q1 ( eki ) , "main" ) ;
-	window.scrollTo ( { top : 0 } ) ;
+	// window.scrollTo ( { top : 0 } ) ;
 }
 
 main () ;
@@ -219,6 +246,7 @@ main () ;
 
 </script>
 
+<footer style="height : 20em ;"></footer>
 
 </body>
 </html>
