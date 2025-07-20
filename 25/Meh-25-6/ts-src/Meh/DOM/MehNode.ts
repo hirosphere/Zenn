@@ -1,5 +1,5 @@
 import { log } from "../Util.js" ;
-import { Leaf } from "../Model/Model.js" ;
+import { State } from "../Model/Model.js" ;
 import * as DD from "./DD.js" ;
 import { PartsPlace } from "./PartsPlace.js" ;
 
@@ -9,7 +9,7 @@ export type TargetDOMElement = HTMLElement | SVGElement | MathMLElement ;
 export abstract class MehNode
 {
 	public abstract node : Node ;
-	protected p_srcs = new Set < Leaf.Ref < any > > ;
+	protected p_srcs = new Set < State.Ref < any > > ;
 
 	protected bindValue
 	(
@@ -19,7 +19,7 @@ export abstract class MehNode
 	
 	) : void
 	{
-		if ( text instanceof Leaf )
+		if ( text instanceof State )
 		{
 			const lterm = lifeBind ? () => this.terminate () : undefined ;
 			text.addRef ( { source : text , vchan : update , lterm } ) ;

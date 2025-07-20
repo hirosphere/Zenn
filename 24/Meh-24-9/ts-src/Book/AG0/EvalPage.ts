@@ -185,3 +185,11 @@ const sample =
 
 JSON .stringify ( fn() , null , "\\t" ) ;
 `;
+
+
+const each = ( start : number , next : number , fn : ( i : number ) => any ) : any [] =>
+{
+	const rt : any [] = [] ;
+	for ( let i = start ; i < next ; i ++ )  rt.push ( fn ( i ) ) ;
+	return rt ;
+}

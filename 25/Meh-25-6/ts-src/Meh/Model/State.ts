@@ -1,22 +1,31 @@
 import { log } from "../Util.js" ;
-import { Life , ru } from "./Life.js" ;
+import { Life , ru , refs } from "./Life.js" ;
 
+const value = Symbol () ;
+const branch = Symbol () ;
 const update = Symbol () ;
 
-export abstract class Leaf < V >  extends Life < Leaf.Ref < V > >
+export abstract class State < V >  extends Life < State.Ref < V > >
 {
 	public static readonly update = update ;
 
-	public static new < V > ( new_v : V , branch ? : Leaf.Branch )
+	public static new < V > ( new_v : V , branch ? : State.Branch )
 	{
-		return new Leaf.Entity ( new_v , branch ) ;
+		return new State.Entity ( new_v , branch ) ;
 	}
+
 
 	/* */
 
-	constructor (  protected p_branch ? : Leaf.Branch  ) {  super () ;  }
+	protected [ branch ] ? : State.Branch ;
 
-	public override addRef ( ref : Leaf.Ref < V > ) : void
+	constructor ( br ? : State.Branch  )
+	{
+		super () ;
+		this [ branch ] = br ;
+	}
+
+	public override addRef ( ref : State.Ref < V > ) : void
 	{
 		super.addRef ( ref ) ;
 		ref.vchan ( this.get () ) ;
@@ -28,9 +37,9 @@ export abstract class Leaf < V >  extends Life < Leaf.Ref < V > >
 	public abstract set ( new_v : V , is_branch ? : boolean ) : void ;
 	public abstract get () : V ;
 
-	public cv < R > ( cv : ( value : V ) => R ) : Leaf < R >
+	public cv < R > ( cv : ( value : V ) => R ) : State < R >
 	{
-		return new Leaf.Conv ( this , { get : cv } ) ;
+		return new State.Conv ( this , { get : cv } ) ;
 	}
 
 	public [ update ] () : void
@@ -41,37 +50,41 @@ export abstract class Leaf < V >  extends Life < Leaf.Ref < V > >
 
 	protected p_notify ( new_v : V , is_branch ? : boolean )
 	{
-		this.p_refs.forEach ( ref => ref.vchan ( new_v ) ) ;
-		! is_branch && this.p_branch ?. [ update ] () ;
+		this[ refs ].forEach ( ref => ref.vchan ( new_v ) ) ;
+		! is_branch && this [ branch ] ?. [ update ] () ;
 	}
 
 	public override toString () { return String ( this.$ ) }
 }
 
-type leaf < V > = Leaf < V > ;
-
-export namespace Leaf
+export namespace State
 {
-	export class Entity < V > extends Leaf < V >
+	export class Entity < V > extends State < V >
 	{
+		[ value ] : V ;
+
 		constructor
 		(
-			protected p_value : V ,
+			newV : V ,
 			branch ? : Branch
 		)
-		{ super ( branch ) ; }
+		{
+			super ( branch ) ;
+			this [ value ] = newV ;
+		}
 
 		public override set ( new_v : V, is_branch ? : boolean ) : void
 		{
-			if ( new_v === this.p_value )  return ;
-			this.p_value = new_v ;
+			if ( new_v === this [ value ] )  return ;
+			this [ value ] = new_v ;
 			this.p_notify ( new_v , is_branch ) ;
 		}
 
-		public override get() : V {  return this.p_value ;  }
+		public override get() : V {  return this [ value ] ;  }
 	}
 
-	export class Rel < V > extends Leaf < V >
+
+	export class Rel < V > extends State < V >
 	{
 		constructor
 		(
@@ -83,11 +96,12 @@ export namespace Leaf
 		public override get ( ): V {  return this.acc.get () ;  }
 	}
 
+
 	export class Conv < V , S >  extends Rel < V >
 	{
 		constructor
 		(
-			src : Leaf < S > ,
+			src : State < S > ,
 			trans : trans < V , S >
 		)
 		{
@@ -122,7 +136,7 @@ export namespace Leaf
 		set ? : ( value : V ) => S ;
 	}
 
-	export interface r < V > extends Omit< Leaf < V > , "set" | "$" >
+	export interface r < V > extends Omit< State < V > , "set" | "$" >
 	{
 		get () : V ;
 		get $ () : V ;

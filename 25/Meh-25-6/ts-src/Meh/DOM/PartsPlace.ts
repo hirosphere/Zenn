@@ -27,7 +27,7 @@ export class PartsPlace
 		protected rel : Node | null ,
 	) {}
 
-	makePart ( dec : DD.StaticPart ) : MehNode | null
+	makePart ( dec : DD.Node ) : MehNode | null
 	{
 		if ( dec === undefined )  return null ;
 
@@ -60,7 +60,7 @@ class Reader
 			return new DynamicPartsPlace ( this ) ;
 		}
 
-		const dec : DD.StaticPart [] = [] ;
+		const dec : DD.Node [] = [] ;
 
 		while ( true )
 		{
@@ -93,7 +93,7 @@ class Reader
 
 class StaticPartPlace extends PartsPlace
 {
-	constructor ( dec : DD.StaticPart [] , rdr : Reader )
+	constructor ( dec : DD.Node [] , rdr : Reader )
 	{
 		super ( rdr.cel , rdr.rel ) ;
 		dec.forEach( dec => this.makePart ( dec ) ) ;

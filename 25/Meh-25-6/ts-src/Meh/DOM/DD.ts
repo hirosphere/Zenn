@@ -1,7 +1,7 @@
-import { Leaf } from "../Model/Model.js" ;
-import { MehElement , TargetDOMElement } from "./DOM.js";
+import { State } from "../Model/Model.js" ;
+import { MehElement , TargetDOMElement } from "./MehNode.js";
 
-type llr < V > = V | Leaf.r < V > ;
+type llr < V > = V | State.r < V > ;
 
 /* Element */
 
@@ -49,10 +49,10 @@ export type Action < Ev extends Event = any > = ( ev : Ev ) => void ;
 
 export type BidirectionalBinds =
 {
-	vInp ? : Leaf < string > ;
-	vChan ? : Leaf < string > ;
-	chInp ? : Leaf < boolean > ;
-	chChan ? : Leaf < boolean > ;
+	vInp ? : State < string > ;
+	vChan ? : State < string > ;
+	chInp ? : State < boolean > ;
+	chChan ? : State < boolean > ;
 }
 
 export type Hook < E extends TargetDOMElement > =
@@ -70,7 +70,7 @@ export type Shadow =
 
 export type Focus =
 {
-	state ? : Leaf < boolean > ;
+	state ? : State < boolean > ;
 }
 
 
@@ -97,6 +97,6 @@ export namespace pl
 }
 
 
-export type StaticPart = Text | MehElement | undefined ;
-export type Part = StaticPart | pl ;
+export type Node = Text | MehElement | undefined ;
+export type Part = Node | pl ;
 

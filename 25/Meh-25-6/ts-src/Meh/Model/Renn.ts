@@ -1,4 +1,4 @@
-import { Life , Leaf } from "./Model.js" ;
+import { Life , refs , State } from "./Model.js" ;
 const log = console.log ;
 
 export class Renn < T >  extends Life < Renn.Ref < T > >
@@ -25,7 +25,7 @@ export class Renn < T >  extends Life < Renn.Ref < T > >
 
 		const next = start + targets.length ;
 		this.update ( next ) ;
-		this.p_refs.forEach ( ref => ref.insert ?.( { start , next , orders } ) ) ;
+		this[ refs ].forEach ( ref => ref.insert ?.( { start , next , orders } ) ) ;
 	}
 
 	public delete
@@ -42,7 +42,7 @@ export class Renn < T >  extends Life < Renn.Ref < T > >
 		const orders = this.p_orders.splice ( start , next - start ) ;
 
 		this.update ( start ) ;
-		this.p_refs .forEach ( ref =>  ref.delete ?. ({ start , next , orders }  ) ) ;
+		this[ refs ] .forEach ( ref =>  ref.delete ?. ({ start , next , orders }  ) ) ;
 	}
 
 	public clear () : void {  this.delete ( 0 , this.orders.length ) ;  }
@@ -66,12 +66,12 @@ export class Renn < T >  extends Life < Renn.Ref < T > >
 
 export namespace Renn
 {
-	export interface Order < T >  extends Leaf.r < number >
+	export interface Order < T >  extends State.r < number >
 	{
 		get target () : T ; 
 	}
 
-	export class OrderI < T >  extends Leaf.Entity < number >
+	export class OrderI < T >  extends State.Entity < number >
 	{
 		constructor
 		(

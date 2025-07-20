@@ -1,4 +1,4 @@
-import { Leaf } from "../Meh/Meh.js" ;
+import { State } from "../Meh/Meh.js" ;
 
 export namespace DM
 {
@@ -9,21 +9,21 @@ export namespace DM
 		l : number ;
 	}
 
-	export class HSL extends Leaf < hsl >
+	export class HSL extends State < hsl >
 	{
-		public readonly h : Leaf < number > ;
-		public readonly s : Leaf < number > ;
-		public readonly l : Leaf < number > ;
+		public readonly h : State < number > ;
+		public readonly s : State < number > ;
+		public readonly l : State < number > ;
 
-		public readonly css : Leaf.r < string > ;
+		public readonly css : State.r < string > ;
 
 		constructor ( i : hsl )
 		{
 			super () ;
 
-			this.h = Leaf.new ( i.h , this ) ;
-			this.s = Leaf.new ( i.s , this ) ;
-			this.l = Leaf.new ( i.l , this ) ;
+			this.h = State.new ( i.h , this ) ;
+			this.s = State.new ( i.s , this ) ;
+			this.l = State.new ( i.l , this ) ;
 
 			this.css = this.cv ( () => HSL.to_css ( this.$ ) ) ;
 		}

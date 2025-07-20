@@ -1,12 +1,12 @@
-import { Leaf , Renn , ef , DOM , DD , pl , log } from "../Meh/Meh.js" ;
+import { State , Renn , ef , DOM , DD , pl , log } from "../Meh/Meh.js" ;
 
 namespace VM
 {
 	export type Quest =
 	{
 		opers : Oper [] ;
-		refMon : Leaf < string > ;
-		ordersMon : Leaf < string > ;
+		refMon : State < string > ;
+		ordersMon : State < string > ;
 	}
 
 	export type Oper = { title : string , exec : () => void } ;
@@ -14,8 +14,8 @@ namespace VM
 
 namespace VM.Quest1
 {
-	export const refMon = Leaf.new ( "ref" ) ;
-	export const ordersMon = Leaf.new ( "orders" ) ;
+	export const refMon = State.new ( "ref" ) ;
+	export const ordersMon = State.new ( "orders" ) ;
 	export const contentPlace = pl.free () ;
 
 	export const opers : VM.Oper [] =

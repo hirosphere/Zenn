@@ -1,5 +1,5 @@
 import * as Meh from "../Meh/Meh.js" ;
-import { Life , Leaf , ru , log } from "../Meh/Meh.js" ;
+import { Life , State , ru , log } from "../Meh/Meh.js" ;
 import { DM } from "./Branch-Color.js" ;
 
 console.log ( "Meh-25-6" ) ;
@@ -29,7 +29,7 @@ const flog_new = ( title : string ) =>
 	ecr ( e , "h2" , { text : title } ) ;
 	const ul = ecr ( e , "ul" ) ;
 
-	const addlf = ( lf : Leaf.r < any > ) =>
+	const addlf = ( lf : State.r < any > ) =>
 	{
 		const ref =
 		{
@@ -56,7 +56,7 @@ const flog_new = ( title : string ) =>
 {
 	const flog = flog_new ( "vchan" ) ;
 
-	const lf = Leaf.new ( 0 ) ;
+	const lf = State.new ( 0 ) ;
 	flog.addlf ( lf ) ;
 
 	lf.$ ++ ;
@@ -79,16 +79,16 @@ const flog_new = ( title : string ) =>
 {
 	/* リードオンリー検査 */
 
-	const lf1 = Leaf.new ( "ところざわ" ) ;
+	const lf1 = State.new ( "ところざわ" ) ;
 
-	const rr : Leaf.r < any > = lf1 ;
+	const rr : State.r < any > = lf1 ;
 
 	lf1.$ += "*" ;
 	lf1.set ( "" ) ;
 	// rr.$ = "" ;
 	// rr.cv ( s => false , r => "" )
 
-	const lf2 = Leaf.new ( 5 ) ;
+	const lf2 = State.new ( 5 ) ;
 
 }
 

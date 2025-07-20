@@ -1,4 +1,4 @@
-import { Leaf , Renn , log } from "../Meh/Meh.js" ;
+import { State , Renn , log } from "../Meh/Meh.js" ;
 
 namespace DM
 {
@@ -17,8 +17,8 @@ namespace DM
 
 		constructor ( i : todoitem )
 		{
-			this.title = Leaf.new ( i.title ) ;
-			this.conpleted = Leaf.new ( i.completed ) ;
+			this.title = State.new ( i.title ) ;
+			this.conpleted = State.new ( i.completed ) ;
 		}
 	}
 

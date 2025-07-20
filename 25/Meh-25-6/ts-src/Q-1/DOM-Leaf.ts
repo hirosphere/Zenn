@@ -1,10 +1,10 @@
-import { Life , Leaf , DOM , DD , ef , log } from "../Meh/Meh.js" ;
+import { Life , State , DOM , DD , ef , log } from "../Meh/Meh.js" ;
 
 namespace VM
 {
-	const new_counter = ( time : number ) : Leaf.Entity < number > =>
+	const new_counter = ( time : number ) : State.Entity < number > =>
 	{
-		const lf = Leaf.new ( 0 ) ;
+		const lf = State.new ( 0 ) ;
 
 		setInterval ( () => lf.$ ++ , time ) ;
 
@@ -34,10 +34,10 @@ namespace VC
 {
 	export const Sample1 = () : DD.Part =>
 	{
-		const lfy = Leaf.new < boolean > ( true ) ;
+		const lfy = State.new < boolean > ( true ) ;
 		lfy.$ = false ;
 
-		const lfx : Leaf < number | string | boolean > = lfy ;
+		const lfx : State < number | string | boolean > = lfy ;
 		lfx.$ = "" ;
 
 		const p : DD.Actions =
@@ -89,6 +89,24 @@ namespace VC
 	}
 }
 
+
+const $ = ef ;
+
+const Counter = () =>
+{
+	const count = State.new ( 0 ) ;
+
+	return $.div
+	(
+		$.button ( { passive : { click : () => count.$ -- } } , "-" ) ,
+		$.button ( { passive : { click : () => count.$ ++ } } , "+" ) ,
+		$.span ( count ) ,
+	) ;
+}
+
+
+
+() => Counter ;
 
 DOM.add
 (
