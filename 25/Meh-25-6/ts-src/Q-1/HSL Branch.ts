@@ -37,6 +37,12 @@ namespace DM
 
 namespace VM
 {
+	export class Applet
+	{
+		value = Meh.State.new ( 50 ) ;
+		range : range = { title : "Range" , value : this.value }
+	}
+
 	export type range =
 	{
 		title : string ;
@@ -48,10 +54,24 @@ namespace VC
 {
 	export const Applet = () =>
 	{
+		const vm = new VM.Applet () ;
+
 		return $.main
 		(
 			{ class : "FV AC" , style : {  } } ,
 			$.h1 ( "HSL Branch" ) ,
+			Range ( vm.range ) ,
+		) ;
+	}
+
+	const Range = ( vm : VM.range ) =>
+	{
+		return $.section
+		(
+			{ class : "RANGE FH PGXX AC" } ,
+			$.span ( { class : "title" } , vm.title ) ,
+			$.input ( { class : "range" , attrs : { type : "range" } , bb : { vInpN : vm.value } } ) ,
+			$.span ( { class : "value" } , vm.value ) ,
 		) ;
 	}
 }

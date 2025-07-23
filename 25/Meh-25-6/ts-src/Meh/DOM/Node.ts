@@ -11,7 +11,7 @@ export abstract class MehNode
 	public abstract node : Node ;
 	protected p_srcs = new Set < State.Ref < any > > ;
 
-	protected bindValue
+	protected bindState
 	(
 		text : any ,
 		update : ( new_v : any ) => void ,
@@ -49,7 +49,7 @@ export class MehText extends MehNode
 
 		this.p_node = document.createTextNode ( "" ) ;
 
-		this.bindValue
+		this.bindState
 		(
 			text ,
 			new_v => this.p_node.nodeValue = String ( new_v )
@@ -88,6 +88,7 @@ export class MehElement extends MehNode
 
 		if ( dec.class )  this.bindClass ( dec.class ) ;
 		if ( dec.attrs )  this.bindAttrs ( dec.attrs , ns ) ;
+		if ( dec.bb )  this.bindBB ( dec.bb ) ;
 		if ( dec.style )  this.bindStyle ( dec.style ) ;
 		if ( dec.passive )  this.setActions ( dec.passive , true ) ;
 		if ( dec.active )  this.setActions ( dec.active , false ) ;
@@ -122,7 +123,7 @@ export class MehElement extends MehNode
 
 		else for ( const [ className , state ] of Object.entries ( dec ) )
 		{
-			this.bindValue
+			this.bindState
 			(
 				state ,
 				state => this.el.classList.toggle ( className , state )
@@ -132,9 +133,9 @@ export class MehElement extends MehNode
 
 	protected bindStyle ( dec : DD.Style ) : void
 	{
-		for ( const [ name , value ] of Object.entries ( dec) )
+		for ( const [ name , value ] of Object.entries ( dec ) )
 		{
-			this.bindValue
+			this.bindState
 			(
 				value ,
 				value => ( this.el.style as any ) [ name ] = value
@@ -146,8 +147,35 @@ export class MehElement extends MehNode
 	{
 		for ( const [ name , value ] of Object.entries ( dec ) )
 		{
-			this.bindValue ( value , value => setAttribute ( ns , this.el , name , value ) )
+			this.bindState ( value , value => setAttribute ( ns , this.el , name , value ) )
 		}
+	}
+
+	protected bindProps ( dec : DD.Attributes < any > )
+	{
+		for ( const [ name , value ] of Object.entries ( dec ) )
+		{
+			this.bindState ( value , value => ( this.el as any ) [ name ] = value ) ;
+		}	
+	}
+
+	protected bindBB ( dec : DD.BidirectionalBinds )
+	{
+		dec.vInp  && this.bindbb ( "input"  , "value" , dec.vInp  ) ;
+		dec.vChan && this.bindbb ( "change" , "value" , dec.vChan ) ;
+
+		dec.vInpN  && this.bindbb ( "input"  , "value" , dec.vInpN , sncv  ) ;
+		dec.vChanN && this.bindbb ( "change" , "value" , dec.vChanN , sncv ) ;
+
+		dec.chInp  && this.bindbb ( "input"  , "checked" , dec.chInp  ) ;
+		dec.chChan && this.bindbb ( "change" , "checked" , dec.chChan ) ;
+	}
+
+
+	protected bindbb ( type : string , prop : string , state : State < any > , cv ? : typeof sncv ) : void
+	{
+		this.bindState ( state , state => ( this.el as any ) [ prop ] = cv ? cv.set ( state ) : state ) ;
+		this.el.addEventListener ( type , ev => state.$ = ( ev.target as any ) [ prop ] );
 	}
 
 	protected setActions ( dec : DD.Actions , passive : boolean ) : void
@@ -174,3 +202,6 @@ const setAttribute = ( ns : string , el : Element , name : string , value : any 
 
 	else  ns ? el.setAttributeNS ( ns, name , value ) : el.setAttribute ( name , value ) ;
 }
+
+/*　BB 双方向バインド用 string <-> number 相互変換  */
+const sncv = { set : ( v : string ) => Number ( v ) , get : ( v : number ) => String ( v ) } ;

@@ -1,5 +1,5 @@
 import { State } from "../Model/Model.js" ;
-import { MehElement , TargetDOMElement } from "./MehNode.js";
+import { MehElement , TargetDOMElement } from "./Node.js";
 
 type llr < V > = V | State.r < V > ;
 
@@ -12,7 +12,7 @@ export type ElementSpec < E extends TargetDOMElement = any > =
 	style ? : Style ;
 	attrs ? : Attributes < E > ;
 	props ? : Attributes < E > ;
-	bibinds ? : BidirectionalBinds ;
+	bb ? : BidirectionalBinds ;
 	passive ? : Actions ;
 	active ? : Actions ;
 }
@@ -51,6 +51,10 @@ export type BidirectionalBinds =
 {
 	vInp ? : State < string > ;
 	vChan ? : State < string > ;
+
+	vInpN ? : State < number > ;
+	vChanN ? : State < number > ;
+
 	chInp ? : State < boolean > ;
 	chChan ? : State < boolean > ;
 }

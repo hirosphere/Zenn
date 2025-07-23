@@ -71,7 +71,7 @@ export namespace Renn
 		get target () : T ; 
 	}
 
-	export class OrderI < T >  extends State.Entity < number >
+	export class OrderI < T >  extends State.Leaf < number >
 	{
 		constructor
 		(

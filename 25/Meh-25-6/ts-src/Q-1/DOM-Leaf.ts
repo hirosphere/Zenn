@@ -2,7 +2,7 @@ import { Life , State , DOM , DD , ef , log } from "../Meh/Meh.js" ;
 
 namespace VM
 {
-	const new_counter = ( time : number ) : State.Entity < number > =>
+	const new_counter = ( time : number ) : State.Leaf < number > =>
 	{
 		const lf = State.new ( 0 ) ;
 

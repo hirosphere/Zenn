@@ -1,28 +1,26 @@
 import { log } from "../Util.js" ;
 import { Life , ru , refs } from "./Life.js" ;
 
-const value = Symbol () ;
-const branch = Symbol () ;
+const set = Symbol () ;
 const update = Symbol () ;
 
 export abstract class State < V >  extends Life < State.Ref < V > >
 {
 	public static readonly update = update ;
 
-	public static new < V > ( new_v : V , branch ? : State.Branch )
+	public static new < V > ( newV : V , branch ? : State.Branch )
 	{
-		return new State.Entity ( new_v , branch ) ;
+		return new State.Leaf ( newV , branch ) ;
 	}
-
 
 	/* */
 
-	protected [ branch ] ? : State.Branch ;
+	#branch ? : State.Branch ;
 
-	constructor ( br ? : State.Branch  )
+	constructor ( branch ? : State.Branch  )
 	{
 		super () ;
-		this [ branch ] = br ;
+		this.#branch = branch ;
 	}
 
 	public override addRef ( ref : State.Ref < V > ) : void
@@ -31,27 +29,23 @@ export abstract class State < V >  extends Life < State.Ref < V > >
 		ref.vchan ( this.get () ) ;
 	}
 
-	public set $ ( new_v : V )  {  this.set ( new_v , false ) ;  }
+	public set $ ( newV : V )  {  this.set ( newV ) ;  }
 	public get $ () : V  {  return this.get () ;  }
 
-	public abstract set ( new_v : V , is_branch ? : boolean ) : void ;
+	public [ set ] ( newV : V , branch ? : State.Branch ) : void { this.set ( newV , branch ) ; }
+
+	public abstract set ( newV : V , branch ? : State.Branch ) : void ;
 	public abstract get () : V ;
 
 	public cv < R > ( cv : ( value : V ) => R ) : State < R >
 	{
-		return new State.Conv ( this , { get : cv } ) ;
+		return new State.Trans ( this , { get : cv } ) ;
 	}
 
-	public [ update ] () : void
+	protected pNotify ( newV : V , branch ? : State.Branch )
 	{
-		log ( `update [ ${ this [ ru ] } ]` ) ;
-		this.p_notify ( this.$ ) ;
-	}
-
-	protected p_notify ( new_v : V , is_branch ? : boolean )
-	{
-		this[ refs ].forEach ( ref => ref.vchan ( new_v ) ) ;
-		! is_branch && this [ branch ] ?. [ update ] () ;
+		this[ refs ].forEach ( ref => ref.vchan ( newV ) ) ;
+		branch == this.#branch && this.#branch?.fUpdate () ;
 	}
 
 	public override toString () { return String ( this.$ ) }
@@ -59,9 +53,9 @@ export abstract class State < V >  extends Life < State.Ref < V > >
 
 export namespace State
 {
-	export class Entity < V > extends State < V >
+	export class Leaf < V > extends State < V >
 	{
-		[ value ] : V ;
+		#value : V ;
 
 		constructor
 		(
@@ -70,21 +64,21 @@ export namespace State
 		)
 		{
 			super ( branch ) ;
-			this [ value ] = newV ;
+			this.#value = newV ;
 		}
 
-		public override set ( new_v : V, is_branch ? : boolean ) : void
+		public override set ( newV : V, branch ? : Branch ) : void
 		{
-			if ( new_v === this [ value ] )  return ;
-			this [ value ] = new_v ;
-			this.p_notify ( new_v , is_branch ) ;
+			if ( newV === this.#value )  return ;
+			this.#value = newV ;
+			this.pNotify ( newV , branch ) ;
 		}
 
-		public override get() : V {  return this [ value ] ;  }
+		public override get() : V {  return this.#value ;  }
 	}
 
 
-	export class Rel < V > extends State < V >
+	export class Relation < V > extends State < V >
 	{
 		constructor
 		(
@@ -92,39 +86,38 @@ export namespace State
 		)
 		{  super () ;  }
 
-		public override set ( new_v : V ) {  this.acc.set ?. ( new_v ) ;  }
+		public override set ( newV : V ) {  this.acc.set ?. ( newV ) ;  }
 		public override get ( ): V {  return this.acc.get () ;  }
 	}
 
 
-	export class Conv < V , S >  extends Rel < V >
+	export class Trans < V , S >  extends State < V >
 	{
 		constructor
 		(
-			src : State < S > ,
-			trans : trans < V , S >
+			private src : State < S > ,
+			private trans : trans < V , S >
 		)
 		{
-			super
-			({
-				get : () => trans.get ( src.$ ) ,
-				set : trans.set ? v => trans.set && src.set ( trans.set ( v ) ) : undefined
-			}) ;
-			
+			super () ;
+
 			const ref : Ref < S > =
 			{
-				vchan : () => this.p_notify ( this.$ ) ,
+				vchan : () => this.pNotify ( this.$ ) ,
 				lterm : () => this.terminate ()
 			}
 			src.addRef ( ref ) ;
 		}
+
+		public override set ( newV : V ) { this.trans.set && this.src.set ( this.trans.set ( newV ) ) ;  }
+		public override get ( ): V {  return this.trans.get ( this.src.$ ) ;  }
 	}
 
 	/* */
 
 	export interface Ref < V >  extends Life.Ref
 	{
-		vchan ( new_v : V ) : void ;
+		vchan ( newV : V ) : void ;
 	}
 
 	/* */
@@ -142,8 +135,19 @@ export namespace State
 		get $ () : V ;
 	}
 
-	export interface Branch
+
+	/* Branch */
+
+	export type ToBranch < V extends object > =
+	{}
+
+	export interface Branch < V > extends State < V > 
 	{
-		[ update ] () : void ;
+		fUpdate () : void ;
+	}
+
+	export class Branch < V > implements State < V >
+	{
+
 	}
 }

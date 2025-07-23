@@ -28,19 +28,24 @@ export namespace DM
 			this.css = this.cv ( () => HSL.to_css ( this.$ ) ) ;
 		}
 
-		public override set ( new_v : hsl , is_branch ? : boolean )
+		public override set ( new_v : hsl , branch ? : State.Branch )
 		{
-			this.h.set ( new_v.h , true ) ;
-			this.s.set ( new_v.s , true ) ;
-			this.l.set ( new_v.l , true ) ;
+			this.h.set ( new_v.h , this ) ;
+			this.s.set ( new_v.s , this ) ;
+			this.l.set ( new_v.l , this ) ;
 
-			this.p_notify ( new_v , is_branch ) ;
+			this.pNotify ( new_v , branch ) ;
 		}
 
 		public override get () : hsl
 		{
 			const [ h , s , l ] = [ this.h.$ , this.s.$ , this.l.$ ] ;
 			return { h , s , l } ;
+		}
+
+		public /* friend */ fUpdate ()
+		{
+			this.pNotify ( this.$ ) ;
 		}
 
 		public override toString () { return JSON.stringify ( this.$ ) }

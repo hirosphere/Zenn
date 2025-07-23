@@ -5,8 +5,7 @@ export * as DOM from "./DOM/DOM.js" ;
 export { DD , ef , sf , pl } from "./DOM/DOM.js" ;
 
 
-export type Number = State < number > ;
-export type String = State < string > ;
-export type Boolean = State < boolean > ;
-export type BigInt = State < bigint > ;
+export type num = State < number > ;
+export type str = State < string > ;
+export type bool = State < boolean > ;
 
