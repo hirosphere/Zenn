@@ -78,19 +78,6 @@ export namespace State
 	}
 
 
-	export class Relation < V > extends State < V >
-	{
-		constructor
-		(
-			protected acc : { get : () => V , set ? : ( v : V ) => void }
-		)
-		{  super () ;  }
-
-		public override set ( newV : V ) {  this.acc.set ?. ( newV ) ;  }
-		public override get ( ): V {  return this.acc.get () ;  }
-	}
-
-
 	export class Trans < V , S >  extends State < V >
 	{
 		constructor
@@ -141,13 +128,13 @@ export namespace State
 	export type ToBranch < V extends object > =
 	{}
 
-	export interface Branch < V > extends State < V > 
-	{
-		fUpdate () : void ;
-	}
 
-	export class Branch < V > implements State < V >
-	{
 
+	export abstract class Branch < V extends object = any > extends State < V >
+	{
+		// public override get () : V {}
+		// public override set ( newV : V ) {}
+
+		public abstract fUpdate () : void ;
 	}
 }

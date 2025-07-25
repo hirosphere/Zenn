@@ -40,8 +40,11 @@ namespace VM
 	export class Applet
 	{
 		value = Meh.State.new ( 50 ) ;
-		range : range = { title : "Range" , value : this.value }
+		range : range = { title : "Range" , value : this.value } ;
+		color : DM.hsl = { h : 90 , s : 0.75 , l : 0.75 } ;
 	}
+
+	export type HSLRanges = { h : range ; s : range ; l : range } ;
 
 	export type range =
 	{
@@ -60,9 +63,18 @@ namespace VC
 		(
 			{ class : "FV AC" , style : {  } } ,
 			$.h1 ( "HSL Branch" ) ,
+			HSLRanges ( vm.color ),
 			Range ( vm.range ) ,
 		) ;
 	}
+
+	const HSLRanges = ( dm : DM.hsl ) => $.section
+	(
+		{  } ,
+		Range ( { title : "H" , value : new State.Leaf ( 0 ) } ) ,
+		Range ( { title : "S" , value : new State.Leaf ( 0 ) } ) ,
+		Range ( { title : "L" , value : new State.Leaf ( 0 ) } ) ,
+	) ;
 
 	const Range = ( vm : VM.range ) =>
 	{
