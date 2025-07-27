@@ -9,14 +9,27 @@
 
 .RANGE
 {
-	max-width : 360px ;
-	width : 100% ;
+	margin-bottom : 1px ;
+
+	background-color : hsl( 0  0%  0% / 10% ) ;
+	border-radius : 0.2ex ;
+	height : 2.8em ;
+	cursor : default ;
+	
+	display : grid ;
+	grid-template-columns : 3em 400px 2em ;
+	padding-inline : 1em ;
+	align-items : center ;
+	column-gap : 1ex ;
 }
 
 .RANGE .range
 {
-	flex-grow : 1 ;
-	width : 90% ;
+}
+
+.RANGE .value
+{
+	text-align : right ;
 }
 
 

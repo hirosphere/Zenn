@@ -1,6 +1,5 @@
 import * as Meh from "../Meh/Meh.js" ;
-import { Life , State , ru , log } from "../Meh/Meh.js" ;
-import { DM } from "./Branch-Color.js" ;
+import { Life , State , leaf , ru , log } from "../Meh/Meh.js" ;
 
 console.log ( "Meh-25-6" ) ;
 
@@ -56,7 +55,7 @@ const flog_new = ( title : string ) =>
 {
 	const flog = flog_new ( "vchan" ) ;
 
-	const lf = State.new ( 0 ) ;
+	const lf = leaf ( 0 ) ;
 	flog.addlf ( lf ) ;
 
 	lf.$ ++ ;
@@ -79,7 +78,7 @@ const flog_new = ( title : string ) =>
 {
 	/* リードオンリー検査 */
 
-	const lf1 = State.new ( "ところざわ" ) ;
+	const lf1 = leaf ( "ところざわ" ) ;
 
 	const rr : State.r < any > = lf1 ;
 
@@ -88,27 +87,6 @@ const flog_new = ( title : string ) =>
 	// rr.$ = "" ;
 	// rr.cv ( s => false , r => "" )
 
-	const lf2 = State.new ( 5 ) ;
+	const lf2 = leaf ( 5 ) ;
 
-}
-
-{
-	const flog = flog_new ( "HSL" ) ;
-
-	const cl = new DM.HSL ( { h:240 , s:0.5 , l:0.5 } ) ;
-
-	flog.addlf ( cl ) ;
-	flog.addlf ( cl.h ) ;
-	flog.addlf ( cl.s ) ;
-	flog.addlf ( cl.l ) ;
-	flog.addlf ( cl.css ) ;
-
-	cl.h.$ += 5 ;
-	cl.h.$ += 5 ;
-
-	cl.s.$ -= 0.1 ;
-	cl.s.$ -= 0.1 ;
-
-	cl.l.$ *= 0.8 ;
-	cl.l.$ *= 0.8 ;
 }

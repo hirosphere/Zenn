@@ -1,4 +1,4 @@
-import { Life , State , Renn , ef , pl , DD , DOM } from "../Meh/Meh.js" ;
+import { Life , State , leaf , Renn , ef , pl , DD , DOM } from "../Meh/Meh.js" ;
 import { Eki } from "../API/Eki.js" ;
 
 namespace VM
@@ -31,7 +31,7 @@ namespace VM
 		constructor ( iv : node )
 		{
 			super () ;
-			this.title = State.new ( iv.title ) ;
+			this.title = leaf ( iv.title ) ;
 			iv.parts && this.parts.insert ( iv.parts.map ( iv => new Node ( iv ) ) ) ;
 		}
 	}

@@ -1,5 +1,5 @@
 import * as Meh from "../Meh/Meh.js" ;
-const { ef : $ , log } = Meh ;
+import { State , leaf , Branch , ef as $ , log } from "../Meh/Meh.js" ;
 
 namespace DM
 {
@@ -15,6 +15,23 @@ namespace DM
 		size : xy ;
 	}
 
+	export type HSL = Branch < hsl > ;
+	export const newHSL = Branch.create < hsl > ;
+
+	new Proxy ( {} as HSL , {} ).h.$ = 50 ;
+
+	export type Shape = Branch < shape > ;
+	export const newShape = Branch.create < shape > ;
+
+	const sh = newShape ( { color : { h : 180 , s : 0.75 , l : 0.75 } , pos : { x : 50 , y : 70 } , size : { x : 10 , y : 10 } } ) ;
+
+	sh.$ ;
+	sh.color.h.$ = 240 ;
+	sh.color.s.$ = 0.6 ;
+	sh.color.l.$ = 0.6 ;
+
+	sh.pos.$ = { x : 0 , y : 1 } ;
+
 	export type hsl =
 	{
 		h : number ;
@@ -28,9 +45,15 @@ namespace DM
 		y : number ;
 	}
 
+
+	( sh : Shape ) =>
+	{
+		// sh.color.h.$ = 0 ;
+	}
+
 	Meh.log ( "HSL Branch" ) ;
 
-	const lf = Meh.State.new ( 555 ) ;
+	const lf = leaf ( 555 ) ;
 
 	Meh.log ( Object.keys ( lf ) ) ;
 }
@@ -39,9 +62,16 @@ namespace VM
 {
 	export class Applet
 	{
-		value = Meh.State.new ( 50 ) ;
-		range : range = { title : "Range" , value : this.value } ;
-		color : DM.hsl = { h : 90 , s : 0.75 , l : 0.75 } ;
+		value = leaf ( 50 ) ;
+		range = { title : "Range" , value : this.value }
+		color = DM.newHSL ( { h : 0 , s : 10 , l : 20 } );
+		css ;
+
+		constructor ()
+		{
+			this.color.h
+			this.css = this.color.cv ( ( { h , s , l } ) => `hsl( ${ h } )` )
+		}
 	}
 
 	export type HSLRanges = { h : range ; s : range ; l : range } ;
@@ -64,23 +94,24 @@ namespace VC
 			{ class : "FV AC" , style : {  } } ,
 			$.h1 ( "HSL Branch" ) ,
 			HSLRanges ( vm.color ),
+			$.p ( vm.css ) ,
 			Range ( vm.range ) ,
 		) ;
 	}
 
-	const HSLRanges = ( dm : DM.hsl ) => $.section
+	const HSLRanges = ( dm : DM.HSL ) => $.section
 	(
-		{  } ,
-		Range ( { title : "H" , value : new State.Leaf ( 0 ) } ) ,
-		Range ( { title : "S" , value : new State.Leaf ( 0 ) } ) ,
-		Range ( { title : "L" , value : new State.Leaf ( 0 ) } ) ,
+		{ class : "RANGES" } ,
+		Range ( { title : "Hue" , value : dm.h } ) ,
+		Range ( { title : "Sat" , value : dm.s } ) ,
+		Range ( { title : "Light" , value : dm.l } ) ,
 	) ;
 
 	const Range = ( vm : VM.range ) =>
 	{
 		return $.section
 		(
-			{ class : "RANGE FH PGXX AC" } ,
+			{ class : "RANGE" } ,
 			$.span ( { class : "title" } , vm.title ) ,
 			$.input ( { class : "range" , attrs : { type : "range" } , bb : { vInpN : vm.value } } ) ,
 			$.span ( { class : "value" } , vm.value ) ,

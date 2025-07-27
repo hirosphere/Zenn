@@ -17,8 +17,8 @@ namespace DM
 
 		constructor ( i : todoitem )
 		{
-			this.title = State.new ( i.title ) ;
-			this.conpleted = State.new ( i.completed ) ;
+			this.title = State.leaf ( i.title ) ;
+			this.conpleted = State.leaf ( i.completed ) ;
 		}
 	}
 

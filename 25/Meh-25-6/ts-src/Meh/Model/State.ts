@@ -2,25 +2,16 @@ import { log } from "../Util.js" ;
 import { Life , ru , refs } from "./Life.js" ;
 
 const set = Symbol () ;
-const update = Symbol () ;
+export const updateBranch = Symbol () ;
 
 export abstract class State < V >  extends Life < State.Ref < V > >
 {
-	public static readonly update = update ;
+	#_composite ? : Branch.Composite ;
 
-	public static new < V > ( newV : V , branch ? : State.Branch )
-	{
-		return new State.Leaf ( newV , branch ) ;
-	}
-
-	/* */
-
-	#branch ? : State.Branch ;
-
-	constructor ( branch ? : State.Branch  )
+	constructor ( composite ? : Branch.Composite )
 	{
 		super () ;
-		this.#branch = branch ;
+		this.#_composite = composite ;
 	}
 
 	public override addRef ( ref : State.Ref < V > ) : void
@@ -32,9 +23,9 @@ export abstract class State < V >  extends Life < State.Ref < V > >
 	public set $ ( newV : V )  {  this.set ( newV ) ;  }
 	public get $ () : V  {  return this.get () ;  }
 
-	public [ set ] ( newV : V , branch ? : State.Branch ) : void { this.set ( newV , branch ) ; }
+	public [ set ] ( newV : V , isBranch ? : true ) : void { this.set ( newV , isBranch ) ; }
 
-	public abstract set ( newV : V , branch ? : State.Branch ) : void ;
+	public abstract set ( newV : V , isBranch ? : true ) : void ;
 	public abstract get () : V ;
 
 	public cv < R > ( cv : ( value : V ) => R ) : State < R >
@@ -42,10 +33,9 @@ export abstract class State < V >  extends Life < State.Ref < V > >
 		return new State.Trans ( this , { get : cv } ) ;
 	}
 
-	protected pNotify ( newV : V , branch ? : State.Branch )
+	protected notify ( newV : V , isBranch ? : true )
 	{
 		this[ refs ].forEach ( ref => ref.vchan ( newV ) ) ;
-		branch == this.#branch && this.#branch?.fUpdate () ;
 	}
 
 	public override toString () { return String ( this.$ ) }
@@ -60,18 +50,18 @@ export namespace State
 		constructor
 		(
 			newV : V ,
-			branch ? : Branch
+			composite ? : Branch.Composite
 		)
 		{
-			super ( branch ) ;
+			super ( composite ) ;
 			this.#value = newV ;
 		}
 
-		public override set ( newV : V, branch ? : Branch ) : void
+		public override set ( newV : V, isBranch ? : true ) : void
 		{
 			if ( newV === this.#value )  return ;
 			this.#value = newV ;
-			this.pNotify ( newV , branch ) ;
+			this.notify ( newV , isBranch ) ;
 		}
 
 		public override get() : V {  return this.#value ;  }
@@ -90,7 +80,7 @@ export namespace State
 
 			const ref : Ref < S > =
 			{
-				vchan : () => this.pNotify ( this.$ ) ,
+				vchan : () => this.notify ( this.$ ) ,
 				lterm : () => this.terminate ()
 			}
 			src.addRef ( ref ) ;
@@ -121,20 +111,88 @@ export namespace State
 		get () : V ;
 		get $ () : V ;
 	}
+}
 
 
-	/* Branch */
+/* Branch */
 
-	export type ToBranch < V extends object > =
-	{}
+export function Branch < T extends object > ()
+{
 
+} 
 
+export type Branch < T extends object > = Branch.Imp < T > & Props < T > ;
 
-	export abstract class Branch < V extends object = any > extends State < V >
+type Props < T extends object > =
+{
+	[ prop in keyof T ] : T [ prop ] extends object ? Branch < T [ prop ] > : State < T [ prop ] > ;
+}
+
+export namespace Branch
+{
+
+	export interface Composite
 	{
-		// public override get () : V {}
-		// public override set ( newV : V ) {}
-
-		public abstract fUpdate () : void ;
+		[ updateBranch ] () : void ;
 	}
+
+	export const create = < T extends object > ( newV : T , branch ? : Imp < any > ) : Branch < T > =>
+	{
+		return new Imp ( newV , branch ) as Branch < T >
+	}
+
+	export class Imp < T extends object , PL extends PropTypeList < T > = any > extends State < T >
+	{
+			
+		/* */
+	
+		 constructor ( props : T , composite ? : Composite )
+		{
+			super () ;
+
+			for ( const [ prop , value ] of Object.entries( props ) )
+			{
+				log ( prop , value ) ;
+				( this as any ) [ prop ] =
+				(
+					typeof value == "object" ?
+						new Imp ( value , composite ) :
+						new State.Leaf ( value , this )
+				) ;
+			}
+		}
+	
+		public override get () : T
+		{
+			return {} as T ;
+		}
+	
+		public override set ( newV : T )
+		{
+			;
+		}
+	
+		[ updateBranch ] () : void
+		{
+			;
+		}
+	}
+
+	type PropTypeList < T extends object > =
+	{
+		[ prop in keyof T ] :
+		(
+			T [ prop ] extends object ?
+				typeof Imp < T [ prop ] > :
+				typeof State < T [ prop ] >
+		)
+	} ;	
+}
+
+
+/* */
+
+export const leaf = < V > ( newV : V , composite ? : Branch.Composite ) : State < V > =>
+{
+	return new State.Leaf ( newV , composite ) ;
 }
