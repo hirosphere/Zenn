@@ -32,9 +32,10 @@ button
 html
 {
 	background-color : hsl( 215  88%  88% ) ;
+	color : hsl( 0  0%  13% ) ;
 
 	padding-inline : 1vw ;
-	font-family : sans-serif ;
+	font-family : "YuGothic" , sans-serif ;
 }
 
 body
@@ -44,6 +45,8 @@ body
 	
 	max-width : 1200px ;
 	min-height : 100vh ;
+
+	overflow : auto ;
 }
 
 main

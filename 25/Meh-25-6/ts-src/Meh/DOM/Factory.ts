@@ -1,4 +1,4 @@
-import { State } from "../Meh.js";
+import { Leaf } from "../Meh.js";
 import { log } from "../Util.js" ; 
 import { DD , MehElement , PartsPlace } from "./DOM.js" ;
 
@@ -48,7 +48,7 @@ const create = < E extends Element = any >
 		(
 			first instanceof MehElement ||
 			first instanceof DD.pl ||
-			first instanceof State
+			first instanceof Leaf
 		)
 		{			
 			return new MehElement ( ns , type , {} , [ first , ... remain ] ) ;

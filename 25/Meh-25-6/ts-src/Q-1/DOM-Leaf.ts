@@ -1,8 +1,8 @@
-import { Life , State , leaf , DOM , DD , ef , log } from "../Meh/Meh.js" ;
+import { Life , Leaf , leaf , DOM , DD , ef , log } from "../Meh/Meh.js" ;
 
 namespace VM
 {
-	const new_counter = ( time : number ) : State < number > =>
+	const new_counter = ( time : number ) : Leaf < number > =>
 	{
 		const lf = leaf ( 0 ) ;
 
@@ -16,8 +16,8 @@ namespace VM
 	export const ct3 = new_counter ( 1400 ) ;
 
 	const toggle_ct = new_counter ( 1000 ) ;
-	export const toggle1 = toggle_ct.cv ( v => ( v & 1 ) != 0 )
-	export const toggle2 = toggle_ct.cv ( v => ( v & 2 ) != 0 )
+	export const toggle1 = toggle_ct.$conv ( v => ( v & 1 ) != 0 )
+	export const toggle2 = toggle_ct.$conv ( v => ( v & 2 ) != 0 )
 
 }
 
@@ -37,8 +37,8 @@ namespace VC
 		const lfy = leaf < boolean > ( true ) ;
 		lfy.$ = false ;
 
-		const lfx : State < number | string | boolean > = lfy ;
-		lfx.$ = "" ;
+		const lfx : Leaf < boolean > = lfy ;
+		lfx.$ = false ;
 
 		const p : DD.Actions =
 		{
@@ -60,7 +60,7 @@ namespace VC
 		return ef.article
 		(
 			ef.h2 ( "Class" ) ,
-			ef.p ( "string , ClassSwitch , Leaf < string > の動作確認。" ) ,
+			ef.p ( "string , ClassSwitch , Leaf < string > の動作確認。" ,  ) ,
 
 			ef.section ( { class : [ "" , { TestA : VM.toggle1 } ] , style : { transition : "all 0.3s ease" } } , "Sample 1 - " , VM.ct1 ) ,
 			ef.section ( { class : [ "" , { TestB : VM.toggle2 } ] } , "Sample 2 - " , VM.ct1 ) ,

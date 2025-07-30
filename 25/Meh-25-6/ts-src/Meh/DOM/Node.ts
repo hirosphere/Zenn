@@ -9,20 +9,24 @@ export type TargetDOMElement = HTMLElement | SVGElement | MathMLElement ;
 export abstract class MehNode
 {
 	public abstract node : Node ;
-	protected p_srcs = new Set < State.Ref < any > > ;
+	#srcs = new Set < State.Ref < any > > ;
 
 	protected bindState
 	(
 		text : any ,
 		update : ( new_v : any ) => void ,
-		lifeBind : boolean = false
 	
 	) : void
 	{
 		if ( text instanceof State )
 		{
-			const lterm = lifeBind ? () => this.terminate () : undefined ;
-			text.addRef ( { source : text , vchan : update , lterm } ) ;
+			text.addRef
+			(
+				{
+					source : text ,
+					vChan : () => update ( text.getValue () ) ,
+				}
+			) ;
 		}
 
 		else  update ( text ) ;
@@ -30,9 +34,8 @@ export abstract class MehNode
 
 	protected terminate ()
 	{
-		log ( "MehNode terminate" )
-		this.p_srcs.forEach ( ref => ref.source ?.removeRef ( ref ) ) ;
-		this.p_srcs.clear () ;
+		this.#srcs.forEach ( ref => ref.source ?. removeRef ( ref ) ) ;
+		this.#srcs.clear () ;
 	}
 }
 
@@ -42,23 +45,19 @@ export abstract class MehNode
 
 export class MehText extends MehNode
 {
-	protected p_node : Node ;
+	readonly node : Node ;
+
 	constructor ( text : DD.Text )
 	{
 		super () ;
 
-		this.p_node = document.createTextNode ( "" ) ;
+		this.node = document.createTextNode ( "" ) ;
 
 		this.bindState
 		(
 			text ,
-			new_v => this.p_node.nodeValue = String ( new_v )
+			new_v => this.node.nodeValue = String ( new_v )
 		) ;
-	}
-
-	public get node () : Node
-	{
-		return this.p_node ;
 	}
 }
 
@@ -69,7 +68,7 @@ export class MehElement extends MehNode
 {
 	public readonly el : TargetDOMElement ;
 
-	protected p_parts : PartsPlace | null = null ;
+	#_parts : PartsPlace | null = null ;
 
 
 	constructor
@@ -87,15 +86,16 @@ export class MehElement extends MehNode
 		/* bind props */
 
 		if ( dec.class )  this.bindClass ( dec.class ) ;
+		if ( dec.style )  this.bindStyle ( dec.style ) ;
+		if ( dec.props )  this.bindProps ( dec.props ) ;
 		if ( dec.attrs )  this.bindAttrs ( dec.attrs , ns ) ;
 		if ( dec.bb )  this.bindBB ( dec.bb ) ;
-		if ( dec.style )  this.bindStyle ( dec.style ) ;
 		if ( dec.passive )  this.setActions ( dec.passive , true ) ;
 		if ( dec.active )  this.setActions ( dec.active , false ) ;
 
 		/* build parts */
 
-		if ( parts ) this.p_parts = PartsPlace.create ( parts , this.el ) ;
+		if ( parts ) this.#_parts = PartsPlace.create ( parts , this.el ) ;
 	}
 
 	public get node () : Node
@@ -159,7 +159,7 @@ export class MehElement extends MehNode
 		}	
 	}
 
-	protected bindBB ( dec : DD.BidirectionalBinds )
+	protected bindBB ( dec : DD.BB )
 	{
 		dec.vInp  && this.bindbb ( "input"  , "value" , dec.vInp  ) ;
 		dec.vChan && this.bindbb ( "change" , "value" , dec.vChan ) ;
@@ -174,8 +174,21 @@ export class MehElement extends MehNode
 
 	protected bindbb ( type : string , prop : string , state : State < any > , cv ? : typeof sncv ) : void
 	{
-		this.bindState ( state , state => ( this.el as any ) [ prop ] = cv ? cv.set ( state ) : state ) ;
-		this.el.addEventListener ( type , ev => state.$ = ( ev.target as any ) [ prop ] );
+		this.bindState
+		(
+			state ,
+			state => ( this.el as any ) [ prop ] = cv ? cv.get ( state ) : state
+		) ;
+
+		this.el.addEventListener
+		(
+			type ,
+			ev =>
+			{
+				const v = ( ev.target as any ) [ prop ] ;
+				state.$ = cv?.set ( v ) ?? v
+			}
+		);
 	}
 
 	protected setActions ( dec : DD.Actions , passive : boolean ) : void
@@ -204,4 +217,8 @@ const setAttribute = ( ns : string , el : Element , name : string , value : any 
 }
 
 /*　BB 双方向バインド用 string <-> number 相互変換  */
-const sncv = { set : ( v : string ) => Number ( v ) , get : ( v : number ) => String ( v ) } ;
+const sncv =
+{
+	set : ( v : string ) => { return Number ( v ) } ,
+	get : ( v : number ) => { return String ( v ) }
+} ;

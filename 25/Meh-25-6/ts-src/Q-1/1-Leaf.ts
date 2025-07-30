@@ -1,8 +1,7 @@
-import * as Meh from "../Meh/Meh.js" ;
-import { Life , State , leaf , ru , log } from "../Meh/Meh.js" ;
+import { ru , setValue , terminate } from "../Meh/Model/Symbol.js" ;
+import { Life , State , Leaf , leaf , log } from "../Meh/Meh.js" ;
 
 console.log ( "Meh-25-6" ) ;
-
 
 const dlog_e = document.getElementById ( "log" ) as HTMLElement ;
 
@@ -28,19 +27,19 @@ const flog_new = ( title : string ) =>
 	ecr ( e , "h2" , { text : title } ) ;
 	const ul = ecr ( e , "ul" ) ;
 
-	const addlf = ( lf : State.r < any > ) =>
+	const addlf = ( lf : State.RO < any > ) =>
 	{
 		const ref =
 		{
-			vchan : () =>
+			vChan : () =>
 			{
-				const text = `${ lf [ ru ] } vchan ${ lf.toString () }` ;
+				const text = `${ lf [ ru ] } vChan ${ lf.$ }` ;
 				ecr ( ul , "li" , { text } );
 			} ,
 
-			lterm : () =>
+			lTerm : () =>
 			{
-				const text = `${ lf [ ru ] } lterm` ;
+				const text = `${ lf [ ru ] } lTerm` ;
 				ecr ( ul , "li" , { text } );
 			} ,
 		}
@@ -63,7 +62,7 @@ const flog_new = ( title : string ) =>
 	lf.$ *= 10 ;
 	lf.$ *= 10 ;
 
-	const cv = lf.cv ( v => `* ${ ( v / 7 ).toFixed ( 3 ) } *` ) ;
+	const cv = lf.$conv ( v => `* ${ ( v / 7 ).toFixed ( 3 ) } *` ) ;
 	flog.addlf ( cv ) ;
 
 	lf.$ ++ ;
@@ -71,7 +70,7 @@ const flog_new = ( title : string ) =>
 	lf.$ *= 10 ;
 	lf.$ *= 10 ;
 
-	lf.terminate () ;
+	lf [ terminate ] () ;
 }
 
 
@@ -80,12 +79,13 @@ const flog_new = ( title : string ) =>
 
 	const lf1 = leaf ( "ところざわ" ) ;
 
-	const rr : State.r < any > = lf1 ;
+	const rr : State.RO < any > = lf1 ;
 
 	lf1.$ += "*" ;
-	lf1.set ( "" ) ;
+	lf1 [ setValue ] ( "" ) ;
+	
 	// rr.$ = "" ;
-	// rr.cv ( s => false , r => "" )
+	rr.$conv ( s => false ) ;
 
 	const lf2 = leaf ( 5 ) ;
 

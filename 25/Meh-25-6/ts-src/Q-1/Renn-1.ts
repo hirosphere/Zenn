@@ -1,12 +1,13 @@
-import { State , leaf , Renn , ef , DOM , DD , pl , log } from "../Meh/Meh.js" ;
+import { Leaf , leaf , Renn , ef , DOM , DD , pl , log } from "../Meh/Meh.js" ;
+
 
 namespace VM
 {
 	export type Quest =
 	{
 		opers : Oper [] ;
-		refMon : State < string > ;
-		ordersMon : State < string > ;
+		refMon : Leaf < string > ;
+		ordersMon : Leaf < string > ;
 	}
 
 	export type Oper = { title : string , exec : () => void } ;

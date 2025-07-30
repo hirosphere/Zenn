@@ -1,61 +1,59 @@
 import * as Meh from "../Meh/Meh.js" ;
-import { State , leaf , Branch , ef as $ , log } from "../Meh/Meh.js" ;
+import { State , Leaf , leaf , llr , Branch , ef as $ , log } from "../Meh/Meh.js" ;
 
 namespace DM
 {
-	export type doc =
-	{
-		title : string ;
-	}
-
-	export type shape =
-	{
-		color : hsl ;
-		pos : xy ;
-		size : xy ;
-	}
-
-	export type HSL = Branch < hsl > ;
-	export const newHSL = Branch.create < hsl > ;
-
-	new Proxy ( {} as HSL , {} ).h.$ = 50 ;
-
-	export type Shape = Branch < shape > ;
-	export const newShape = Branch.create < shape > ;
-
-	const sh = newShape ( { color : { h : 180 , s : 0.75 , l : 0.75 } , pos : { x : 50 , y : 70 } , size : { x : 10 , y : 10 } } ) ;
-
-	sh.$ ;
-	sh.color.h.$ = 240 ;
-	sh.color.s.$ = 0.6 ;
-	sh.color.l.$ = 0.6 ;
-
-	sh.pos.$ = { x : 0 , y : 1 } ;
-
-	export type hsl =
-	{
-		h : number ;
-		s : number ;
-		l : number ;
-	}
-
 	export type xy =
 	{
 		x : number ;
 		y : number ;
-	}
+	} ;
 
+	export class XY extends Branch < xy > () {}
 
-	( sh : Shape ) =>
+	export type area = 
 	{
-		// sh.color.h.$ = 0 ;
+		pos : xy ;
+		size : xy ;
+	} ;
+
+	export class Area extends Branch < area > ()
+	{}
+
+	const a = new Area ( { pos : { x : 10 , y : 10 } , size : { x : 70 , y : 50 } } ) ;
+
+
+
+	/* 型定義 */
+
+	export type hsl =
+	{
+		hue : number ;
+		sat : number ;
+		light : number ;
 	}
 
-	Meh.log ( "HSL Branch" ) ;
+	export class HSL extends Branch < hsl > ()
+	{
+		get css () : State < string > { return this.$conv ( tocss ) ; }
+	}
 
-	const lf = leaf ( 555 ) ;
+	const tocss = ( { hue , sat , light } : hsl ) =>
+	(
+		`hsl( ${ hue }  ${ sat * 100 }%  ${ light * 100 }% )`
+	) ;
 
-	Meh.log ( Object.keys ( lf ) ) ;
+	/* 応用例 */
+
+	const color : HSL = new HSL ( { hue : 90 , sat : 0.5 , light : 0.5 } ) ;
+	color.hue.$ += 5 ;
+	color.light.$ *= 0.95 ;
+
+	console.log ( color.css.$ ) ;
+
+
+
+
 }
 
 namespace VM
@@ -64,22 +62,23 @@ namespace VM
 	{
 		value = leaf ( 50 ) ;
 		range = { title : "Range" , value : this.value }
-		color = DM.newHSL ( { h : 0 , s : 10 , l : 20 } );
-		css ;
+		color = new DM.HSL ( { hue : 0 , sat : 0.65 , light : 0.65 } );
 
 		constructor ()
 		{
-			this.color.h
-			this.css = this.color.cv ( ( { h , s , l } ) => `hsl( ${ h } )` )
+			this.color.hue
 		}
 	}
 
-	export type HSLRanges = { h : range ; s : range ; l : range } ;
-
 	export type range =
 	{
-		title : string ;
-		value : Meh.State < number > ;
+		title : llr.String ;
+		value : Leaf < number > ;
+		min ? : llr.Number ;
+		max ? : llr.Number ;
+		step ? : llr.Number ;
+		toL ? : ( value : number ) => string ;
+		unit ? : llr.String ;
 	}
 }
 
@@ -91,30 +90,63 @@ namespace VC
 
 		return $.main
 		(
-			{ class : "FV AC" , style : {  } } ,
 			$.h1 ( "HSL Branch" ) ,
+			BranchSetValueTest ( vm.color ) ,
 			HSLRanges ( vm.color ),
-			$.p ( vm.css ) ,
+			Display ( vm.color.css ) ,
 			Range ( vm.range ) ,
 		) ;
 	}
 
+	const BranchSetValueTest = ( color : DM.HSL ) => $.section
+	(
+		{ class : "FH" , style : { gap : "0.6ex" } } ,
+		$.button ( { passive : { click : () => color.$ = { hue : 95 , sat : 0.40 , light : 0.50 } } } , "くさ色" ) ,
+		$.button ( { passive : { click : () => color.$ = { hue : 210 , sat : 0.70 , light : 0.65 } } } , "そら色" ) ,
+		$.button ( { passive : { click : () => color.$ = { hue : 345 , sat : 0.40 , light : 0.50 } } } , "あか" ) ,
+	);
+	
+
+	const Display = ( colorCss : State < string > ) =>  $.section
+	(
+		{ class : "DISPLAY" , style : { backgroundColor : colorCss } } ,
+		$.section ( { style : { color : "#fff" , whiteSpace : "pre" } } , colorCss ) ,
+		$.section ( { style : { color : "#111" , whiteSpace : "pre" } } , colorCss ) ,
+	) ;
+
 	const HSLRanges = ( dm : DM.HSL ) => $.section
 	(
 		{ class : "RANGES" } ,
-		Range ( { title : "Hue" , value : dm.h } ) ,
-		Range ( { title : "Sat" , value : dm.s } ) ,
-		Range ( { title : "Light" , value : dm.l } ) ,
+		Range ( { title : "Hue" , value : dm.hue , unit : "°" , step : 0.1 , max : 360 , toL : v => v.toFixed ( 1 ) } ) ,
+		Range ( { title : "Sat" , value : dm.sat , unit : "%" , step : 0.001 , max : 1 , toL : toPC } ) ,
+		Range ( { title : "Light" , value : dm.light , unit : "%" , step : 0.001 , max : 1 , toL : toPC } ) ,
 	) ;
 
-	const Range = ( vm : VM.range ) =>
+	const toPC = ( value : number ) : string => ( value * 100 ) .toFixed ( 1 ) ;
+
+	const Range = ( { title , value , max , min , step , toL , unit } : VM.range ) =>
 	{
+		const range = $.input
+		(
+			{
+				class : "range" ,
+				attrs : { type : "range" } ,
+				props : { min , max , step } ,
+				bb : { vInpN : value }
+			}
+		) ;
+
 		return $.section
 		(
 			{ class : "RANGE" } ,
-			$.span ( { class : "title" } , vm.title ) ,
-			$.input ( { class : "range" , attrs : { type : "range" } , bb : { vInpN : vm.value } } ) ,
-			$.span ( { class : "value" } , vm.value ) ,
+			$.span ( { class : "title" } , title ) ,
+			range ,
+			$.span
+			(
+				{ class : "vu" } ,
+				$.span ( { class : "value" } , toL ? value.$conv ( toL ) : value ) ,
+				$.span ( { class : "unit" } , unit ) ,
+			) ,
 		) ;
 	}
 }

@@ -1,12 +1,28 @@
 import { log } from "../Util.js" ;
-import { Life , ru , refs } from "./Life.js" ;
+import { Life } from "./Life.js" ;
+import { Branch } from "./Branch.js" ;
+import
+{
+	ru ,
+	refs , notify ,
+	setValue ,
+	updateComposite ,
+	terminate ,
 
-const set = Symbol () ;
-export const updateBranch = Symbol () ;
+} from "./Symbol.js" ;
+
+
+
+/* State */
+
+const rels = Symbol () ;
 
 export abstract class State < V >  extends Life < State.Ref < V > >
 {
 	#_composite ? : Branch.Composite ;
+	#_rels ? : Rels ;
+
+	/* 公開 */
 
 	constructor ( composite ? : Branch.Composite )
 	{
@@ -14,185 +30,150 @@ export abstract class State < V >  extends Life < State.Ref < V > >
 		this.#_composite = composite ;
 	}
 
+	public get $ () : V { return this.getValue () ; }
+	public set $ ( newV : V ) { this.setValue ( newV ) ; }
+
+	public abstract getValue () : V ;
+	public abstract setValue ( newV : V , isComposite ? : true ) : void ;
+
+
+	public $conv < R > ( get : State.conv < R , V > ) : State < R >
+	{
+		return new Trans ( this , { get } ) ;
+	}
+
 	public override addRef ( ref : State.Ref < V > ) : void
 	{
 		super.addRef ( ref ) ;
-		ref.vchan ( this.get () ) ;
+		ref.vChan () ;
 	}
 
-	public set $ ( newV : V )  {  this.set ( newV ) ;  }
-	public get $ () : V  {  return this.get () ;  }
+	/* 非公開 */
 
-	public [ set ] ( newV : V , isBranch ? : true ) : void { this.set ( newV , isBranch ) ; }
-
-	public abstract set ( newV : V , isBranch ? : true ) : void ;
-	public abstract get () : V ;
-
-	public cv < R > ( cv : ( value : V ) => R ) : State < R >
+	public [ setValue ] ( newV : V , isComposite ? : true ) : void
 	{
-		return new State.Trans ( this , { get : cv } ) ;
+		this.setValue ( newV , isComposite ) ;
 	}
 
-	protected notify ( newV : V , isBranch ? : true )
+	protected [ notify ] ( isComposite ? : true )
 	{
-		this[ refs ].forEach ( ref => ref.vchan ( newV ) ) ;
+		this [ refs ].forEach ( ref => ref.vChan () ) ;
+		! isComposite && this.#_composite ?. [ updateComposite ] () ;
 	}
 
-	public override toString () { return String ( this.$ ) }
+	protected get [ rels ] () : Rels
+	{
+		return this.#_rels ??= new Map ;
+	}
+
+	public override toString () { return String ( this.getValue () ) ; }
+
+	override [ terminate ] ()
+	{
+		this [ rels ].forEach ( rel => rel [ terminate ] () ) ;
+		super [ terminate ] () ;
+	}
 }
+
+type Rels = Map < object , State < any > > ;
 
 export namespace State
 {
-	export class Leaf < V > extends State < V >
+	export interface Ref < V >  extends Life.Ref < State < V > >
 	{
-		#value : V ;
-
-		constructor
-		(
-			newV : V ,
-			composite ? : Branch.Composite
-		)
-		{
-			super ( composite ) ;
-			this.#value = newV ;
-		}
-
-		public override set ( newV : V, isBranch ? : true ) : void
-		{
-			if ( newV === this.#value )  return ;
-			this.#value = newV ;
-			this.notify ( newV , isBranch ) ;
-		}
-
-		public override get() : V {  return this.#value ;  }
-	}
-
-
-	export class Trans < V , S >  extends State < V >
-	{
-		constructor
-		(
-			private src : State < S > ,
-			private trans : trans < V , S >
-		)
-		{
-			super () ;
-
-			const ref : Ref < S > =
-			{
-				vchan : () => this.notify ( this.$ ) ,
-				lterm : () => this.terminate ()
-			}
-			src.addRef ( ref ) ;
-		}
-
-		public override set ( newV : V ) { this.trans.set && this.src.set ( this.trans.set ( newV ) ) ;  }
-		public override get ( ): V {  return this.trans.get ( this.src.$ ) ;  }
+		vChan () : void ;
 	}
 
 	/* */
 
-	export interface Ref < V >  extends Life.Ref
+	export type conv < Out , In > = ( inp : In ) => Out ;
+	export type trans < V , Src > =
 	{
-		vchan ( newV : V ) : void ;
+		get : ( value : Src ) => V ;
+		set ? : ( value : V ) => Src ;
 	}
 
-	/* */
-
-	export type cv < V , S > = ( srcValue : S ) => V ;
-	export type trans < V , S > =
+	export interface RO < V > extends Omit< State < V > , "setValue" | "$" >
 	{
-		get : ( value : S ) => V ;
-		set ? : ( value : V ) => S ;
-	}
-
-	export interface r < V > extends Omit< State < V > , "set" | "$" >
-	{
-		get () : V ;
 		get $ () : V ;
 	}
 }
 
 
-/* Branch */
+/* Leaf */
 
-export function Branch < T extends object > ()
+
+export const leaf = < V > ( newV : V , composite ? : Branch.Composite ) : Leaf < V > =>
 {
-
-} 
-
-export type Branch < T extends object > = Branch.Imp < T > & Props < T > ;
-
-type Props < T extends object > =
-{
-	[ prop in keyof T ] : T [ prop ] extends object ? Branch < T [ prop ] > : State < T [ prop ] > ;
+	return new Leaf ( newV , composite ) ;
 }
 
-export namespace Branch
+export type ll < V > = State < V > | V ;
+export namespace ll
 {
+	export type String = ll < string > ;
+	export type Number = ll < number > ;
+	export type Boolean = ll < boolean > ;
+}
 
-	export interface Composite
-	{
-		[ updateBranch ] () : void ;
-	}
-
-	export const create = < T extends object > ( newV : T , branch ? : Imp < any > ) : Branch < T > =>
-	{
-		return new Imp ( newV , branch ) as Branch < T >
-	}
-
-	export class Imp < T extends object , PL extends PropTypeList < T > = any > extends State < T >
-	{
-			
-		/* */
-	
-		 constructor ( props : T , composite ? : Composite )
-		{
-			super () ;
-
-			for ( const [ prop , value ] of Object.entries( props ) )
-			{
-				log ( prop , value ) ;
-				( this as any ) [ prop ] =
-				(
-					typeof value == "object" ?
-						new Imp ( value , composite ) :
-						new State.Leaf ( value , this )
-				) ;
-			}
-		}
-	
-		public override get () : T
-		{
-			return {} as T ;
-		}
-	
-		public override set ( newV : T )
-		{
-			;
-		}
-	
-		[ updateBranch ] () : void
-		{
-			;
-		}
-	}
-
-	type PropTypeList < T extends object > =
-	{
-		[ prop in keyof T ] :
-		(
-			T [ prop ] extends object ?
-				typeof Imp < T [ prop ] > :
-				typeof State < T [ prop ] >
-		)
-	} ;	
+export type llr < V > = State.RO < V > | V ;
+export namespace llr
+{
+	export type String = llr < string > ;
+	export type Number = llr < number > ;
+	export type Boolean = llr < boolean > ;
 }
 
 
-/* */
-
-export const leaf = < V > ( newV : V , composite ? : Branch.Composite ) : State < V > =>
+export class Leaf < V > extends State < V >
 {
-	return new State.Leaf ( newV , composite ) ;
+	#_value : V ;
+
+	constructor
+	(
+		newV : V ,
+		composite ? : Branch.Composite
+	)
+	{
+		super ( composite ) ;
+		this.#_value = newV ;
+	}
+
+	public override setValue ( newV : V, isComposite ? : true ) : void
+	{
+		if ( newV === this.#_value )  return ;
+		this.#_value = newV ;
+		this [ notify ] ( isComposite ) ;
+	}
+
+	public override getValue () : V {  return this.#_value ;  }
+}
+
+export class Trans < V , S >  extends State < V >
+{
+	constructor
+	(
+		private src : State < S > ,
+		private trans : State.trans < V , S >
+	)
+	{
+		super () ;
+
+		const ref : State.Ref < S > =
+		{
+			vChan : () => this [ notify ] () ,
+			lTerm : () => this [ terminate ] ()
+		}
+		src.addRef ( ref ) ;
+	}
+
+	public override setValue( newV : V , isComposite ? : true ) : void
+	{
+		this.trans.set && this.src.setValue ( this.trans.set ( newV ) , isComposite ) ;
+	}
+
+	public override getValue ( ) : V
+	{
+		return this.trans.get ( this.src.getValue () ) ;
+	}
 }

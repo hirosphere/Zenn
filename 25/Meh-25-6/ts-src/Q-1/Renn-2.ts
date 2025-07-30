@@ -1,4 +1,4 @@
-import { Life , State , leaf , Renn , ef , pl , DD , DOM } from "../Meh/Meh.js" ;
+import { Life , Leaf , leaf , Renn , ef , pl , DD , DOM } from "../Meh/Meh.js" ;
 import { Eki } from "../API/Eki.js" ;
 
 namespace VM
@@ -25,7 +25,7 @@ namespace VM
 
 	export class Node extends Life
 	{
-		public title : State < string > ;
+		public title : Leaf < string > ;
 		public parts = new Nodes ;
 
 		constructor ( iv : node )

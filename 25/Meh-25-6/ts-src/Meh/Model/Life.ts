@@ -1,21 +1,19 @@
-
-export const ru = Symbol () ;
-export const refs = Symbol () ;
+import { ru , refs , terminate } from "./Symbol.js" ;
 
 let next_ru = 1 ;
 
-export class Life < Ref extends Life.Ref = any >
+export class Life < Ref extends Life.Ref < any > = any >
 {
 	protected [ refs ] = new Set < Ref > ;
 
 	public addRef ( ref : Ref ) {  this[ refs ].add ( ref ) ;  }
 	public removeRef ( ref : Ref ) {  this[ refs ].delete ( ref ) ;  }
 
-	public terminate ()
+	public [ terminate ] ()
 	{
-		this[ refs ] .forEach
+		this [ refs ].forEach
 		(
-			ref => ref.lterm ?. ( this )
+			ref => ref.lTerm ?. ( this )
 		) ;
 	}
 
@@ -24,9 +22,9 @@ export class Life < Ref extends Life.Ref = any >
 
 export namespace Life
 {
-	export interface Ref
+	export interface Ref < Src extends Life >
 	{
-		source ? : Life ;
-		lterm ? : ( source : Life ) => void
+		source ? : Src ;
+		lTerm ? : ( source : Life ) => void
 	}
 }

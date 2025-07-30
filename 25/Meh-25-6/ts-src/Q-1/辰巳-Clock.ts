@@ -1,4 +1,4 @@
-import { State , DOM , log } from "../Meh/Meh.js" ;
+import { leaf , DOM , log } from "../Meh/Meh.js" ;
 
 
 
@@ -30,9 +30,9 @@ const r12 = ( dayphase : number , scale : number ) : string =>
 	return anm [ ch >= 12 ? 0 : ch ] ;
 }
 
-const time = State.leaf ( "" ) ;
-const anmtime = time.cv ( time => to_anm ( time ) ) ;
-const shintime = State.leaf ( "" ) ;
+const time = leaf ( "" ) ;
+const anmtime = time.$conv ( time => to_anm ( time ) ) ;
+const shintime = leaf ( "" ) ;
 
 const step = () =>
 {

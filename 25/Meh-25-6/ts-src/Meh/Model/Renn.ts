@@ -1,4 +1,5 @@
-import { Life , refs , State } from "./Model.js" ;
+import { terminate , refs } from "./Symbol.js" ;
+import { Life , State , Leaf } from "./Model.js" ;
 const log = console.log ;
 
 export class Renn < T >  extends Life < Renn.Ref < T > >
@@ -58,7 +59,7 @@ export class Renn < T >  extends Life < Renn.Ref < T > >
 		}
 	}
 
-	public override terminate () : void
+	public override [ terminate ] () : void
 	{
 		;
 	}
@@ -66,12 +67,12 @@ export class Renn < T >  extends Life < Renn.Ref < T > >
 
 export namespace Renn
 {
-	export interface Order < T >  extends State.r < number >
+	export interface Order < T >  extends State.RO < number >
 	{
 		get target () : T ; 
 	}
 
-	export class OrderI < T >  extends State.Leaf < number >
+	export class OrderI < T >  extends Leaf < number >
 	{
 		constructor
 		(
@@ -86,7 +87,7 @@ export namespace Renn
 
 	/** Ref */
 
-	export interface Ref < T >  extends Life.Ref
+	export interface Ref < T >  extends Life.Ref < Renn < T > >
 	{
 		src ? : Renn < T > ;
 

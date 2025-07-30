@@ -1,7 +1,7 @@
 import { State } from "../Model/Model.js" ;
 import { MehElement , TargetDOMElement } from "./Node.js";
 
-type llr < V > = V | State.r < V > ;
+type llr < V > = V | State.RO < V > ;
 
 /* Element */
 
@@ -11,8 +11,8 @@ export type ElementSpec < E extends TargetDOMElement = any > =
 	class ? : Class ;
 	style ? : Style ;
 	attrs ? : Attributes < E > ;
-	props ? : Attributes < E > ;
-	bb ? : BidirectionalBinds ;
+	props ? : Properties < E > ;
+	bb ? : BB ;
 	passive ? : Actions ;
 	active ? : Actions ;
 }
@@ -47,7 +47,7 @@ export type Actions =
 export type Action < Ev extends Event = any > = ( ev : Ev ) => void ;
 
 
-export type BidirectionalBinds =
+export type BB =  /** BidirectionalBinds */
 {
 	vInp ? : State < string > ;
 	vChan ? : State < string > ;
@@ -78,16 +78,19 @@ export type Focus =
 }
 
 
+
 /* Part */
 
-export type Literal = string | number | boolean | bigint | null ;
-export type Text = llr < Literal > ;
-
+export type Text = llr < string > | llr < number > | llr < boolean > | llr < bigint > | null ;
 
 export abstract class pl
 {
 	public static free () : pl.Free { return new pl.Free () }
+
+	#typetag = plTag ;
 }
+
+const plTag = Symbol () ;
 
 export namespace pl
 {
@@ -103,4 +106,3 @@ export namespace pl
 
 export type Node = Text | MehElement | undefined ;
 export type Part = Node | pl ;
-
