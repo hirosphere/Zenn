@@ -35,7 +35,7 @@ namespace DM
 
 	export class HSL extends Branch < hsl > ()
 	{
-		get css () : State < string > { return this.$conv ( tocss ) ; }
+		get css () : State < string > { return this.$_conv ( tocss ) ; }
 	}
 
 	const tocss = ( { hue , sat , light } : hsl ) =>
@@ -144,7 +144,7 @@ namespace VC
 			$.span
 			(
 				{ class : "vu" } ,
-				$.span ( { class : "value" } , toL ? value.$conv ( toL ) : value ) ,
+				$.span ( { class : "value" } , toL ? value.$_conv ( toL ) : value ) ,
 				$.span ( { class : "unit" } , unit ) ,
 			) ,
 		) ;

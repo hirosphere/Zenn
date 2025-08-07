@@ -33,7 +33,7 @@ namespace VM.Quest1
 
 	const renn = new Renn < string > ;
 
-	renn.addRef
+	renn.$_addRef
 	({
 		insert( { start , next , orders } )
 		{

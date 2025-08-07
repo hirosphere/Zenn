@@ -7,7 +7,7 @@ type llr < V > = V | State.RO < V > ;
 
 export type ElementSpec < E extends TargetDOMElement = any > =
 {
-	target ? : E ;
+	target ? : string ;
 	class ? : Class ;
 	style ? : Style ;
 	attrs ? : Attributes < E > ;
@@ -19,8 +19,10 @@ export type ElementSpec < E extends TargetDOMElement = any > =
 
 export type Class =
 (
-	string | ClassSwitch | ( string | ClassSwitch ) []
+	string | State < string > | ClassSwitch |
+	( string | State < string > | ClassSwitch ) []
 );
+
 
 export type ClassSwitch = Record < string , llr < boolean > > ;
 

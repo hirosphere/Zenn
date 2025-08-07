@@ -16,8 +16,8 @@ namespace VM
 	export const ct3 = new_counter ( 1400 ) ;
 
 	const toggle_ct = new_counter ( 1000 ) ;
-	export const toggle1 = toggle_ct.$conv ( v => ( v & 1 ) != 0 )
-	export const toggle2 = toggle_ct.$conv ( v => ( v & 2 ) != 0 )
+	export const toggle1 = toggle_ct.$_conv ( v => ( v & 1 ) != 0 )
+	export const toggle2 = toggle_ct.$_conv ( v => ( v & 2 ) != 0 )
 
 }
 

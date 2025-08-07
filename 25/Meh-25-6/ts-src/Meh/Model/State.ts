@@ -5,6 +5,7 @@ import
 {
 	ru ,
 	refs , notify ,
+	getValue ,
 	setValue ,
 	updateComposite ,
 	terminate ,
@@ -30,30 +31,29 @@ export abstract class State < V >  extends Life < State.Ref < V > >
 		this.#_composite = composite ;
 	}
 
-	public get $ () : V { return this.getValue () ; }
-	public set $ ( newV : V ) { this.setValue ( newV ) ; }
-
-	public abstract getValue () : V ;
-	public abstract setValue ( newV : V , isComposite ? : true ) : void ;
+	public get $ () : V { return this [ getValue ] () ; }
+	public set $ ( newV : V ) { this [ setValue ] ( newV ) ; }
 
 
-	public $conv < R > ( get : State.conv < R , V > ) : State < R >
+	public $_conv < R > ( get : State.conv < R , V > ) : State < R >
 	{
 		return new Trans ( this , { get } ) ;
 	}
 
-	public override addRef ( ref : State.Ref < V > ) : void
+	public override $_addRef ( ref : State.Ref < V > ) : void
 	{
-		super.addRef ( ref ) ;
+		super.$_addRef ( ref ) ;
 		ref.vChan () ;
+	}
+
+	public override $_rmvRef(ref: State.Ref<V>): void {
+		;
 	}
 
 	/* 非公開 */
 
-	public [ setValue ] ( newV : V , isComposite ? : true ) : void
-	{
-		this.setValue ( newV , isComposite ) ;
-	}
+	public abstract [ getValue ] () : V ;
+	public abstract [ setValue ] ( newV : V , isComposite ? : true ) : void ;
 
 	protected [ notify ] ( isComposite ? : true )
 	{
@@ -66,7 +66,7 @@ export abstract class State < V >  extends Life < State.Ref < V > >
 		return this.#_rels ??= new Map ;
 	}
 
-	public override toString () { return String ( this.getValue () ) ; }
+	public override toString () { return String ( this.$ ) ; }
 
 	override [ terminate ] ()
 	{
@@ -139,14 +139,14 @@ export class Leaf < V > extends State < V >
 		this.#_value = newV ;
 	}
 
-	public override setValue ( newV : V, isComposite ? : true ) : void
+	public override [ setValue ] ( newV : V, isComposite ? : true ) : void
 	{
 		if ( newV === this.#_value )  return ;
 		this.#_value = newV ;
 		this [ notify ] ( isComposite ) ;
 	}
 
-	public override getValue () : V {  return this.#_value ;  }
+	public override [ getValue ] () : V {  return this.#_value ;  }
 }
 
 export class Trans < V , S >  extends State < V >
@@ -164,16 +164,17 @@ export class Trans < V , S >  extends State < V >
 			vChan : () => this [ notify ] () ,
 			lTerm : () => this [ terminate ] ()
 		}
-		src.addRef ( ref ) ;
+
+		src.$_addRef ( ref ) ;
 	}
 
-	public override setValue( newV : V , isComposite ? : true ) : void
+	public override [ setValue ]( newV : V , isComposite ? : true ) : void
 	{
-		this.trans.set && this.src.setValue ( this.trans.set ( newV ) , isComposite ) ;
+		this.trans.set && this.src [ setValue ] ( this.trans.set ( newV ) , isComposite ) ;
 	}
 
-	public override getValue ( ) : V
+	public override [ getValue ] ( ) : V
 	{
-		return this.trans.get ( this.src.getValue () ) ;
+		return this.trans.get ( this.src [ getValue ] () ) ;
 	}
 }

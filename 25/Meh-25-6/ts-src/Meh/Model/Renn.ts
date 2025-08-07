@@ -4,25 +4,24 @@ const log = console.log ;
 
 export class Renn < T >  extends Life < Renn.Ref < T > >
 {
-	protected p_orders : Renn.OrderI < T > [] = [] ;
-
-	public get orders () : Renn.Order < T > [] { return this.p_orders ; }
+	#_orders : Renn.OrderI < T > [] = [] ;
+	public get orders () : Renn.Order < T > [] { return this.#_orders ; }
 
 	public insert
 	(
 		targets : T [] ,
-		start : number = this.p_orders.length
+		start : number = this.#_orders.length
 	
 	) : void
 	{
-		start = Math.min ( start , this.p_orders.length ) ;
+		start = Math.min ( start , this.#_orders.length ) ;
 
 		const orders = targets.map
 		(
 			( target , i ) => new Renn.OrderI ( this , start + i , target )
 		) ;
 
-		this.p_orders.splice ( start , 0 , ... orders ) ;
+		this.#_orders.splice ( start , 0 , ... orders ) ;
 
 		const next = start + targets.length ;
 		this.update ( next ) ;
@@ -31,16 +30,16 @@ export class Renn < T >  extends Life < Renn.Ref < T > >
 
 	public delete
 	(
-		start : number = this.p_orders.length - 1 ,
+		start : number = this.#_orders.length - 1 ,
 		next : number = start + 1
 	
 	) : void
 	{
 		if ( start > next ) [ start , next ] = [ next , start ] ;
-		if ( start >= this.p_orders.length ) return ;
-		if ( next >= this.p_orders.length )  next = this.p_orders.length ;
+		if ( start >= this.#_orders.length ) return ;
+		if ( next >= this.#_orders.length )  next = this.#_orders.length ;
 
-		const orders = this.p_orders.splice ( start , next - start ) ;
+		const orders = this.#_orders.splice ( start , next - start ) ;
 
 		this.update ( start ) ;
 		this[ refs ] .forEach ( ref =>  ref.delete ?. ({ start , next , orders }  ) ) ;
@@ -53,9 +52,9 @@ export class Renn < T >  extends Life < Renn.Ref < T > >
 
 	protected update ( start : number )
 	{
-		for ( let pos = start ; pos < this.p_orders.length ; pos ++ )
+		for ( let pos = start ; pos < this.#_orders.length ; pos ++ )
 		{
-			this.p_orders [ pos ].$ = pos ;
+			this.#_orders [ pos ].$ = pos ;
 		}
 	}
 

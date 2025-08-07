@@ -177,14 +177,14 @@ namespace Graph
 		const left =
 		(
 			( 100 + ( dm.相対時刻 ) * 250 )
-			+ ( geo_x * 20 )
+			+ ( geo_x * 24 )
 		
 		) + "px" ;
 		
 		const top =
 		(
 			( 100 + ( ( dm.相対時刻 + ( 9 / 24 ) ) % 1 )  * 300 )
-			+ ( geo_y * 20 )
+			+ ( geo_y * 16 )
 			
 		) + "px" ;
 		

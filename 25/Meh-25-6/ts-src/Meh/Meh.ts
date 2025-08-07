@@ -7,3 +7,8 @@ export { DD , ef , sf , pl } from "./DOM/DOM.js" ;
 
 import { State } from "./Model/Model.js" ;
 export type Number = State < number > ;
+
+import { Life } from "../Meeh/Model/typedef.js" ;
+
+new Life ;
+

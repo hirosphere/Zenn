@@ -44,7 +44,7 @@ const flog_new = ( title : string ) =>
 			} ,
 		}
 
-		lf.addRef ( ref ) ;
+		lf.$_addRef ( ref ) ;
 	}
 
 	return { addlf }
@@ -62,7 +62,7 @@ const flog_new = ( title : string ) =>
 	lf.$ *= 10 ;
 	lf.$ *= 10 ;
 
-	const cv = lf.$conv ( v => `* ${ ( v / 7 ).toFixed ( 3 ) } *` ) ;
+	const cv = lf.$_conv ( v => `* ${ ( v / 7 ).toFixed ( 3 ) } *` ) ;
 	flog.addlf ( cv ) ;
 
 	lf.$ ++ ;
@@ -85,7 +85,7 @@ const flog_new = ( title : string ) =>
 	lf1 [ setValue ] ( "" ) ;
 	
 	// rr.$ = "" ;
-	rr.$conv ( s => false ) ;
+	rr.$_conv ( s => false ) ;
 
 	const lf2 = leaf ( 5 ) ;
 

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Meh-25 Book</title>
+
+<style>
+
+*
+{
+	box-sizing : border-box ;
+	margin : 0 ;
+	padding : 0 ;
+}
+
+html
+{
+	height : 100% ;
+	color : hsl( 0  0%  8% ) ;
+}
+
+body
+{
+	height : 100% ;
+}
+
+body.NAVI_MODE_HORIZ
+{
+	display : grid ;
+	grid-template-columns : auto 1fr ;
+}
+
+body.NAVI_MODE_VERT
+{
+	display : grid ;
+	grid-template-rows : 1fr auto ;
+}
+
+main
+{
+	text-align : center ;
+}
+
+body.NAVI_MODE_HORIZ > main
+{
+}
+
+body.NAVI_MODE_VERT > main
+{
+}
+
+h1
+{
+	line-height: 1;
+}
+
+button { padding : 1ex 1em ; }
+
+
+/* Navigators */
+
+.NAVI
+{
+	background-color : hsl( 205  90%  92% ) ;
+}
+
+.HORIZ_NAVI { display : none ; }
+.VERT_NAVI_TOP { display : none ; }
+.VERT_NAVI_BOTTOM { display : none ; }
+
+
+.NAVI_MODE_HORIZ > .HORIZ_NAVI
+{
+	width : calc( 180px + 5vw ) ;
+
+	display : block ;
+	padding : 1ex ;
+
+	text-align : center ;
+}
+
+.NAVI_MODE_VERT > .VERT_NAVI_TOP
+{
+	display : none ;
+	flex-direction : column ;
+	align-items : center ;
+}
+
+.NAVI_MODE_VERT > .VERT_NAVI_BOTTOM
+{
+	display : flex ;
+	flex-direction : column ;
+	align-items : center ;
+	padding : 0.60ex ;
+}
+
+</style>
+
+
+</head>
+
+<body>
+	<script type="module" src="../js-out-1/Book/App.js" ></script>
+</body>
+
+
+</html>

@@ -31,7 +31,7 @@ const r12 = ( dayphase : number , scale : number ) : string =>
 }
 
 const time = leaf ( "" ) ;
-const anmtime = time.$conv ( time => to_anm ( time ) ) ;
+const anmtime = time.$_conv ( time => to_anm ( time ) ) ;
 const shintime = leaf ( "" ) ;
 
 const step = () =>

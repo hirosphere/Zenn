@@ -1,4 +1,4 @@
-import { Life , Leaf , leaf , Renn , ef , pl , DD , DOM } from "../Meh/Meh.js" ;
+import { Life , State , Leaf , Branch , leaf , Renn , ef , pl , DD , DOM , log } from "../Meh/Meh.js" ;
 import { Eki } from "../API/Eki.js" ;
 
 namespace VM
@@ -63,13 +63,29 @@ namespace VC
 
 	const Node = ( vm : VM.Node ) : DD.Node =>
 	{
+		const keydown = ( ev : KeyboardEvent ) =>
+		{
+			log ( "key" , ev.key , ev.shiftKey , ev.ctrlKey , ev.altKey ) ;
+
+			switch ( ev.key )
+			{
+				case " " :  console.clear () ;  break ;
+				default : return ;
+			}
+		} ;
+
+		const click = ( ev : MouseEvent ) =>
+		{
+			log ( "click" , ev.buttons ) ;
+		} ;
+
 		return ef.li
 		(
 			{ class : "NODE" } ,
 			ef.span
 			(
 				{ class : "items" } ,
-				ef.button ( "+" ) ,
+				ef.button ( { active : { keydown , click } } , "+" ) ,
 				vm.title
 			) ,
 			Nodes ( vm.parts ) ,

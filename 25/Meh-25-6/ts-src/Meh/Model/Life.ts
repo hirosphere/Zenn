@@ -6,8 +6,8 @@ export class Life < Ref extends Life.Ref < any > = any >
 {
 	protected [ refs ] = new Set < Ref > ;
 
-	public addRef ( ref : Ref ) {  this[ refs ].add ( ref ) ;  }
-	public removeRef ( ref : Ref ) {  this[ refs ].delete ( ref ) ;  }
+	public $_addRef ( ref : Ref ) {  this[ refs ].add ( ref ) ;  }
+	public $_rmvRef ( ref : Ref ) {  this[ refs ].delete ( ref ) ;  }
 
 	public [ terminate ] ()
 	{

@@ -1,24 +1,19 @@
 import { State , Leaf } from "./State.js" ;
-import { ru , terminate , notify , updateComposite } from "./Symbol.js" ;
+import { Renn } from "./Renn.js" ;
+import { ru , terminate , getValue , setValue , notify , updateComposite } from "./Symbol.js" ;
 const log = console.log ;
 
 /* Branch */
 
-export type Branch < V extends object > = Branch.Imp < V > &
+export type Branch < $ extends object > = Branch.Imp < $ > &
 {
-	readonly [ prop in keyof V ] :
+	readonly [ prop in keyof $ ] :
 	(
-		V [ prop ] extends object ?
-				Branch < V [ prop ] >
-				: Leaf < V [ prop ] >
+		$ [ prop ] extends object ?
+				Branch < $ [ prop ] >
+				: Leaf < $ [ prop ] >
 	)
 }
-
-export type Branc < V extends object > = Branch.Imp < V > &
-{
-	readonly [ prop in keyof V ] :  number ;
-}
-
 
 export function Branch < V extends object > () : { new ( newV : V ) : Branch < V > }
 {
@@ -51,8 +46,11 @@ export namespace Branch
 				) ;
 			}
 		}
+
+
+		/* 非公開 */
 	
-		public override getValue () : V
+		public override [ getValue ] () : V
 		{
 			return Object.fromEntries
 			(
@@ -63,11 +61,11 @@ export namespace Branch
 			) as V ;
 		}
 	
-		public override setValue ( newV : V )
+		public override [ setValue ] ( newV : V )
 		{
 			for ( const [ prop , state ] of Object.entries ( this ) )
 			{
-				state instanceof State && state.setValue
+				state instanceof State && state [ setValue ]
 				(
 					( newV as any ) [ prop ] ,
 					true
@@ -83,3 +81,5 @@ export namespace Branch
 		}
 	}
 }
+
+

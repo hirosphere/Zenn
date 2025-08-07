@@ -20,11 +20,11 @@ export abstract class MehNode
 	{
 		if ( text instanceof State )
 		{
-			text.addRef
+			text.$_addRef
 			(
 				{
 					source : text ,
-					vChan : () => update ( text.getValue () ) ,
+					vChan : () => update ( text.$ ) ,
 				}
 			) ;
 		}
@@ -34,7 +34,7 @@ export abstract class MehNode
 
 	protected terminate ()
 	{
-		this.#srcs.forEach ( ref => ref.source ?. removeRef ( ref ) ) ;
+		this.#srcs.forEach ( ref => ref.source ?. $_rmvRef ( ref ) ) ;
 		this.#srcs.clear () ;
 	}
 }
@@ -115,10 +115,13 @@ export class MehElement extends MehNode
 		
 		if ( typeof dec == "string" )
 		{
-			dec.split ( /\s+/g ).forEach
-			(
-				className => className && this.el.classList.toggle ( className , true )
-			) ;
+			this.el.classList.add ( ... dec.split ( /\s+/g ) ) ;
+		}
+
+		else if ( dec instanceof State && typeof dec.$ == "string" )
+		{
+			const place = new ClassPlace ( this.el ) ;
+			this.bindState ( dec , names => place.classNames = names ) ;
 		}
 
 		else for ( const [ className , state ] of Object.entries ( dec ) )
@@ -202,8 +205,36 @@ export class MehElement extends MehNode
 
 const makeElement = ( ns : string , type : string , dec : DD.ElementSpec ) : TargetDOMElement =>
 {
-	if ( dec.target )  return dec.target ;
-	return ns ? document.createElementNS ( ns , type ) as TargetDOMElement : document.createElement ( type );
+	const rt =
+	(
+		dec.target && document.querySelector ( dec.target ) ||
+		(
+			ns ?
+				document.createElementNS ( ns , type ) :
+				document.createElement ( type )
+		)
+	) ;
+	
+	return rt as TargetDOMElement ;
+}
+
+
+class ClassPlace
+{
+	constructor ( protected el : Element , ) {}
+
+	set classNames ( v : string )
+	{
+		const rem = this.#prev ;
+		const mow = new Set < string > ( v.split ( /\s+/g ) ) ;
+
+		this.el.classList.remove ( ... rem .difference ( mow ) ) ;
+		this.el.classList.add ( ... mow ) ;
+
+		this.#prev = mow ;
+	}
+
+	#prev = new Set < string > ;
 }
 
 const setAttribute = ( ns : string , el : Element , name : string , value : any ) : void =>
