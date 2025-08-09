@@ -2,13 +2,11 @@ const log = console.log ;
 
 
 const Refs = Symbol () ;
-const Refs_Add = Symbol () ;
-const Refs_Remove = Symbol () ;
 const Life_Terminate = Symbol () ;
 
-const State_Get = Symbol () ;
-const State_Set = Symbol () ;
-const State_Change_Notify = Symbol () ;
+const Leaf_Get = Symbol () ;
+const Leaf_Set = Symbol () ;
+const Leaf_Change_Notify = Symbol () ;
 
 const Coll = Symbol () ;
 const Coll_Update = Symbol () ;
@@ -19,12 +17,7 @@ const Coll_Update = Symbol () ;
 
 export class Life < R extends Life.Ref >
 {
-	public zzz_addRef ( ref : R )
-	{
-		this [ Refs ].add ( ref ) ;
-	}
-
-	protected [ Refs ] = new Set < R > ;
+	public [ Refs ] = new Set < R > ;
 
 	public [ Life_Terminate ] ()
 	{
@@ -36,118 +29,136 @@ export class Life < R extends Life.Ref >
 export namespace Life
 {
 	export interface Ref { lTerm ? () : void ; }
+
+	export const addRef = < R extends Ref > ( life : Life < R > , ref : R ) : void =>
+	{
+		life [ Refs ].add ( ref ) ;
+	}
+
+	export const removeRef = < R extends Ref > ( life : Life < R > , ref : R ) : void =>
+	{
+		life [ Refs ].delete ( ref ) ;
+	}
 }
 
 
 
-/* State */
+/* Live { Leaf , Compo } */
 
-export function State < V > ( newV : V , coll ? : State.Collection ) : State < V >
-{
-	return new Leaf ( newV , coll ) ;
-}
-
-export interface State < V > extends Life < State.Ref >
+export interface Leaf < V > extends Life < Leaf.Ref >
 {
 	get $ () : V ;
 	set $ ( newV : V ) ;
 
-	[ State_Get ] () : V ;
-	[ State_Set ] ( newV : V , collection ? : State.Collection ) : void ;
+	[ Leaf_Get ] () : V ;
+	[ Leaf_Set ] ( newV : V , collection ? : Coll ) : void ;
+
+	[ Leaf_Change_Notify ] ( coll : Coll ) : void ;
+
 }
 
-export namespace State
+export namespace Leaf
 {
-	export type Constructor < V > = new ( newV : V , coll : Collection ) => Deep < V > ;
-
+	export function create < V > ( newV : V , coll ? : Coll ) : Leaf < V >
+	{
+		return new Entity ( newV , coll ) ;
+	}
+	
 	export interface Ref extends Life.Ref { vChan ? () : void ;  }
 
-	/*  */
-
-	export type Deep < V > =
-	(
-		V extends object ?
-			V extends Array < infer EL > ?
-				Renn < EL >
-				: Branch < V >
-			: State < V >
-	) ;
-	
-	export interface Collection
+	export const addRef = ( state : Leaf < any > , ref : Ref ) =>
 	{
-		[ Coll_Update ] () : void ;
+		Life.addRef ( state , ref ) ;
 	}
-
-	export interface Renn < E > extends State < Array < E > >
-	{
-		at ( pos : number ) : Deep < E > ;
-	} ;
-	
-	export type Branch < V extends object > = State < V > &
-	{
-		[ prop in keyof V ] : Deep < V [ prop ] > ;
-	} ;	
 }
 
-
-
-/* State 実装 */
-
-abstract class State_Imple < V > extends Life < State.Ref > implements State < V >
+interface Coll
 {
-	constructor ( coll ? : State.Collection )
+	[ Coll_Update ] () : void ;
+}
+
+export type Compo < V > =
+(
+	V extends object ?
+		V extends Array < infer EL > ?
+			Renn < EL >
+			: Branch < V >
+		: Leaf < V >
+) ;
+
+export interface Renn < E > extends Leaf < Array < E > >
+{
+	insert ( newVs : E [] ) : void ;
+	delete ( start : number , length : number ) : void ;
+
+	at ( pos : number ) : Compo < E > ;
+} ;
+
+export type Branch < V extends object > = Leaf < V > &
+{
+	[ prop in keyof V ] : Compo < V [ prop ] > ;
+} ;
+
+
+/* 実装 */
+
+abstract class Leaf_Imple < V > extends Life < Leaf.Ref > implements Leaf < V >
+{
+	constructor ( coll ? : Coll )
 	{
 		super () ;
 		this [ Coll ] = coll ;
 	}
 
-	public override zzz_addRef ( ref : State.Ref ) : void
-	{
-		super.zzz_addRef ( ref ) ;
-		ref.vChan ?.() ;
-	}
+	get $ () : V { return this [ Leaf_Get ] () ; }
+	set $ ( newV : V ) { this [ Leaf_Set ] ( newV ) ; }
 
-	get $ () : V { return this [ State_Get ] () ; }
-	set $ ( newV : V ) { this [ State_Set ] ( newV ) ; }
+	public abstract [ Leaf_Get ] () : V ;
+	public abstract [ Leaf_Set ] ( newV : V , collection ? : Coll ) : void ;
 
-	public abstract [ State_Get ] () : V ;
-	public abstract [ State_Set ] ( newV : V , collection ? : State.Collection ) : void ;
+	protected [ Coll ] ? : Coll ;
 
-	protected [ Coll ] ? : State.Collection ;
-
-	protected [ State_Change_Notify ] ( coll ? : State.Collection ) : void
+	public [ Leaf_Change_Notify ] ( coll ? : Coll ) : void
 	{
 		this [ Refs ].forEach ( ref => ref.vChan ?.() ) ;
 		coll && coll != this [ Coll ] && coll [ Coll_Update ] () ;
 	}
 }
 
-export class Leaf < V > extends State_Imple < V > 
+class Entity < V > extends Leaf_Imple < V > 
 {
-	constructor ( newV : V , coll ? : State.Collection )
+	constructor ( newV : V , coll ? : Coll )
 	{
 		super ( coll ) ;
 		this.#_value = newV ;
 	}
 
-	public [ State_Get ] () : V { return this.#_value ; }
+	public [ Leaf_Get ] () : V { return this.#_value ; }
 
-	public [ State_Set ] ( newV : V , collection ? : State.Collection ) : void
+	public [ Leaf_Set ] ( newV : V , coll ? : Coll ) : void
 	{
 		if ( newV === this.#_value )  return ;
 		this.#_value = newV ;
-		this [ State_Change_Notify ] () ;
+		this [ Leaf_Change_Notify ] ( coll ) ;
 	}
 
 	#_value : V ;
 }
+
+class Branch_Impl extends Leaf_Imple < any >
+{
+	[ Leaf_Get ] () { return {} }
+
+	[ Leaf_Set ] (  ) {}
+}
+
 
 
 /* usagi */
 {
 	type xy = { x : number ; y : number ; }
 
-	( s : State.Deep < xy > ) =>
+	( s : Compo < xy > ) =>
 	{
 		s.$ = { x : 5 , y : 15 } ;
 		s.x.$ += 10 ;
@@ -155,7 +166,7 @@ export class Leaf < V > extends State_Imple < V >
 
 	type todo = { title : string ; completed : boolean ; }
 
-	( todoList : State.Deep < todo [] > ) =>
+	( todoList : Compo < todo [] > ) =>
 	{
 		todoList.at ( 5 ).title.$ = "" ;
 		todoList.at( 3 ).$ = { title : "ヴラヂヴォストーク 東方支配" , completed : true } ;
