@@ -4,7 +4,7 @@ const change_ref = () =>
 {
 	log ( "change ref" ) ;
 
-	const st = Leaf.create ( 0 ) ;
+	const st = Leaf ( 0 ) ;
 
 	Leaf.addRef ( st , { vChan() { log ( st.$ ) } , lTerm() {} } ) ;
 
