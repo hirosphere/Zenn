@@ -1,0 +1,3 @@
+import { log } from "../Meh/Meh.js";
+log("Q-1/Q-1");
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiUFEtMS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3RzLXNyYy9RLTEvUFEtMS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsR0FBRyxFQUFFLE1BQU0sZUFBZSxDQUFFO0FBRXJDLEdBQUcsQ0FBRyxTQUFTLENBQUUsQ0FBRSJ9

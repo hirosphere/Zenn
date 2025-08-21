@@ -8,7 +8,7 @@ export class PartsPlace
 	public static create
 	(
 		dec : DD.Part [] ,
-		cel : Element ,
+		cel : Element | DocumentFragment ,
 		rel : Node | null = null ,
 	
 	) : PartsPlace | null
@@ -23,7 +23,7 @@ export class PartsPlace
 
 	constructor
 	(
-		protected cel : Element ,
+		protected cel : Element | DocumentFragment ,
 		protected rel : Node | null ,
 	) {}
 
@@ -47,17 +47,19 @@ class Reader
 	constructor
 	(
 		public dec : DD.Part [] ,
-		public cel : Element ,
+		public cel : Element | DocumentFragment ,
 		public rel : Node | null = null ,
 	)
 	{}
 
 	get next () : PartsPlace | null
 	{
-		if ( this.cur instanceof PartsPlace )
+		const cur = this.cur ;
+		if ( cur instanceof DD.PartsPlace )
 		{
 			this.pos ++ ;
-			return new DynamicPartsPlace ( this ) ;
+			if ( cur instanceof DD.PartsPlace.Each )  return new DynamicPartsPlace ( cur , this ) ;
+			if ( cur instanceof DD.PartsPlace.Free )  return new FreePartsPlace ( cur , this ) ;
 		}
 
 		const dec : DD.Node [] = [] ;
@@ -66,14 +68,11 @@ class Reader
 		{
 			if
 			(
-				this.cur instanceof DD.pl ||
+				this.cur instanceof DD.PartsPlace ||
 				this.pos >= this.dec.length
 			)
 			{
 				if ( dec.length )  return new StaticPartPlace ( dec , this ) ;
-				const pldec = this.cur ;
-				this.pos ++ ;
-				if ( pldec instanceof DD.pl.Free )  return new FreePartsPlace ( pldec , this ) ;
 				return null ;
 			}
 
@@ -101,20 +100,27 @@ class StaticPartPlace extends PartsPlace
 	}
 }
 
+
 class FreePartsPlace extends PartsPlace
 {
-	constructor ( dec : DD.pl.Free , rdr : Reader )
+	constructor ( dec : DD.PartsPlace.Free , rdr : Reader )
 	{
 		super ( rdr.cel , rdr.rel ) ;
 		this.next = rdr.next ;
 	}
 }
 
-class DynamicPartsPlace extends PartsPlace
+
+class DynamicPartsPlace < EV > extends PartsPlace
 {
-	constructor ( rdr : Reader )
+	constructor ( dec : DD.PartsPlace.Each < EV > , rdr : Reader )
 	{
 		super ( rdr.cel , rdr.rel ) ;
+		
+		dec.model.orders.forEach
+		(
+			order => this.makePart ( dec.createNode ( order ) )
+		) ;
 
 		this.next = rdr.next ;
 	}

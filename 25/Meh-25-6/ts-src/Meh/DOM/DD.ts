@@ -1,7 +1,7 @@
-import { State } from "../Model/Model.js" ;
+import { Leaf , Renn , Order } from "../Model/Model.js" ;
 import { MehElement , TargetDOMElement } from "./Node.js";
 
-type llr < V > = V | State.RO < V > ;
+type llr < V > = V | Leaf.RO < V > ;
 
 /* Element */
 
@@ -10,17 +10,20 @@ export type ElementSpec < E extends TargetDOMElement = any > =
 	target ? : string ;
 	class ? : Class ;
 	style ? : Style ;
+	shadow ? : Shadow ;
 	attrs ? : Attributes < E > ;
 	props ? : Properties < E > ;
-	bb ? : BB ;
+	biBind ? : BB ;
 	passive ? : Actions ;
 	active ? : Actions ;
+	focus ? : Focus ;
+	hook ? : Hook < E > ;
 }
 
 export type Class =
 (
-	string | State < string > | ClassSwitch |
-	( string | State < string > | ClassSwitch ) []
+	string | Leaf < string > | ClassSwitch |
+	( string | Leaf < string > | ClassSwitch ) []
 );
 
 
@@ -31,14 +34,14 @@ export type Style =
 	[ name in keyof CSSStyleDeclaration ] ? : llr < CSSStyleDeclaration [ name ] > ;
 };
 
-export type Properties < E extends globalThis.Element > =
+export type Properties < E extends TargetDOMElement > =
 {
 	[ name in keyof E ] ? : llr < E [ name ] > ;
 }
 
-export type Attributes < E extends globalThis.Element > =
+export type Attributes < E extends TargetDOMElement > =
 {
-	[ name in keyof E ] ? : Text ;
+	[ name in keyof E ] ? : llr < E [ name ] > ;
 };
 
 export type Actions =
@@ -51,15 +54,18 @@ export type Action < Ev extends Event = any > = ( ev : Ev ) => void ;
 
 export type BB =  /** BidirectionalBinds */
 {
-	vInp ? : State < string > ;
-	vChan ? : State < string > ;
+	vInp ? : Leaf < string > ;
+	vChan ? : Leaf < string > ;
 
-	vInpN ? : State < number > ;
-	vChanN ? : State < number > ;
+	vInpN ? : Leaf < number > ;
+	vChanN ? : Leaf < number > ;
 
-	chInp ? : State < boolean > ;
-	chChan ? : State < boolean > ;
+	chInp ? : Leaf < boolean > ;
+	chChan ? : Leaf < boolean > ;
 }
+
+export type Focus = Leaf.RO < boolean > ;
+
 
 export type Hook < E extends TargetDOMElement > =
 {
@@ -68,16 +74,10 @@ export type Hook < E extends TargetDOMElement > =
 	term ? ( el : E ) : void ;
 };
 
-export type Shadow =
-{
-	mode ? : "open" | "closed" ;
-	css ? : string | CSSStyleSheet | ( string | CSSStyleSheet ) [] ;
-}
+export type Shadow = llr < string > | CSSStyleSheet | ( llr < string > | CSSStyleSheet ) [] ;
 
-export type Focus =
-{
-	state ? : State < boolean > ;
-}
+
+
 
 
 
@@ -85,26 +85,45 @@ export type Focus =
 
 export type Text = llr < string > | llr < number > | llr < boolean > | llr < bigint > | null ;
 
-export abstract class pl
+export namespace pl
 {
-	public static free () : pl.Free { return new pl.Free () }
+	export const free = () => new PartsPlace.Free () ;
+	export const each = < EV >
+	(
+		model : Renn < EV > ,
+		createNode : ( i : Order < EV > ) => Node
+	
+	) => new PartsPlace.Each ( model , createNode ) ; 
+}
 
-	#typetag = plTag ;
+export abstract class PartsPlace
+{
+	#_typetag = plTag ;
 }
 
 const plTag = Symbol () ;
 
-export namespace pl
+export namespace PartsPlace
 {
-	export class Free  extends pl
+	export class Free  extends PartsPlace
 	{
 		set contents ( contents : Part | Part [] )
 		{
 			;
 		}
 	}
+
+	export class Each < EV > extends PartsPlace
+	{
+		constructor
+		(
+			public readonly model : Renn < EV > ,
+			public readonly createNode : ( i : Order < EV > ) => Node ,
+		)
+		{ super () ; }
+	}
 }
 
 
 export type Node = Text | MehElement | undefined ;
-export type Part = Node | pl ;
+export type Part = Node | PartsPlace ;

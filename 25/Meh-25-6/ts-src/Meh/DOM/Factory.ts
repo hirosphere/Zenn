@@ -1,5 +1,4 @@
-import { Leaf } from "../Meh.js";
-import { log } from "../Util.js" ; 
+import { Leaf } from "../Model/Model.js";
 import { DD , MehElement , PartsPlace } from "./DOM.js" ;
 
 
@@ -47,8 +46,8 @@ const create = < E extends Element = any >
 		if
 		(
 			first instanceof MehElement ||
-			first instanceof DD.pl ||
-			first instanceof Leaf
+			first instanceof DD.PartsPlace ||
+			first instanceof Leaf.Core
 		)
 		{			
 			return new MehElement ( ns , type , {} , [ first , ... remain ] ) ;

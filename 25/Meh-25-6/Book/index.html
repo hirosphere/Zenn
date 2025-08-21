@@ -3,16 +3,20 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Meh-25 Book</title>
+	<title>Book</title>
 
 <style>
 
-*
-{
-	box-sizing : border-box ;
-	margin : 0 ;
-	padding : 0 ;
-}
+* { box-sizing : border-box ; margin : 0 ; padding : 0 ; }
+
+.FR { display : flex ;  flex-direction : row ; }
+.FC { display : flex ;  flex-direction : column ; }
+.AC { align-items : center ; }
+.PGMM { padding : 1em ;  gap : 1em ; }
+.PGMX { padding : 1em ;  gap : 1ex ; }
+.PGXX { padding : 1ex ;  gap : 1ex ; }
+
+
 
 html
 {
@@ -25,34 +29,16 @@ body
 	height : 100% ;
 }
 
-body.NAVI_MODE_HORIZ
+.LM_HORIZ
 {
 	display : grid ;
 	grid-template-columns : auto 1fr ;
 }
 
-body.NAVI_MODE_VERT
+.LM_VERT
 {
 	display : grid ;
 	grid-template-rows : 1fr auto ;
-}
-
-main
-{
-	text-align : center ;
-}
-
-body.NAVI_MODE_HORIZ > main
-{
-}
-
-body.NAVI_MODE_VERT > main
-{
-}
-
-h1
-{
-	line-height: 1;
 }
 
 button { padding : 1ex 1em ; }
@@ -65,34 +51,33 @@ button { padding : 1ex 1em ; }
 	background-color : hsl( 205  90%  92% ) ;
 }
 
-.HORIZ_NAVI { display : none ; }
-.VERT_NAVI_TOP { display : none ; }
-.VERT_NAVI_BOTTOM { display : none ; }
-
-
-.NAVI_MODE_HORIZ > .HORIZ_NAVI
+.LM_HORIZ > .NAVI
 {
 	width : calc( 180px + 5vw ) ;
 
-	display : block ;
+	display : grid ;
+	grid-template-rows : 1fr auto ;
 	padding : 1ex ;
-
 	text-align : center ;
 }
 
-.NAVI_MODE_VERT > .VERT_NAVI_TOP
+
+.LM_VERT > .NAVI
 {
-	display : none ;
-	flex-direction : column ;
+	order : 2 ;
+
+	display : grid ;
+	grid-template-columns : 1fr auto ;
 	align-items : center ;
+	padding : 0.30ex ;
 }
 
-.NAVI_MODE_VERT > .VERT_NAVI_BOTTOM
+/* */
+
+main
 {
-	display : flex ;
-	flex-direction : column ;
-	align-items : center ;
-	padding : 0.60ex ;
+	height : 100% ;
+	overflow : auto ;
 }
 
 </style>

@@ -1,5 +1,5 @@
 import { log } from "../Util.js" ;
-import { State } from "../Model/Model.js" ;
+import { Leaf } from "../Model/Model.js" ;
 import * as DD from "./DD.js" ;
 import { PartsPlace } from "./PartsPlace.js" ;
 
@@ -9,7 +9,7 @@ export type TargetDOMElement = HTMLElement | SVGElement | MathMLElement ;
 export abstract class MehNode
 {
 	public abstract node : Node ;
-	#srcs = new Set < State.Ref < any > > ;
+	#srcs = new Set < Leaf.Ref > ;
 
 	protected bindState
 	(
@@ -18,10 +18,11 @@ export abstract class MehNode
 	
 	) : void
 	{
-		if ( text instanceof State )
+		if ( text instanceof Leaf.Core )
 		{
-			text.$_addRef
+			Leaf.RO.addRef
 			(
+				text ,
 				{
 					source : text ,
 					vChan : () => update ( text.$ ) ,
@@ -34,7 +35,7 @@ export abstract class MehNode
 
 	protected terminate ()
 	{
-		this.#srcs.forEach ( ref => ref.source ?. $_rmvRef ( ref ) ) ;
+		this.#srcs.forEach ( ref => ref.source && ref ) ;
 		this.#srcs.clear () ;
 	}
 }
@@ -89,13 +90,32 @@ export class MehElement extends MehNode
 		if ( dec.style )  this.bindStyle ( dec.style ) ;
 		if ( dec.props )  this.bindProps ( dec.props ) ;
 		if ( dec.attrs )  this.bindAttrs ( dec.attrs , ns ) ;
-		if ( dec.bb )  this.bindBB ( dec.bb ) ;
+		if ( dec.biBind )  this.bindBB ( dec.biBind ) ;
 		if ( dec.passive )  this.setActions ( dec.passive , true ) ;
 		if ( dec.active )  this.setActions ( dec.active , false ) ;
+		if ( dec.focus )  this.bindFocus ( dec.focus ) ;
 
 		/* build parts */
 
-		if ( parts ) this.#_parts = PartsPlace.create ( parts , this.el ) ;
+		if ( parts )
+		{
+			if ( dec.shadow !== undefined )
+			{
+				const root = this.el.attachShadow ( { mode : "open" } ) ;
+				this.setShadow ( dec.shadow , root ) ;
+				this.#_parts = PartsPlace.create ( parts , root ) ;
+			}
+
+			else  this.#_parts = PartsPlace.create ( parts , this.el ) ;
+		}
+
+		/* Hook */
+
+		if ( dec.hook )
+		{
+			dec.hook.el = this.el ;
+			dec.hook.init?. ( this.el ) ;
+		}
 	}
 
 	public get node () : Node
@@ -118,7 +138,7 @@ export class MehElement extends MehNode
 			this.el.classList.add ( ... dec.split ( /\s+/g ) ) ;
 		}
 
-		else if ( dec instanceof State && typeof dec.$ == "string" )
+		else if ( dec instanceof Leaf.Core && typeof dec.$ == "string" )
 		{
 			const place = new ClassPlace ( this.el ) ;
 			this.bindState ( dec , names => place.classNames = names ) ;
@@ -143,6 +163,30 @@ export class MehElement extends MehNode
 				value ,
 				value => ( this.el.style as any ) [ name ] = value
 			);
+		}
+	}
+
+	protected setShadow ( dec : DD.Shadow , root : ShadowRoot ) : void
+	{
+		if ( dec instanceof Array )
+		{
+			dec.forEach ( dec => this.setShadow ( dec , root ) ) ;
+			return ;
+		}
+
+		if ( dec instanceof CSSStyleSheet )  root.adoptedStyleSheets.push ( dec ) ;
+
+		else
+		{
+			const ss = new CSSStyleSheet () ;
+
+			if ( dec instanceof Leaf.Core )
+			{
+				this.bindState ( dec , state => ss.replace ( state ) ) ;
+			}
+			else if ( typeof dec == "string" ) ss.replace ( dec ) ;
+
+			root.adoptedStyleSheets.push ( ss ) ;
 		}
 	}
 
@@ -175,7 +219,7 @@ export class MehElement extends MehNode
 	}
 
 
-	protected bindbb ( type : string , prop : string , state : State < any > , cv ? : typeof sncv ) : void
+	protected bindbb ( type : string , prop : string , state : Leaf < any > , cv ? : typeof sncv ) : void
 	{
 		this.bindState
 		(
@@ -191,7 +235,7 @@ export class MehElement extends MehNode
 				const v = ( ev.target as any ) [ prop ] ;
 				state.$ = cv?.set ( v ) ?? v
 			}
-		);
+		) ;
 	}
 
 	protected setActions ( dec : DD.Actions , passive : boolean ) : void
@@ -200,6 +244,15 @@ export class MehElement extends MehNode
 		{
 			this.el.addEventListener ( type , action as EventListener , { passive } ) ;
 		}
+	}
+
+	protected bindFocus ( dec : DD.Focus ) : void
+	{
+		this.bindState
+		(
+			dec ,
+			state => { this.el.tabIndex = state ? 0 : -1 ; }
+		) ;
 	}
 }
 
@@ -250,6 +303,6 @@ const setAttribute = ( ns : string , el : Element , name : string , value : any 
 /*　BB 双方向バインド用 string <-> number 相互変換  */
 const sncv =
 {
-	set : ( v : string ) => { return Number ( v ) } ,
-	get : ( v : number ) => { return String ( v ) }
+	set ( v : string ) { return Number ( v ) } ,
+	get ( v : number ) { return String ( v ) }
 } ;

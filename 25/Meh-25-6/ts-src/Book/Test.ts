@@ -1,4 +1,4 @@
-import { Life , Leaf , Compo } from "../Meh/Model/LiveState.js" ;
+import { Life , Leaf , Compo } from "../Meh/Meh.js" ;
 
 const change_ref = () =>
 {
@@ -57,8 +57,8 @@ const log = console.log ;
 
 export const main = () =>
 {
-	log ( "STATE" ) ;
+	// log ( "STATE" ) ;
 
-	change_ref () ;
+	// change_ref () ;
 }
 

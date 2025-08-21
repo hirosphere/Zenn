@@ -1,5 +1,7 @@
 import * as Meh from "../Meh/Meh.js" ;
-import { State , Leaf , leaf , llr , Branch , ef as $ , log } from "../Meh/Meh.js" ;
+import { Leaf , Compo as Composite , ef as $ , log } from "../Meh/Meh.js" ;
+
+type llr < V > = V | Leaf < V > ;
 
 namespace DM
 {
@@ -9,7 +11,7 @@ namespace DM
 		y : number ;
 	} ;
 
-	export class XY extends Branch < xy > () {}
+	export type XY = Composite < xy > ;
 
 	export type area = 
 	{
@@ -17,11 +19,7 @@ namespace DM
 		size : xy ;
 	} ;
 
-	export class Area extends Branch < area > ()
-	{}
-
-	const a = new Area ( { pos : { x : 10 , y : 10 } , size : { x : 70 , y : 50 } } ) ;
-
+	export type Area = Composite < area > ;
 
 
 	/* 型定義 */
@@ -33,36 +31,39 @@ namespace DM
 		light : number ;
 	}
 
-	export class HSL extends Branch < hsl > ()
+	export type HSL = Composite < hsl > ;
+
+	export function HSL ( v : hsl )
 	{
-		get css () : State < string > { return this.$_conv ( tocss ) ; }
+		return Composite ( v ) ;
 	}
+
+	export const toCSS = ( s : HSL ) => Leaf.transR ( s , tocss ) ;
 
 	const tocss = ( { hue , sat , light } : hsl ) =>
 	(
-		`hsl( ${ hue }  ${ sat * 100 }%  ${ light * 100 }% )`
+		`hsl( ${ hue.toFixed ( 1 ) }  ${ pc ( sat ) }  ${ pc ( light ) } )`
 	) ;
+
+	const pc = ( v : number ) : string => ( v * 100 ).toFixed ( 1 ) + "%" ;
 
 	/* 応用例 */
 
-	const color : HSL = new HSL ( { hue : 90 , sat : 0.5 , light : 0.5 } ) ;
+	const color : HSL = HSL ( { hue : 90 , sat : 0.5 , light : 0.5 } ) ;
 	color.hue.$ += 5 ;
 	color.light.$ *= 0.95 ;
 
-	console.log ( color.css.$ ) ;
-
-
-
-
+	console.log ( color ) ;
 }
 
 namespace VM
 {
 	export class Applet
 	{
-		value = leaf ( 50 ) ;
+		value = Leaf ( 50 ) ;
 		range = { title : "Range" , value : this.value }
-		color = new DM.HSL ( { hue : 0 , sat : 0.65 , light : 0.65 } );
+		color = DM.HSL ( { hue : 255 , sat : 0.45 , light : 0.55 } );
+		colorCSS = DM.toCSS ( this.color ) ;
 
 		constructor ()
 		{
@@ -72,13 +73,13 @@ namespace VM
 
 	export type range =
 	{
-		title : llr.String ;
+		title : llr < string > ;
 		value : Leaf < number > ;
-		min ? : llr.Number ;
-		max ? : llr.Number ;
-		step ? : llr.Number ;
+		min ? : llr < number > ;
+		max ? : llr < number > ;
+		step ? : llr < number > ;
 		toL ? : ( value : number ) => string ;
-		unit ? : llr.String ;
+		unit ? : llr < string > ;
 	}
 }
 
@@ -93,7 +94,7 @@ namespace VC
 			$.h1 ( "HSL Branch" ) ,
 			BranchSetValueTest ( vm.color ) ,
 			HSLRanges ( vm.color ),
-			Display ( vm.color.css ) ,
+			Display ( vm.colorCSS ) ,
 			Range ( vm.range ) ,
 		) ;
 	}
@@ -102,12 +103,12 @@ namespace VC
 	(
 		{ class : "FH" , style : { gap : "0.6ex" } } ,
 		$.button ( { passive : { click : () => color.$ = { hue : 95 , sat : 0.40 , light : 0.50 } } } , "くさ色" ) ,
-		$.button ( { passive : { click : () => color.$ = { hue : 210 , sat : 0.70 , light : 0.65 } } } , "そら色" ) ,
-		$.button ( { passive : { click : () => color.$ = { hue : 345 , sat : 0.40 , light : 0.50 } } } , "あか" ) ,
+		$.button ( { passive : { click : () => color.$ = { hue : 220 , sat : 0.70 , light : 0.70 } } } , "そら色" ) ,
+		$.button ( { passive : { click : () => color.$ = { hue : 345 , sat : 0.42 , light : 0.50 } } } , "あか" ) ,
 	);
 	
 
-	const Display = ( colorCss : State < string > ) =>  $.section
+	const Display = ( colorCss : Leaf < string > ) => $.section
 	(
 		{ class : "DISPLAY" , style : { backgroundColor : colorCss } } ,
 		$.section ( { style : { color : "#fff" , whiteSpace : "pre" } } , colorCss ) ,
@@ -132,7 +133,7 @@ namespace VC
 				class : "range" ,
 				attrs : { type : "range" } ,
 				props : { min , max , step } ,
-				bb : { vInpN : value }
+				biBind : { vInpN : value }
 			}
 		) ;
 
@@ -144,7 +145,7 @@ namespace VC
 			$.span
 			(
 				{ class : "vu" } ,
-				$.span ( { class : "value" } , toL ? value.$_conv ( toL ) : value ) ,
+				$.span ( { class : "value" } , toL ? Leaf.trans ( value , { get : toL } ) : value ) ,
 				$.span ( { class : "unit" } , unit ) ,
 			) ,
 		) ;

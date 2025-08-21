@@ -1,5 +1,6 @@
-import { State , Leaf , leaf , Branch , Model as moh , ef , DD , DOM as dom , log } from "../Meh/Meh.js" ;
+import { Leaf , Compo , Model as moh , ef , DD , DOM as dom , log } from "../Meh/Meh.js" ;
 import { main as testMain } from "./Test.js" ;
+import * as AG_1 from "./AG_1/AG_1.js" ;
 
 /* Data Models */
 
@@ -19,14 +20,15 @@ namespace VM
 	const app_iv : app =
 	{
 		title : "Meh-25 Book" ,
-		naviMode : "NAVI_MODE_HORIZ" ,
+		naviMode : "LM_HORIZ" ,
 	}
 
-	export class App extends Branch < app > ()
+	export class App
 	{
+		doc = Compo ( app_iv ) ;
+
 		constructor ()
 		{
-			super ( app_iv ) ;
 		}
 
 		t1 = clock ( 1000 ) ;
@@ -35,14 +37,14 @@ namespace VM
 
 		toggleNaviMode ()
 		{
-			const s = this.naviMode ;
-			s.$ = s.$ == "NAVI_MODE_VERT" ? "NAVI_MODE_HORIZ" : "NAVI_MODE_VERT"
+			const s = this.doc.naviMode ;
+			s.$ = s.$ == "LM_HORIZ" ? "LM_VERT" : "LM_HORIZ"
 		}
 	}
 
 	const clock = ( tempo : number = 1000 ) =>
 	{
-		const st = leaf ( 0 ) ;
+		const st = Leaf ( 0 ) ;
 		setInterval ( () => st.$ ++ , tempo ) ;
 		return st ;
 	}
@@ -50,10 +52,10 @@ namespace VM
 	export type app =
 	{
 		title : string ;
-		naviMode : navi_mode ;
+		naviMode : layout_mode ;
 	}
 
-	type navi_mode = "NAVI_MODE_HORIZ" | "NAVI_MODE_VERT" ;
+	type layout_mode = "LM_HORIZ" | "LM_VERT" ;
 }
 
 
@@ -67,51 +69,43 @@ namespace VC
 
 		return ef.body
 		(
-			{ class : vm.naviMode , target : "body"  } ,
-			HorizNavi ( vm ) ,
-			VertzNaviTop ( vm ) ,
-			ef.main
-			(
-				ef.h1 ( vm.title ) ,
-				ef.p ( vm.t1 , ) ,
-				ef.p ( vm.t2 , ) ,
-				ef.p ( vm.t3 , ) ,
-				ef.section
-				(
-					{ class : "NMI" } ,
-					ef.button ( { passive : { click : () => vm.toggleNaviMode () } } , vm.naviMode ) ,
-				) ,
-			) ,
-			VertzNaviBottom ( vm ) ,
+			{ class : vm.doc.naviMode , target : "body"  } ,
+			Navi ( vm ) ,
+			// AG_1.ToDo () ,
+			AG_1.OrderQ1 () ,
 		) ;
 	}
 
-	const HorizNavi = ( vm : VM.App ) : DD.Node =>
+	( vm : VM.App ) => ef.main
+	(
+		ef.h1 ( vm.doc.title ) ,
+		ef.p ( vm.t1 , ) ,
+		ef.p ( vm.t2 , ) ,
+		ef.p ( vm.t3 , ) ,
+	) ;
+
+
+	const Navi = ( vm : VM.App ) : DD.Node =>
 	{
 		return ef.nav
 		(
-			{ class : "NAVI HORIZ_NAVI" } ,
-			ef.p ( "Horiz Navi" ) ,
+			{ class : "NAVI" } ,
+			ef.section
+			(
+				ef.p ( "Horiz Navi" ) ,
+			) ,
+			ef.section
+			(
+				Command ( vm.doc.naviMode , () => vm.toggleNaviMode () ) ,
+			) ,
 		) ;
 	} ;
 
-	const VertzNaviTop = ( vm : VM.App ) : DD.Node =>
-	{
-		return ef.nav
-		(
-			{ class : "NAVI VERT_NAVI_TOP" } ,
-			ef.p ( "Vert Top" ) ,
-		) ;
-	} ;
-
-	const VertzNaviBottom = ( vm : VM.App ) : DD.Node =>
-	{
-		return ef.nav
-		(
-			{ class : "NAVI VERT_NAVI_BOTTOM" } ,
-			ef.p ( "Vert Bottom" ) ,
-		) ;
-	} ;
+	const Command = ( title : Leaf.LL < string > , click : () => void ) => ef.button
+	(
+		{ passive : { click } } ,
+		title ,
+	) ;
 }
 
 
