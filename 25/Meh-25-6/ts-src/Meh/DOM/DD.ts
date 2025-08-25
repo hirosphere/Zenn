@@ -125,5 +125,5 @@ export namespace PartsPlace
 }
 
 
-export type Node = Text | MehElement | undefined ;
-export type Part = Node | PartsPlace ;
+export type Node = Text | MehElement ;
+export type Part = Node | PartsPlace | undefined ;

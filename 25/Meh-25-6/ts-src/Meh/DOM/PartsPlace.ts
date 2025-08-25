@@ -1,5 +1,7 @@
-import { log } from "../Util.js" ;
+import { Life , Renn , Order } from "../Model/Model.js" ;
 import { DD , MehElement, MehText , MehNode } from "./DOM.js" ;
+
+const log = console.log ;
 
 /* */
 
@@ -9,31 +11,39 @@ export class PartsPlace
 	(
 		dec : DD.Part [] ,
 		cel : Element | DocumentFragment ,
-		rel : Node | null = null ,
 	
 	) : PartsPlace | null
 	{
-		return new Reader ( dec , cel , rel ).next ;
+		return new Reader ( dec , cel ).next ;
 	}
 
 
 	/* */
 
-	next : PartsPlace | null = null ;
+	nodes : MehNode [] = [] ;
+	nextPlace : PartsPlace | null = null ;
+	get nextNode () : MehNode | null { return ( this.nextPlace ?.nodes [ 0 ] ) ?? null ; }
 
 	constructor
 	(
 		protected cel : Element | DocumentFragment ,
-		protected rel : Node | null ,
 	) {}
 
-	makePart ( dec : DD.Node ) : MehNode | null
+	protected makePart ( dec : DD.Node , rel ? : Node ) : MehNode
 	{
-		if ( dec === undefined )  return null ;
-
 		const mn = dec instanceof MehElement ? dec : new MehText ( dec ) ;
-		this.cel.insertBefore ( mn.node , this.rel ) ;
+		this.cel.insertBefore ( mn.node , rel ?? null ) ;
 		return mn ;
+	}
+
+	public terminate () : void
+	{
+		this.nextPlace ?.terminate () ;
+		
+		while ( this.nodes.length )
+		{
+			this.nodes.pop () ?.terminate () ;
+		}
 	}
 }
 
@@ -58,8 +68,8 @@ class Reader
 		if ( cur instanceof DD.PartsPlace )
 		{
 			this.pos ++ ;
-			if ( cur instanceof DD.PartsPlace.Each )  return new DynamicPartsPlace ( cur , this ) ;
-			if ( cur instanceof DD.PartsPlace.Free )  return new FreePartsPlace ( cur , this ) ;
+			if ( cur instanceof DD.PartsPlace.Each )  return new RennPlace ( cur , this ) ;
+			if ( cur instanceof DD.PartsPlace.Free )  return new FreePlace ( cur , this ) ;
 		}
 
 		const dec : DD.Node [] = [] ;
@@ -72,11 +82,11 @@ class Reader
 				this.pos >= this.dec.length
 			)
 			{
-				if ( dec.length )  return new StaticPartPlace ( dec , this ) ;
+				if ( dec.length )  return new StaticPlace ( dec , this ) ;
 				return null ;
 			}
 
-			dec.push ( this.cur ) ;
+			if ( this.cur !== undefined ) dec.push ( this.cur ) ;
 			this.pos ++ ;
 		}
 	}
@@ -90,38 +100,68 @@ class Reader
 
 /* */
 
-class StaticPartPlace extends PartsPlace
+class StaticPlace extends PartsPlace
 {
 	constructor ( dec : DD.Node [] , rdr : Reader )
 	{
-		super ( rdr.cel , rdr.rel ) ;
-		dec.forEach( dec => this.makePart ( dec ) ) ;
-		this.next = rdr.next ;
+		super ( rdr.cel ) ;
+		this.nodes = dec.map( dec => this.makePart ( dec ) ) ;
+		this.nextPlace = rdr.next ;
 	}
 }
 
 
-class FreePartsPlace extends PartsPlace
+class FreePlace extends PartsPlace
 {
 	constructor ( dec : DD.PartsPlace.Free , rdr : Reader )
 	{
-		super ( rdr.cel , rdr.rel ) ;
-		this.next = rdr.next ;
+		super ( rdr.cel ) ;
+		this.nextPlace = rdr.next ;
 	}
 }
 
 
-class DynamicPartsPlace < EV > extends PartsPlace
+class RennPlace < EV > extends PartsPlace
 {
-	constructor ( dec : DD.PartsPlace.Each < EV > , rdr : Reader )
-	{
-		super ( rdr.cel , rdr.rel ) ;
-		
-		dec.model.orders.forEach
-		(
-			order => this.makePart ( dec.createNode ( order ) )
-		) ;
+	#_src : Renn.Ref < EV > ;
 
-		this.next = rdr.next ;
+	constructor ( protected dec : DD.PartsPlace.Each < EV > , rdr : Reader )
+	{
+		super ( rdr.cel ) ;
+		
+		this.#_src =
+		{
+			insert : ( start , orders ) =>
+			{
+				const next = this.nodes [ start ] ;
+
+				const nodes = orders.map
+				(
+					order => this.makePart
+					(
+						dec.createNode ( order ) ,
+						next ?.node
+					)
+				) ;
+
+				this.nodes.splice ( start , 0 , ... nodes ) ;
+			} ,
+
+			delete : ( start , length ) =>
+			{
+				const nodes = this.nodes.splice ( start , length ) ;
+				nodes.forEach ( node => node .terminate () ) ;
+			} ,
+		}
+
+		dec.model.addRef ( this.#_src ) ;
+
+		this.nextPlace = rdr.next ;
+	}
+
+	public override terminate () : void
+	{
+		Life.removeRef ( this.dec.model , this.#_src ) ;
+		super.terminate () ;
 	}
 }

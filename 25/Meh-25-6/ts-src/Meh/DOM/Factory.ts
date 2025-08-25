@@ -21,7 +21,6 @@ export const add =
 	(
 		dec instanceof Array ? dec : [ dec ] ,
 		cel ,
-		rel
 	) ;
 }
 

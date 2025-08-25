@@ -1,4 +1,3 @@
-import { log } from "../Util.js" ;
 import { Leaf } from "../Model/Model.js" ;
 import * as DD from "./DD.js" ;
 import { PartsPlace } from "./PartsPlace.js" ;
@@ -20,21 +19,22 @@ export abstract class MehNode
 	{
 		if ( text instanceof Leaf.Core )
 		{
-			Leaf.RO.addRef
-			(
-				text ,
-				{
-					source : text ,
-					vChan : () => update ( text.$ ) ,
-				}
-			) ;
+			const ref =
+			{
+				source : text ,
+				vChan : () => update ( text.$ ) ,
+			}
+
+			this.#srcs.add ( ref ) ;
+			Leaf.RO.addRef ( text , ref ) ;
 		}
 
 		else  update ( text ) ;
 	}
 
-	protected terminate ()
+	public terminate ()
 	{
+		this.node.parentElement ?.removeChild ( this.node ) ;
 		this.#srcs.forEach ( ref => ref.source && ref ) ;
 		this.#srcs.clear () ;
 	}

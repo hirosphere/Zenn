@@ -39,7 +39,7 @@ export namespace Life
 
 	export const terminate = ( life : Life < any > ) =>
 	{
-		life [ Refs ] .forEach ( ref => ref ?.lTerm () ) ;
+		life [ Refs ] .forEach ( ref => ref.lTerm ?.() ) ;
 		life [ Refs ] .clear () ;
 	}
 }

@@ -1,9 +1,17 @@
-import { Leaf , Coll , Refs , Leaf_Get_Value , Leaf_Set_Value , Leaf_Notify_Change } from "./Leaf.js" ;
+import
+{
+	Life ,
+	Leaf , Coll , Refs ,
+	Leaf_Get_Value , Leaf_Set_Value , Leaf_Notify_Change
+
+} from "./Leaf.js" ;
+
+const log = console.log ;
 
 
 /** Order Marker */
 
-export class Renn < EV > extends Leaf.Core < EV [] , Renn.Ref >
+export class Renn < EV > extends Leaf.Core < EV [] , Renn.Ref < EV > >
 {
 	#_length = Leaf ( 0 ) ;
 	#_orders : OrderImpl < EV > [] ;
@@ -34,13 +42,13 @@ export class Renn < EV > extends Leaf.Core < EV [] , Renn.Ref >
 
 	/* 参照 */
 
-	public addRef ( ref : Renn.Ref )
+	public addRef ( ref : Renn.Ref < EV > )
 	{
 		this [ Refs ].add ( ref ) ;
-		ref.insert ?.( 0 , this.#_orders.length ) ;
+		ref.insert ?.( 0 , this.#_orders ) ;
 	}
 
-	public removeRef ( ref : Renn.Ref )
+	public removeRef ( ref : Renn.Ref < EV > )
 	{
 		this [ Refs ].delete ( ref ) ;
 	}
@@ -58,22 +66,27 @@ export class Renn < EV > extends Leaf.Core < EV [] , Renn.Ref >
 
 		const next = start + orders.length ;
 		this.update ( next ) ;
-		this [ Refs ].forEach ( ref => ref.insert ?. ( start , next ) ) ;
+
+		this [ Refs ].forEach ( ref => ref.insert ?. ( start , orders ) ) ;
 	}
 
 	public delete ( start : number , length : number ) : void
 	{
-		
+		const orders = this.#_orders.splice ( start , length ) ;
+		orders.forEach ( o => Life.terminate ( o ) ) ;
+
+		this.update ( start ) ;
+		this [ Refs ].forEach ( ref => ref.delete ?. ( start , length ) ) ;
 	}
 
 	public clear () : void
 	{
-		;
+		this.delete ( 0 , this.#_orders.length ) ;
 	}
 
 	/* プロパティ */
 
-	public get length ()
+	public get length () : Leaf.RO < number >
 	{
 		return this.#_length ;
 	} 
@@ -101,6 +114,18 @@ export class Renn < EV > extends Leaf.Core < EV [] , Renn.Ref >
 		}
 
 		this.#_length.$ = this.#_orders.length ;
+	}
+}
+
+
+export namespace Renn
+{
+	export interface Ref < EV > extends Leaf.Ref
+	{
+		insert ? ( start : number , orders : ReadonlyArray < Order < EV > > ) : void ;
+		add ? ( start : number , length : number ) : void ;
+		remove ? ( start : number , length : number ) : void ;
+		delete ? ( start : number , length : number ) : void ;
 	}
 }
 
@@ -133,16 +158,10 @@ export class OrderImpl < T > extends Leaf.Core.Entity < number >
 	{
 		return this.renn.at ( this.$ - 1 ) ;
 	}
-}
 
-export namespace Renn
-{
-	export interface Ref extends Leaf.Ref
+	public delete () : void
 	{
-		insert ? ( start : number , next : number ) : void ;
-		add ? ( start : number , next : number ) : void ;
-		remove ? ( start : number , next : number ) : void ;
-		delete ? ( start : number , next : number ) : void ;
+		this.renn.delete ( this.$ , 1 ) ;
 	}
 }
 
@@ -158,14 +177,14 @@ export class Key < K >
 
 	#_match ? : MatchImpl < K > ;
 
-	constructor ( public readonly current : Leaf < K | undefined > = Leaf ( undefined ) )
+	constructor ( public readonly curr : Leaf < K | undefined > = Leaf ( undefined ) )
 	{
-		Leaf.addRef ( this.current , { vChan : () => this.update () } ) ;
+		Leaf.addRef ( this.curr , { vChan : () => this.update () } ) ;
 	}
 
 	public set ( key ? : K )
 	{
-		this.current.$ = key ;
+		this.curr.$ = key ;
 	}
 
 	public getItem ( key : K | undefined ) : Key.Match < K >
@@ -180,7 +199,7 @@ export class Key < K >
 		let item = this.items.get ( key ) ;
 		if ( item )  return item ;
 
-		item = new MatchImpl < K > ( this.current , key , key === this.current.$ ) ;
+		item = new MatchImpl < K > ( this.curr , key , key === this.curr.$ ) ;
 		this.items.set ( key , item ) ;
 
 		return item ;
@@ -189,7 +208,7 @@ export class Key < K >
 	protected update () : void
 	{
 		if ( this.#_match ) this.#_match.$ = false ;
-		this.#_match = this.makeItem ( this.current.$ ) ;
+		this.#_match = this.makeItem ( this.curr.$ ) ;
 		if ( this.#_match ) this.#_match.$ = true ;
 	}
 }

@@ -44,6 +44,32 @@ ul
 	padding-inline-start : 3em ;
 }
 
+.E
+{
+	display: flex;
+	flex-direction: column;
+	border : 0.2ex solid hsl( 0  0  80% ) ;
+	border-radius: 1ex;
+
+	min-width : 16em ;
+	min-height : 1.5em ;
+	padding : 0.3ex ;
+	padding-left: 2em;
+
+	gap : 0.64ex ;
+}
+
+.E > span
+{
+	display: block;
+	padding: 0 0.5ex ;
+}
+
+.E { font-size: 1em; }
+.E .E { font-size: 0.9em; }
+.E .E .E { font-size: 0.81em; }
+.E .E .E .E { font-size: 0.73em; }
+
 </style>
 
 
@@ -67,6 +93,40 @@ ul
 			<section class="R"></section>
 			<section class="R"></section>
 			<section class="R"></section>
+		</section>
+	</section>
+
+	<section class="E">
+		<span>Node</span>
+		<section class="E">
+			<span>Node</span>
+			<section class="E"><span>Node</span></section>
+			<section class="E"><span>Node</span></section>
+			<section class="E"><span>Node</span></section>
+			<section class="E"><span>Node</span>
+				<section class="E"><span>Node</span></section>
+				<section class="E"><span>Node</span></section>
+				<section class="E"><span>Node</span></section>
+				<section class="E"><span>Node</span></section>
+			</section>
+		</section>
+		<section class="E">
+			<span>Node</span>
+			<section class="E"><span>Node</span></section>
+			<section class="E"><span>Node</span></section>
+			<section class="E"><span>Node</span></section>
+		</section>
+		<section class="E">
+			<span>Node</span>
+			<section class="E"><span>Node</span></section>
+			<section class="E"><span>Node</span></section>
+			<section class="E"><span>Node</span></section>
+			<section class="E"><span>Node</span>
+				<section class="E"><span>Node</span></section>
+				<section class="E"><span>Node</span></section>
+				<section class="E"><span>Node</span></section>
+				<section class="E"><span>Node</span></section>
+			</section>
 		</section>
 	</section>
 
