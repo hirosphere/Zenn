@@ -59,7 +59,7 @@ export namespace VM
 			
 			return each
 			(
-				r ( 4 , 5 ) ,
+				r ( 3 , 3 ) ,
 				i =>
 				{
 					ct ++ ;
@@ -125,33 +125,37 @@ export namespace VC
 		{
 			display : flex ;
 			flex-direction : column ;
-			padding : 0.3ex 1.1ex 1.1ex 2em ;
-			gap : 0.5ex ;
+			padding : 0.3ex 1.0ex 1.0ex 2em ;
+			gap : 1.0ex ;
 
-			font-size : 80% ;
+			font-size : 0.86em ;
 		}
 	
 		.NODE
 		{
-			border : 0.1ex  solid  hsl( 0  0%  80% ) ;
-			border-radius: 2.5ex ;
+			border : 0.1ex  solid  hsl( 0  0%  0% / 20% ) ;
+			border-radius: 2.8ex ;
+			background : hsl( 185  100%  45% / 5% ) ;
+
 			list-style : none ;
 			cursor : default ;
 			overflow : hidden ;
 
-			transition : background-color 0.1s ,  border-color 0.1s ;
+			transition : background-color 0.2s ,  border-color 0.2s ;
 		}
 
 		.NODE:hover
 		{
 			border-color : hsl( 185  50%  50% ) ;
-			background : hsl( 185  100%  45% / 14% ) ;
+			background : hsl( 185  100%  100% ) ;
 		}
 
 		.NODE .HEAD
 		{
+			font-size : max( 1em , 0.7rem ) ;
+
 			display : grid ;
-			height : 2em ;
+			height : 2.0em ;
 			grid-template-columns : 1fr auto  auto  auto ;
 			padding-inline : 1.0em 1.2em ;
 			white-space : nowrap ;
@@ -164,13 +168,13 @@ export namespace VC
 			border-radius : 0.8ex ;
 			padding-inline : 1ex ;
 
-			transition : background-color 0.1s ;
+			transition : background-color 0.3s ;
 		}
 
 		.NODE:hover > .HEAD > .TITLE
 		{
-			background : hsl( 0  0%  0% / 60% ) ;
-			color : hsl( 0  0%  90% ) ;
+			background : hsl( 330  0%  30% / 0% ) ;
+			color : hsl( 0  0%  0% ) ;
 		}
 
 		.NODE .COMMAND
