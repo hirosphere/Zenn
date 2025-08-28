@@ -197,7 +197,18 @@ export namespace VC
 			) ,
 			ef.footer
 			(
-				ef.a ( { attrs : { href : "./zz-index.html" } } , "index" )
+				{ class : "FR PGMM" } ,
+				ef.a ( { attrs : { href : "./zz-index.html" } } , "index" ) ,
+				ef.a
+				(
+					{
+						attrs :
+						{
+							href : "https://github.com/hirosphere/Zenn/blob/gh-pages/25/Meh-25-6/ts-src/Book/AG_1/Extreem.ts" ,
+							target : "_blank"
+						} ,
+					} ,
+					"ts-src" )
 			)
 		) ;
 	} ;
