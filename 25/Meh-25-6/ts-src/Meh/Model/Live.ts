@@ -42,6 +42,7 @@ interface LiveArray < EV > extends Leaf < Array < EV > >
 {
 	insert ( newValues : EV [] , start ? : number ) : void ;
 	delete ( start : number , length : number ) : void ;
+	clear () : void ;
 
 	at ( pos : number ) : Order < Live < EV > > | undefined ;
 	renn : Renn < Live < EV > > ;
@@ -133,7 +134,12 @@ export namespace Live.Core
 
 		public delete ( start : number , length : number ) : void
 		{
-			;
+			this.renn.delete ( start , length ) ;
+		}
+
+		public clear () : void
+		{
+			this.renn.clear () ;
 		}
 		
 		public at ( pos : number ) : Order < Live < EV > > | undefined

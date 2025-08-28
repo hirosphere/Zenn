@@ -152,11 +152,11 @@ export namespace VC
 		{
 			display : grid ;
 			height : 2em ;
-			grid-template-columns : 1fr auto  auto ;
-			padding-inline : 1.0em 1em ;
+			grid-template-columns : 1fr auto  auto  auto ;
+			padding-inline : 1.0em 1.2em ;
 			white-space : nowrap ;
 			align-items : center ;
-			gap : 0.8ex ;
+			gap : 1.2ex ;
 		}
 
 		.NODE > .HEAD > .TITLE
@@ -226,7 +226,7 @@ export namespace VC
 		) ;
 	}
 
-	const Node = ( appVM : VM.Applet , dm : DM.Node ) : DD.Node =>
+	const Node = ( appVM : VM.Applet , node : DM.Node ) : DD.Node =>
 	{
 		return ef.li
 		(
@@ -234,18 +234,20 @@ export namespace VC
 			ef.span
 			(
 				{ class : "HEAD" } ,
-				ef.span ( { class : "TITLE" } , dm.title ) ,
-				Command ( "T" , () => appVM.ct.$ = VM.testTree ( dm ) ) ,
-				Command ( "NP" , () => VM.newPart ( dm ) ) ,
+				ef.span ( { class : "TITLE" } , node.title ) ,
+				Command ( "CLR" , "Clear" , () => node.parts.clear () ) ,
+				Command ( "TREE" , "New Tree" , () => appVM.ct.$ = VM.testTree ( node ) ) ,
+				Command ( "PART" , "New Part" , () => VM.newPart ( node ) ) ,
 			) ,
-			Nodes ( appVM , dm.parts )
+			Nodes ( appVM , node.parts )
 		) ;
 	}
 
-	const Command = ( title : string , oper : () => void ) => ef.button
+	const Command = ( title : string , tip : string , oper : () => void ) => ef.button
 	(
 		{
 			class : "COMMAND" ,
+			attrs : { title : tip } ,
 			passive : { click ( ev ) { oper () ; } }
 		} ,
 		title
