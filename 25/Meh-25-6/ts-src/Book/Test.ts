@@ -1,4 +1,4 @@
-import { Life , Leaf , Compo } from "../Meh/Meh.js" ;
+import { Life , Leaf , Live } from "../Meh/Meh.js" ;
 
 const change_ref = () =>
 {
@@ -29,13 +29,13 @@ type todo =
 
 const acc_1 = () =>
 {
-	( s : Compo < todo > ) =>
+	( s : Live < todo > ) =>
 	{
 		s.title.$ += " (重要)" ;
 		s.completed.$ = false ;
 	}
 
-	( s : Compo < 10 > ) =>
+	( s : Live < 10 > ) =>
 	{
 		Leaf.addRef ( s , { lTerm(){  } } )
 		s.$ = 10 ;
@@ -48,7 +48,7 @@ type todo_app =
 	list : todo [] ;
 }
 
-const acc_2 = ( app : Compo < todo_app > ) =>
+const acc_2 = ( app : Live < todo_app > ) =>
 {
 	app.list.insert ( [ { title : "銅山おこし" , completed : false } ] ) ;
 }

@@ -1,4 +1,4 @@
-import { Leaf , Compo , ef , pl , DD , Focus , log } from "../../Meh/Meh.js" ;
+import { Leaf , Live , ef , pl , DD , Focus , log } from "../../Meh/Meh.js" ;
 import { Renn , Order as MehOrder , Key } from "../../Meh/Model/Marker.js" ;
 
 namespace DM
@@ -15,7 +15,7 @@ namespace DM
 
 	export type stat_src = Omit < stat , "no" | "r1" | "r2" > ;
 
-	export type Stat = Compo < stat > ;
+	export type Stat = Live < stat > ;
 	export type Order = MehOrder < Stat > ;
 	
 
@@ -54,7 +54,7 @@ namespace VM
 	export class List
 	{
 		public datasrc : DM.stat [] ;
-		public compo : Compo < DM.stat [] > ;
+		public compo : Live < DM.stat [] > ;
 		public renn ;
 		public selected = new Key < DM.Order > () ;
 		public hover = new Key < DM.Order > () ;
@@ -69,7 +69,7 @@ namespace VM
 		{
 			const datasrc : DM.stat_src [] = DM.data [ line ].slist ;
 			this.datasrc = datasrc.map ( ( src , n ) => DM.stat ( line , n , src ) ) ;
-			this.compo = Compo ( this.datasrc ) ;
+			this.compo = Live ( this.datasrc ) ;
 			this.renn = this.compo.renn ;
 		}
 
@@ -147,8 +147,7 @@ namespace VC
 		}
 		.LIST ul { background : #fff ; width : 29em ; height : 30em ; overflow : auto ; }
 		.LIST li
-		{
-			border-bottom : 1px dotted #ccc ;
+		{er-bottom : 1px dotted #ccc ;
 			display : grid ; grid-template-columns : 5ex 6ex 13em 5ex 5ex ; gap : 1ex ;
 		}
 		.LIST li.HOVER { background : hsl( 210  0%  95% ) ; }
@@ -307,7 +306,7 @@ namespace VC
 {
 	type xy = { x : number ; y : number ; } ;
 
-	( x : Compo < xy [] > ) => { x ; }
+	( x : Live < xy [] > ) => { x ; }
 }
 
 export const OrderQ1 = VC.Applet ;

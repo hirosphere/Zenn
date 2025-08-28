@@ -1,5 +1,5 @@
 import * as Meh from "../Meh/Meh.js" ;
-import { Leaf , Compo as Composite , ef as $ , log } from "../Meh/Meh.js" ;
+import { Leaf , Live as Composite , ef as $ , log } from "../Meh/Meh.js" ;
 
 type llr < V > = V | Leaf < V > ;
 

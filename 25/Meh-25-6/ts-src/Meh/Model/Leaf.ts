@@ -27,7 +27,7 @@ export namespace Life
 
 	/* */
 
-	export const addRef = ( life : Life < any > , ref : Ref ) =>
+	export const addRef = < R extends Ref > ( life : Life < any > , ref : R ) =>
 	{
 		life [ Refs ] .add ( ref ) ;
 	}

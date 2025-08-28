@@ -1,4 +1,4 @@
-import { Leaf , Compo as Live , Renn , Order , ef , pl , DD , Focus } from "../../Meh/Meh.js" ;
+import { Leaf , Live , Renn , Order , ef , pl , DD , Focus } from "../../Meh/Meh.js" ;
 
 namespace DM
 {

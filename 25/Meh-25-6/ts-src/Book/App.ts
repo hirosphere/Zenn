@@ -1,4 +1,4 @@
-import { Leaf , Compo , Model as moh , ef , DD , DOM as dom , log } from "../Meh/Meh.js" ;
+import { Leaf , Live , Model as moh , ef , DD , DOM as dom , log } from "../Meh/Meh.js" ;
 import { main as testMain } from "./Test.js" ;
 import * as AG_1 from "./AG_1/AG_1.js" ;
 
@@ -25,7 +25,7 @@ namespace VM
 
 	export class App
 	{
-		doc = Compo ( app_iv ) ;
+		doc = Live ( app_iv ) ;
 
 		constructor ()
 		{
@@ -71,8 +71,9 @@ namespace VC
 		(
 			{ class : vm.doc.naviMode , target : "body"  } ,
 			Navi ( vm ) ,
+			AG_1.Extreem.VC.Applet () ,
 			// AG_1.ToDo () ,
-			AG_1.OrderQ1 () ,
+			// AG_1.OrderQ1 () ,
 		) ;
 	}
 

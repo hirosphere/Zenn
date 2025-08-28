@@ -1,7 +1,17 @@
-import { Life , Leaf , Leaf_Get_Value , Leaf_Set_Value , Leaf_Notify_Change , Coll , Coll_Update } from "./Leaf.js" ;
+import
+{
+	Life , Leaf ,
+	Leaf_Get_Value ,
+	Leaf_Set_Value ,
+	Leaf_Notify_Change ,
+	Coll , Coll_Update
+
+} from "./Leaf.js" ;
+
 import { Renn , Order } from "./Marker.js" ;
 
-export type Compo < V > =
+
+export type Live < V > =
 (
 	V extends object ?
 	(
@@ -12,15 +22,15 @@ export type Compo < V > =
 	: Leaf < V >
 ) ;
 
-export function Compo < V > ( newValue : V , coll ? : Coll ) : Compo < V >
+export function Live < V > ( newValue : V , coll ? : Coll ) : Live < V >
 {
 	const rt =
 	(
 		newValue instanceof Object ?
 		(
 			newValue instanceof Array ?
-				new Compo.Core.LiveArrayI ( newValue , coll )
-				: new Compo.Core.LiveObject ( newValue , coll ) as any
+				new Live.Core.LiveArrayI ( newValue , coll )
+				: new Live.Core.LiveObject ( newValue , coll ) as any
 		)
 		: new Leaf.Core.Entity ( newValue , coll )
 	) ;
@@ -33,17 +43,17 @@ interface LiveArray < EV > extends Leaf < Array < EV > >
 	insert ( newValues : EV [] , start ? : number ) : void ;
 	delete ( start : number , length : number ) : void ;
 
-	at ( pos : number ) : Order < Compo < EV > > | undefined ;
-	renn : Renn < Compo < EV > > ;
+	at ( pos : number ) : Order < Live < EV > > | undefined ;
+	renn : Renn < Live < EV > > ;
 }
 
 type LiveObject < V extends object > = Leaf < V > &
 {
-	[ prop in keyof V ] : Compo < V [ prop ] > ;
+	[ prop in keyof V ] : Live < V [ prop ] > ;
 }
 
 
-export namespace Compo.Core
+export namespace Live.Core
 {
 	export class LiveObject < V extends object > extends Leaf.Core < V >
 	{
@@ -53,7 +63,7 @@ export namespace Compo.Core
 
 			for ( const [ prop , value ] of Object.entries ( newValue ) )
 			{
-				( this as any ) [ prop ] = Compo ( value , this ) ;
+				( this as any ) [ prop ] = Live ( value , this ) ;
 			}
 		}
 
@@ -91,12 +101,12 @@ export namespace Compo.Core
 
 	export class LiveArrayI < EV > extends Leaf.Core < EV [] > implements LiveArray < EV >
 	{
-		public readonly renn : Renn < Compo < EV > > = new Renn ( [] ) ;
+		public readonly renn : Renn < Live < EV > > = new Renn ( [] ) ;
 
 		constructor ( newValue : EV [] , coll ? : Coll )
 		{
 			super ( coll ) ;
-			this.renn.insert ( newValue.map ( ev => Compo ( ev ) ) ) ;
+			this.renn.insert ( newValue.map ( ev => Live ( ev ) ) ) ;
 		}
 
 		public override [ Leaf_Get_Value ] () : EV []
@@ -113,12 +123,12 @@ export namespace Compo.Core
 		public override [ Leaf_Set_Value ] ( newValue : EV [] , coll ? : Coll ) : void
 		{
 			this.renn.clear () ;
-			this.renn.insert ( newValue.map ( ev => Compo ( ev ) ) ) ;
+			this.renn.insert ( newValue.map ( ev => Live ( ev ) ) ) ;
 		}
 
 		public insert ( newValue : EV [] , start : number ) : void
 		{
-			this.renn.insert ( newValue.map ( v => Compo ( v ) ) , start ) ;
+			this.renn.insert ( newValue.map ( v => Live ( v ) ) , start ) ;
 		}
 
 		public delete ( start : number , length : number ) : void
@@ -126,7 +136,7 @@ export namespace Compo.Core
 			;
 		}
 		
-		public at ( pos : number ) : Order < Compo < EV > > | undefined
+		public at ( pos : number ) : Order < Live < EV > > | undefined
 		{
 			return this.renn.at ( pos ) ;
 		}

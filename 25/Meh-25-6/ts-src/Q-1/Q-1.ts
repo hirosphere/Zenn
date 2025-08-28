@@ -1,4 +1,4 @@
-import { log , Leaf , Compo } from "../Meh/Meh.js" ;
+import { log , Leaf } from "../Meh/Meh.js" ;
 
 const Qst1 = () =>
 {
