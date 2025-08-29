@@ -59,7 +59,7 @@ export namespace VM
 			
 			return each
 			(
-				r ( 3 , 3 ) ,
+				r ( 10 , 10 ) ,
 				i =>
 				{
 					ct ++ ;
@@ -118,49 +118,50 @@ export namespace VC
 		{
 			width : clamp( 300px , 28em , 100% ) ;
 
-			font-size : 2.0rem ;
+			font-size : 1.6rem ;
 		}
 
 		.NODES:not(:empty)
 		{
 			display : flex ;
 			flex-direction : column ;
-			padding : 0.3ex 1.0ex 1.0ex 2em ;
-			gap : 1.0ex ;
+			padding-block : 1ex 1ex ;
+			gap : 0.8ex ;
 
-			font-size : 0.86em ;
+			font-size : 0.8518em ;
 		}
 	
 		.NODE
 		{
-			border : 0.1ex  solid  hsl( 0  0%  0% / 20% ) ;
-			border-radius: 2.8ex ;
-			background : hsl( 185  100%  45% / 5% ) ;
+			border : 0.5ex  solid  hsl( 0  0%  0% / 20% ) ;
+			border-radius: 2.5ex ;
+			background : hsl( 210  100%  45% / 5% ) ;
 
 			list-style : none ;
 			cursor : default ;
 			overflow : hidden ;
 
+			padding-inline : 2.6em 1ex ;
+
 			transition : background-color 0.2s ,  border-color 0.2s ;
 		}
 
-		.NODE:hover
+		/* .NODE:hover
 		{
 			border-color : hsl( 185  50%  50% ) ;
 			background : hsl( 185  100%  100% ) ;
-		}
+		} */
 
-		.NODE .HEAD
+		.NODE > .HEAD
 		{
-			font-size : max( 1em , 0.7rem ) ;
+			font-size : max( 1em , 0.6rem ) ;
 
 			display : grid ;
-			height : 2.0em ;
-			grid-template-columns : 1fr auto  auto  auto ;
-			padding-inline : 1.0em 1.2em ;
+			height : 2.2em ;
+			grid-template-columns : auto 1fr auto  auto  auto ;
 			white-space : nowrap ;
 			align-items : center ;
-			gap : 1.2ex ;
+			gap : 0.6ex ;
 		}
 
 		.NODE > .HEAD > .TITLE
@@ -177,9 +178,15 @@ export namespace VC
 			color : hsl( 0  0%  0% ) ;
 		}
 
-		.NODE .COMMAND
+		.NODE > .HEAD > .COMMAND
 		{
-			border : none ;  background : none ;  font-size : 70% ;
+			border : none ; border-radius : 1ex ;  background : none ;  font-size : 70% ;
+			padding : 0.5ex 0.4ex ;
+		}
+
+		.NODE .COMMAND:hover
+		{
+			background : hsl( 28  10%  88% ) ;
 		}
 
 		a { text-decoration : none ; color : hsl( 0  0%  37% ) ; }
@@ -238,6 +245,7 @@ export namespace VC
 			ef.span
 			(
 				{ class : "HEAD" } ,
+				Command ( "+" , "" , () => 0  ) ,
 				ef.span ( { class : "TITLE" } , node.title ) ,
 				Command ( "CLR" , "Clear" , () => node.parts.clear () ) ,
 				Command ( "TREE" , "New Tree" , () => appVM.ct.$ = VM.testTree ( node ) ) ,

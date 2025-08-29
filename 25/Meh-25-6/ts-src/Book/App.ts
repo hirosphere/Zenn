@@ -71,7 +71,8 @@ namespace VC
 		(
 			{ class : vm.doc.naviMode , target : "body"  } ,
 			Navi ( vm ) ,
-			AG_1.Extreem.VC.Applet () ,
+			// AG_1.Extreem.VC.Applet () ,
+			AG_1.Extreem_2.VC.Applet () ,
 			// AG_1.ToDo () ,
 			// AG_1.OrderQ1 () ,
 		) ;
