@@ -55,6 +55,18 @@ export namespace DM
 
 	export class HSL extends NodeBase < hsl >
 	{
+		public readonly hue : Leaf < number > ;
+		public readonly sat : Leaf < number > ;
+		public readonly light : Leaf < number > ;
+
+		constructor ( v : hsl )
+		{
+			super ( v ) ;
+
+			this.hue = Leaf ( v.hue ) ;
+			this.sat = Leaf ( v.sat ) ;
+			this.light = Leaf ( v.light ) ;
+		}
 	}
 
 	export type Node = Memo ;
@@ -81,15 +93,23 @@ export namespace VC
 
 	* { box-sizing : border-box ; margin : 0 ; padding : 0 ; }
 	
-	:host
+	main
 	{
 		display : flex ;
 		flex-direction : column ;
-		padding : 5em ;
+		padding : 1ex 1em ;
 		align-items : center ;
 		gap : 1ex ;
 
 		color : hsl( 0  0%  10% ) ;
+	}
+
+	h1
+	{
+		margin : 0em ;
+		border-radius : 2% / 50% ;
+		background : hsl( 90  55%  55% ) ; width : 100% ;
+		padding-inline : 1ex ;
 	}
 	
 	` ;
@@ -97,10 +117,14 @@ export namespace VC
 
 	export const Applet = () =>
 	{
-		return ef.main
+		return ef.div
 		(
 			{ shadow : css } ,
-			ef.h1 ( "Extreem 2" ) ,
+			ef.main
+			(
+				{  } ,
+				ef.h1 ( "Extreem 2 .." ) ,
+			)
 		) ;
 	}
 }

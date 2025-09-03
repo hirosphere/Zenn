@@ -59,7 +59,7 @@ export namespace VM
 			
 			return each
 			(
-				r ( 10 , 10 ) ,
+				r ( 5 , 5 ) ,
 				i =>
 				{
 					ct ++ ;
@@ -74,7 +74,8 @@ export namespace VM
 			) ;
 		}
 
-		node.parts.insert ( create ( 3 ) ) ;
+		node.parts.insert ( create ( 4 ) ) ;
+		log ( ct ) ;
 		return ct ;
 	}
 
@@ -116,7 +117,8 @@ export namespace VC
 
 		.TREE
 		{
-			width : clamp( 300px , 28em , 100% ) ;
+			width : clamp( 300px , 33em , 100% ) ;
+			background : hsl( 210  100%  45% / 5% ) ;
 
 			font-size : 1.6rem ;
 		}
@@ -125,23 +127,25 @@ export namespace VC
 		{
 			display : flex ;
 			flex-direction : column ;
+
 			padding-block : 1ex 1ex ;
+			padding-inline : 3em 1ex ;
+
 			gap : 0.8ex ;
 
-			font-size : 0.8518em ;
+			font-size : 0.7862em ;
 		}
 	
 		.NODE
 		{
-			border : 0.5ex  solid  hsl( 0  0%  0% / 20% ) ;
+			border : 0.4ex  solid  hsl( 0  0%  0% / 70% ) ;
 			border-radius: 2.5ex ;
-			background : hsl( 210  100%  45% / 5% ) ;
+
+			background : hsl( 180  100%  45% / 5% ) ;
 
 			list-style : none ;
 			cursor : default ;
 			overflow : hidden ;
-
-			padding-inline : 2.6em 1ex ;
 
 			transition : background-color 0.2s ,  border-color 0.2s ;
 		}
@@ -154,28 +158,33 @@ export namespace VC
 
 		.NODE > .HEAD
 		{
-			font-size : max( 1em , 0.6rem ) ;
+			font-size : max( 1em , 0.5rem ) ;
+
+			border-radius : 0.2ex ;
+			background : hsl( 0  0%  0% / 7% ) ;
 
 			display : grid ;
 			height : 2.2em ;
+
+			padding-inline : 1em ;
+
 			grid-template-columns : auto 1fr auto  auto  auto ;
-			white-space : nowrap ;
 			align-items : center ;
+			
 			gap : 0.6ex ;
+			white-space : nowrap ;
+		}
+
+		.NODE:hover > .HEAD
+		{
+			background : hsl( 0  0%  0% / 80% ) ;
+			color : hsl( 0  0%  100% ) ;
 		}
 
 		.NODE > .HEAD > .TITLE
 		{
-			border-radius : 0.8ex ;
+			border-radius : 0.0ex ;
 			padding-inline : 1ex ;
-
-			transition : background-color 0.3s ;
-		}
-
-		.NODE:hover > .HEAD > .TITLE
-		{
-			background : hsl( 330  0%  30% / 0% ) ;
-			color : hsl( 0  0%  0% ) ;
 		}
 
 		.NODE > .HEAD > .COMMAND
