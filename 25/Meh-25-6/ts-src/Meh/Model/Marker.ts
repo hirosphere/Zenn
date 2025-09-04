@@ -1,7 +1,7 @@
 import
 {
 	Life ,
-	Leaf , Coll , Refs ,
+	Leaf , Aggregate , Refs ,
 	Leaf_Get_Value , Leaf_Set_Value , Leaf_Notify_Change
 
 } from "./Leaf.js" ;
@@ -16,9 +16,9 @@ export class Renn < EV > extends Leaf.Core < EV [] , Renn.Ref < EV > >
 	#_length = Leaf ( 0 ) ;
 	#_orders : OrderImpl < EV > [] ;
 
-	constructor ( newValue ? : EV [] , coll ? : Coll )
+	constructor ( newValue ? : EV [] , ag ? : Aggregate )
 	{
-		super ( coll ) ;
+		super ( ag ) ;
 
 		this.#_orders = newValue ? newValue.map
 		(
@@ -32,7 +32,7 @@ export class Renn < EV > extends Leaf.Core < EV [] , Renn.Ref < EV > >
 		return this.#_orders.map ( o => o.target ) ;
 	}
 
-	public [ Leaf_Set_Value ] ( newValue : EV [] , coll ? : Coll )
+	public [ Leaf_Set_Value ] ( newValue : EV [] , coll ? : Aggregate )
 	{
 		this.clear () ;
 		this.insert ( newValue ) ;
@@ -104,6 +104,11 @@ export class Renn < EV > extends Leaf.Core < EV [] , Renn.Ref < EV > >
 		return this.#_orders ;
 	}
 
+	public each ( fn : ( value : EV , order : number ) => void ) : void
+	{
+		this.#_orders.forEach ( o => fn ( o.target , o.$ ) ) ;
+	}
+
 	/*  */
 
 	protected update ( start : number ) : void
@@ -114,6 +119,7 @@ export class Renn < EV > extends Leaf.Core < EV [] , Renn.Ref < EV > >
 		}
 
 		this.#_length.$ = this.#_orders.length ;
+		this [ Leaf_Notify_Change ] ( undefined ) ;
 	}
 }
 

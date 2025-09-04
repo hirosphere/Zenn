@@ -33,17 +33,17 @@ namespace DM
 				title : "Todo 日本史" ,
 				items :
 				[
+					{ title : "財閥街をつくる" , completed : false } ,
+					{ title : "官庁街をつくる" , completed : false } ,
 					{ title : "石油を掘る" , completed : false } ,
 					{ title : "ウランを掘る" , completed : false } ,
 					{ title : "露天炭を掘る" , completed : false } ,
 					{ title : "炭鉱を掘る" , completed : false } ,
 					{ title : "銀座線を掘る" , completed : false } ,
-					{ title : "丸の内線を掘る" , completed : false } ,
-					{ title : "日比谷線を掘る" , completed : false } ,
-					{ title : "千代田線を掘る" , completed : false } ,
-					{ title : "有楽町線を掘る" , completed : false } ,
-					{ title : "財閥を掘る" , completed : false } ,
-					{ title : "政策官庁を掘る" , completed : false } ,
+				//	{ title : "丸の内線を掘る" , completed : false } ,
+				//	{ title : "日比谷線を掘る" , completed : false } ,
+				//	{ title : "千代田線を掘る" , completed : false } ,
+				//	{ title : "有楽町線を掘る" , completed : false } ,
 				]
 			} ,
 			{
@@ -51,9 +51,10 @@ namespace DM
 				items :
 				[
 					{ title : "わんこの肚鳴りを聴く" , completed : false } ,
-					{ title : "ニャンコの足を聴く" , completed : false } ,
+					{ title : "ニャンコの足掻きを聴く" , completed : false } ,
 					{ title : "ねずみのいびきを聴く" , completed : false } ,
 					{ title : "牛の屁を聴く" , completed : false } ,
+					{ title : "文鳥のゲップを聴く" , completed : false } ,
 				]
 			} ,
 		]
@@ -65,8 +66,16 @@ namespace VM
 	export class Applet
 	{
 		doc : DM.Applet = Live ( DM.sample_data ) ;
-		d = Live ( DM.sample_data ) ;
+		constructor ()
+		{
+			this.doc.lists.renn.each ( list => randDone ( list ) ) ;
+		}
 	}
+
+	const randDone = ( list : DM.TodoList ) => list.items.renn.each
+	(
+		i => i.completed.$ = Math.random () > 0.8
+	) ;
 }
 
 
@@ -86,8 +95,34 @@ namespace VC
 
 		ul { list-style : none ; }
 
-		.TODO_LIST { width : min( 25em 100% ) ; background : hsl( 210  90%  90% ) ; }
-		.TODO_ITEM { display : grid ; grid-template-columns : 20em auto ; gap : 1ex ; }
+		.TODO_LIST { width : min( 35em 100% ) ; }
+		.TODO_LIST  li
+		{
+			border-bottom : 1px dotted hsl( 50  3%  100% ) ;
+		}
+
+		.TODO_ITEM
+		{
+			background : hsl( 50  3%  85% ) ;
+
+			display : grid ;
+			grid-template-columns : auto 20em 4em ;
+			gap : 1ex ;
+
+			padding : 0.6ex 1em ;
+		}
+
+		.EDITOR
+		{
+
+		}
+
+		.JSON
+		{
+			width : 50em ; height : 30em ; padding : 1ex ;
+			color : hsl ( 0  0%  10% ) ; font-family : courier ;
+			tab-size : 4ex ;
+		}
 	
 	` ;
 
@@ -95,15 +130,27 @@ namespace VC
 	{
 		const vm = new VM.Applet ;
 
-		return ef.main
+		return ef.div
 		(
-			{ class : "FC PGMM AC" , shadow : css } ,
-			ef.h1 ( vm.doc.title ) ,
-			pl.each
+			{ shadow : css } ,
+
+			ef.main
 			(
-				vm.doc.lists.renn ,
-				o => TodoList ( o.target )
-			) ,
+				{ class : "FC PGXX AC" } ,
+				ef.h1 ( vm.doc.title ) ,
+				pl.each
+				(
+					vm.doc.lists.renn ,
+					o => TodoList ( o.target )
+				) ,
+				ef.section
+				(
+					ef.textarea
+					(
+						{ class : "JSON" , props : { value : Leaf.transR( vm.doc , o => JSON.stringify ( o , null , "\t" ) ) } }
+					) ,
+				)
+			)
 		) ;
 	}
 
@@ -112,6 +159,7 @@ namespace VC
 		{ class : "TODO_LIST FC PGXX" } ,
 
 		ef.h2 ( dm.title ) ,
+		Editor ( dm ) ,
 		ef.ul
 		(
 			pl.each
@@ -122,14 +170,33 @@ namespace VC
 		) ,
 	) ;
 
+	const Editor = ( dm : DM.TodoList ) =>
+	{
+		const title = Leaf ( "すべき何か" ) ;
+
+		const click = () =>
+		{
+			dm.items.insert ( [ { title : title.$ , completed : false } ] , 0 ) ;
+			title.$ = "まだ何かしたい？" ;
+		}
+
+		return ef.section
+		(
+			{ class : "EDITOR  FR PGXX" } ,
+			ef.input ( { biBind : { vChan : title } } ) ,
+			ef.button ( { passive : { click } } , "新規作成" ) ,
+		) ;
+	}
+
 	const TodoItem = ( o : Order < DM.TodoItem > ) =>
 	{
 		const d = o.target ;
 		return ef.li
 		(
 			{ class : "TODO_ITEM" } ,
-			ef.span ( { class : "_TEXT" } , d.title ) ,
 			ef.input ( { attrs : { type : "checkbox" } , biBind : { chInp : d.completed } } ) ,
+			ef.span ( { class : "_TEXT" } , d.title ) ,
+			ef.button ( { passive : { click () { o.delete () ; } } } , "削除" ) ,
 		);
 	}
 }

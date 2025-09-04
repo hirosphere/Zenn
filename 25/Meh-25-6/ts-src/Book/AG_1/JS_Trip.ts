@@ -1,22 +1,50 @@
+import { Live } from "../../Meh/Meh.js" ;
 
-import { Leaf, Coll } from "../../Meh/Model/Leaf.js" ;
-import { Live } from "../../Meh/Model/Live.js" ;
-
-
-const HSL =
+namespace DM
 {
-	hue : Leaf.Core.Entity < number > ,
-	sat : Leaf.Core.Entity < number > ,
-	light : Leaf.Core.Entity < number > ,
+	export type Shape = Live < shape > ;
 
-	/* rel */
+	export type shape = typeof shape ;
+	export type hsl = typeof hsl ;
+	export type xy = typeof xy ;
 
-	css : () => "" ,
-
-	/* fn */
+	export const xy = { x : 0 , y : 0 } ;
+	export const hsl = { hue : 0 , sat : 0 , light : 0 } ;
+	export const shape = { pos : xy , size : xy , fill : hsl } ;
+	export const polygon = { ... shape , points : [] as xy [] } ;
 }
 
-type node =
+namespace VM
 {
+	Live ( DM.xy ) .x.$ = 5 ;
 
+	( s : DM.Shape ) =>
+	{
+		s.fill.$ = { hue : 90 , sat : 0.5 , light : 0 } ;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+	* Object
+		* フィールド存在の担保
+
+
+ */

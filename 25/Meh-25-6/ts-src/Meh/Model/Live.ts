@@ -4,7 +4,7 @@ import
 	Leaf_Get_Value ,
 	Leaf_Set_Value ,
 	Leaf_Notify_Change ,
-	Coll , Coll_Update
+	Aggregate , Part_Change
 
 } from "./Leaf.js" ;
 
@@ -22,7 +22,7 @@ export type Live < V > =
 	: Leaf < V >
 ) ;
 
-export function Live < V > ( newValue : V , coll ? : Coll ) : Live < V >
+export function Live < V > ( newValue : V , coll ? : Aggregate ) : Live < V >
 {
 	const rt =
 	(
@@ -58,9 +58,9 @@ export namespace Live.Core
 {
 	export class LiveObject < V extends object > extends Leaf.Core < V >
 	{
-		constructor ( newValue : V , coll ? : Coll )
+		constructor ( newValue : V , ag ? : Aggregate )
 		{
-			super ( coll ) ;
+			super ( ag ) ;
 
 			for ( const [ prop , value ] of Object.entries ( newValue ) )
 			{
@@ -80,7 +80,7 @@ export namespace Live.Core
 			) as any ;
 		}
 
-		public override [ Leaf_Set_Value ] ( newValue : V , coll ? : Coll ) : void
+		public override [ Leaf_Set_Value ] ( newValue : V , ag ? : Aggregate ) : void
 		{
 			for ( const [ prop , value ] of Object.entries ( newValue ) )
 			{
@@ -91,23 +91,27 @@ export namespace Live.Core
 				}
 			}
 
-			this [ Leaf_Notify_Change ] ( coll ) ;
+			this [ Leaf_Notify_Change ] ( ag ) ;
 		}
 
-		public [ Coll_Update ] ()
+		[ Part_Change ] ()
 		{
 			this [ Leaf_Notify_Change ] ( undefined ) ;
 		}
+
 	}
+
+
+	/* LiveArray */
 
 	export class LiveArrayI < EV > extends Leaf.Core < EV [] > implements LiveArray < EV >
 	{
-		public readonly renn : Renn < Live < EV > > = new Renn ( [] ) ;
+		public readonly renn : Renn < Live < EV > > = new Renn ( [] , this ) ;
 
-		constructor ( newValue : EV [] , coll ? : Coll )
+		constructor ( newValue : EV [] , ag ? : Aggregate )
 		{
-			super ( coll ) ;
-			this.renn.insert ( newValue.map ( ev => Live ( ev ) ) ) ;
+			super ( ag ) ;
+			this.renn.insert ( newValue.map ( ev => Live ( ev , this ) ) ) ;
 		}
 
 		public override [ Leaf_Get_Value ] () : EV []
@@ -121,15 +125,15 @@ export namespace Live.Core
 			return this.renn.orders.map ( o => o.target.$ ) as any ;
 		}
 
-		public override [ Leaf_Set_Value ] ( newValue : EV [] , coll ? : Coll ) : void
+		public override [ Leaf_Set_Value ] ( newValue : EV [] , coll ? : Aggregate ) : void
 		{
 			this.renn.clear () ;
-			this.renn.insert ( newValue.map ( ev => Live ( ev ) ) ) ;
+			this.renn.insert ( newValue.map ( ev => Live ( ev , this ) ) ) ;
 		}
 
 		public insert ( newValue : EV [] , start : number ) : void
 		{
-			this.renn.insert ( newValue.map ( v => Live ( v ) ) , start ) ;
+			this.renn.insert ( newValue.map ( v => Live ( v , this ) ) , start ) ;
 		}
 
 		public delete ( start : number , length : number ) : void
@@ -145,6 +149,13 @@ export namespace Live.Core
 		public at ( pos : number ) : Order < Live < EV > > | undefined
 		{
 			return this.renn.at ( pos ) ;
+		}
+
+		/* */
+
+		[ Part_Change ] ()
+		{
+			this [ Leaf_Notify_Change ] ( undefined ) ;
 		}
 	}
 

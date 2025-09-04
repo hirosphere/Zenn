@@ -164,7 +164,7 @@ export namespace VC
 			background : hsl( 0  0%  0% / 7% ) ;
 
 			display : grid ;
-			height : 2.2em ;
+			height : 3.6em ;
 
 			padding-inline : 1em ;
 

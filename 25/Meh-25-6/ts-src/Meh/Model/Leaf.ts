@@ -4,7 +4,7 @@ export const Leaf_Set_Value = Symbol () ;
 export const Leaf_Get_Value = Symbol () ;
 export const Leaf_Notify_Change = Symbol () ;
 
-export const Coll_Update = Symbol () ;
+export const Part_Change = Symbol () ;
 
 const log = console.log ;
 
@@ -56,9 +56,9 @@ export interface Leaf < V , R extends Leaf.Ref = Leaf.Ref > extends Life < R >
 	set $ ( newValue : V ) ;
 
 	[ Leaf_Get_Value ] () : V ;
-	[ Leaf_Set_Value ] ( newValue : V , coll ? : Coll ) : void ;
+	[ Leaf_Set_Value ] ( newValue : V , changer ? : object ) : void ;
 
-	[ Leaf_Notify_Change ] ( coll : Coll | undefined ) : void ;
+	[ Leaf_Notify_Change ] ( changer : object | undefined ) : void ;
 }
 
 export function Leaf < V > ( newValue : V ) : Leaf < V >
@@ -99,9 +99,9 @@ export namespace Leaf
 	}
 }
 
-export interface Coll
+export interface Aggregate
 {
-	[ Coll_Update ] () : void ;
+	[ Part_Change ] () : void ;
 }
 
 /* .. 実装 */
@@ -138,28 +138,28 @@ export namespace Leaf
 
 	export abstract class Core < V , R extends Ref = Ref > extends Life < R > implements Leaf < V >
 	{
-		#_coll ? : Coll ;
+		#_ag ? : Aggregate ;
 
-		constructor ( coll : Coll | undefined )
+		constructor ( ag : Aggregate | undefined )
 		{
 			super () ;
-			this.#_coll = coll ;
+			this.#_ag = ag ;
 		}
 
 		public get $ () : V { return this [ Leaf_Get_Value ] () ; }
 		public set $ ( newValue : V ) { this [ Leaf_Set_Value ] ( newValue ) ; }
 
 		public abstract [ Leaf_Get_Value ] () : V ;
-		public abstract [ Leaf_Set_Value ] ( newValue : V , coll ? : Coll ) : void ;
+		public abstract [ Leaf_Set_Value ] ( newValue : V , changer ? : object ) : void ;
 
-		public [ Leaf_Notify_Change ] ( coll : Coll | undefined )
+		public [ Leaf_Notify_Change ] ( changer : object | undefined )
 		{
 			this [ Refs ] .forEach
 			(
 				ref => ref.vChan ?.()
 			)
 
-			if ( this.#_coll && this.#_coll != coll )  this.#_coll [ Coll_Update ] () ;
+			if ( this.#_ag && this.#_ag != changer )  this.#_ag [ Part_Change ] () ;
 		}
 	}
 }
@@ -170,7 +170,7 @@ export namespace Leaf.Core
 	{
 		#_value : V ;
 
-		constructor ( newValue : V , coll ? : Coll )
+		constructor ( newValue : V , coll ? : Aggregate )
 		{
 			super ( coll ) ;
 			this.#_value = newValue ;
@@ -181,11 +181,11 @@ export namespace Leaf.Core
 			return this.#_value ;
 		}
 
-		public [ Leaf_Set_Value ] ( newValue : V , coll ? : Coll )
+		public [ Leaf_Set_Value ] ( newValue : V , changer ? : object )
 		{
 			if ( newValue === this.#_value )  return ;
 			this.#_value = newValue ;
-			this [ Leaf_Notify_Change ] ( coll ) ;
+			this [ Leaf_Notify_Change ] ( changer ) ;
 		}
 	}
 
@@ -195,10 +195,10 @@ export namespace Leaf.Core
 		(
 			protected source : Leaf < S > ,
 			protected conv : Leaf.trans < V , S > ,
-			coll ? : Coll
+			ag ? : Aggregate
 		)
 		{
-			super ( coll ) ;
+			super ( ag ) ;
 			
 			Leaf.addRef
 			(
@@ -214,12 +214,12 @@ export namespace Leaf.Core
 			return this.conv.get ( this.source.$ ) ;
 		}
 
-		public override [ Leaf_Set_Value ] ( newValue : V , coll ? : Coll ) : void
+		public override [ Leaf_Set_Value ] ( newValue : V , changer ? : object ) : void
 		{
 			if ( this.conv.set )  this.source [ Leaf_Set_Value ]
 			(
 				this.conv.set ( newValue ) ,
-				coll
+				changer
 			) ;
 		}
 	}
