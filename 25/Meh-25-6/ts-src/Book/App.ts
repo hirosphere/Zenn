@@ -20,7 +20,7 @@ namespace VM
 	const app_iv : app =
 	{
 		title : "Meh-25 Book" ,
-		naviMode : "LM_HORIZ" ,
+		naviMode : "LM_VERT" ,
 	}
 
 	export class App

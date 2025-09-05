@@ -22,17 +22,17 @@ export type Live < V > =
 	: Leaf < V >
 ) ;
 
-export function Live < V > ( newValue : V , coll ? : Aggregate ) : Live < V >
+export function Live < V > ( newValue : V , agg ? : Aggregate ) : Live < V >
 {
 	const rt =
 	(
 		newValue instanceof Object ?
 		(
 			newValue instanceof Array ?
-				new Live.Core.LiveArrayI ( newValue , coll )
-				: new Live.Core.LiveObject ( newValue , coll ) as any
+				new Live.Core.LiveArrayI ( newValue , agg )
+				: new Live.Core.LiveObject ( newValue , agg ) as any
 		)
-		: new Leaf.Core.Entity ( newValue , coll )
+		: new Leaf.Core.Entity ( newValue , agg )
 	) ;
 
 	return rt ;

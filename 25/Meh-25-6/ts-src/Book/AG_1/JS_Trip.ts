@@ -1,37 +1,60 @@
-import { Live } from "../../Meh/Meh.js" ;
 
-namespace DM
+type Leaf < V > =
 {
-	export type Shape = Live < shape > ;
-
-	export type shape = typeof shape ;
-	export type hsl = typeof hsl ;
-	export type xy = typeof xy ;
-
-	export const xy = { x : 0 , y : 0 } ;
-	export const hsl = { hue : 0 , sat : 0 , light : 0 } ;
-	export const shape = { pos : xy , size : xy , fill : hsl } ;
-	export const polygon = { ... shape , points : [] as xy [] } ;
+	get $ () : V ;
 }
 
-namespace VM
+namespace Live
 {
-	Live ( DM.xy ) .x.$ = 5 ;
-
-	( s : DM.Shape ) =>
+	export class Entity < V > implements Leaf < V >
 	{
-		s.fill.$ = { hue : 90 , sat : 0.5 , light : 0 } ;
+		#_value : V ;
+
+		constructor ( value : V )
+		{
+			this.#_value = value ;
+		}
+
+		public get $ () : V
+		{
+			return this.#_value ;
+		}
+	}
+
+	export class Number extends Entity < number >
+	{}
+
+	type Branch < V extends object > = Leaf < V >
+	{
+	}
+
+	export const Branch = < V extends object > ( ctors : PropCtors < V > ) : new () => Branch < V > =>
+	{
+		return class Branch
+		{
+			public get $ () : V { return {} as V ; }
+		}
+	}
+
+	export type PropCtors < V extends object > =
+	{
+		[ prop in keyof V ] : new ( value : V [ prop ] ) => Entity < V [ prop ] > ;
+	}
+
+	export type Constructor < V > = new (  ) => Entity < V > ;
+
+}
+
+class ExNumber extends Live.Number {}
+
+type xy = { x : number } ;
+class XY extends Live.Branch < xy > ( { x : ExNumber } )
+{
+	op ()
+	{
+		this.$ ;
 	}
 }
-
-
-
-
-
-
-
-
-
 
 
 
