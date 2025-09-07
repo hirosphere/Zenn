@@ -33,28 +33,7 @@ namespace DM
 				title : "Todo 日本史" ,
 				items :
 				[
-					{ title : "財閥街をつくる" , completed : false } ,
-					{ title : "官庁街をつくる" , completed : false } ,
-					{ title : "石油を掘る" , completed : false } ,
-					{ title : "ウランを掘る" , completed : false } ,
-					{ title : "露天炭を掘る" , completed : false } ,
-					{ title : "炭鉱を掘る" , completed : false } ,
-					{ title : "銀座線を掘る" , completed : false } ,
-				//	{ title : "丸の内線を掘る" , completed : false } ,
-				//	{ title : "日比谷線を掘る" , completed : false } ,
-				//	{ title : "千代田線を掘る" , completed : false } ,
-				//	{ title : "有楽町線を掘る" , completed : false } ,
-				]
-			} ,
-			{
-				title : "「聴く」" ,
-				items :
-				[
-					{ title : "わんこの肚鳴りを聴く" , completed : false } ,
-					{ title : "ニャンコの足掻きを聴く" , completed : false } ,
-					{ title : "ねずみのいびきを聴く" , completed : false } ,
-					{ title : "牛の屁を聴く" , completed : false } ,
-					{ title : "文鳥のゲップを聴く" , completed : false } ,
+					{ title : "" , completed : false } ,
 				]
 			} ,
 		]
@@ -66,11 +45,18 @@ namespace VM
 	export class Applet
 	{
 		doc : DM.Applet = Live ( DM.sample_data ) ;
+		windowSize = Live ( "" ) ;
+
 		constructor ()
 		{
 			this.doc.lists.renn.each ( list => randDone ( list ) ) ;
+
+			updateWindowSize ( this.windowSize ) ;
+			window.addEventListener ( "resize" , () => updateWindowSize ( this.windowSize ) ) ;
 		}
 	}
+
+	const updateWindowSize = ( s : Live < string > ) => s.$ = `${ window.innerWidth } , ${ window.innerHeight }` ;
 
 	const randDone = ( list : DM.TodoList ) => list.items.renn.each
 	(
@@ -132,6 +118,8 @@ namespace VC
 			color : hsl ( 0  0%  10% ) ;
 			font-family : courier ;
 			tab-size : 4ex ;
+
+			text-size-adjust : 100% ;
 		}
 	
 	` ;
@@ -157,6 +145,7 @@ namespace VC
 				(
 					{ class : "JSON" , props : { value : Leaf.transR( vm.doc , o => JSON.stringify ( o , null , "\t" ) ) } }
 				) ,
+				ef.p ( vm.windowSize )
 		)
 		) ;
 	}
@@ -184,7 +173,7 @@ namespace VC
 		const submit = () =>
 		{
 			dm.items.insert ( [ { title : title.$ , completed : false } ] , 0 ) ;
-			title.$ = "まだ何かしたい？" ;
+			title.$ = "すべき何か" ;
 		}
 
 		return ef.form

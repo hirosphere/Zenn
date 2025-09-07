@@ -1,73 +1,46 @@
 
-type Leaf < V > =
+export const LEAF_SET_VALUE = Symbol () ;
+export const AGG_UPDATE = Symbol () ;
+
+
+namespace Live
 {
-	get $ () : V ;
+	export abstract class Leaf < V >
+	{
+		public set ( value : V ) { this [ LEAF_SET_VALUE ] ( value ) ; }
+
+		abstract [ LEAF_SET_VALUE ] ( value : V , changer ? : object ) : void ;
+	}
+
+	export class Entity < V > extends Leaf < V >
+	{
+		override [ LEAF_SET_VALUE ] ( value : V , changer ? : object ) : void
+		{
+			;
+		}
+	}
+
+	export const createClass = () =>
+	{}
 }
 
 namespace Live
 {
-	export class Entity < V > implements Leaf < V >
+	export interface Aggrigate
 	{
-		#_value : V ;
-
-		constructor ( value : V )
-		{
-			this.#_value = value ;
-		}
-
-		public get $ () : V
-		{
-			return this.#_value ;
-		}
+		[ AGG_UPDATE ] () : void ;
 	}
-
-	export class Number extends Entity < number >
-	{}
-
-	type Branch < V extends object > = Leaf < V >
-	{
-	}
-
-	export const Branch = < V extends object > ( ctors : PropCtors < V > ) : new () => Branch < V > =>
-	{
-		return class Branch
-		{
-			public get $ () : V { return {} as V ; }
-		}
-	}
-
-	export type PropCtors < V extends object > =
-	{
-		[ prop in keyof V ] : new ( value : V [ prop ] ) => Entity < V [ prop ] > ;
-	}
-
-	export type Constructor < V > = new (  ) => Entity < V > ;
-
 }
 
-class ExNumber extends Live.Number {}
 
-type xy = { x : number } ;
-class XY extends Live.Branch < xy > ( { x : ExNumber } )
+namespace Live
 {
-	op ()
-	{
-		this.$ ;
-	}
+	export const easyCreate = < V > ( value : V ) =>
+	{}
 }
-
-
-
-
-
-
-
-
 
 /*
-
-	* Object
-		* フィールド存在の担保
-
-
- */
+	Live
+		Tough
+		Easy
+*/
