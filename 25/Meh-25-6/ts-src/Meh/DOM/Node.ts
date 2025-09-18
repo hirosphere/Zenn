@@ -26,7 +26,7 @@ export abstract class MehNode
 			}
 
 			this.#srcs.add ( ref ) ;
-			Leaf.RO.addRef ( text , ref ) ;
+			text.addRef ( ref ) ;
 		}
 
 		else  update ( text ) ;

@@ -1,0 +1,4 @@
+const log = console.log;
+log("LS_$");
+export {};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiTFNfLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vdHMtcXNyYy9MU18udHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBRUEsTUFBTSxHQUFHLEdBQUcsT0FBTyxDQUFDLEdBQUcsQ0FBRTtBQUV6QixHQUFHLENBQUcsTUFBTSxDQUFFLENBQUEifQ==

@@ -33,7 +33,7 @@ namespace DM
 				title : "Todo 日本史" ,
 				items :
 				[
-					{ title : "" , completed : false } ,
+					{ title : "" , completed : true } ,
 				]
 			} ,
 		]

@@ -4,6 +4,33 @@ const log = console.log ;
 
 export namespace DM
 {
+	export type xy = { x : number } ;
+	export type hsl = { hue : number } ;
+	export type shape = { pos : xy , size : xy , color : hsl } ;
+
+	export class XY extends Live.Branch < xy > ()
+	{
+		x = new Live.Number ;
+	} ;
+
+	export class HSL extends Live.Branch < hsl > ()
+	{
+		hue = new Live.Number ;
+	}
+
+	export class Shape extends Live.Branch < shape > ()
+	{
+		;
+	}
+
+	( s : Shape ) =>
+	{
+		s.$ ;
+	}
+}
+
+export namespace DM
+{
 	export type node =
 	{
 		title : string ;
@@ -12,8 +39,13 @@ export namespace DM
 
 	/* */
 
-	export type Nodes = Live < node [] >
-	export type Node = Live < node > ;
+	export class Node extends Live.Branch < node >
+	{
+		public readonly title = new Live.String ;
+	}
+
+	export type Nodes = Live.Row < node > ;
+
 }
 
 
@@ -33,7 +65,7 @@ export namespace VM
 
 	export class Applet
 	{
-		public readonly root = Live ( sample ) ;
+		public readonly root = new DM.Node ( sample ) ;
 		public readonly ct = Leaf ( 0 ) ;
 
 		constructor ()
@@ -49,7 +81,7 @@ export namespace VM
 
 	export const testTree = ( node : DM.Node ) : number =>
 	{
-		node.parts.renn.clear () ;
+		node.parts.clear () ;
 		
 		let ct = 0;
 
