@@ -27,7 +27,9 @@ function qst1 ()
 
 	r.add_ref ( ref ) ;
 
-	r.insert ( [ "三河島" , "南千住" , "北千住" ] , -1000 ) ;
+	r.insert ( [ "三河島" , "南千住" , "北千住" ] , 2 ) ;
+
+	r.insert ( [ "綾瀬" , "亀有" , "金町" ] , 5 ) ;
 
 	r.delete ( 100 , 100 ) ;
 

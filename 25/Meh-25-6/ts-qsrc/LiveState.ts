@@ -29,6 +29,7 @@ export class Life < R extends Life.Ref >
 	public [ life_add_ref ] ( ref : R )
 	{
 		this [ refs ] .add ( ref ) ;
+		ref.src = this ;
 	}
 
 	public [ life_remove_ref ] ( ref : R )
@@ -62,6 +63,7 @@ export namespace Life
 
 	export type Ref =
 	{
+		src ? : Life < any > ;
 		lTerm ? () : void ;
 	}
 }
@@ -77,36 +79,95 @@ export type Agg =
 const ls_set = Symbol () ;
 const ls_get = Symbol () ;
 const ls_notify = Symbol () ;
+const ls_trans = Symbol () ;
+const ls_trans_r = Symbol () ;
 
 
-export type LS < T > = Life < LS.Ref > &
+/* Suppin Foundation */
+
+export type Suppin < V > = Suppin.Ro < V > &
 {
-	[ ls_set ] ( newv : T , ch ? : object ) : void ;
-	[ ls_get ] () : T ;
+	[ ls_set ] ( newv : V , ch ? : object ) : void ;
+	[ ls_trans ] < TR > ( tr : LS.trans < TR , V > ) : LS < TR > ;
+}
+
+export namespace Suppin
+{
+	export type Ro < V > = Life < LS.Ref > &
+	{
+		[ ls_get ] () : V ;
+		[ ls_trans_r ] < TR > ( tr : LS.trans_r < TR , V > ) : LS.Ro < TR > ;
+	}
+}
+
+/*  */
+
+export type LS < V > = LS.Ro < V > & Suppin < V > &
+{
+	set $ ( val : V ) ;
+	get $ () : V ;
+
+	trans < TR > ( tr : LS.trans < TR , V > ) : LS < TR > ;
 }
 
 export namespace LS
 {
+	export type Ro < V > = Suppin.Ro < V > &
+	{
+		get $ () : V ;
+
+		add_ref ( ref : Ref ) : void ;
+		remove_ref ( ref : Ref ) : void ;
+
+		trans_r < TR > ( tr : LS.trans_r < TR , V > ) : Ro < TR > ;
+	}
+
 	export type Ref = Life.Ref &
 	{
 		vChan ( changer ? : object ) : void ; 
 	}
-
-	export type R < T > = Life < Ref > &
-	{
-		[ ls_get ] () : T ;
-	} ;
 }
 
 
 export namespace LS
 {
-
-	export abstract class Impl < T >  extends Life < Ref >  implements LS < T >
+	export abstract class Core < V >  extends Life < Ref >  implements LS < V >
 	{
+		/* LS */
 
-		public abstract [ ls_set ] ( newv : T , ch ? : object ) : void ;
-		public abstract [ ls_get ] () : T ;
+		public add_ref ( ref : Ref ) : void { this [ life_add_ref ] ( ref ) ; }
+		public remove_ref ( ref : Ref ) : void { this [ life_remove_ref ] ( ref ) ; }
+
+		public set $ ( newv : V ) { this [ ls_set ] ( newv ) ; }
+		public get $ () : V  { return this [ ls_get ] () ; }
+
+		public set ( newv : V , ch : object ) { this [ ls_set ] ( newv , ch ) ; }
+		public get () : V  { return this [ ls_get ] () ; }
+
+		public trans < TR > ( tr : trans < TR , V > ) : LS < TR > { return this [ ls_trans ] ( tr ) ; }
+		public trans_r < TR > ( tr : trans_r < TR , V > ) : Ro < TR > { return this [ ls_trans_r ] ( tr ) ; }
+
+
+		/* Suppin */
+
+		public override [ life_add_ref ] ( ref : Ref ) : void
+		{
+			super [ life_add_ref ] ( ref ) ;
+			ref.vChan () ;
+		}
+
+		public abstract [ ls_set ] ( newv : V , ch ? : object ) : void ;
+		public abstract [ ls_get ] () : V ;
+
+		public [ ls_trans ] < TR > ( tr : trans < TR , V > ) : LS < TR >
+		{
+			return new Trans < TR , V > ( this , tr ) ;
+		}
+
+		public [ ls_trans_r ] < TR > ( tr : trans_r < TR , V > ) : LS.Ro < TR >
+		{
+			return new Trans < TR , V > ( this , tr ) ;
+		}
 
 		protected [ ls_notify ] ( ch : object | uned ) : void
 		{
@@ -115,16 +176,13 @@ export namespace LS
 		}
 	}
 
-	export const set = < T > ( ls : LS < T > , newv : T , ch ? : object ) : void => ls [ ls_set ] ( newv , ch ) ;
-	export const get = < T > ( ls : LS.R < T > ) : T => ls [ ls_get ] () ;
-	export const mod = < T > ( ls : LS < T > , m : ( v : T ) => T , ch ? : object ) => { set ( ls , m ( get ( ls ) ) , ch ) }
+	export const set = < T > ( ls : Suppin < T > , newv : T , ch ? : object ) : void => ls [ ls_set ] ( newv , ch ) ;
+	export const get = < T > ( ls : Suppin.Ro < T > ) : T => ls [ ls_get ] () ;
+	export const mute = < T > ( ls : Suppin < T > , m : ( v : T ) => T , ch ? : object ) => { set ( ls , m ( get ( ls ) ) , ch ) }
+	export const trans = < R , T  > ( ls : Suppin < T > , tr : trans < R , T > ) =>    ls [ ls_trans ] ( tr ) ;
 
-	export const add_ref = < T > ( ls : LS.R < T > , ref : Ref ) =>
-	{
-		Life.add_ref ( ls , ref ) ;
-		ref.vChan () ;
-	}
-
+	export const add_ref = < T > ( ls : LS.Ro < T > , ref : Ref ) => Life.add_ref ( ls , ref ) ;
+	export const remove_ref = < T > ( ls : LS.Ro < T > , ref : Ref ) => Life.remove_ref ( ls , ref ) ;
 
 	/* ....  ....  ....  ....  ....  ....  ....  ....  ....  .... */
 
@@ -132,7 +190,7 @@ export namespace LS
 
 	/* Leaf */
 
-	export class Leaf < T >  extends Impl < T >
+	export class Leaf < T >  extends Core < T >
 	{
 		constructor ( newv : T , agg ? : Agg )
 		{
@@ -155,159 +213,44 @@ export namespace LS
 		#_value : T ;
 	}
 
-	export class Trans < T , S >  extends Impl < T >
+	export class Trans < T , S >  extends Core < T >
 	{
-		constructor ( src : Impl < S > , tr : trans < T , S > , agg ? : Agg )
+		constructor ( src : Core < S > , tr : trans_x < T , S > , agg ? : Agg )
 		{
 			super ( agg ) ;
-			this.#_trans = tr ;
+			this.#_trans = typeof tr == "function" ? { get : tr } : tr ;
 			this.#_src = src ;
-			LS.add_ref ( src , this.#_ref ) ;
+			src [ life_add_ref ] ( this.#_ref ) ;
 		}
 
 		public override [ ls_set ] ( newv : T , ch ? : object ) : void
 		{
 			if ( ! this.#_trans.set )  return ;
 
-			LS.set 
+			this.#_src [ ls_set ]
 			(
-				this.#_src ,
 				this.#_trans.set ( newv ) ,
 				ch
-			)
+			) ;
 		}
 
 		public override [ ls_get ] () : T
 		{
-			return this.#_trans.get
-			(
-				LS.get ( this.#_src )
-			) ;
+			return this.#_trans.get ( this.#_src [ ls_get ] () ) ;
 		}
 
 
-		#_src : Impl < S > ;
+		#_src : Core < S > ;
 		#_ref : Ref = { vChan : ( ch ) => this [ ls_notify ] ( ch ) }
 		#_trans : trans < T , S > ;
 	}
 
 	export type trans < T , S > =
 	{
-		get : ( srcv : S ) => T ;
-		set ? : ( v : T ) => S ;
+		get : ( val : S ) => T ;
+		set ? : ( val : T ) => S ;
 	}
+
+	export type trans_r < T , S > = ( val : S ) => T ;
+	export type trans_x < T , S > = trans < T , S > | trans_r < T , S > ;
 }
-
-
-
-
-/* .... .... Ease .... .... */
-
-export function Ease < T > ( v : T , agg ? : Agg ) : Ease < T >
-{
-	const rt =
-	(
-		v instanceof Object ?
-		(
-			v instanceof Array ?
-				createRow  ( v , agg )
-				: createBranch ( v , agg )
-		)
-		: new LS.Leaf ( v , agg )
-	) ;
-
-	return rt as any ;
-}
-
-export type Ease < T > =
-(
-	T extends object ?
-	(
-		T extends Array < infer E > ?
-			Ease.Row < E >
-			: Ease.Branch < T >
-	)
-	: LS < T >
-) ;
-
-
-export namespace Ease
-{
-	/* .... Type .... */
-
-	export type Branch < T extends object > = LS < T > & Agg & Props < T > ;
-
-	type Props < T extends object > =
-	{
-		[ prop in keyof T ] : Ease < T [ prop ] > ;
-	}
-	
-	export type Row < E > = LS < E [] > & Agg &
-	{
-		at ( pos : number ) : Ease < E > | undefined ;
-	}
-}
-
-/* Branch */
-
-function createBranch < T extends object > ( newv : T , agg ? : Agg ) : Ease.Branch < T >
-{
-	return new BranchImpl ( newv , agg ) as any ;
-}
-
-class BranchImpl < T extends object >  extends LS.Impl < T >  implements Agg
-{
-	constructor ( newv : T , agg ? : Agg )
-	{
-		super ( agg ) ;
-	}
-
-	public override [ ls_set ] ( newv : T , ch ? : object ) : void
-	{}
-
-	public override [ ls_get ] () : T
-	{
-		return {} as any ;
-	}
-
-	public [ agg_echan ] ()
-	{
-		;
-	}
-}
-
-
-/* Row */
-
-function createRow < E > ( newv : E [] , agg ? : Agg ) : Ease.Row < E >
-{
-	return new RowImpl ( newv , agg ) ;
-}
-
-class RowImpl < E >  extends LS.Impl < E [] > implements Ease.Row < E >
-{
-	constructor ( newv : E [] , agg ? : Agg )
-	{
-		super ( agg ) ;
-	}
-
-	public override [ ls_set ] ( v : E [] , ch ? : object ) : void
-	{
-		v ;
-	}
-
-	public override [ ls_get ] () : E []
-	{
-		return [] ;
-	}
-
-	public at ( pos : number ) : Ease < E > | undefined
-	{
-		return undefined ;
-	}
-
-	public [ agg_echan ] () : void
-	{}
-}
-
-

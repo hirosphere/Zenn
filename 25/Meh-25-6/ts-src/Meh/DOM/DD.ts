@@ -1,7 +1,7 @@
-import { Leaf , Renn , Order } from "../Model/Model.js" ;
+import { LS , Renn , Order } from "../Model/Model.js" ;
 import { MehElement , TargetDOMElement } from "./Node.js";
 
-type llr < V > = V | Leaf.RO < V > ;
+type llr < V > = V | LS.Ro < V > ;
 
 /* Element */
 
@@ -22,8 +22,8 @@ export type ElementSpec < E extends TargetDOMElement = any > =
 
 export type Class =
 (
-	string | Leaf < string > | ClassSwitch |
-	( string | Leaf < string > | ClassSwitch ) []
+	string | LS < string > | ClassSwitch |
+	( string | LS < string > | ClassSwitch ) []
 );
 
 
@@ -54,17 +54,17 @@ export type Action < Ev extends Event = any > = ( ev : Ev ) => void ;
 
 export type BB =  /** BidirectionalBinds */
 {
-	vInp ? : Leaf < string > ;
-	vChan ? : Leaf < string > ;
+	vInp ? : LS < string > ;
+	vChan ? : LS < string > ;
 
-	vInpN ? : Leaf < number > ;
-	vChanN ? : Leaf < number > ;
+	vInpN ? : LS < number > ;
+	vChanN ? : LS < number > ;
 
-	chInp ? : Leaf < boolean > ;
-	chChan ? : Leaf < boolean > ;
+	chInp ? : LS < boolean > ;
+	chChan ? : LS < boolean > ;
 }
 
-export type Focus = Leaf.RO < boolean > ;
+export type Focus = LS.Ro < boolean > ;
 
 
 export type Hook < E extends TargetDOMElement > =

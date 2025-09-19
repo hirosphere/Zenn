@@ -1,4 +1,4 @@
-import { Leaf } from "../Model/Model.js";
+import { LS } from "../Model/Model.js";
 import { DD , MehElement , PartsPlace } from "./DOM.js" ;
 
 
@@ -46,7 +46,7 @@ const create = < E extends Element = any >
 		(
 			first instanceof MehElement ||
 			first instanceof DD.PartsPlace ||
-			first instanceof Leaf.Core
+			first instanceof LS.Core
 		)
 		{			
 			return new MehElement ( ns , type , {} , [ first , ... remain ] ) ;

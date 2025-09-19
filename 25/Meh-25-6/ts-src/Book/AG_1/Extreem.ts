@@ -1,32 +1,9 @@
-import { Life , Leaf , Renn , Order , Live , DD , ef , pl , DOM } from "../../Meh/Meh.js" ;
+import { Ease , LS , Renn , Order , DD , ef , pl , DOM } from "../../Meh/Meh.js" ;
 const log = console.log ;
 
 
 export namespace DM
 {
-	export type xy = { x : number } ;
-	export type hsl = { hue : number } ;
-	export type shape = { pos : xy , size : xy , color : hsl } ;
-
-	export class XY extends Live.Branch < xy > ()
-	{
-		x = new Live.Number ;
-	} ;
-
-	export class HSL extends Live.Branch < hsl > ()
-	{
-		hue = new Live.Number ;
-	}
-
-	export class Shape extends Live.Branch < shape > ()
-	{
-		;
-	}
-
-	( s : Shape ) =>
-	{
-		s.$ ;
-	}
 }
 
 export namespace DM
@@ -36,16 +13,6 @@ export namespace DM
 		title : string ;
 		parts : node [] ;
 	}
-
-	/* */
-
-	export class Node extends Live.Branch < node >
-	{
-		public readonly title = new Live.String ;
-	}
-
-	export type Nodes = Live.Row < node > ;
-
 }
 
 
@@ -66,7 +33,7 @@ export namespace VM
 	export class Applet
 	{
 		public readonly root = new DM.Node ( sample ) ;
-		public readonly ct = Leaf ( 0 ) ;
+		public readonly ct = LS ( 0 ) ;
 
 		constructor ()
 		{

@@ -154,14 +154,14 @@ class RennPlace < EV > extends PartsPlace
 			} ,
 		}
 
-		dec.model.addRef ( this.#_src ) ;
+		dec.model.add_ref ( this.#_src ) ;
 
 		this.nextPlace = rdr.next ;
 	}
 
 	public override terminate () : void
 	{
-		Life.removeRef ( this.dec.model , this.#_src ) ;
+		Life.remove_ref ( this.dec.model , this.#_src ) ;
 		super.terminate () ;
 	}
 }

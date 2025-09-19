@@ -1,4 +1,4 @@
-import { Leaf } from "../Model/Model.js" ;
+import { Life , LS } from "../Model/Model.js" ;
 import * as DD from "./DD.js" ;
 import { PartsPlace } from "./PartsPlace.js" ;
 
@@ -8,7 +8,7 @@ export type TargetDOMElement = HTMLElement | SVGElement | MathMLElement ;
 export abstract class MehNode
 {
 	public abstract node : Node ;
-	#srcs = new Set < Leaf.Ref > ;
+	#srcs = new Set < LS.Ref > ;
 
 	protected bindState
 	(
@@ -17,16 +17,16 @@ export abstract class MehNode
 	
 	) : void
 	{
-		if ( text instanceof Leaf.Core )
+		if ( text instanceof LS.Core )
 		{
 			const ref =
 			{
 				source : text ,
-				vChan : () => update ( text.$ ) ,
+				vChan : () => update ( LS.get ( text ) ) ,
 			}
 
 			this.#srcs.add ( ref ) ;
-			text.addRef ( ref ) ;
+			LS.add_ref ( text , ref ) ;
 		}
 
 		else  update ( text ) ;
@@ -35,7 +35,7 @@ export abstract class MehNode
 	public terminate ()
 	{
 		this.node.parentElement ?.removeChild ( this.node ) ;
-		this.#srcs.forEach ( ref => ref.source && ref ) ;
+		this.#srcs.forEach ( ref => ref.src && Life.remove_ref ( ref.src , ref ) ) ;
 		this.#srcs.clear () ;
 	}
 }
@@ -138,7 +138,7 @@ export class MehElement extends MehNode
 			this.el.classList.add ( ... dec.split ( /\s+/g ) ) ;
 		}
 
-		else if ( dec instanceof Leaf.Core && typeof dec.$ == "string" )
+		else if ( dec instanceof LS.Core && typeof dec.$ == "string" )
 		{
 			const place = new ClassPlace ( this.el ) ;
 			this.bindState ( dec , names => place.classNames = names ) ;
@@ -180,7 +180,7 @@ export class MehElement extends MehNode
 		{
 			const ss = new CSSStyleSheet () ;
 
-			if ( dec instanceof Leaf.Core )
+			if ( dec instanceof LS.Core )
 			{
 				this.bindState ( dec , state => ss.replace ( state ) ) ;
 			}
@@ -219,7 +219,7 @@ export class MehElement extends MehNode
 	}
 
 
-	protected bindbb ( type : string , prop : string , state : Leaf < any > , cv ? : typeof sncv ) : void
+	protected bindbb ( type : string , prop : string , state : LS < any > , cv ? : typeof sncv ) : void
 	{
 		this.bindState
 		(
@@ -233,7 +233,7 @@ export class MehElement extends MehNode
 			ev =>
 			{
 				const v = ( ev.target as any ) [ prop ] ;
-				state.$ = cv?.set ( v ) ?? v
+				LS.set ( state , cv?.set ( v ) ?? v ) ;
 			}
 		) ;
 	}

@@ -123,7 +123,7 @@ export namespace Renn
 
 /* Order */
 
-export type Order < T > = LS.R < number > & O < T > ;
+export type Order < T > = LS.Ro < number > & O < T > ;
 
 type O < T > =
 {

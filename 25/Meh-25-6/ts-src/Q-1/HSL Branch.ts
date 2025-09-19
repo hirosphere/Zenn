@@ -1,5 +1,5 @@
 import * as Meh from "../Meh/Meh.js" ;
-import { Leaf , Live as Composite , ef as $ , log } from "../Meh/Meh.js" ;
+import { LS , Ease , ef as $ , log } from "../Meh/Meh.js" ;
 
 type llr < V > = V | Leaf < V > ;
 
@@ -11,7 +11,7 @@ namespace DM
 		y : number ;
 	} ;
 
-	export type XY = Composite < xy > ;
+	export type XY = Ease < xy > ;
 
 	export type area = 
 	{
@@ -19,7 +19,7 @@ namespace DM
 		size : xy ;
 	} ;
 
-	export type Area = Composite < area > ;
+	export type Area = Ease < area > ;
 
 
 	/* 型定義 */
@@ -31,14 +31,14 @@ namespace DM
 		light : number ;
 	}
 
-	export type HSL = Composite < hsl > ;
+	export type HSL = Ease < hsl > ;
 
 	export function HSL ( v : hsl )
 	{
-		return Composite ( v ) ;
+		return Ease ( v ) ;
 	}
 
-	export const toCSS = ( s : HSL ) => Leaf.transR ( s , tocss ) ;
+	export const toCSS = ( s : HSL ) => s.trans_r ( tocss ) ;
 
 	const tocss = ( { hue , sat , light } : hsl ) =>
 	(
@@ -60,7 +60,7 @@ namespace VM
 {
 	export class Applet
 	{
-		value = Leaf ( 50 ) ;
+		value = LS ( 50 ) ;
 		range = { title : "Range" , value : this.value }
 		color = DM.HSL ( { hue : 255 , sat : 0.45 , light : 0.55 } );
 		colorCSS = DM.toCSS ( this.color ) ;
@@ -74,7 +74,7 @@ namespace VM
 	export type range =
 	{
 		title : llr < string > ;
-		value : Leaf < number > ;
+		value : LS < number > ;
 		min ? : llr < number > ;
 		max ? : llr < number > ;
 		step ? : llr < number > ;
@@ -108,7 +108,7 @@ namespace VC
 	);
 	
 
-	const Display = ( colorCss : Leaf < string > ) => $.section
+	const Display = ( colorCss : LS < string > ) => $.section
 	(
 		{ class : "DISPLAY" , style : { backgroundColor : colorCss } } ,
 		$.section ( { style : { color : "#fff" , whiteSpace : "pre" } } , colorCss ) ,
@@ -145,7 +145,7 @@ namespace VC
 			$.span
 			(
 				{ class : "vu" } ,
-				$.span ( { class : "value" } , toL ? Leaf.trans ( value , { get : toL } ) : value ) ,
+				$.span ( { class : "value" } , toL ? LS.trans_r ( value , toL ) : value ) ,
 				$.span ( { class : "unit" } , unit ) ,
 			) ,
 		) ;

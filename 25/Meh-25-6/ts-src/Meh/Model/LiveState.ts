@@ -1,186 +1,271 @@
 
-export const ud = undefined ;
-export type ud = undefined ;
+const log = console.log ;
 
+export const uned = undefined ;
+export type uned = undefined ;
 
-/* Life */
+/* */
 
-const LIFE_TERMINATE = Symbol () ;
+export const ru = Symbol () ;
+export const life_term = Symbol () ;
+export const life_add_ref = Symbol () ;
+export const agg_echan = Symbol () ;
+
+const life_remove_ref = Symbol () ;
+export const refs = Symbol () ;
+export const agg = Symbol () ;
+
+let next_ru = 1 ;
+let life_count = 0 ;
 
 export class Life < R extends Life.Ref >
 {
-	public addRef ( ref : R )
+	constructor ( a ? : Agg )
 	{
-		this.#_refs.add ( ref ) ;
+		life_count ++ ;
+		this [ agg ] = a ;
 	}
 
-	public removeRef ( ref : R )
+	public [ life_add_ref ] ( ref : R )
 	{
-		this.#_refs.delete ( ref ) ;
+		this [ refs ] .add ( ref ) ;
+		ref.src = this ;
 	}
 
-	[ LIFE_TERMINATE ] ()
+	public [ life_remove_ref ] ( ref : R )
 	{
-		this.#_refs.clear () ;
+		this [ refs ] .delete ( ref ) ;
 	}
 
-	#_refs = new Set < R > ;
+	public [ life_term ] ()
+	{
+		this [ refs ] .forEach ( ref => ref.lTerm ?.() ) ;
+		this [ refs ] .clear () ;
+		life_count -- ;
+
+		log ( "term" , this [ ru ] , life_count )
+	}
+
+	protected [ ru ] = next_ru ++ ;
+	protected [ agg ] ? : Agg ;
+	protected [ refs ] = new Set < R > ;
 }
 
 export namespace Life
 {
+	/* methods */
+
+	export const add_ref = < R extends Ref > ( life : Life < R > , ref : R ) => life [ life_add_ref ] ( ref ) ;
+	export const remove_ref = < R extends Ref > ( life : Life < R > , ref : R ) => life [ life_remove_ref ] ( ref ) ;
+	export const terminate = < R extends Ref > ( life : Life < R > ) => life [ life_term ] () ;
+
+	/* Ref */
+
 	export type Ref =
 	{
-		src : Life < any > ;
-		lTerm ? : () => void ;
-	}
-
-	export const terminate = ( life : Life < any > ) : void =>
-	{
-		life [ LIFE_TERMINATE ] () ;
+		src ? : Life < any > ;
+		lTerm ? () : void ;
 	}
 }
 
-
-/* Live */
-
-export type Live < LIT > = Life < Live.Ref > &
+export type Agg =
 {
-	set $ ( lv : LIT ) ;
-	get $ () : LIT ;
-
-	set ( lv : LIT , changer ? : object ) : void ;
-	get () : LIT ;
+	[ agg_echan ] () : void ;
 }
 
-export namespace Live
+
+
+
+/* ---- LiveState ----  */
+
+const ls_set = Symbol () ;
+const ls_get = Symbol () ;
+const ls_notify = Symbol () ;
+const ls_trans = Symbol () ;
+const ls_trans_r = Symbol () ;
+
+
+/* Foundation */
+
+export type LSF < V > = LSF.Ro < V > &
 {
-	/* Row */
+	[ ls_set ] ( newv : V , ch ? : object ) : void ;
+	[ ls_trans ] < TR > ( tr : LS.trans < TR , V > ) : LS < TR > ;
+}
 
-
-	/* Aggrigate */
-
-	export type Agg =
+export namespace LSF
+{
+	export type Ro < V > = Life < LS.Ref > &
 	{
-		eChan () : void ;
+		[ ls_get ] () : V ;
+		[ ls_trans_r ] < TR > ( tr : LS.trans_r < TR , V > ) : LS.Ro < TR > ;
 	}
 
-
-	/*  */
 	
+}
+
+
+
+/* Main */
+
+export function LS < V > ( newv : V , agg ? : Agg ) : LS < V >
+{
+	return new LS.Leaf ( newv , agg ) ;
+}
+
+export type LS < V > = LS.Ro < V > & LSF < V > &
+{
+	set $ ( val : V ) ;
+	get $ () : V ;
+
+	trans < TR > ( tr : LS.trans < TR , V > ) : LS < TR > ;
+}
+
+export namespace LS
+{
+	export type Ro < V > = LSF.Ro < V > &
+	{
+		get $ () : V ;
+
+		add_ref ( ref : Ref ) : void ;
+		remove_ref ( ref : Ref ) : void ;
+
+		trans_r < TR > ( tr : LS.trans_r < TR , V > ) : Ro < TR > ;
+	}
+
 	export type Ref = Life.Ref &
 	{
-		vChan : ( changer : object | ud ) => void ;
+		vChan ( changer ? : object ) : void ; 
 	}
 }
 
 
-export namespace Live
+export namespace LS
 {
-	export abstract class Base < LIT > extends Life < Live.Ref >  implements Live < LIT >
+	/* LSFメソッド */
+
+	export const set = < T > ( ls : LSF < T > , newv : T , ch ? : object ) : void => ls [ ls_set ] ( newv , ch ) ;
+	export const get = < T > ( ls : LSF.Ro < T > ) : T => ls [ ls_get ] () ;
+	export const mute = < T > ( ls : LSF < T > , m : ( v : T ) => T , ch ? : object ) => { set ( ls , m ( get ( ls ) ) , ch ) }
+	export const trans = < R , T  > ( ls : LSF < T > , tr : trans < R , T > ) =>    ls [ ls_trans ] ( tr ) ;
+	export const trans_r = < R , T  > ( ls : LSF < T > , tr : trans_r < R , T > ) =>    ls [ ls_trans_r ] ( tr ) ;
+
+	export const add_ref = < T > ( ls : LSF.Ro < T > , ref : Ref ) => Life.add_ref ( ls , ref ) ;
+	export const remove_ref = < T > ( ls : LSF.Ro < T > , ref : Ref ) => Life.remove_ref ( ls , ref ) ;
+
+
+	/* ....  ....  ....  ....  ....  ....  ....  ....  ....  .... */
+
+
+	export abstract class Core < V >  extends Life < Ref >  implements LS < V >
 	{
-		protected constructor ()
+		/* LS */
+
+		public add_ref ( ref : Ref ) : void { this [ life_add_ref ] ( ref ) ; }
+		public remove_ref ( ref : Ref ) : void { this [ life_remove_ref ] ( ref ) ; }
+
+		public set $ ( newv : V ) { this [ ls_set ] ( newv ) ; }
+		public get $ () : V  { return this [ ls_get ] () ; }
+
+		public set ( newv : V , ch : object ) { this [ ls_set ] ( newv , ch ) ; }
+		public get () : V  { return this [ ls_get ] () ; }
+
+		public trans < TR > ( tr : trans < TR , V > ) : LS < TR > { return this [ ls_trans ] ( tr ) ; }
+		public trans_r < TR > ( tr : trans_r < TR , V > ) : Ro < TR > { return this [ ls_trans_r ] ( tr ) ; }
+
+
+		/* Suppin */
+
+		public override [ life_add_ref ] ( ref : Ref ) : void
 		{
-			super () ;
+			super [ life_add_ref ] ( ref ) ;
+			ref.vChan () ;
 		}
 
-		public set $ ( lv : LIT ) { this.set ( lv ) ; }
-		public get $ () : LIT { return this.get () ; }
-	
-		public abstract set ( lv : LIT , changer ? : object ) : void ;
-		public abstract get () : LIT ;
-	
-		public override addRef ( ref : Live.Ref ) : void
+		public abstract [ ls_set ] ( newv : V , ch ? : object ) : void ;
+		public abstract [ ls_get ] () : V ;
+
+		public [ ls_trans ] < TR > ( tr : trans < TR , V > ) : LS < TR >
 		{
-			super.addRef ( ref ) ;
-			ref.vChan ( ud ) ;
+			return new Trans < TR , V > ( this , tr ) ;
 		}
 
-		/* */
+		public [ ls_trans_r ] < TR > ( tr : trans_r < TR , V > ) : LS.Ro < TR >
+		{
+			return new Trans < TR , V > ( this , tr ) ;
+		}
 
-		protected p_agg ? : Live.Agg ;
+		protected [ ls_notify ] ( ch : object | uned ) : void
+		{
+			this [ refs ] .forEach ( ref => ref.vChan ( ch ) ) ;
+			this [ agg ] && ch != this [ agg ] && this [ agg ] [ agg_echan ] () ;
+		}
 	}
-	
-	
+
 	/* Leaf */
 
-	export abstract class Leaf < LIT > extends Base < LIT >
+	export class Leaf < T >  extends Core < T >
 	{
-		protected init ( value : LIT , agg ? : Agg ) : void
-		{
-			this.p_value = value ;
-		}
-	
-		public override get () : LIT { return this.p_value ; }
-		public override set ( lv : LIT , changer ? : object )
-		{
-			this.p_value = lv ;
-		}
-
-		protected abstract p_value : LIT ;
-	}
-
-	export function newLeaf < LIT > ( defv : LIT ) : new () => Leaf < LIT >
-	{
-		return class extends Leaf < LIT >
-		{
-			protected override p_value: LIT = defv ;
-		} ;
-	}
-	
-
-	export class Number extends newLeaf ( 0 ) {}
-	export class String extends newLeaf ( "" ) {}
-	export class Boolean extends newLeaf ( false ) {}
-	export class BigInt extends newLeaf ( 0n ) {}
-
-	/* Branch */
-
-	export type Branch < LIT > = Live < LIT > &
-	{
-		
-	}
-
-	export function Branch < LIT extends object > ( defv ? : LIT ) : new () => Branch < LIT >
-	{
-		return class Branch < LIT > extends Base < LIT >
-		{
-			public override set ( lv : LIT , changer ? : object ) : void
-			{
-				;
-			}
-	
-			public override get() : LIT
-			{
-				return {} as any ;
-			}
-
-		} as any
-	}
-
-	/* Row */
-
-	export class Row < E > extends Base < E [] >
-	{
-		constructor ( lt : E [] , agg ? : Agg )
+		constructor ( newv : T , agg ? : Agg )
 		{
 			super ( agg ) ;
+			this.#_value = newv ;
 		}
 
-		public override set( lv : E [] , changer : object ) : void
+		public override [ ls_set ] ( newv : T , ch ? : object ) : void
 		{
-			;
+			if ( newv === this.#_value )  return ;
+			this.#_value = newv ;
+			this [ ls_notify ] ( ch ) ;
 		}
 
-		public override get(): E[] {
-			return [] ;
+		public override [ ls_get ] () : T
+		{
+			return this.#_value ;
 		}
 
-		public insert ( lt : E [] ) : void
-		{}
-
-		public clear () : void
-		{}
+		#_value : T ;
 	}
+
+	export class Trans < T , S >  extends Core < T >
+	{
+		constructor ( src : Core < S > , tr : trans_x < T , S > , agg ? : Agg )
+		{
+			super ( agg ) ;
+			this.#_trans = typeof tr == "function" ? { get : tr } : tr ;
+			this.#_src = src ;
+			src [ life_add_ref ] ( this.#_ref ) ;
+		}
+
+		public override [ ls_set ] ( newv : T , ch ? : object ) : void
+		{
+			if ( ! this.#_trans.set )  return ;
+
+			this.#_src [ ls_set ]
+			(
+				this.#_trans.set ( newv ) ,
+				ch
+			) ;
+		}
+
+		public override [ ls_get ] () : T
+		{
+			return this.#_trans.get ( this.#_src [ ls_get ] () ) ;
+		}
+
+
+		#_src : Core < S > ;
+		#_ref : Ref = { vChan : ( ch ) => this [ ls_notify ] ( ch ) }
+		#_trans : trans < T , S > ;
+	}
+
+	export type trans < T , S > =
+	{
+		get : ( val : S ) => T ;
+		set ? : ( val : T ) => S ;
+	}
+
+	export type trans_r < T , S > = ( val : S ) => T ;
+	export type trans_x < T , S > = trans < T , S > | trans_r < T , S > ;
 }
 
