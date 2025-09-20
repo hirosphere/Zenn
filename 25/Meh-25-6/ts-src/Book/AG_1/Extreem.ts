@@ -4,15 +4,14 @@ const log = console.log ;
 
 export namespace DM
 {
-}
-
-export namespace DM
-{
 	export type node =
 	{
 		title : string ;
 		parts : node [] ;
 	}
+
+	export type Node = Ease < node > ;
+	export type Nodes = Ease < node [] > ;
 }
 
 
@@ -32,7 +31,7 @@ export namespace VM
 
 	export class Applet
 	{
-		public readonly root = new DM.Node ( sample ) ;
+		public readonly root : DM.Node = Ease ( sample ) ;
 		public readonly ct = LS ( 0 ) ;
 
 		constructor ()
@@ -227,7 +226,8 @@ export namespace VC
 							target : "_blank"
 						} ,
 					} ,
-					"ts-src" )
+					"ts-src"
+				)
 			)
 		) ;
 	} ;

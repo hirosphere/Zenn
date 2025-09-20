@@ -1,3 +1,4 @@
+import { Renn } from "./Marker.js" ;
 
 const log = console.log ;
 
@@ -78,9 +79,9 @@ export type Agg =
 
 /* ---- LiveState ----  */
 
-const ls_set = Symbol () ;
-const ls_get = Symbol () ;
-const ls_notify = Symbol () ;
+export const ls_set = Symbol () ;
+export const ls_get = Symbol () ;
+export const ls_notify = Symbol () ;
 const ls_trans = Symbol () ;
 const ls_trans_r = Symbol () ;
 
@@ -100,8 +101,6 @@ export namespace LSF
 		[ ls_get ] () : V ;
 		[ ls_trans_r ] < TR > ( tr : LS.trans_r < TR , V > ) : LS.Ro < TR > ;
 	}
-
-	
 }
 
 
@@ -116,7 +115,9 @@ export function LS < V > ( newv : V , agg ? : Agg ) : LS < V >
 export type LS < V > = LS.Ro < V > & LSF < V > &
 {
 	set $ ( val : V ) ;
-	get $ () : V ;
+	// get $ () : V ;
+
+	set ( val : V , ch ? : object ) : void ;
 
 	trans < TR > ( tr : LS.trans < TR , V > ) : LS < TR > ;
 }
@@ -126,6 +127,7 @@ export namespace LS
 	export type Ro < V > = LSF.Ro < V > &
 	{
 		get $ () : V ;
+		get () : V ;
 
 		add_ref ( ref : Ref ) : void ;
 		remove_ref ( ref : Ref ) : void ;
@@ -269,3 +271,18 @@ export namespace LS
 	export type trans_x < T , S > = trans < T , S > | trans_r < T , S > ;
 }
 
+export namespace LS
+{
+	export class RowCore < E >  extends Core < E [] >
+	{
+		public [ ls_set ] ( newv : E [] , ch ? : object ) : void
+		{}
+
+		public [ ls_get ] () : E []
+		{
+			return this.#_renn.orders.map ( o => o.target.$ ) ;
+		}
+
+		#_renn = new Renn < LS < E > > ;
+	}
+}

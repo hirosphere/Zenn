@@ -1,7 +1,7 @@
 import * as Meh from "../Meh/Meh.js" ;
 import { LS , Ease , ef as $ , log } from "../Meh/Meh.js" ;
 
-type llr < V > = V | Leaf < V > ;
+type llr < V > = V | LS < V > ;
 
 namespace DM
 {
