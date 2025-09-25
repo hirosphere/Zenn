@@ -1,4 +1,4 @@
-import { Ease , LS , Renn , Order , DD , ef , pl , DOM } from "../../Meh/Meh.js" ;
+import { Ease , Live , Renn , Order , DD , ef , pl , DOM } from "../../Meh/Meh.js" ;
 const log = console.log ;
 
 
@@ -32,7 +32,7 @@ export namespace VM
 	export class Applet
 	{
 		public readonly root : DM.Node = Ease ( sample ) ;
-		public readonly ct = LS ( 0 ) ;
+		public readonly ct = Live ( 0 ) ;
 
 		constructor ()
 		{
@@ -54,10 +54,12 @@ export namespace VM
 		const create = ( limit : number , path : number [] = [] ) : DM.node [] =>
 		{
 			if ( limit <= 0 )  return [] ;
+
+			log ( path.join ( "." ) )
 			
 			return each
 			(
-				r ( 5 , 5 ) ,
+				r ( 3 , 6 ) ,
 				i =>
 				{
 					ct ++ ;
@@ -72,7 +74,7 @@ export namespace VM
 			) ;
 		}
 
-		node.parts.insert ( create ( 4 ) ) ;
+		node.parts.insert ( create ( 3 ) ) ;
 		log ( ct ) ;
 		return ct ;
 	}
@@ -131,7 +133,7 @@ export namespace VC
 
 			gap : 0.8ex ;
 
-			font-size : 0.7862em ;
+			font-size : 0.908em ;
 		}
 	
 		.NODE
@@ -156,13 +158,13 @@ export namespace VC
 
 		.NODE > .HEAD
 		{
-			font-size : max( 1em , 0.5rem ) ;
+			font-size : max( 1.2em , 0.5rem ) ;
 
 			border-radius : 0.2ex ;
 			background : hsl( 0  0%  0% / 7% ) ;
 
 			display : grid ;
-			height : 3.6em ;
+			height : 2.2em ;
 
 			padding-inline : 1em ;
 
@@ -175,8 +177,7 @@ export namespace VC
 
 		.NODE:hover > .HEAD
 		{
-			background : hsl( 0  0%  0% / 80% ) ;
-			color : hsl( 0  0%  100% ) ;
+			background : hsl( 0  0%  0% / 10% ) ;
 		}
 
 		.NODE > .HEAD > .TITLE
@@ -240,12 +241,12 @@ export namespace VC
 			pl.each
 			(
 				dm.renn ,
-				( o ) => Node ( appVM , o.target )
+				( p ) => Node ( appVM , p )
 			)
 		) ;
 	}
 
-	const Node = ( appVM : VM.Applet , node : DM.Node ) : DD.Node =>
+	const Node = ( app : VM.Applet , node : DM.Node ) : DD.Node =>
 	{
 		return ef.li
 		(
@@ -256,10 +257,10 @@ export namespace VC
 				Command ( "+" , "" , () => 0  ) ,
 				ef.span ( { class : "TITLE" } , node.title ) ,
 				Command ( "CLR" , "Clear" , () => node.parts.clear () ) ,
-				Command ( "TREE" , "New Tree" , () => appVM.ct.$ = VM.testTree ( node ) ) ,
+				Command ( "TREE" , "New Tree" , () => app.ct.$ = VM.testTree ( node ) ) ,
 				Command ( "PART" , "New Part" , () => VM.newPart ( node ) ) ,
 			) ,
-			Nodes ( appVM , node.parts )
+			Nodes ( app , node.parts )
 		) ;
 	}
 

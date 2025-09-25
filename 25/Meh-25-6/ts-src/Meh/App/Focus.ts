@@ -1,4 +1,4 @@
-import { Leaf , Order } from "../Meh.js" ;
+import { Order } from "../Meh.js" ;
 
 export class Focus
 {

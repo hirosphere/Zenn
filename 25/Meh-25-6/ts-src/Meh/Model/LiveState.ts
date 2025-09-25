@@ -1,81 +1,8 @@
-import { Renn } from "./Marker.js" ;
+import { Life , refs , life_add_ref , life_remove_ref , Agg , agg , agg_echan } from "./Life.js" ;
 
 const log = console.log ;
 
-export const uned = undefined ;
-export type uned = undefined ;
-
-/* */
-
-export const ru = Symbol () ;
-export const life_term = Symbol () ;
-export const life_add_ref = Symbol () ;
-export const agg_echan = Symbol () ;
-
-const life_remove_ref = Symbol () ;
-export const refs = Symbol () ;
-export const agg = Symbol () ;
-
-let next_ru = 1 ;
-let life_count = 0 ;
-
-export class Life < R extends Life.Ref >
-{
-	constructor ( a ? : Agg )
-	{
-		life_count ++ ;
-		this [ agg ] = a ;
-	}
-
-	public [ life_add_ref ] ( ref : R )
-	{
-		this [ refs ] .add ( ref ) ;
-		ref.src = this ;
-	}
-
-	public [ life_remove_ref ] ( ref : R )
-	{
-		this [ refs ] .delete ( ref ) ;
-	}
-
-	public [ life_term ] ()
-	{
-		this [ refs ] .forEach ( ref => ref.lTerm ?.() ) ;
-		this [ refs ] .clear () ;
-		life_count -- ;
-
-		log ( "term" , this [ ru ] , life_count )
-	}
-
-	protected [ ru ] = next_ru ++ ;
-	protected [ agg ] ? : Agg ;
-	protected [ refs ] = new Set < R > ;
-}
-
-export namespace Life
-{
-	/* methods */
-
-	export const add_ref = < R extends Ref > ( life : Life < R > , ref : R ) => life [ life_add_ref ] ( ref ) ;
-	export const remove_ref = < R extends Ref > ( life : Life < R > , ref : R ) => life [ life_remove_ref ] ( ref ) ;
-	export const terminate = < R extends Ref > ( life : Life < R > ) => life [ life_term ] () ;
-
-	/* Ref */
-
-	export type Ref =
-	{
-		src ? : Life < any > ;
-		lTerm ? () : void ;
-	}
-}
-
-export type Agg =
-{
-	[ agg_echan ] () : void ;
-}
-
-
-
+log ( "Live" ) ;
 
 /* ---- LiveState ----  */
 
@@ -88,51 +15,60 @@ const ls_trans_r = Symbol () ;
 
 /* Foundation */
 
-export type LSF < V > = LSF.Ro < V > &
+export type Plain < V > = Plain.Ro < V > &
 {
 	[ ls_set ] ( newv : V , ch ? : object ) : void ;
-	[ ls_trans ] < TR > ( tr : LS.trans < TR , V > ) : LS < TR > ;
+	[ ls_trans ] < TR > ( tr : Live.trans < TR , V > ) : Live < TR > ;
 }
 
-export namespace LSF
+export namespace Plain
 {
-	export type Ro < V > = Life < LS.Ref > &
+	export type Ro < V > = Life < Live.Ref > &
 	{
 		[ ls_get ] () : V ;
-		[ ls_trans_r ] < TR > ( tr : LS.trans_r < TR , V > ) : LS.Ro < TR > ;
+		[ ls_trans_r ] < TR > ( tr : Live.trans_r < TR , V > ) : Live.R < TR > ;
 	}
+
+	/** */
+
+	export const set = < T > ( ls : Plain < T > , newv : T , ch ? : object ) : void => ls [ ls_set ] ( newv , ch ) ;
+	export const get = < T > ( ls : Plain.Ro < T > ) : T => ls [ ls_get ] () ;
+	export const mute = < T > ( ls : Plain < T > , m : ( v : T ) => T , ch ? : object ) => { set ( ls , m ( get ( ls ) ) , ch ) }
+	export const trans = < R , T  > ( ls : Plain < T > , tr : Live.trans < R , T > ) =>    ls [ ls_trans ] ( tr ) ;
+	export const trans_r = < R , T  > ( ls : Plain < T > , tr : Live.trans_r < R , T > ) =>    ls [ ls_trans_r ] ( tr ) ;
+
+	export const add_ref = < T > ( ls : Plain.Ro < T > , ref : Live.Ref ) => Life.add_ref ( ls , ref ) ;
+	export const remove_ref = < T > ( ls : Plain.Ro < T > , ref : Live.Ref ) => Life.remove_ref ( ls , ref ) ;
 }
 
 
 
 /* Main */
 
-export function LS < V > ( newv : V , agg ? : Agg ) : LS < V >
+export function Live < V > ( newv : V , agg ? : Agg ) : Live < V >
 {
-	return new LS.Leaf ( newv , agg ) ;
+	return new Live.Leaf ( newv , agg ) ;
 }
 
-export type LS < V > = LS.Ro < V > & LSF < V > &
+export type Live < V > = Live.R < V > & Plain < V > &
 {
-	set $ ( val : V ) ;
-	// get $ () : V ;
+	$ : V ;
 
 	set ( val : V , ch ? : object ) : void ;
 
-	trans < TR > ( tr : LS.trans < TR , V > ) : LS < TR > ;
+	trans < TR > ( tr : Live.trans < TR , V > ) : Live < TR > ;
 }
 
-export namespace LS
+export namespace Live
 {
-	export type Ro < V > = LSF.Ro < V > &
+	export type R < V > = Plain.Ro < V > &
 	{
-		get $ () : V ;
-		get () : V ;
+		readonly $ : V ;
 
 		add_ref ( ref : Ref ) : void ;
 		remove_ref ( ref : Ref ) : void ;
 
-		trans_r < TR > ( tr : LS.trans_r < TR , V > ) : Ro < TR > ;
+		trans_r < TR > ( tr : Live.trans_r < TR , V > ) : R < TR > ;
 	}
 
 	export type Ref = Life.Ref &
@@ -141,25 +77,9 @@ export namespace LS
 	}
 }
 
-
-export namespace LS
+export namespace Live
 {
-	/* LSFメソッド */
-
-	export const set = < T > ( ls : LSF < T > , newv : T , ch ? : object ) : void => ls [ ls_set ] ( newv , ch ) ;
-	export const get = < T > ( ls : LSF.Ro < T > ) : T => ls [ ls_get ] () ;
-	export const mute = < T > ( ls : LSF < T > , m : ( v : T ) => T , ch ? : object ) => { set ( ls , m ( get ( ls ) ) , ch ) }
-	export const trans = < R , T  > ( ls : LSF < T > , tr : trans < R , T > ) =>    ls [ ls_trans ] ( tr ) ;
-	export const trans_r = < R , T  > ( ls : LSF < T > , tr : trans_r < R , T > ) =>    ls [ ls_trans_r ] ( tr ) ;
-
-	export const add_ref = < T > ( ls : LSF.Ro < T > , ref : Ref ) => Life.add_ref ( ls , ref ) ;
-	export const remove_ref = < T > ( ls : LSF.Ro < T > , ref : Ref ) => Life.remove_ref ( ls , ref ) ;
-
-
-	/* ....  ....  ....  ....  ....  ....  ....  ....  ....  .... */
-
-
-	export abstract class Core < V >  extends Life < Ref >  implements LS < V >
+	export abstract class Core < V >  extends Life < Ref >  implements Live < V >
 	{
 		/* LS */
 
@@ -172,8 +92,8 @@ export namespace LS
 		public set ( newv : V , ch : object ) { this [ ls_set ] ( newv , ch ) ; }
 		public get () : V  { return this [ ls_get ] () ; }
 
-		public trans < TR > ( tr : trans < TR , V > ) : LS < TR > { return this [ ls_trans ] ( tr ) ; }
-		public trans_r < TR > ( tr : trans_r < TR , V > ) : Ro < TR > { return this [ ls_trans_r ] ( tr ) ; }
+		public trans < TR > ( tr : trans < TR , V > ) : Live < TR > { return this [ ls_trans ] ( tr ) ; }
+		public trans_r < TR > ( tr : trans_r < TR , V > ) : R < TR > { return this [ ls_trans_r ] ( tr ) ; }
 
 
 		/* Suppin */
@@ -187,20 +107,20 @@ export namespace LS
 		public abstract [ ls_set ] ( newv : V , ch ? : object ) : void ;
 		public abstract [ ls_get ] () : V ;
 
-		public [ ls_trans ] < TR > ( tr : trans < TR , V > ) : LS < TR >
+		public [ ls_trans ] < TR > ( tr : trans < TR , V > ) : Live < TR >
 		{
 			return new Trans < TR , V > ( this , tr ) ;
 		}
 
-		public [ ls_trans_r ] < TR > ( tr : trans_r < TR , V > ) : LS.Ro < TR >
+		public [ ls_trans_r ] < TR > ( tr : trans_r < TR , V > ) : Live.R < TR >
 		{
 			return new Trans < TR , V > ( this , tr ) ;
 		}
 
-		protected [ ls_notify ] ( ch : object | uned ) : void
+		protected [ ls_notify ] ( ch : object | undefined ) : void
 		{
 			this [ refs ] .forEach ( ref => ref.vChan ( ch ) ) ;
-			this [ agg ] && ch != this [ agg ] && this [ agg ] [ agg_echan ] () ;
+			this [ agg ] && ( ch != this [ agg ] ) && this [ agg ] [ agg_echan ] () ;
 		}
 	}
 
@@ -271,18 +191,3 @@ export namespace LS
 	export type trans_x < T , S > = trans < T , S > | trans_r < T , S > ;
 }
 
-export namespace LS
-{
-	export class RowCore < E >  extends Core < E [] >
-	{
-		public [ ls_set ] ( newv : E [] , ch ? : object ) : void
-		{}
-
-		public [ ls_get ] () : E []
-		{
-			return this.#_renn.orders.map ( o => o.target.$ ) ;
-		}
-
-		#_renn = new Renn < LS < E > > ;
-	}
-}

@@ -1,7 +1,9 @@
-import { LS , Renn , Order } from "../Model/Model.js" ;
-import { MehElement , TargetDOMElement } from "./Node.js";
+import { Plain , Renn , Order } from "../Model/Model.js" ;
+import { MehElement } from "./Node.js";
 
-type llr < V > = V | LS.Ro < V > ;
+export type TargetDOMElement = HTMLElement | SVGElement | MathMLElement ;
+
+type llr < V > = V | Plain.Ro < V > ;
 
 /* Element */
 
@@ -22,8 +24,8 @@ export type ElementSpec < E extends TargetDOMElement = any > =
 
 export type Class =
 (
-	string | LS < string > | ClassSwitch |
-	( string | LS < string > | ClassSwitch ) []
+	llr < string > | ClassSwitch |
+	( llr < string > | ClassSwitch ) []
 );
 
 
@@ -54,17 +56,17 @@ export type Action < Ev extends Event = any > = ( ev : Ev ) => void ;
 
 export type BB =  /** BidirectionalBinds */
 {
-	vInp ? : LS < string > ;
-	vChan ? : LS < string > ;
+	vInp ? : Plain < string > ;
+	vChan ? : Plain < string > ;
 
-	vInpN ? : LS < number > ;
-	vChanN ? : LS < number > ;
+	vInpN ? : Plain < number > ;
+	vChanN ? : Plain < number > ;
 
-	chInp ? : LS < boolean > ;
-	chChan ? : LS < boolean > ;
+	chInp ? : Plain < boolean > ;
+	chChan ? : Plain < boolean > ;
 }
 
-export type Focus = LS.Ro < boolean > ;
+export type Focus = Plain.Ro < boolean > ;
 
 
 export type Hook < E extends TargetDOMElement > =
@@ -88,10 +90,10 @@ export type Text = llr < string > | llr < number > | llr < boolean > | llr < big
 export namespace pl
 {
 	export const free = () => new PartsPlace.Free () ;
-	export const each = < EV >
+	export const each = < E >
 	(
-		model : Renn < EV > ,
-		createNode : ( i : Order < EV > ) => Node
+		model : Renn < E > ,
+		createNode : ( e : E , o : Order < E > ) => Node
 	
 	) => new PartsPlace.Each ( model , createNode ) ; 
 }
@@ -113,12 +115,12 @@ export namespace PartsPlace
 		}
 	}
 
-	export class Each < EV > extends PartsPlace
+	export class Each < E > extends PartsPlace
 	{
 		constructor
 		(
-			public readonly model : Renn < EV > ,
-			public readonly createNode : ( i : Order < EV > ) => Node ,
+			public readonly model : Renn < E > ,
+			public readonly createNode : ( part : E , order : Order < E > ) => Node ,
 		)
 		{ super () ; }
 	}

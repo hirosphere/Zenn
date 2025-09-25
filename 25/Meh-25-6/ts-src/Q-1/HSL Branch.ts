@@ -1,7 +1,7 @@
 import * as Meh from "../Meh/Meh.js" ;
-import { LS , Ease , ef as $ , log } from "../Meh/Meh.js" ;
+import { Live , Ease , ef as $ , log } from "../Meh/Meh.js" ;
 
-type llr < V > = V | LS < V > ;
+type llr < V > = V | Live < V > ;
 
 namespace DM
 {
@@ -60,7 +60,7 @@ namespace VM
 {
 	export class Applet
 	{
-		value = LS ( 50 ) ;
+		value = Live ( 50 ) ;
 		range = { title : "Range" , value : this.value }
 		color = DM.HSL ( { hue : 255 , sat : 0.45 , light : 0.55 } );
 		colorCSS = DM.toCSS ( this.color ) ;
@@ -74,7 +74,7 @@ namespace VM
 	export type range =
 	{
 		title : llr < string > ;
-		value : LS < number > ;
+		value : Live < number > ;
 		min ? : llr < number > ;
 		max ? : llr < number > ;
 		step ? : llr < number > ;
@@ -108,7 +108,7 @@ namespace VC
 	);
 	
 
-	const Display = ( colorCss : LS < string > ) => $.section
+	const Display = ( colorCss : Live.R < string > ) => $.section
 	(
 		{ class : "DISPLAY" , style : { backgroundColor : colorCss } } ,
 		$.section ( { style : { color : "#fff" , whiteSpace : "pre" } } , colorCss ) ,
@@ -145,7 +145,7 @@ namespace VC
 			$.span
 			(
 				{ class : "vu" } ,
-				$.span ( { class : "value" } , toL ? LS.trans_r ( value , toL ) : value ) ,
+				$.span ( { class : "value" } , toL ? value.trans_r ( toL ) : value ) ,
 				$.span ( { class : "unit" } , unit ) ,
 			) ,
 		) ;

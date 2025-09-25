@@ -1,10 +1,16 @@
-import { Leaf , Live , Renn , Order , ef , pl , DD , Focus } from "../../Meh/Meh.js" ;
+import { Live , Ease , Renn , Order , ef , pl , DD , Focus } from "../../Meh/Meh.js" ;
+import { Plain } from "../../Meh/Model/LiveState.js" ;
 
 namespace DM
 {
-	export type Applet = Live < applet > ;
-	export type TodoList = Live < todo_list > ;
-	export type TodoItem = Live < todo_item > ;
+	export type Applet = Ease < applet > ;
+	export type TodoList = Ease < todo_list > ;
+	export type TodoItem = Ease < todo_item > ;
+
+	( app : Ease < applet > ) =>
+	{
+		app ;
+	}
 
 	export type applet =
 	{
@@ -44,11 +50,12 @@ namespace VM
 {
 	export class Applet
 	{
-		doc : DM.Applet = Live ( DM.sample_data ) ;
+		doc : DM.Applet = Ease ( DM.sample_data ) ;
 		windowSize = Live ( "" ) ;
 
 		constructor ()
 		{
+			this.doc
 			this.doc.lists.renn.each ( list => randDone ( list ) ) ;
 
 			updateWindowSize ( this.windowSize ) ;
@@ -139,11 +146,11 @@ namespace VC
 				pl.each
 				(
 					vm.doc.lists.renn ,
-					o => TodoList ( o.target )
+					p => TodoList ( p )
 				) ,
 				ef.textarea
 				(
-					{ class : "JSON" , props : { value : Leaf.transR( vm.doc , o => JSON.stringify ( o , null , "\t" ) ) } }
+					{ class : "JSON" , props : { value : vm.doc.trans_r ( o => JSON.stringify ( o , null , "\t" ) ) } }
 				) ,
 				ef.p ( vm.windowSize )
 		)
@@ -161,14 +168,14 @@ namespace VC
 			pl.each
 			(
 				dm.items.renn ,
-				o => TodoItem ( o )
+				( p , o ) => TodoItem ( o )
 			)
 		) ,
 	) ;
 
 	const Editor = ( dm : DM.TodoList ) =>
 	{
-		const title = Leaf ( "すべき何か" ) ;
+		const title = Ease ( "すべき何か" ) ;
 
 		const submit = () =>
 		{
@@ -196,7 +203,7 @@ namespace VC
 			ef.input ( { attrs : { type : "checkbox" } , biBind : { chInp : d.completed } } ) ,
 			ef.span ( { class : "_TEXT" } , d.title ) ,
 			ef.button ( { passive : { click () { o.delete () ; } } } , "削除" ) ,
-		);
+		) ;
 	}
 }
 

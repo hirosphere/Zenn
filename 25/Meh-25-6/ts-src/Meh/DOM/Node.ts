@@ -1,14 +1,12 @@
-import { Life , LS } from "../Model/Model.js" ;
+import { Life , Plain , Live } from "../Model/Model.js" ;
 import * as DD from "./DD.js" ;
 import { PartsPlace } from "./PartsPlace.js" ;
-
-export type TargetDOMElement = HTMLElement | SVGElement | MathMLElement ;
 
 
 export abstract class MehNode
 {
 	public abstract node : Node ;
-	#srcs = new Set < LS.Ref > ;
+	#srcs = new Set < Live.Ref > ;
 
 	protected bindState
 	(
@@ -17,16 +15,16 @@ export abstract class MehNode
 	
 	) : void
 	{
-		if ( text instanceof LS.Core )
+		if ( text instanceof Live.Core )
 		{
 			const ref =
 			{
 				source : text ,
-				vChan : () => update ( LS.get ( text ) ) ,
+				vChan : () => update ( Plain.get ( text ) ) ,
 			}
 
 			this.#srcs.add ( ref ) ;
-			LS.add_ref ( text , ref ) ;
+			Plain.add_ref ( text , ref ) ;
 		}
 
 		else  update ( text ) ;
@@ -67,7 +65,7 @@ export class MehText extends MehNode
 
 export class MehElement extends MehNode
 {
-	public readonly el : TargetDOMElement ;
+	public readonly el : DD.TargetDOMElement ;
 
 	#_parts : PartsPlace | null = null ;
 
@@ -138,7 +136,7 @@ export class MehElement extends MehNode
 			this.el.classList.add ( ... dec.split ( /\s+/g ) ) ;
 		}
 
-		else if ( dec instanceof LS.Core && typeof dec.$ == "string" )
+		else if ( dec instanceof Live.Core && typeof dec.$ == "string" )
 		{
 			const place = new ClassPlace ( this.el ) ;
 			this.bindState ( dec , names => place.classNames = names ) ;
@@ -180,7 +178,7 @@ export class MehElement extends MehNode
 		{
 			const ss = new CSSStyleSheet () ;
 
-			if ( dec instanceof LS.Core )
+			if ( dec instanceof Live.Core )
 			{
 				this.bindState ( dec , state => ss.replace ( state ) ) ;
 			}
@@ -219,7 +217,7 @@ export class MehElement extends MehNode
 	}
 
 
-	protected bindbb ( type : string , prop : string , state : LS < any > , cv ? : typeof sncv ) : void
+	protected bindbb ( type : string , prop : string , state : Plain < any > , cv ? : typeof sncv ) : void
 	{
 		this.bindState
 		(
@@ -233,7 +231,7 @@ export class MehElement extends MehNode
 			ev =>
 			{
 				const v = ( ev.target as any ) [ prop ] ;
-				LS.set ( state , cv?.set ( v ) ?? v ) ;
+				Plain.set ( state , cv?.set ( v ) ?? v ) ;
 			}
 		) ;
 	}
@@ -256,7 +254,7 @@ export class MehElement extends MehNode
 	}
 }
 
-const makeElement = ( ns : string , type : string , dec : DD.ElementSpec ) : TargetDOMElement =>
+const makeElement = ( ns : string , type : string , dec : DD.ElementSpec ) : DD.TargetDOMElement =>
 {
 	const rt =
 	(
@@ -268,7 +266,7 @@ const makeElement = ( ns : string , type : string , dec : DD.ElementSpec ) : Tar
 		)
 	) ;
 	
-	return rt as TargetDOMElement ;
+	return rt as DD.TargetDOMElement ;
 }
 
 

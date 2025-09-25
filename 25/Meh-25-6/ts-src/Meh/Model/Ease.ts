@@ -1,76 +1,99 @@
-import { LS , Agg , ls_set , ls_get } from "./LiveState.js" ;
-import { Renn } from "./Marker.js" ;
+import { Agg, agg_echan , } from "./Life.js" ;
+import { Live , ls_set , ls_get , ls_notify } from "./LiveState.js" ;
+import { Row , RowCore } from "./Arrigate.js" ;
 
-export function Ease < V > ( newv : V ) : Ease < V >
+const log = console.log ;
+
+export function Ease < V > ( val : V , agg ? : Agg ) : Ease < V >
 {
-	return {} as any;
+	return val instanceof Object ?
+	(
+		val instanceof Array ?
+			new EaseRow ( val , agg ) as any
+			: new EaseBranch ( val , agg ) as any
+	)
+	: Live ( val , agg ) as any ;
 }
+
 
 export type Ease < V > =
 (
 	V extends object ?
 	(
 		V extends Array < infer E > ?
-			Row < E > :
+			Row < E , Ease < E > > :
 			Branch < V >
-	)
-	: LS < V >
+	) :
+	V extends boolean ?
+		Live < boolean > :
+		Live < V >
 ) ;
 
-type Branch < V extends object > = LS < V > & Agg &
+
+
+class EaseRow < E > extends RowCore < E , Ease < E > >
 {
-	[ prop in keyof V ] : Ease < V [ prop ] >
-} ;
-
-
-export type Row < E > = LS < E [] > & Agg &
-{
-	renn : Renn < E > ;
-
-	at ( pos : number ) : Ease < E > | undefined ;
-	insert ( vs : E [] ) : void ;
-	delete () : void ;
-	clear () : void ;
+	protected override createElement ( val : E ) : Ease < E >
+	{
+		return Ease ( val ) ;
+	}
 }
 
 
 /* */
 
-export class BranchCore < V extends object >  extends LS.Core < V >
+
+type Branch < V extends object > = Live < V > & Agg &
 {
-	public [ ls_set ] ( newv : V , ch ? : object ) : void
-	{}
+	[ prop in keyof V ] : Ease < V [ prop ] >
+} ;
+
+export class EaseBranch < V extends object >  extends Live.Core < V >  implements Agg
+{
+	constructor ( val : V , agg ? : Agg )
+	{
+		super ( agg ) ;
+
+		Object.entries ( val ) .forEach
+		(
+			( [ prop , val ] ) => ( this as any ) [ prop ] = Ease ( val , this ) 
+		) ;
+	}
+
+	public [ ls_set ] ( val : V , ch ? : object ) : void
+	{
+		Object.entries ( val ).forEach ( ent => set_prop ( this , ent ) ) ;
+		this [ ls_notify ] ( ch ) ;
+	}
 
 	public [ ls_get ] () : V
 	{
-		return {} as any ;
+		const rt : any = {} ;
+		Object.entries ( this ).forEach
+		(
+			( [ prop , ls ] ) =>
+			{
+				if ( ls instanceof Live.Core )
+				{
+					rt [ prop ] = ls.$ ;
+				}
+			}
+		)
+		return rt ;
+	}
+
+	public [ agg_echan ] () : void
+	{
+		this [ ls_notify ] ( undefined ) ;
 	}
 }
 
-
-const lv = 0 ;
-const xy = { x : 55 } ;
-const shape = { size : xy } ;
-
-( e : Ease < number > ) => e.$ = 5 ;
-( e : Ease < typeof xy > ) => e.x.$ = 5 ;
-( e : Ease < typeof xy > ) => e.$ = xy ;
-( e : Ease < typeof shape > ) => e.size.x.$ = 5 ;
-( e : Ease < typeof shape > ) => e.$ = shape ;
-
-( e : Ease < typeof shape > ) =>
+function set_prop ( br : any , [ prop , val ] : [ any , any ] )
 {
-	e.add_ref ( { vChan : () => console.log } ) ;
+	const ls = br [ prop ] ;
+	if ( ls instanceof Live.Core )
+	{
+		ls.set ( val , br ) ;
+	}
 }
 
-
-( rw : Ease < typeof shape [] > ) =>
-{
-	rw.add_ref ( { vChan : () => console.log } ) ;
-	rw.$ = [ shape , shape ] ;
-
-	const e = rw.at ( 0 ) ;
-	e && e.size.x.set ( xy.x ) ;
-
-	rw.$ [ 0 ] ?.size.x.toFixed ( 2 ) ;
-}

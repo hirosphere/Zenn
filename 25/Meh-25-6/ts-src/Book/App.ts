@@ -1,4 +1,4 @@
-import { Leaf , Live , Model as moh , ef , DD , DOM as dom , log } from "../Meh/Meh.js" ;
+import { Live , Ease , Model as moh , ef , DD , DOM as dom , log } from "../Meh/Meh.js" ;
 import { main as testMain } from "./Test.js" ;
 import * as AG_1 from "./AG_1/AG_1.js" ;
 
@@ -25,7 +25,7 @@ namespace VM
 
 	export class App
 	{
-		doc = Live ( app_iv ) ;
+		doc = Ease ( app_iv ) ;
 
 		constructor ()
 		{
@@ -44,7 +44,7 @@ namespace VM
 
 	const clock = ( tempo : number = 1000 ) =>
 	{
-		const st = Leaf ( 0 ) ;
+		const st = Ease ( 0 ) ;
 		setInterval ( () => st.$ ++ , tempo ) ;
 		return st ;
 	}
@@ -103,7 +103,7 @@ namespace VC
 		) ;
 	} ;
 
-	const Command = ( title : Leaf.LL < string > , click : () => void ) => ef.button
+	const Command = ( title : Live.R < string > | string , click : () => void ) => ef.button
 	(
 		{ passive : { click } } ,
 		title ,

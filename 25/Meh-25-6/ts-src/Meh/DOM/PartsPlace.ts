@@ -128,7 +128,7 @@ class RennPlace < EV > extends PartsPlace
 	constructor ( protected dec : DD.PartsPlace.Each < EV > , rdr : Reader )
 	{
 		super ( rdr.cel ) ;
-		
+
 		this.#_src =
 		{
 			insert : ( start , orders ) =>
@@ -139,7 +139,7 @@ class RennPlace < EV > extends PartsPlace
 				(
 					order => this.makePart
 					(
-						dec.createNode ( order ) ,
+						dec.createNode ( order.target , order ) ,
 						next ?.node
 					)
 				) ;

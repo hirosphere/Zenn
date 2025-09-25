@@ -1,4 +1,4 @@
-import { LS } from "../Model/Model.js";
+import { Live } from "../Model/Model.js";
 import { DD , MehElement , PartsPlace } from "./DOM.js" ;
 
 
@@ -27,15 +27,13 @@ export const add =
 
 /* ElementFactory */
 
-const first = {} ;
 
-
-const create = < E extends Element = any >
+const create = < E extends DD.TargetDOMElement = any >
 (
 	ns : string ,
 	type : string ,
 
-	first : DD.ElementSpec | DD.Part | undefined ,
+	first : DD.ElementSpec < E > | DD.Part | undefined ,
 	remain : DD.Part [] ,
 
 ) : MehElement =>
@@ -46,7 +44,7 @@ const create = < E extends Element = any >
 		(
 			first instanceof MehElement ||
 			first instanceof DD.PartsPlace ||
-			first instanceof LS.Core
+			first instanceof Live.Core
 		)
 		{			
 			return new MehElement ( ns , type , {} , [ first , ... remain ] ) ;
