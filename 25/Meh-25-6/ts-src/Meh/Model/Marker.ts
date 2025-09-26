@@ -34,8 +34,10 @@ export class Renn < T >  extends Life < Renn.Ref < T > >  implements Agg
 
 	/* */
 
-	public insert ( targets : T [] , start : number = this.#_orders.length ) : void
+	public insert ( targets : T [] , start ? : number ) : void
 	{
+		log ( "Renn ins" , start ) ;
+
 		start = pos_trim ( start , this.#_orders ) ;
 
 		const orders = create_orders ( this , start , targets ) ;
@@ -121,9 +123,9 @@ const create_orders = < T > ( agg : Renn < T > , start : number , targets ? : T 
 	return rt ;
 }
 
-const pos_trim = ( start : number , ar : Array < any > ) =>
+const pos_trim = ( start : number | undefined , ar : Array < any > ) =>
 {
-	return Math.max ( 0 , Math.min ( ar.length , start ) ) ;
+	return Math.max ( 0 , Math.min ( ar.length , start ?? ar.length ) ) ;
 }
 
 export namespace Renn

@@ -4,6 +4,11 @@ import { Live , ls_set , ls_get , ls_notify } from "./LiveState.js" ;
 
 import { Renn } from "./Marker.js" ;
 
+const log = console.log ;
+
+
+/* */
+
 export type Row < E , EL extends Live < any > > = Live < E [] > & Agg &
 {
 	get renn () : Renn < EL > ;
@@ -26,6 +31,7 @@ export abstract class RowCore < E , EL extends Live < any > >  extends Live.Core
 
 	public [ ls_set ] ( vals : E [] , ch ? : object ) : void
 	{
+		this.clear () ;
 		this.insert ( vals , 0 ) ;
 	}
 
@@ -43,11 +49,12 @@ export abstract class RowCore < E , EL extends Live < any > >  extends Live.Core
 		return this.#_renn.at ( pos ) ?.target ;
 	}
 	
-	public insert ( vals : E [] , start : number = this.#_renn.orders.length ) : void
+	public insert ( vals : E [] , start ? : number ) : void
 	{
 		this.#_renn.insert
 		(
 			vals.map ( val => this.createElement ( val ) , start ) ,
+			start
 		) ;
 	}
 

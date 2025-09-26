@@ -1,4 +1,4 @@
-import { Agg, agg_echan , } from "./Life.js" ;
+import { ru , Agg , agg , agg_echan , } from "./Life.js" ;
 import { Live , ls_set , ls_get , ls_notify } from "./LiveState.js" ;
 import { Row , RowCore } from "./Arrigate.js" ;
 
@@ -35,7 +35,7 @@ class EaseRow < E > extends RowCore < E , Ease < E > >
 {
 	protected override createElement ( val : E ) : Ease < E >
 	{
-		return Ease ( val ) ;
+		return Ease ( val , this ) ;
 	}
 }
 

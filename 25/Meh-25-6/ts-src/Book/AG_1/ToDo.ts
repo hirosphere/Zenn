@@ -1,6 +1,8 @@
 import { Live , Ease , Renn , Order , ef , pl , DD , Focus } from "../../Meh/Meh.js" ;
 import { Plain } from "../../Meh/Model/LiveState.js" ;
 
+const log = console.log ;
+
 namespace DM
 {
 	export type Applet = Ease < applet > ;
@@ -39,7 +41,7 @@ namespace DM
 				title : "Todo 日本史" ,
 				items :
 				[
-					{ title : "" , completed : true } ,
+					{ title : "倭国へ逃げる" , completed : true } ,
 				]
 			} ,
 		]
@@ -48,19 +50,55 @@ namespace DM
 
 namespace VM
 {
+	const STORAGE_KEY = "TODO_25_09" ;
+
 	export class Applet
 	{
-		doc : DM.Applet = Ease ( DM.sample_data ) ;
+		doc : DM.Applet ;
 		windowSize = Live ( "" ) ;
 
 		constructor ()
 		{
-			this.doc
-			this.doc.lists.renn.each ( list => randDone ( list ) ) ;
+			this.doc = load () ;
+
+			// this.doc.lists.renn.each ( list => randDone ( list ) ) ;
 
 			updateWindowSize ( this.windowSize ) ;
 			window.addEventListener ( "resize" , () => updateWindowSize ( this.windowSize ) ) ;
 		}
+
+		public save () : void
+		{
+			const json = JSON.stringify ( this.doc.$ ) ;
+
+			log ( "save" , json )
+			
+			localStorage.setItem ( STORAGE_KEY , json ) ;
+		}
+	}
+
+	function load () : DM.Applet
+	{
+		try
+		{
+			const json = localStorage.getItem ( STORAGE_KEY ) ;
+			const val = JSON.parse ( json ?? "" ) as DM.applet ;	
+			return Ease ( val ) ;
+		}
+		catch ( exc )
+		{
+			return Ease ( DM.sample_data ) ;
+		}
+	}
+
+
+	export function newItem ( list : DM.TodoList )
+	{
+		list.items.insert
+		(
+			[ { title : "やるべき何か" , completed : false } ] ,
+			0
+		) ;
 	}
 
 	const updateWindowSize = ( s : Live < string > ) => s.$ = `${ window.innerWidth } , ${ window.innerHeight }` ;
@@ -133,7 +171,7 @@ namespace VC
 
 	export const Applet = () : DD.Node =>
 	{
-		const vm = new VM.Applet ;
+		const app = new VM.Applet ;
 
 		return ef.div
 		(
@@ -142,32 +180,39 @@ namespace VC
 			ef.main
 			(
 				{ class : "FC PGXX AC OA" } ,
-				ef.h1 ( vm.doc.title ) ,
+				ef.h1 ( app.doc.title ) ,
+				ef.section
+				(
+					{ class : "FR PGXX" } ,
+					ef.input ( { biBind : { vChan : app.doc.title } } ) ,
+					ef.button ( { passive : { click () { app.save () ; } } } , "Save" ) ,
+				) ,
 				pl.each
 				(
-					vm.doc.lists.renn ,
+					app.doc.lists.renn ,
 					p => TodoList ( p )
 				) ,
 				ef.textarea
 				(
-					{ class : "JSON" , props : { value : vm.doc.trans_r ( o => JSON.stringify ( o , null , "\t" ) ) } }
+					{ class : "JSON" , props : { value : app.doc.trans_r ( o => JSON.stringify ( o , null , "\t" ) ) } }
 				) ,
-				ef.p ( vm.windowSize )
+				ef.p ( app.windowSize )
 		)
 		) ;
 	}
 
-	const TodoList = ( dm : DM.TodoList ) : DD.Node => ef.article
+	const TodoList = ( list : DM.TodoList ) : DD.Node => ef.article
 	(
 		{ class : "TODO_LIST FC PGXX" } ,
 
-		ef.h2 ( dm.title ) ,
-		Editor ( dm ) ,
+		ef.h2 ( list.title ) ,
+		ef.input ( { biBind : { vChan : list.title } } ) ,
+		Editor ( list ) ,
 		ef.ul
 		(
 			pl.each
 			(
-				dm.items.renn ,
+				list.items.renn ,
 				( p , o ) => TodoItem ( o )
 			)
 		) ,
@@ -175,33 +220,20 @@ namespace VC
 
 	const Editor = ( dm : DM.TodoList ) =>
 	{
-		const title = Ease ( "すべき何か" ) ;
-
-		const submit = () =>
-		{
-			dm.items.insert ( [ { title : title.$ , completed : false } ] , 0 ) ;
-			title.$ = "すべき何か" ;
-		}
-
-		return ef.form
+		return ef.section
 		(
-			{
-				class : "EDITOR  FR PGXX" ,
-				active : { submit : ev => { submit () ; ev.preventDefault () ; } }
-			} ,
-			ef.input ( { biBind : { vChan : title } } ) ,
-			ef.button ( "新規作成" ) ,
-		) ;
+			ef.button ( { passive : { click () { VM.newItem ( dm ) } } } , "+" )
+		)
 	}
 
 	const TodoItem = ( o : Order < DM.TodoItem > ) =>
 	{
-		const d = o.target ;
+		const i = o.target ;
 		return ef.li
 		(
 			{ class : "TODO_ITEM" } ,
-			ef.input ( { attrs : { type : "checkbox" } , biBind : { chInp : d.completed } } ) ,
-			ef.span ( { class : "_TEXT" } , d.title ) ,
+			ef.input ( { attrs : { type : "checkbox" } , biBind : { chInp : i.completed } } ) ,
+			ef.input ( { class : "_TEXT" , biBind : { vChan : i.title } } ) ,
 			ef.button ( { passive : { click () { o.delete () ; } } } , "削除" ) ,
 		) ;
 	}

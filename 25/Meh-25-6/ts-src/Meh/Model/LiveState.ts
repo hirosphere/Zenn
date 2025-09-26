@@ -134,10 +134,10 @@ export namespace Live
 			this.#_value = newv ;
 		}
 
-		public override [ ls_set ] ( newv : T , ch ? : object ) : void
+		public override [ ls_set ] ( val : T , ch ? : object ) : void
 		{
-			if ( newv === this.#_value )  return ;
-			this.#_value = newv ;
+			if ( val === this.#_value )  return ;
+			this.#_value = val ;
 			this [ ls_notify ] ( ch ) ;
 		}
 
