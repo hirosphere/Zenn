@@ -1,2 +1,2 @@
-export {};
+"use strict";
 //# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiVXNlTGl2ZVN0YXRlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vdHMtcXNyYy9Vc2VMaXZlU3RhdGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiJ9

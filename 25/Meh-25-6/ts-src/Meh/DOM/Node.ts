@@ -63,24 +63,24 @@ export class MehText extends MehNode
 
 /*  */
 
-export class MehElement extends MehNode
+export class MehElement < E extends DD.TargetDOMElement >  extends MehNode
 {
-	public readonly el : DD.TargetDOMElement ;
+	public readonly el : E ;
 
-	#_parts : PartsPlace | null = null ;
+	#_parts ? : PartsPlace ;
 
 
 	constructor
 	(
 		ns : string ,
 		type : string ,
-		dec : DD.ElementSpec ,
+		dec : DD.ElementSpec < E > ,
 		parts : DD.Part [] ,
 	)
 	{
 		super () ;
 
-		this.el = makeElement ( ns , type , dec ) ;
+		this.el = makeElement ( ns , type , dec ) as E ;
 
 		/* bind props */
 
@@ -188,7 +188,7 @@ export class MehElement extends MehNode
 		}
 	}
 
-	protected bindAttrs ( dec : DD.Attributes < any > , ns : string ) : void
+	protected bindAttrs ( dec : DD.Props < any > , ns : string ) : void
 	{
 		for ( const [ name , value ] of Object.entries ( dec ) )
 		{
@@ -196,7 +196,7 @@ export class MehElement extends MehNode
 		}
 	}
 
-	protected bindProps ( dec : DD.Attributes < any > )
+	protected bindProps ( dec : DD.Props < any > )
 	{
 		for ( const [ name , value ] of Object.entries ( dec ) )
 		{
@@ -254,7 +254,7 @@ export class MehElement extends MehNode
 	}
 }
 
-const makeElement = ( ns : string , type : string , dec : DD.ElementSpec ) : DD.TargetDOMElement =>
+const makeElement = ( ns : string , type : string , dec : DD.ElementSpec < any > ) : DD.TargetDOMElement =>
 {
 	const rt =
 	(

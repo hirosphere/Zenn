@@ -15,7 +15,7 @@ const ls_trans_r = Symbol () ;
 
 /* Foundation */
 
-export type Plain < V > = Plain.Ro < V > &
+export type Plain < V > = Plain.R < V > &
 {
 	[ ls_set ] ( newv : V , ch ? : object ) : void ;
 	[ ls_trans ] < TR > ( tr : Live.trans < TR , V > ) : Live < TR > ;
@@ -23,7 +23,7 @@ export type Plain < V > = Plain.Ro < V > &
 
 export namespace Plain
 {
-	export type Ro < V > = Life < Live.Ref > &
+	export type R < V > = Life < Live.Ref > &
 	{
 		[ ls_get ] () : V ;
 		[ ls_trans_r ] < TR > ( tr : Live.trans_r < TR , V > ) : Live.R < TR > ;
@@ -32,13 +32,13 @@ export namespace Plain
 	/** */
 
 	export const set = < T > ( ls : Plain < T > , newv : T , ch ? : object ) : void => ls [ ls_set ] ( newv , ch ) ;
-	export const get = < T > ( ls : Plain.Ro < T > ) : T => ls [ ls_get ] () ;
+	export const get = < T > ( ls : Plain.R < T > ) : T => ls [ ls_get ] () ;
 	export const mute = < T > ( ls : Plain < T > , m : ( v : T ) => T , ch ? : object ) => { set ( ls , m ( get ( ls ) ) , ch ) }
 	export const trans = < R , T  > ( ls : Plain < T > , tr : Live.trans < R , T > ) =>    ls [ ls_trans ] ( tr ) ;
 	export const trans_r = < R , T  > ( ls : Plain < T > , tr : Live.trans_r < R , T > ) =>    ls [ ls_trans_r ] ( tr ) ;
 
-	export const add_ref = < T > ( ls : Plain.Ro < T > , ref : Live.Ref ) => Life.add_ref ( ls , ref ) ;
-	export const remove_ref = < T > ( ls : Plain.Ro < T > , ref : Live.Ref ) => Life.remove_ref ( ls , ref ) ;
+	export const add_ref = < T > ( ls : Plain.R < T > , ref : Live.Ref ) => Life.add_ref ( ls , ref ) ;
+	export const remove_ref = < T > ( ls : Plain.R < T > , ref : Live.Ref ) => Life.remove_ref ( ls , ref ) ;
 }
 
 
@@ -53,15 +53,15 @@ export function Live < V > ( newv : V , agg ? : Agg ) : Live < V >
 export type Live < V > = Live.R < V > & Plain < V > &
 {
 	$ : V ;
-
 	set ( val : V , ch ? : object ) : void ;
-
 	trans < TR > ( tr : Live.trans < TR , V > ) : Live < TR > ;
 }
 
 export namespace Live
 {
-	export type R < V > = Plain.Ro < V > &
+	/* Readonly */
+
+	export type R < V > = Plain.R < V > &
 	{
 		readonly $ : V ;
 
@@ -71,9 +71,16 @@ export namespace Live
 		trans_r < TR > ( tr : Live.trans_r < TR , V > ) : R < TR > ;
 	}
 
+	export namespace R
+	{
+		export type LL < V > = Live.R < V > | V ;
+	}
+
+	/* Refference */
+
 	export type Ref = Life.Ref &
 	{
-		vChan ( changer ? : object ) : void ; 
+		vChan ( changer : object | undefined ) : void ; 
 	}
 }
 
@@ -101,7 +108,7 @@ export namespace Live
 		public override [ life_add_ref ] ( ref : Ref ) : void
 		{
 			super [ life_add_ref ] ( ref ) ;
-			ref.vChan () ;
+			ref.vChan ( undefined ) ;
 		}
 
 		public abstract [ ls_set ] ( newv : V , ch ? : object ) : void ;

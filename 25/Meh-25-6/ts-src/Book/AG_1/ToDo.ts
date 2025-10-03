@@ -1,4 +1,4 @@
-import { Live , Ease , Renn , Order , ef , pl , DD , Focus } from "../../Meh/Meh.js" ;
+import { Live , Ease , Renn , Order , ef , pl , DD , Focus , DOM } from "../../Meh/Meh.js" ;
 import { Plain } from "../../Meh/Model/LiveState.js" ;
 
 const log = console.log ;
@@ -11,7 +11,7 @@ namespace DM
 
 	( app : Ease < applet > ) =>
 	{
-		app ;
+		app.$.title = "" ;
 	}
 
 	export type applet =
@@ -54,14 +54,17 @@ namespace VM
 
 	export class Applet
 	{
-		doc : DM.Applet ;
+		doc : DM.Applet = Ease ( DM.sample_data ) ;
+
 		windowSize = Live ( "" ) ;
 
 		constructor ()
 		{
-			this.doc = load () ;
-
-			// this.doc.lists.renn.each ( list => randDone ( list ) ) ;
+			load
+			(
+				this.doc ,
+				() => this.doc.add_ref ( { vChan : () => this.save () } )
+			) ;
 
 			updateWindowSize ( this.windowSize ) ;
 			window.addEventListener ( "resize" , () => updateWindowSize ( this.windowSize ) ) ;
@@ -77,17 +80,18 @@ namespace VM
 		}
 	}
 
-	function load () : DM.Applet
+	function load ( doc : DM.Applet , onsuccess : () => void ) : void
 	{
 		try
 		{
 			const json = localStorage.getItem ( STORAGE_KEY ) ;
 			const val = JSON.parse ( json ?? "" ) as DM.applet ;	
-			return Ease ( val ) ;
+			doc.$ = val ;
+			onsuccess () ;
 		}
 		catch ( exc )
 		{
-			return Ease ( DM.sample_data ) ;
+			log ( "ロード・パースエラー" )
 		}
 	}
 
@@ -96,7 +100,7 @@ namespace VM
 	{
 		list.items.insert
 		(
-			[ { title : "やるべき何か" , completed : false } ] ,
+			[ { title : "" , completed : false } ] ,
 			0
 		) ;
 	}
@@ -110,7 +114,7 @@ namespace VM
 }
 
 
-namespace VC
+export namespace VC
 {
 	const css = /* css */ `
 		
@@ -129,6 +133,7 @@ namespace VC
 
 		ul { list-style : none ; }
 		button { padding : 0.4ex 1em ; }
+		input { padding : 0.5ex 0.8ex ; }
 
 		.TODO_LIST { width : min( 100% , 36em ) ; }
 
@@ -236,6 +241,13 @@ namespace VC
 			ef.input ( { class : "_TEXT" , biBind : { vChan : i.title } } ) ,
 			ef.button ( { passive : { click () { o.delete () ; } } } , "削除" ) ,
 		) ;
+	}
+
+	/*  */
+
+	export const main = () =>
+	{
+		DOM.add ( Applet () , "body" )
 	}
 }
 

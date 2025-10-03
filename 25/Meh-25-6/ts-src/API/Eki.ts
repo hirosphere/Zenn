@@ -15,6 +15,7 @@ const log = console.log ;
 
 */
 
+export type Eki = Eki.Records ;
 
 export async function Eki ( dataPath : string = "../../../" ) : Promise < Eki.Records >
 {
@@ -23,6 +24,85 @@ export async function Eki ( dataPath : string = "../../../" ) : Promise < Eki.Re
 
 export namespace Eki
 {
+	/* Index */
+
+	export type Index = { name : string ; parts ? : Index [] } ;
+
+
+	class RootIndex
+	{
+		constructor ( private rc : Records )
+		{}
+
+		public get name () { return "駅データ.jp" ; }
+		
+		public get parts () : Index []
+		{
+			return Object.keys( area_prefs ).map ( label => new AreaIndex ( label , this.rc ) ) ;
+		}
+	}
+
+	class AreaIndex
+	{
+		public readonly parts : PrefIndex [] ;
+
+		constructor ( public readonly name : string , rc : Records )
+		{
+			this.parts = area_prefs [ name ] ?.map
+			(
+				pref => new PrefIndex ( pref , rc )
+			
+			) ?? [] ;
+		}
+	}
+
+	class PrefIndex
+	{
+		public readonly name : string ;
+		public readonly parts : Index [] ;
+
+		constructor ( name : string , private rc : Records )
+		{
+			this.name = name ;
+
+			const cd = pref_cd [ name ] ;
+
+			this.parts = rc.pref_line.items ( cd ) ?.map
+			(
+				line => new LineIndex ( line )
+			
+			) ?? [] ;
+		}
+	}
+
+	class LineIndex
+	{
+		public readonly name : string ;
+		public readonly parts : Index [] ;
+
+		constructor ( line : Line )
+		{
+			this.name = line.line_name ;
+			this.parts = line.stations.map ( stat => new StationIndex ( stat ) ) ;
+		}
+	}
+
+	class StationIndex
+	{
+		public readonly name : string ;
+
+		constructor ( stat : Station )
+		{
+			this.name = stat.station_name ;
+		}
+	}
+
+
+
+
+	/* Records */
+
+
 	const initiate = Symbol () ;
 
 	export const create = async ( dataPath : string ) : Promise < Records > =>
@@ -36,13 +116,14 @@ export namespace Eki
 	{
 		/* インデックス */		
 
-		public readonly rootIndex = new Root ;
+		public readonly rootIndex = new RootIndex ( this ) ;
 
 
-		/* データ構築確認用データ */
+		/* 二次構築データ */
 
-		public readonly pref_stations = new Maple < pref_cd , Station > ;
-		public readonly pref_companies = new Maple < pref_cd , Company >
+		public readonly pref_station = new Maple < pref_cd , Station > ;
+		public readonly pref_company = new Maple < pref_cd , Company >
+		public readonly pref_line = new Setmap < pref_cd , Line >
 
 
 		/* レコード */
@@ -58,20 +139,22 @@ export namespace Eki
 		public async [ initiate ] ( dataPath : string )
 		{
 			const dataRoot = dataPath + "DataSource/Eki/" ;
+
+			/* 読み込みは二次構築を兼ねる */
 			
-			/* 会社データをとりこみ */
+			/* 会社データを読み込み */
 			( await fetchCSV ( dataRoot + "company.csv" ) )
 			.forEach ( records => new Company ( this , records ) ) ;
 			
-			/* 路線データをとりこみ */
+			/* 路線データを読み込み */
 			( await fetchCSV ( dataRoot + "line.csv" ) )
 			.forEach ( records => new Line ( this , records ) ) ;
 			
-			/* 駅データをとりこみ */
+			/* 駅データを読み込み */
 			( await fetchCSV ( dataRoot + "station.csv" ) )
 			.forEach ( records => new Station ( this , records ) ) ;
 
-			/* 駅順序データをとりこみ */
+			/* 駅順序データを読み込み */
 			( await fetchCSV ( dataRoot + "join.csv" ) )
 			.forEach ( i => this.set_station_rel ( i ) ) ;
 
@@ -120,11 +203,16 @@ export namespace Eki
 		return lines .map ( line => line.split ( "," ) );
 	}
 
-	/*  */
+
+
+
+	/* Record */
 
 	export const line = new Map < line_cd , Line > ;
 	export const station = new Map < station_cd , Station > ;
 
+	export const pref_company = new Map < pref_cd , Company [] > ;
+	export const pref_line = new Map < pref_cd , Line [] > ;
 	export const pref_station = new Map < pref_cd , Station [] > ;
 	export const line_station = new Map < string , Station [] > ;
 
@@ -134,14 +222,10 @@ export namespace Eki
 	type station_g_cd = string ;
 	type station_cd = string ;
 
-	/* Index */
 
-	class Root
-	{
-		get name () { return "駅データ.jp" ; }
-	}
 
-	/* Real Index */
+
+	/* Data Classes */
 
 	class Company
 	{
@@ -199,18 +283,22 @@ export namespace Eki
 	{
 		constructor ( protected records : Records , public iv : string [] )
 		{
+			/* 駅・路線・都道府県データの関連付け */
+
 			records.station.set ( this.station_cd , this ) ;
 			const line = records.line.get ( this.line_cd ) ;
 			line ?.stations.push ( this ) ;
 			line ?.prefset.add ( this.pref_cd ) ;
 
+			records.pref_station.pushItem ( this.pref_cd , this ) ;
+			if ( line )  records.pref_line.setItem ( this.pref_cd , line ) ;
+
+
 			/* address の重複都道府県名を除去 */
 			iv [ 8 ] = iv [ 8 ].replace ( this.pref_name , "" ) ;
-
-			records.pref_stations.pushItem ( this.pref_cd , this ) ;
 		}
 
-		get pref_name ()  {  return prefNameList [ this.pref_cd ] ;  }
+		get pref_name ()  {  return cd_pref [ this.pref_cd ] ;  }
 		get line ()  {  return this.records.line.get ( this.line_cd ) ?.line_name ?? ".."  }
 
 		readonly next : Station [] = [] ;
@@ -233,7 +321,11 @@ export namespace Eki
 		get e_sort () {  return this.iv [ 14 ] ; }
 	}
 
-	const areaTitleToPrefTitleList : { [ name : string ] : string [] } =
+
+
+	/*  */
+
+	const area_prefs : { [ name : string ] : string [] } =
 	{
 		"北海道・東北" : [ "北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県", ] ,
 		"関東・甲信越" : [ "茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","山梨県","長野県","新潟県", ] ,
@@ -243,12 +335,16 @@ export namespace Eki
 		"九州・沖縄" : [ "福岡県","佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県", ]
 	} ;
 
-	const prefNameList : { [ cd : pref_cd ] : string } =
+
+
+
+	const cd_pref : { [ cd : pref_cd ] : string } =
 	{
 		"1":"北海道","2":"青森県","3":"岩手県","4":"宮城県","5":"秋田県","6":"山形県","7":"福島県","8":"茨城県","9":"栃木県","10":"群馬県","11":"埼玉県","12":"千葉県","13":"東京都","14":"神奈川県","15":"新潟県","16":"富山県","17":"石川県","18":"福井県","19":"山梨県","20":"長野県","21":"岐阜県","22":"静岡県","23":"愛知県","24":"三重県","25":"滋賀県","26":"京都府","27":"大阪府","28":"兵庫県","29":"奈良県","30":"和歌山県","31":"鳥取県","32":"島根県","33":"岡山県","34":"広島県","35":"山口県","36":"徳島県","37":"香川県","38":"愛媛県","39":"高知県","40":"福岡県","41":"佐賀県","42":"長崎県","43":"熊本県","44":"大分県","45":"宮崎県","46":"鹿児島県","47":"沖縄県","99":"その他"
 	} ;
 
-	const prefTitleToPrefCd = Object.fromEntries( Object.entries( prefNameList ).map( ([ cd , title ]) => [ title , cd ] ) ) ;
+
+	const pref_cd = Object.fromEntries( Object.entries( cd_pref ).map( ([ cd , title ]) => [ title , cd ] ) ) ;
 }
 
 
@@ -264,5 +360,26 @@ class Maple < Key , Item > extends Map < Key , Item [] >
 		let list = this.get ( key ) ?? [] ;
 		if ( ! this.has ( key ) ) this.set ( key , list ) ;
 		return list ;
+	}
+}
+
+class Setmap < Key , Item > extends Map < Key , Set < Item > >
+{
+	public setItem ( key : Key , item : Item ) : void
+	{
+		this.makeSet ( key ) .add ( item ) ;
+	}
+
+	public items ( key : Key ) : Item []
+	{
+		const set = this.get ( key ) ;
+		return set ? [ ... set ] : [] ;
+	}
+
+	protected makeSet ( key : Key ) : Set < Item >
+	{
+		let set = this.get ( key ) ?? new Set < Item > ;
+		if ( ! this.has ( key ) ) this.set ( key , set ) ;
+		return set ;
 	}
 }

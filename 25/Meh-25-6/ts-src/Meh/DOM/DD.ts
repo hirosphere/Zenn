@@ -1,20 +1,20 @@
-import { Plain , Renn , Order } from "../Model/Model.js" ;
+import { Plain , Live , Renn , Order } from "../Model/Model.js" ;
 import { MehElement } from "./Node.js";
 
 export type TargetDOMElement = HTMLElement | SVGElement | MathMLElement ;
 
-type llr < V > = V | Plain.Ro < V > ;
+type llr < V > = V | Plain.R < V > ;
 
 /* Element */
 
-export type ElementSpec < E extends TargetDOMElement = any > =
+export type ElementSpec < E extends TargetDOMElement > =
 {
 	target ? : string ;
 	class ? : Class ;
 	style ? : Style ;
 	shadow ? : Shadow ;
-	attrs ? : Attributes < E > ;
-	props ? : Properties < E > ;
+	attrs ? : Props < E > ;
+	props ? : Props < E > ;
 	biBind ? : BB ;
 	passive ? : Actions ;
 	active ? : Actions ;
@@ -36,14 +36,12 @@ export type Style =
 	[ name in keyof CSSStyleDeclaration ] ? : llr < CSSStyleDeclaration [ name ] > ;
 };
 
-export type Properties < E extends TargetDOMElement > =
+export type Props < E extends TargetDOMElement > =
 {
-	[ name in keyof E ] ? : llr < E [ name ] > ;
-}
-
-export type Attributes < E extends TargetDOMElement > =
-{
-	[ name in keyof E ] ? : llr < E [ name ] > ;
+	[
+		name in keyof E  as
+			E [ name ] extends ( number | string | boolean ) ? name : never
+	] ? : llr < E [ name ] > ;
 };
 
 export type Actions =
@@ -66,7 +64,7 @@ export type BB =  /** BidirectionalBinds */
 	chChan ? : Plain < boolean > ;
 }
 
-export type Focus = Plain.Ro < boolean > ;
+export type Focus = Plain.R < boolean > ;
 
 
 export type Hook < E extends TargetDOMElement > =
@@ -89,7 +87,13 @@ export type Text = llr < string > | llr < number > | llr < boolean > | llr < big
 
 export namespace pl
 {
-	export const free = () => new PartsPlace.Free () ;
+	export const flush = < K >
+	(
+		key : Live < K > ,
+		createNode : ( key : K ) => Node | undefined
+	
+	) => new PartsPlace.Flush ( key , createNode )
+
 	export const each = < E >
 	(
 		model : Renn < E > ,
@@ -107,12 +111,14 @@ const plTag = Symbol () ;
 
 export namespace PartsPlace
 {
-	export class Free  extends PartsPlace
+	export class Flush < K > extends PartsPlace
 	{
-		set contents ( contents : Part | Part [] )
-		{
-			;
-		}
+		constructor
+		(
+			public readonly key : Live < K > ,
+			public readonly createNode : ( key : K ) => Node | undefined
+		)
+		{ super () ; }
 	}
 
 	export class Each < E > extends PartsPlace
@@ -127,5 +133,5 @@ export namespace PartsPlace
 }
 
 
-export type Node = Text | MehElement ;
+export type Node = Text | MehElement < any > ;
 export type Part = Node | PartsPlace | undefined ;

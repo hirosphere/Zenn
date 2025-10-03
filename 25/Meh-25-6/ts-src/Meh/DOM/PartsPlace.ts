@@ -3,49 +3,6 @@ import { DD , MehElement, MehText , MehNode } from "./DOM.js" ;
 
 const log = console.log ;
 
-/* */
-
-export class PartsPlace
-{
-	public static create
-	(
-		dec : DD.Part [] ,
-		cel : Element | DocumentFragment ,
-	
-	) : PartsPlace | null
-	{
-		return new Reader ( dec , cel ).next ;
-	}
-
-
-	/* */
-
-	nodes : MehNode [] = [] ;
-	nextPlace : PartsPlace | null = null ;
-	get nextNode () : MehNode | null { return ( this.nextPlace ?.nodes [ 0 ] ) ?? null ; }
-
-	constructor
-	(
-		protected cel : Element | DocumentFragment ,
-	) {}
-
-	protected makePart ( dec : DD.Node , rel ? : Node ) : MehNode
-	{
-		const mn = dec instanceof MehElement ? dec : new MehText ( dec ) ;
-		this.cel.insertBefore ( mn.node , rel ?? null ) ;
-		return mn ;
-	}
-
-	public terminate () : void
-	{
-		this.nextPlace ?.terminate () ;
-		
-		while ( this.nodes.length )
-		{
-			this.nodes.pop () ?.terminate () ;
-		}
-	}
-}
 
 
 /* */
@@ -62,14 +19,14 @@ class Reader
 	)
 	{}
 
-	get next () : PartsPlace | null
+	get next () : PartsPlace | undefined
 	{
 		const cur = this.cur ;
 		if ( cur instanceof DD.PartsPlace )
 		{
 			this.pos ++ ;
 			if ( cur instanceof DD.PartsPlace.Each )  return new RennPlace ( cur , this ) ;
-			if ( cur instanceof DD.PartsPlace.Free )  return new FreePlace ( cur , this ) ;
+			if ( cur instanceof DD.PartsPlace.Flush )  return new FlushPlace ( cur , this ) ;
 		}
 
 		const dec : DD.Node [] = [] ;
@@ -83,7 +40,7 @@ class Reader
 			)
 			{
 				if ( dec.length )  return new StaticPlace ( dec , this ) ;
-				return null ;
+				return undefined ;
 			}
 
 			if ( this.cur !== undefined ) dec.push ( this.cur ) ;
@@ -98,6 +55,60 @@ class Reader
 }
 
 
+
+
+/* */
+
+export class PartsPlace
+{
+	public static create
+	(
+		dec : DD.Part [] ,
+		cel : Element | DocumentFragment ,
+	
+	) : PartsPlace | undefined
+	{
+		return new Reader ( dec , cel ).next ;
+	}
+
+
+	/* */
+
+	meh_nodes : MehNode [] = [] ;
+
+	nextPlace ? : PartsPlace ;
+	
+	get nextNode () : Node | undefined
+	{
+		return ( this.nextPlace ?.meh_nodes [ 0 ] ?.node ) ?? undefined ;
+	}
+
+	constructor
+	(
+		protected cel : Element | DocumentFragment ,
+	) {}
+
+	protected makePart ( dec : DD.Node , rel ? : Node ) : MehNode
+	{
+		rel && log ( "rel" , rel?.nodeName ) ;
+
+		const mn = dec instanceof MehElement ? dec : new MehText ( dec ) ;
+		this.cel.insertBefore ( mn.node , rel ?? null ) ;
+		return mn ;
+	}
+
+	public terminate () : void
+	{
+		this.nextPlace ?.terminate () ;
+		
+		while ( this.meh_nodes.length )
+		{
+			this.meh_nodes.pop () ?.terminate () ;
+		}
+	}
+}
+
+
 /* */
 
 class StaticPlace extends PartsPlace
@@ -105,19 +116,43 @@ class StaticPlace extends PartsPlace
 	constructor ( dec : DD.Node [] , rdr : Reader )
 	{
 		super ( rdr.cel ) ;
-		this.nodes = dec.map( dec => this.makePart ( dec ) ) ;
+		this.meh_nodes = dec.map( dec => this.makePart ( dec ) ) ;
 		this.nextPlace = rdr.next ;
 	}
 }
 
 
-class FreePlace extends PartsPlace
+class FlushPlace extends PartsPlace
 {
-	constructor ( dec : DD.PartsPlace.Free , rdr : Reader )
+	constructor ( private dec : DD.PartsPlace.Flush < any > , rdr : Reader )
 	{
 		super ( rdr.cel ) ;
+		dec.key.add_ref ( this ) ;
 		this.nextPlace = rdr.next ;
 	}
+
+	public vChan () : void
+	{
+		const key = this.dec.key.$ ;
+		if ( this.#_nodes.has ( key ) )  return ;
+
+		const dd = this.dec.createNode ( key ) ;
+		if ( ! dd )  return ;
+
+		const node = this.makePart ( dd , this.nextNode ) ;
+
+		this.meh_nodes.push ( node ) ;
+		this.#_nodes.set ( key , node ) ;
+	}
+
+	public override terminate () : void
+	{
+		this.#_nodes.clear () ;
+		this.dec.key.remove_ref ( this ) ;
+		super.terminate () ;
+	}
+
+	#_nodes = new Map < any , MehNode > ;
 }
 
 
@@ -133,24 +168,26 @@ class RennPlace < EV > extends PartsPlace
 		{
 			insert : ( start , orders ) =>
 			{
-				const next = this.nodes [ start ] ;
+				const next = this.meh_nodes [ start ] ?.node ?? this.nextNode ;
+				
+				log ( "next" , next ) ;
 
 				const nodes = orders.map
 				(
 					order => this.makePart
 					(
 						dec.createNode ( order.target , order ) ,
-						next ?.node
+						next
 					)
 				) ;
 
-				this.nodes.splice ( start , 0 , ... nodes ) ;
+				this.meh_nodes.splice ( start , 0 , ... nodes ) ;
 			} ,
 
 			delete : ( start , length ) =>
 			{
-				const nodes = this.nodes.splice ( start , length ) ;
-				nodes.forEach ( node => node .terminate () ) ;
+				const nodes = this.meh_nodes.splice ( start , length ) ;
+				nodes.forEach ( node => node.terminate () ) ;
 			} ,
 		}
 

@@ -1,7 +1,7 @@
 import * as Meh from "../Meh/Meh.js" ;
 import { Live , Ease , ef as $ , log } from "../Meh/Meh.js" ;
 
-type llr < V > = V | Live < V > ;
+type llr < V > = V | Live.R < V > ;
 
 namespace DM
 {
@@ -132,7 +132,12 @@ namespace VC
 			{
 				class : "range" ,
 				attrs : { type : "range" } ,
-				props : { min , max , step } ,
+				props :
+				{
+					min : toS ( min ) ,
+					max : toS ( max ) ,
+					step : toS ( step )
+				} ,
 				biBind : { vInpN : value }
 			}
 		) ;
@@ -151,5 +156,12 @@ namespace VC
 		) ;
 	}
 }
+
+function toS ( s ? : llr < number > ) : llr < string > | undefined
+{
+	return s instanceof Live.Core ? s.trans_r ( tos ) : s != undefined ? String ( s ) : s ;
+}
+
+const tos = ( s : number ) : string => String ( s ) ;
 
 Meh.DOM.add ( VC.Applet () , "body" ) ;

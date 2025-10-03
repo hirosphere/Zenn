@@ -1,4 +1,5 @@
 import { Live } from "../Model/Model.js";
+import { TargetDOMElement } from "./DD.js";
 import { DD , MehElement , PartsPlace } from "./DOM.js" ;
 
 
@@ -10,12 +11,12 @@ export const add =
 	celq : Element | string ,		/* 追加先のエレメント/クエリー */
 	relq ? : Node | string		/* 追加したい位置の後に来るエレメント/クエリー */
 
-) : PartsPlace | null =>
+) : PartsPlace | undefined =>
 {
 	const cel = typeof celq == "string" ? document.querySelector ( celq ) : celq ;
 	const rel = typeof relq == "string" ? document.querySelector ( relq ) : relq || null ;
 
-	if ( cel == null )  return null ;
+	if ( cel == null )  return ;
 
 	return PartsPlace.create
 	(
@@ -36,7 +37,7 @@ const create = < E extends DD.TargetDOMElement = any >
 	first : DD.ElementSpec < E > | DD.Part | undefined ,
 	remain : DD.Part [] ,
 
-) : MehElement =>
+) : MehElement < E > =>
 {
 	if ( first instanceof Object )
 	{
@@ -50,19 +51,19 @@ const create = < E extends DD.TargetDOMElement = any >
 			return new MehElement ( ns , type , {} , [ first , ... remain ] ) ;
 		}
 
-		return new MehElement ( ns , type , first as DD.ElementSpec , remain ) ;
+		return new MehElement ( ns , type , first as DD.ElementSpec < E > , remain ) ;
 	}
 
 	return new MehElement ( ns , type , {} , [ first , ... remain ] ) ;
 }
 
 
-type create < E extends Element > =
+type create < E extends TargetDOMElement > =
 (
-	first ? : DD.ElementSpec | DD.Part ,
+	first ? : DD.ElementSpec < E > | DD.Part ,
 	... remain : DD.Part []
 )
-=> MehElement ;
+=> MehElement < E > ;
 
 
 class Handler < T extends object > implements ProxyHandler < T >
