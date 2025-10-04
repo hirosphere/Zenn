@@ -26,7 +26,7 @@ class Reader
 		{
 			this.pos ++ ;
 			if ( cur instanceof DD.PartsPlace.Each )  return new RennPlace ( cur , this ) ;
-			if ( cur instanceof DD.PartsPlace.Flush )  return new FlushPlace ( cur , this ) ;
+			if ( cur instanceof DD.PartsPlace.Key )  return new FlushPlace ( cur , this ) ;
 		}
 
 		const dec : DD.Node [] = [] ;
@@ -124,11 +124,12 @@ class StaticPlace extends PartsPlace
 
 class FlushPlace extends PartsPlace
 {
-	constructor ( private dec : DD.PartsPlace.Flush < any > , rdr : Reader )
+	constructor ( private dec : DD.PartsPlace.Key < any > , rdr : Reader )
 	{
 		super ( rdr.cel ) ;
-		dec.key.add_ref ( this ) ;
 		this.nextPlace = rdr.next ;
+
+		dec.key.add_ref ( this ) ;
 	}
 
 	public vChan () : void

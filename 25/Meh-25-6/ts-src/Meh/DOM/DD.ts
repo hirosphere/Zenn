@@ -87,12 +87,12 @@ export type Text = llr < string > | llr < number > | llr < boolean > | llr < big
 
 export namespace pl
 {
-	export const flush = < K >
+	export const key = < K >
 	(
 		key : Live < K > ,
 		createNode : ( key : K ) => Node | undefined
 	
-	) => new PartsPlace.Flush ( key , createNode )
+	) => new PartsPlace.Key ( key , createNode )
 
 	export const each = < E >
 	(
@@ -111,7 +111,7 @@ const plTag = Symbol () ;
 
 export namespace PartsPlace
 {
-	export class Flush < K > extends PartsPlace
+	export class Key < K > extends PartsPlace
 	{
 		constructor
 		(
