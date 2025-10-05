@@ -70,7 +70,7 @@ namespace VC
 
 	:host
 	{
-		color : hsl( 0  0%  7% ) ;
+		color : hsl( 0  0%  10% ) ;
 	}
 
 	main { padding : 1em ; gap : 5em ; }
@@ -79,19 +79,21 @@ namespace VC
 	.Index
 	{
 		width : 100% ;
-		border : 0.1ex  solid  hsl( 45  5%  60% ) ;
-		border-radius : 1.2em ;
+		border : 0.05ex  solid  hsl( 45  5%  90% ) ;
+		border-radius : 1.0em ;
 
 		display : none ;
 
-		padding : 0.6em ;
-		gap : 1em ;
+		padding : 0.4em ;
+		gap : 1ex ;
+
+		background : hsl( 176  50%  50% / 10% ) ;
 	}
 
 	.Index.Selected { display : flex ; }
 
-	.Index.Root { font-size: 1.1em ; }
-	.Index > .Index { font-size : 0.90em ; }
+	.Index.Root { font-size: 1.00em ; }
+	.Index > .Index { font-size : 1.00em ; }
 
 
 	ul.Tabs
@@ -101,10 +103,15 @@ namespace VC
 		max-height : 14em ;
 		overflow : auto ;
 
+		border : 1px solid hsl( 0  0%  75% ) ;
+		border-radius : 1ex ;
+
 		display : flex ;
 		list-style : none ;
 		gap: 0.4ex  0.1ex ;
 		flex-wrap : wrap ;
+
+		padding : 1em ;
 		justify-content : center ;
 	}
 
@@ -114,23 +121,28 @@ namespace VC
 		border-bottom : 0.3ex  solid  hsl( 45  3%  80% ) ;
 		padding : 1.2ex 1.36em ;
 		white-space : nowrap ;
+		color : hsl( 45  0%  13% ) ;
 	}
 
 	li.Tab:hover
 	{
-		background-color : hsl( 45  3%  92% ) ;
+		background-color : hsl( 45  3%  94% ) ;
 		border-color : hsl( 45  3%  70% ) ;
 	}
 
-	li.Selected , li.Selected:hover
+	li.Selected ,
+	li.Selected:hover
 	{
 		border-color : hsl( 96  50%  50% ) ;
-		/* background-color : hsl( 45  3%  14% ) ;
+		background-color : hsl( 45  3%  92% ) ;
 
-		color : hsl( 0  0  100% ) ; */
-	
 		border-bottom-width : 0.5ex ;
 		padding-bottom : 0.8ex ;
+	}
+
+	li.Selected:hover
+	{
+		background-color : hsl( 45  3%  90% ) ;
 	}
 
 	footer { height : 20em ; }
@@ -174,7 +186,7 @@ namespace VC
 		{ class : [ "Index FC AC" , { Selected : vm.selected ?? true , Root : isroot } ] } ,
 
 		ef.h2 ( vm.dm.name ) ,
-		Tabs ( vm ) ,
+		vm.parts.length ? Tabs ( vm ) : uned ,
 		pl.key
 		(
 			vm.current ,
