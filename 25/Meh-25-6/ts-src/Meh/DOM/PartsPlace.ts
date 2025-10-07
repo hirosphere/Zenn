@@ -3,6 +3,17 @@ import { DD , MehElement, MehText , MehNode } from "./DOM.js" ;
 
 const log = console.log ;
 
+/* */
+
+export const createPartsPlace =
+(
+	dec : DD.Part [] ,
+	cel : Element | DocumentFragment ,
+
+) : PartsPlace | undefined =>
+{
+	return new Reader ( dec , cel ).next ;
+}
 
 
 /* */
@@ -26,7 +37,7 @@ class Reader
 		{
 			this.pos ++ ;
 			if ( cur instanceof DD.PartsPlace.Each )  return new RennPlace ( cur , this ) ;
-			if ( cur instanceof DD.PartsPlace.Key )  return new FlushPlace ( cur , this ) ;
+			if ( cur instanceof DD.PartsPlace.Key )  return new KeyPlace ( cur , this ) ;
 		}
 
 		const dec : DD.Node [] = [] ;
@@ -61,16 +72,7 @@ class Reader
 
 export class PartsPlace
 {
-	public static create
-	(
-		dec : DD.Part [] ,
-		cel : Element | DocumentFragment ,
-	
-	) : PartsPlace | undefined
-	{
-		return new Reader ( dec , cel ).next ;
-	}
-
+	public static create = createPartsPlace ;
 
 	/* */
 
@@ -122,7 +124,7 @@ class StaticPlace extends PartsPlace
 }
 
 
-class FlushPlace extends PartsPlace
+class KeyPlace extends PartsPlace
 {
 	constructor ( private dec : DD.PartsPlace.Key < any > , rdr : Reader )
 	{

@@ -13,7 +13,7 @@ export class Key < K >
 		this.current.add_ref ( { vChan : () => this.update () } ) ;
 	}
 
-	public get_item ( key : K ) : Key.Match < K >
+	public mt ( key : K ) : Key.Match < K >
 	{
 		let match = this.#_items.get ( key ) ;
 

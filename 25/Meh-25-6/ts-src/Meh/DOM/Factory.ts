@@ -1,6 +1,7 @@
 import { Live } from "../Model/Model.js";
 import { TargetDOMElement } from "./DD.js";
-import { DD , MehElement , PartsPlace } from "./DOM.js" ;
+import { DD , MehElement  } from "./DOM.js" ;
+import { PartsPlace , createPartsPlace } from "./PartsPlace.js" ;
 
 
 /* HTMLドキュメントに MehElement / Text を追加 */

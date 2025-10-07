@@ -44,7 +44,7 @@ namespace VM
 			
 			) ?? [] ;
 			
-			this.selected = agg?.get_item ( this ) ;
+			this.selected = agg?.mt ( this ) ;
 		}
 	}
 }
@@ -73,7 +73,11 @@ namespace VC
 		color : hsl( 0  0%  10% ) ;
 	}
 
-	main { padding : 1em ; gap : 5em ; }
+	main
+	{
+		background-color : hsl( 176  55%  65% ) ;
+		padding : 1em ; gap : 5em ;
+	}
 
 
 	.Index
@@ -87,7 +91,7 @@ namespace VC
 		padding : 0.4em ;
 		gap : 1ex ;
 
-		background : hsl( 176  50%  50% / 10% ) ;
+		background : hsl( 176  0%  100% / 25% ) ;
 	}
 
 	.Index.Selected { display : flex ; }
@@ -100,7 +104,7 @@ namespace VC
 	{
 		cursor : default ;
 
-		max-height : 14em ;
+		max-height : 55vh ;
 		overflow : auto ;
 
 		border : 1px solid hsl( 0  0%  75% ) ;
