@@ -29,13 +29,13 @@ body
 	height : 100% ;
 }
 
-.LM_HORIZ
+.NAVI_MODE_COL
 {
 	display : grid ;
 	grid-template-columns : auto 1fr ;
 }
 
-.LM_VERT
+.NAVI_MODE_ROW
 {
 	display : grid ;
 	grid-template-rows : 1fr auto ;
@@ -48,28 +48,92 @@ button { padding : 1ex 1em ; }
 
 .NAVI
 {
-	background-color : hsl( 205  90%  92% ) ;
+	background-color : hsl( 200  80%  94% ) ;
+	cursor : default ;
 }
 
-.LM_HORIZ > .NAVI
+ul.PEER_NAVI > li > .TITLE
+{
+	border-radius : 0.18ex ;
+	padding : 0.30ex  1ex 0.36ex ;
+	overflow : hidden ;
+	white-space : nowrap ;
+}
+
+ul.PEER_NAVI > li > .TITLE:hover
+{
+	background-color : hsl( 0  0%  0% / 3% ) ;
+}
+
+ul.PEER_NAVI > li.SELECTED > .TITLE
+{
+	background-color : hsl( 0  0%  0% / 80% ) ;
+	border-color : hsl( 0  0%  0% / 0% ) ;
+	color : hsl( 0  0%  90% ) ;
+}
+
+.NAVI_MODE_COL > .NAVI
 {
 	width : calc( 180px + 5vw ) ;
 
 	display : grid ;
 	grid-template-rows : 1fr auto ;
-	padding : 1ex ;
+	padding : 1em 0.3ex ;
 	text-align : center ;
+
+	color : hsl( 0  0%  15% ) ;
+}
+
+.NAVI_MODE_COL > .NAVI > .PEER_NAVI_SWITCH
+{
+	margin-block : auto ;
+}
+
+.NAVI_MODE_COL > .NAVI  ul.PEER_NAVI > li
+{
+	border-bottom : 1px  solid  hsl( 0  0%  0% / 0% ) ;
+	padding-block : 0.1ex ;
+	list-style : none ;
+}
+
+.NAVI_MODE_COL > .NAVI  ul.PEER_NAVI > li > .TITLE
+{
+	display : block ;
 }
 
 
-.LM_VERT > .NAVI
+.NAVI_MODE_ROW > .NAVI
 {
 	order : 2 ;
 
 	display : grid ;
 	grid-template-columns : 1fr auto ;
 	align-items : center ;
-	padding : 0.30ex ;
+	padding : 0.1ex ;
+}
+
+.NAVI_MODE_ROW > .NAVI > .PEER_NAVI_SWITCH
+{
+	margin-inline : auto ;
+}
+
+.NAVI_MODE_ROW > .NAVI  ul.PEER_NAVI
+{
+	display : flex ;
+}
+
+.NAVI_MODE_ROW > .NAVI  ul.PEER_NAVI > li
+{
+	border-bottom : 1px  solid  hsl( 0  0%  0% / 0% ) ;
+	padding-block : 0.1ex ;
+	list-style : none ;
+}
+
+.NAVI_MODE_ROW > .NAVI  ul.PEER_NAVI > li::after
+{
+	padding-inline : 0.25ex ;
+	content : "|" ;
+	color : hsl( 45  5%  70% ) ;
 }
 
 /* */

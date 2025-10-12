@@ -36,8 +36,6 @@ export class Renn < T >  extends Life < Renn.Ref < T > >  implements Agg
 
 	public insert ( targets : T [] , start ? : number ) : void
 	{
-		log ( "Renn ins" , start ) ;
-
 		start = pos_trim ( start , this.#_orders ) ;
 
 		const orders = create_orders ( this , start , targets ) ;

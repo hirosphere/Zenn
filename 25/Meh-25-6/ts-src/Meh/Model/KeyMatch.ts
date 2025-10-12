@@ -6,14 +6,14 @@ export class Key < K >
 {
 	constructor
 	(
-		public readonly current : Live < K >
+		public readonly key : Live < K >
 	)
 	{
-		this.#_curr = this.current.$ ;
-		this.current.add_ref ( { vChan : () => this.update () } ) ;
+		this.#_curr = this.key.$ ;
+		this.key.add_ref ( { vChan : () => this.update () } ) ;
 	}
 
-	public mt ( key : K ) : Key.Match < K >
+	public match ( key : K ) : Key.Match < K >
 	{
 		let match = this.#_items.get ( key ) ;
 
@@ -31,7 +31,7 @@ export class Key < K >
 	protected update () : void
 	{
 		const old_key = this.#_curr ;
-		const new_key = this.#_curr = this.current.$ ;
+		const new_key = this.#_curr = this.key.$ ;
 
 		this.update_item ( old_key ) ;
 		this.update_item ( new_key ) ;
@@ -40,7 +40,7 @@ export class Key < K >
 	protected update_item ( key : K ) : void
 	{
 		const item = this.#_items.get ( key ) ;
-		if ( item ) item.$ = key === this.current.$ ;
+		if ( item ) item.$ = key === this.key.$ ;
 	}
 
 	#_items = new Map < K , Key.Match < K > > ;
@@ -57,12 +57,12 @@ export namespace Key
 			public readonly key : K ,
 		)
 		{
-			super ( srv.current.$ === key ) ;
+			super ( srv.key.$ === key ) ;
 		}
 
 		public select () : void
 		{
-			this.srv.current.$ = this.key ;
+			this.srv.key.$ = this.key ;
 		}
 	}
 }

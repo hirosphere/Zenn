@@ -26,8 +26,10 @@ namespace VM
 {
 	type Sel = Index | uned ;
 
-	export class Index extends Key < Sel >
+	export class Index
 	{
+		public curr_part = new Key ( Live < Sel > ( uned ) ) ;
+
 		public parts : Index [] ;
 		public readonly selected ? : Key.Match < Sel > ;
 
@@ -37,14 +39,13 @@ namespace VM
 			agg ? : Index
 		)
 		{
-			super ( Live < Sel > ( uned ) ) ;
 			this.parts = dm.parts ?.map
 			(
 				part => new Index ( part , this )
 			
 			) ?? [] ;
 			
-			this.selected = agg?.mt ( this ) ;
+			this.selected = agg?.curr_part.match ( this ) ;
 		}
 	}
 }
@@ -70,11 +71,14 @@ namespace VC
 
 	:host
 	{
+		height : 100% ;
+		overflow : auto ;
 		color : hsl( 0  0%  10% ) ;
 	}
 
 	main
 	{
+		height : 100% ;
 		background-color : hsl( 176  55%  65% ) ;
 		padding : 1em ; gap : 5em ;
 	}
@@ -149,23 +153,19 @@ namespace VC
 		background-color : hsl( 45  3%  90% ) ;
 	}
 
-	footer { height : 20em ; }
+	footer { padding-block : 30vh ; color: #fff ; }
 	
 	` ;
 
 	export const App = ( dapapath : string ) :  DD.Node =>
 	{
 		const index = Live < VM.Index | uned > ( uned ) ;
-		const index2 = Live < VM.Index | uned > ( uned ) ;
-		const index3 = Live < VM.Index | uned > ( uned ) ;
 
 		DM.load
 		(
 			dapapath ,
-			( eki ) =>
+			eki =>
 			{
-				index3.$ = new VM.Index ( eki.rootIndex ) ;
-				index2.$ = new VM.Index ( eki.rootIndex ) ;
 				index.$ = new VM.Index ( eki.rootIndex ) ;
 			}
 		) ;
@@ -180,7 +180,7 @@ namespace VC
 				pl.key ( index , vm => vm ? Index ( vm , true ) : uned ) ,
 				// pl.key ( index2 , vm => vm ? Index ( vm ) : uned ) ,
 				// pl.key ( index3 , vm => vm ? Index ( vm ) : uned ) ,
-				ef.footer () ,
+				ef.footer ( "foot" ) ,
 			)
 		) ;
 	}
@@ -193,8 +193,8 @@ namespace VC
 		vm.parts.length ? Tabs ( vm ) : uned ,
 		pl.key
 		(
-			vm.current ,
-			index => ( index ? Index( index ) : uned ) ,
+			vm.curr_part.key ,
+			pvm => ( pvm ? Index( pvm ) : uned ) ,
 		) ,
 	) ;
 
@@ -214,16 +214,6 @@ namespace VC
 			}
 		} ,
 		index.dm.name
-	) ;
-
-	export const TabsSwitch = ( index : VM.Index ) => ef.section
-	(
-		{ class : "TabsSwitch" } ,
-		pl.key
-		(
-			index.current ,
-			part => part?.dm.name ?? "-.."
-		) ,
 	) ;
 }
 

@@ -120,7 +120,7 @@ export namespace VC
 			width : clamp( 300px , 33em , 100% ) ;
 			background : hsl( 210  100%  45% / 5% ) ;
 
-			font-size : 1.6rem ;
+			font-size : 1.2rem ;
 		}
 
 		.NODES:not(:empty)

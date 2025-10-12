@@ -59,6 +59,21 @@ export type Live < V > = Live.R < V > & Plain < V > &
 
 export namespace Live
 {
+	/* helper types */
+
+	export type str = Live < string > ;
+	export type num = Live < number > ;
+	export type bool = Live < boolean > ;
+
+	export type ll < V > = Live < V > | V ;
+
+	export namespace ll
+	{
+		export type str = Live < string > | string ;
+		export type num = Live < number > | number ;
+		export type bool = Live < boolean > | boolean ;	
+	}
+
 	/* Readonly */
 
 	export type R < V > = Plain.R < V > &
@@ -73,7 +88,20 @@ export namespace Live
 
 	export namespace R
 	{
-		export type LL < V > = Live.R < V > | V ;
+		/* helper types */
+
+		export type str = R < string > ;
+		export type num = R < number > ;
+		export type bool = R < boolean > ;
+
+		export type ll < V > = R < V > | V ;
+		
+		export namespace ll
+		{
+			export type str = R < string > | string ;
+			export type num = R < number > | number ;
+			export type bool = R < boolean > | boolean ;	
+		}
 	}
 
 	/* Refference */

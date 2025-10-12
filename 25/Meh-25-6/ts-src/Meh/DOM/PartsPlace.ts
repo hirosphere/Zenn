@@ -80,15 +80,15 @@ export class PartsPlace
 
 	nextPlace ? : PartsPlace ;
 	
-	get nextNode () : Node | undefined
-	{
-		return ( this.nextPlace ?.meh_nodes [ 0 ] ?.node ) ?? undefined ;
-	}
-
 	constructor
 	(
 		protected cel : Element | DocumentFragment ,
 	) {}
+
+	get nextNode () : Node | undefined
+	{
+		return ( this.nextPlace ?.meh_nodes [ 0 ] ?.node ) ?? undefined ;
+	}
 
 	protected makePart ( dec : DD.Node , rel ? : Node ) : MehNode
 	{
@@ -173,8 +173,6 @@ class RennPlace < EV > extends PartsPlace
 			{
 				const next = this.meh_nodes [ start ] ?.node ?? this.nextNode ;
 				
-				log ( "next" , next ) ;
-
 				const nodes = orders.map
 				(
 					order => this.makePart
