@@ -78,7 +78,7 @@ export var VC;
 			width : clamp( 300px , 33em , 100% ) ;
 			background : hsl( 210  100%  45% / 5% ) ;
 
-			font-size : 1.2rem ;
+			font-size : 1.0rem ;
 		}
 
 		.NODES:not(:empty)

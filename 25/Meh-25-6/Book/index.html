@@ -21,127 +21,150 @@
 html
 {
 	height : 100% ;
-	color : hsl( 0  0%  8% ) ;
-}
-
-body
-{
-	height : 100% ;
-}
-
-.NAVI_MODE_COL
-{
-	display : grid ;
-	grid-template-columns : auto 1fr ;
-}
-
-.NAVI_MODE_ROW
-{
-	display : grid ;
-	grid-template-rows : 1fr auto ;
-}
-
-button { padding : 1ex 1em ; }
-
-
-/* Navigators */
-
-.NAVI
-{
-	background-color : hsl( 200  80%  94% ) ;
-	cursor : default ;
-}
-
-ul.PEER_NAVI > li > .TITLE
-{
-	border-radius : 0.18ex ;
-	padding : 0.30ex  1ex 0.36ex ;
-	overflow : hidden ;
-	white-space : nowrap ;
-}
-
-ul.PEER_NAVI > li > .TITLE:hover
-{
-	background-color : hsl( 0  0%  0% / 3% ) ;
-}
-
-ul.PEER_NAVI > li.SELECTED > .TITLE
-{
-	background-color : hsl( 0  0%  0% / 80% ) ;
-	border-color : hsl( 0  0%  0% / 0% ) ;
-	color : hsl( 0  0%  90% ) ;
-}
-
-.NAVI_MODE_COL > .NAVI
-{
-	width : calc( 180px + 5vw ) ;
-
-	display : grid ;
-	grid-template-rows : 1fr auto ;
-	padding : 1em 0.3ex ;
-	text-align : center ;
-
 	color : hsl( 0  0%  15% ) ;
 }
 
-.NAVI_MODE_COL > .NAVI > .PEER_NAVI_SWITCH
+html
 {
-	margin-block : auto ;
-}
-
-.NAVI_MODE_COL > .NAVI  ul.PEER_NAVI > li
-{
-	border-bottom : 1px  solid  hsl( 0  0%  0% / 0% ) ;
-	padding-block : 0.1ex ;
-	list-style : none ;
-}
-
-.NAVI_MODE_COL > .NAVI  ul.PEER_NAVI > li > .TITLE
-{
-	display : block ;
+	font-family : 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif ;
 }
 
 
-.NAVI_MODE_ROW > .NAVI
-{
-	order : 2 ;
+/* body */
 
-	display : grid ;
-	grid-template-columns : 1fr auto ;
-	align-items : center ;
-	padding : 0.1ex ;
-}
+body { height : 100% ; }
 
-.NAVI_MODE_ROW > .NAVI > .PEER_NAVI_SWITCH
-{
-	margin-inline : auto ;
-}
-
-.NAVI_MODE_ROW > .NAVI  ul.PEER_NAVI
+body.NAVI_BLOCK
 {
 	display : flex ;
+	flex-direction : row ;
 }
 
-.NAVI_MODE_ROW > .NAVI  ul.PEER_NAVI > li
+body.NAVI_INLINE
 {
-	border-bottom : 1px  solid  hsl( 0  0%  0% / 0% ) ;
-	padding-block : 0.1ex ;
-	list-style : none ;
+	display : flex ;
+	flex-direction : column ;
 }
 
-.NAVI_MODE_ROW > .NAVI  ul.PEER_NAVI > li::after
+
+/* Navi */
+
+.NAVI
 {
-	padding-inline : 0.25ex ;
-	content : "|" ;
-	color : hsl( 45  5%  70% ) ;
+	background-color : hsl( 200  70%  95% ) ;
 }
 
-/* */
+.NAVI ._LINK
+{
+	text-decoration : none ;
+	color : hsl( 0  0%  0% / 85% ) ;
+}
 
-main
+.NAVI  .CLOCK { display : block ;  text-align : center ; }
+
+.NAVI .TREE { cursor : default ; }
+
+.NAVI .INDEX.SEL > .INDEX_HEAD
+{
+	background : hsl( 0  0%  0% / 90% ) ;
+	color : hsl( 0  0%  90% ) ;
+}
+
+.NAVI .INDEX.SEL > .INDEX_HEAD > ._LINK
+{
+	color : hsl( 0  0%  90% ) ;
+}
+
+.NAVI .INDEX_THUMB
+{
+	cursor : default ;
+	padding : 0.0ex  1.0ex ;
+	font-family : Courier, monospace ;
+}
+
+.NAVI .INDEX_THUMB:hover { background-color : hsl( 0  0%  100% / 15% ) ; }
+
+
+/*	NAVI > BLOCK */
+
+.NAVI_BLOCK .NAVI
+{
+	width : calc( 180px + 6vw ) ;
+	display : grid ;
+	grid-template-rows :  1fr  auto ;
+
+	padding : 1ex ;
+}
+
+.NAVI_BLOCK .INDEX_HEAD
+{
+	display : grid ;
+	grid-template-columns : 1fr auto ;
+
+	padding : 0.6ex 0.6ex 0.9ex 1ex ;
+}
+
+.NAVI_BLOCK .INDEX_PARTS
+{
+	margin : 0.2ex ;
+	padding : 1ex ;
+	list-style 	: none ;
+}
+
+
+
+/*	NAVI > INLINE */
+
+.NAVI_INLINE .NAVI
+{
+	order : 1 ;
+	display : grid ;
+	grid-template-columns : 1fr auto ;
+
+	padding : 0.5ex 1vw ;
+}
+
+.NAVI_INLINE .INDEX
+{
+	display : inline ;
+}
+
+.NAVI_INLINE .INDEX_HEAD
+{
+	display : inline-flex ;
+	padding : 0.4ex 0.4ex 0.4ex 1.3ex ;
+	gap : 1ex ;
+}
+
+/* CONTENT */
+
+.CONTENT_SWITCH
+{
+	width : 100% ;
+	height : 100% ;
+	overflow : hidden ;
+}
+
+.CONTENT_FRAME
 {
 	height : 100% ;
 	overflow : auto ;
+	display : none ;
+}
+
+.CONTENT_FRAME.CURRENT { display : block ; }
+
+.DEFAULT_CONTENT
+{
+	width : 100% ;
+	height : 100% ;
+
+	display : flex ;
+	flex-direction : column ;
+	justify-content : center ;
+	align-items : center ;
+
+	padding : 1em ;
 }
 
 </style>

@@ -17,6 +17,7 @@ export class Renn < T >  extends Life < Renn.Ref < T > >  implements Agg
 		super ( agg ) ;
 
 		this.#_orders = create_orders ( this , 0 , targets ) ;
+		this.update ( 0 ) ;
 	}
 
 	/*  */

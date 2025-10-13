@@ -71,8 +71,6 @@ namespace VC
 
 	:host
 	{
-		height : 100% ;
-		overflow : auto ;
 		color : hsl( 0  0%  10% ) ;
 	}
 
