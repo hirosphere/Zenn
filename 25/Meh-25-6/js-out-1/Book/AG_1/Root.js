@@ -1,0 +1,19 @@
+import { ef, } from "../../Meh/Meh.js";
+const log = console.log;
+export var VC;
+(function (VC) {
+    const css /* css */ = `
+	* { box-sizing : bourder-box ; margin : 0 ; padding : 0 ; }
+	
+	main
+	{
+		padding : 1em ;
+	}
+
+
+	`;
+    VC.App = () => {
+        return ef.div({ shadow: css }, ef.main(ef.h1("Root")));
+    };
+})(VC || (VC = {}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiUm9vdC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uL3RzLXNyYy9Cb29rL0FHXzEvUm9vdC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQXFCLEVBQUUsR0FBUyxNQUFNLGtCQUFrQixDQUFFO0FBRWpFLE1BQU0sR0FBRyxHQUFHLE9BQU8sQ0FBQyxHQUFHLENBQUU7QUFJekIsTUFBTSxLQUFXLEVBQUUsQ0F5QmxCO0FBekJELFdBQWlCLEVBQUU7SUFFbEIsTUFBTSxHQUFHLENBQUMsU0FBUyxHQUNuQjs7Ozs7Ozs7O0VBU0MsQ0FBQztJQUVXLE1BQUcsR0FBRyxHQUFhLEVBQUU7UUFFakMsT0FBTyxFQUFFLENBQUMsR0FBRyxDQUVaLEVBQUUsTUFBTSxFQUFHLEdBQUcsRUFBRSxFQUNoQixFQUFFLENBQUMsSUFBSSxDQUVOLEVBQUUsQ0FBQyxFQUFFLENBQUcsTUFBTSxDQUFFLENBQ2hCLENBQ0QsQ0FBRTtJQUNKLENBQUMsQ0FBQTtBQUNGLENBQUMsRUF6QmdCLEVBQUUsS0FBRixFQUFFLFFBeUJsQiJ9

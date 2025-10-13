@@ -10,7 +10,7 @@ namespace VM
 {
 	const index : BFW.VM.index =
 	{
-		type : "" ,
+		type : "Root" ,
 		title : "Meh Book" ,
 		open : true ,
 		parts :
@@ -31,7 +31,7 @@ namespace VM
 	export class App
 	{
 		public readonly navi = new BFW.VM.Navi ( index ) ;
-		public readonly navi_mode = Live < navi_mode > ( "NAVI_BLOCK" ) ;
+		public readonly navi_mode = Live < navi_mode > ( "NAVI_INLINE" ) ;
 
 		constructor ()
 		{
@@ -79,6 +79,7 @@ namespace VC
 
 	const types : types =
 	{
+		"Root" : index => AG_1.Root.VC.App () ,
 		"Eki_Q1" : index =>  AG_1.EkiApp ( "../../../" ) ,
 		"Treem" : index => AG_1.Extreem.VC.Applet () ,
 		"Todo" : index => AG_1.ToDo ()
@@ -88,7 +89,7 @@ namespace VC
 	{
 		return ef.div
 		(
-			{ class : [ "CONTENT_FRAME" , { CURRENT : index.page } ] } ,
+			{ class : [ "CONTENT_FRAME" , { CURRENT : index.selected } ] } ,
 
 			types [ index.type ] ?. ( index ) ??
 			

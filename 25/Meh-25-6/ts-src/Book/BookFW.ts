@@ -36,7 +36,7 @@ export namespace VM
 		public readonly parts : Renn < Index > ;
 
 		public readonly url : Live.R.str ;
-		public readonly page : Key.Match < Index | undefined > ;
+		public readonly selected : Key.Match < Index | undefined > ;
 		public readonly has_parts : Live.R.bool ;
 		public readonly open : Live.bool ;
 
@@ -53,7 +53,7 @@ export namespace VM
 			this.name = Live ( name ?? "" ) ;
 			this.url = Live ( "?" + name ) ;
 
-			this.page = navi.page.match ( this ) ;
+			this.selected = navi.page.match ( this ) ;
 			this.open = Live ( i.open ?? false ) ;
 
 			const parts = Object.entries ( i.parts ?? {} ) .map ( ( [ name , i ] ) => new Index ( navi , i , this , name ) ) ;
@@ -72,33 +72,28 @@ export namespace VC
 	{
 		return ef.section
 		(
-			{ class : [ "INDEX" , { SEL : vm.page } ] } ,
-			ef.section
-			(
-				{ class : "INDEX_HEAD" } ,
-				Link ( vm ) ,
-				Thumb ( vm ) ,
-			) ,
-			pl.key
-			(
-				vm.open ,
-				state => ( state && vm.has_parts.$ ) ? Parts ( vm ) : undefined
-			) ,
+			{ class : [ "INDEX" ] } ,
+			Head ( vm ) ,
+			Parts ( vm ) ,
 		) ;
 	}
 
-	export const Link = ( vm : VM.Index ) : DD.Node =>
+	const Head = ( vm : VM.Index ) : DD.Node =>
 	{
 		const click = ( ev : MouseEvent ) =>
 		{
-			vm.page.select () ;
+			vm.selected.select () ;
 			ev.preventDefault () ;
 		} ;
 
 		return ef.a
 		(
-			{ class : "_LINK" , active : { click } } ,
-			vm.title
+			{
+				class : [ "INDEX_HEAD  _LINK" , { _SELECTED : vm.selected } ] ,
+				active : { click }
+			} ,
+			ef.span ( vm.title ) ,
+			Thumb ( vm ) ,
 		) ;
 	}
 
@@ -108,6 +103,7 @@ export namespace VC
 		{
 			vm.open.$ = vm.has_parts.$ && ! vm.open.$
 			ev.preventDefault () ;
+			ev.stopPropagation () ;
 		} ;
 
 		return ef.span
@@ -122,11 +118,9 @@ export namespace VC
 
 	const thumb_ch = ( s : boolean ) : string => s ? ">" : "*" ;
 
-	const Parts_ = ( vm : VM.Index ) => ef.p ( vm.title ) ;
-
 	const Parts = ( vm : VM.Index ) : DD.Node => ef.ul
 	(
-		{ class : "INDEX_PARTS" } ,
+		{ class : [ "INDEX_PARTS" , { OPEN : vm.open } ] } ,
 		pl.each ( vm.parts , pvm => ef.li ( Index ( pvm ) ) ) ,
 	) ;
 }
