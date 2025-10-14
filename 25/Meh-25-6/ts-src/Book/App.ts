@@ -21,10 +21,11 @@ namespace VM
 			"Eval" : { type : "Eval" , title : "Eval" } ,
 			"Tree" : { type : "Tree" , title : "Tree" , parts :
 			{
-				"Tree1" : { type : "Tree 1" , title : "Tree" } ,
-				"Tree2" : { type : "Tree 2" , title : "Tree" } ,
-				"Tree3" : { type : "Tree 3" , title : "Tree" } ,
-			} }
+				"Tree1" : { type : "Tree" , title : "Tree 1" } ,
+				"Tree2" : { type : "Tree" , title : "Tree 2" } ,
+				"Tree3" : { type : "Tree" , title : "Tree 3" } ,
+			} } ,
+			"Arbre" : { type : "Arbre" , title : "Arbre" }
 		}
 	}
 
