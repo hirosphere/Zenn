@@ -19,9 +19,9 @@ namespace VM
 			"Treem" : { type : "Treem" , title : "Extreem" } ,
 			"Todo" : { type : "Todo" , title : "Todo" } ,
 			"Eval" : { type : "Eval" , title : "Eval" } ,
-			"Tree" : { type : "Tree" , title : "Tree" , open : true , parts : tree ( "Tree" , 3 ) } ,
-			"Arbre" : { type : "Tree" , title : "Arbre" , open : false , parts : tree ( "Arbre" , 4 ) } ,
-			"Baum" : { type : "Tree" , title : "Baum" , open : false , parts : tree ( "Baum" , 5 ) } ,
+		//	"Tree" : { type : "Tree" , title : "Tree" , open : false , parts : tree ( "Tree" , 3 ) } ,
+		//	"Arbre" : { type : "Tree" , title : "Arbre" , open : false , parts : tree ( "Arbre" , 4 ) } ,
+		//	"Baum" : { type : "Tree" , title : "Baum" , open : true , parts : tree ( "Baum" , 5 ) } ,
 		}
 	}
 
@@ -34,7 +34,7 @@ namespace VM
 
 		for ( let nom = 1 ; nom <= 5 ; nom ++ )
 		{
-			rt [ "Tree-" + nom ] =
+			rt [ "i" + nom ] =
 			{
 				type : "Tree" ,
 				title : title + " " + path + nom ,
@@ -47,7 +47,7 @@ namespace VM
 	export class App
 	{
 		public readonly navi = new BookBase.VM.Navi ( index , this ) ;
-		public readonly navi_mode = Live < navi_mode > ( "NAVI_BLOCK" ) ;
+		public readonly navi_mode = Live < navi_mode > ( "NAVI_INLINE" ) ;
 
 		constructor ()
 		{
@@ -64,7 +64,7 @@ namespace VM
 		{
 			const root = this.navi.root ;
 			const path = String ( query.path ) ;
-			return root.search_micro ( path.split ( "/" ) ) ;
+			return root.from_path ( path.split ( "/" ) ) ;
 		}
 
 		indexToURL ( index : BookBase.VM.Index ) : string
@@ -73,9 +73,9 @@ namespace VM
 			return `?path=${ path.join ( "/" ) }` ;
 		}
 
-		private typeToIndex ( type : string ) : BookBase.VM.Index | undefined
+		updateBrowserURL ( url : string ) : void
 		{
-			return 
+			history.replaceState ( null , "" , url ) ;
 		}
 	}
 
@@ -122,7 +122,8 @@ namespace VC
 		"Root" : index => AG_1.Root.VC.App () ,
 		"Eki_Q1" : index =>  AG_1.EkiApp ( "../../../" ) ,
 		"Treem" : index => AG_1.Extreem.VC.Applet () ,
-		"Todo" : index => AG_1.ToDo ()
+		"Todo" : index => AG_1.ToDo () ,
+		"Eval" : index => AG_1.Eval.VC.EvalApp () ,
 	}
 
 	const ContentFrame = ( index : BookBase.VM.Index , types : types ) : DD.Node =>

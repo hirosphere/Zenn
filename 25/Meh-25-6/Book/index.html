@@ -107,32 +107,38 @@ body.NAVI_INLINE
 	display : grid ;
 	grid-template-rows :  1fr  auto ;
 
-	padding : 4vh 0.3vw  0.6vh 0.3vw ;
+	padding-block : 4vh  0.6vh ;
+	padding-inline : 0.3vw  0.3vw ;
 	gap : 1ex ;
 }
 
 .NAVI_BLOCK .TREE
 {
-	overflow-y : overlay ;
-	padding-inline: 1.6vw  1.2ex ;
+	overflow-y : scroll ;
+	padding-inline : 1.6vw  0.2ex ;
 }
 
 .NAVI_BLOCK .INDEX_HEAD
 {
 	border-radius : 0.6ex 0.1ex  0.1ex  0.6ex ;
-
-	border-left : 0.0ex  solid  hsl( 0  0%  0% / 30% ) ;
-	border-bottom : 1px  dotted  hsl( 0  0%  0% / 30% ) ;
+	border-bottom : 1px  dotted  hsl( 0  0%  0% / 35% ) ;
 
 	display : grid ;
 	grid-template-columns : 1fr auto ;
 
-	padding : 0.55ex 0.6ex 0.55ex 1em ;
+	padding : 0 ;
+	align-items : stretch ;
+}
+
+.NAVI_BLOCK .INDEX_TITLE
+{
+	border-left : 1px solid hsl( 45  4%  50% ) ;
+	padding : 0.6ex 1em ;
 }
 
 .NAVI_BLOCK .INDEX_THUMB
 {
-	padding : 0.0ex  1.0ex ;
+	padding : 0.5ex  1.5ex ;
 	font-family : Courier, monospace ;
 }
 

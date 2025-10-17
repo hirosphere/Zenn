@@ -11,31 +11,42 @@ export namespace VM
 		public readonly page = new Key ( Live < Index | undefined > ( undefined ) ) ;
 		public readonly root : Index ;
 
-		constructor ( index : index , private client : NaviClient )
+		constructor ( iv : index , private client : NaviClient )
 		{
-			this.root = new Index ( this , index ) ;
+			this.root = new Index ( this , iv ) ;
+			this.page.key.add_ref ( { vChan : ch => ch != this && this.on_page_changed () } ) ;
 		}
 
-		public initiate ( defaultIndex : Index ) : void
+		public initiate ( defaultIndex : Index  = this.root ) : void
 		{
 			const path = location.pathname ;
-			const query = location.search ;
+			const query = Object.fromEntries ( new URLSearchParams ( location.search ) ) ;
 
-			log ( "Navi initiate" , path , query ) ;
+			const index = this.client.urlToIndex ( path , query )
 
-			this.page.key.$ = defaultIndex ;
+			this.page.key.set ( index ?? defaultIndex , this ) ;
 		}
 
 		public make_url ( index : Index ) : string
 		{
 			return this.client.indexToURL ( index ) ;
 		}
+
+		/*  */
+
+		private on_page_changed () : void
+		{
+			const index = this.page.key.$ ;
+			const url = index ? this.client.indexToURL ( index ) : "" ;
+			this.client.updateBrowserURL ?.( url ) ;
+		}
 	}
 
 	export type NaviClient =
 	{
 		urlToIndex ( path : string , query : Record < string , string > ) : Index | undefined ;
-		indexToURL ( index : Index ) : string ;	
+		indexToURL ( index : Index ) : string ;
+		updateBrowserURL ? ( url : string ) : void ;
 	}
 
 
@@ -98,13 +109,12 @@ export namespace VM
 			this.open.$ = this.has_parts.$ && ! this.open.$
 		}
 
-		public search_micro ( path : string [] ) : Index | undefined
+		public from_path ( path : string [] ) : Index | undefined
 		{
 			if ( path.length == 0 )  return ;
 			const name = path [ 0 ] ;
 			const part = this.parts_by_name.get ( name ) ;
-			if ( ! part )  return ;
-			return part.search_micro ( path.slice ( 1 ) ) ;
+			return part ?.from_path ( path.slice ( 1 ) ) ?? part ;
 		}
 
 		public get path () : Index []
