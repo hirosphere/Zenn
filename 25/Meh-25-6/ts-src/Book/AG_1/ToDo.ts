@@ -74,7 +74,7 @@ namespace VM
 		{
 			const json = JSON.stringify ( this.doc.$ ) ;
 
-			log ( "save" , json )
+			log ( "save" , this.doc.$.lists.at ( 0 )?.items.at ( 0 )?.title ) ;
 			
 			localStorage.setItem ( STORAGE_KEY , json ) ;
 		}

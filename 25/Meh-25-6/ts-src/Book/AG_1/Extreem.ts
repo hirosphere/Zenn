@@ -55,8 +55,6 @@ export namespace VM
 		{
 			if ( limit <= 0 )  return [] ;
 
-			log ( path.join ( "." ) )
-			
 			return each
 			(
 				r ( 3 , 6 ) ,

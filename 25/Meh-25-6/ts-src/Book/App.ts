@@ -1,5 +1,5 @@
 import { Live , ef , pl , DD , DOM as dom , log } from "../Meh/Meh.js" ;
-import * as BFW from "./BookFW.js" ;
+import * as BookBase from "./BookBase.js" ;
 import * as AG_1 from "./AG_1/AG_1.js" ;
 
 /* Data Models */
@@ -8,7 +8,7 @@ import * as AG_1 from "./AG_1/AG_1.js" ;
 
 namespace VM
 {
-	const index : BFW.VM.index =
+	const index : BookBase.VM.index =
 	{
 		type : "Root" ,
 		title : "Meh Book" ,
@@ -19,24 +19,39 @@ namespace VM
 			"Treem" : { type : "Treem" , title : "Extreem" } ,
 			"Todo" : { type : "Todo" , title : "Todo" } ,
 			"Eval" : { type : "Eval" , title : "Eval" } ,
-			"Tree" : { type : "Tree" , title : "Tree" , parts :
-			{
-				"Tree1" : { type : "Tree" , title : "Tree 1" } ,
-				"Tree2" : { type : "Tree" , title : "Tree 2" } ,
-				"Tree3" : { type : "Tree" , title : "Tree 3" } ,
-			} } ,
-			"Arbre" : { type : "Arbre" , title : "Arbre" }
+			"Tree" : { type : "Tree" , title : "Tree" , open : true , parts : tree ( "Tree" , 3 ) } ,
+			"Arbre" : { type : "Tree" , title : "Arbre" , open : false , parts : tree ( "Arbre" , 4 ) } ,
+			"Baum" : { type : "Tree" , title : "Baum" , open : false , parts : tree ( "Baum" , 5 ) } ,
 		}
+	}
+
+	function tree ( title : string , limit : number , path : string = "" , depth : number = 0 ) : BookBase.VM.index [ "parts" ]
+	{
+		if ( ++ depth > limit )  return ;
+
+		const rt : BookBase.VM.index [ "parts" ] = {} ;
+		path += ( path && "-" || "" ) ;
+
+		for ( let nom = 1 ; nom <= 5 ; nom ++ )
+		{
+			rt [ "Tree-" + nom ] =
+			{
+				type : "Tree" ,
+				title : title + " " + path + nom ,
+				parts : tree ( title , limit , path + nom , depth )
+			}
+		}
+		return rt ;
 	}
 
 	export class App
 	{
-		public readonly navi = new BFW.VM.Navi ( index ) ;
-		public readonly navi_mode = Live < navi_mode > ( "NAVI_INLINE" ) ;
+		public readonly navi = new BookBase.VM.Navi ( index , this ) ;
+		public readonly navi_mode = Live < navi_mode > ( "NAVI_BLOCK" ) ;
 
 		constructor ()
 		{
-			this.navi.page.key.$ = this.navi.root ;
+			this.navi.initiate ( this.navi.root ) ;
 		}
 
 		toggleNaviMode ()
@@ -44,6 +59,30 @@ namespace VM
 			const s = this.navi_mode ;
 			s.$ = s.$ == "NAVI_INLINE" ? "NAVI_BLOCK" : "NAVI_INLINE"
 		}
+
+		urlToIndex ( path_ : string , query : Record < string , string > ) : BookBase.VM.Index | undefined
+		{
+			const root = this.navi.root ;
+			const path = String ( query.path ) ;
+			return root.search_micro ( path.split ( "/" ) ) ;
+		}
+
+		indexToURL ( index : BookBase.VM.Index ) : string
+		{
+			const path = index.path.map ( index => encodeURIComponent ( index.name.$ ) ) .slice ( 1 ) ;
+			return `?path=${ path.join ( "/" ) }` ;
+		}
+
+		private typeToIndex ( type : string ) : BookBase.VM.Index | undefined
+		{
+			return 
+		}
+	}
+
+	type url_query =
+	{
+		path : string ;
+		type : string ;
 	}
 
 	type navi_mode = "NAVI_INLINE" | "NAVI_BLOCK" ;
@@ -76,7 +115,7 @@ namespace VC
 
 	/* Content */
 
-	type types = { [ type : string ] : ( index : BFW.VM.Index ) => DD.Node } ;
+	type types = { [ type : string ] : ( index : BookBase.VM.Index ) => DD.Node } ;
 
 	const types : types =
 	{
@@ -86,7 +125,7 @@ namespace VC
 		"Todo" : index => AG_1.ToDo ()
 	}
 
-	const ContentFrame = ( index : BFW.VM.Index , types : types ) : DD.Node =>
+	const ContentFrame = ( index : BookBase.VM.Index , types : types ) : DD.Node =>
 	{
 		return ef.div
 		(
@@ -109,7 +148,8 @@ namespace VC
 			ef.section
 			(
 				{ class : "TREE" } ,
-				BFW.VC.Index ( vm.navi.root ) ,
+				BookBase.VC.Index ( vm.navi.root ) ,
+				ef.footer () ,
 			) ,
 
 			ef.section
@@ -119,17 +159,13 @@ namespace VC
 		) ;
 	} ;
 
-	const Command = ( title : Live.R < string > | string , click : () => void ) => ef.button
-	(
-		{ passive : { click } } ,
-		title ,
-	) ;
-
 	const Clock = ( action : () => void ) : DD.Node =>
 	{
 		const time = Live ( "" ) ;
 		
-		setInterval ( () => time.$ = new Date ().toLocaleString () , 1000 ) ;
+		const update = () => time.$ = new Date ().toLocaleString () ;
+		update () ;
+		setInterval ( update , 1000 ) ;
 
 		const click = ( ev : MouseEvent ) =>
 		{
