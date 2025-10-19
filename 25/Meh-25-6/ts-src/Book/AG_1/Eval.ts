@@ -1,5 +1,6 @@
 import { Live , Renn , Key , DD , ef , pl } from "../../Meh/Meh.js" ;
 
+const log = console.log ;
 const ud = undefined ;
 type ud = undefined ;
 
@@ -19,23 +20,30 @@ export namespace DM
 	type eval =
 	{
 		title : string ;
+		code ? : string ;
 	}
 
 	export class Eval
 	{
 		public title = Live ( "Eval" ) ;
 
-		public code = Live ( "location" ) ;
+		public code = Live ( "" ) ;
 		public output = Live ( "" ) ;
 		public input = Live ( "" ) ;
+
+		public display ? : HTMLElement ;
 
 		constructor ( iv : eval )
 		{
 			this.title.$ = iv.title ;
+			this.code.$ = iv.code ?? "" ;
 		}
 
 		public execute () : void
 		{
+			let input = this.input.$ ;
+			let d = this.display ;
+
 			try
 			{
 				this.output.$ = eval ( this.code.$ ) ;
@@ -46,6 +54,21 @@ export namespace DM
 			}
 		}
 	}
+
+	export type iExecute = { execute () : void ; }
+
+	/* */
+
+	export const samples =
+	[
+		"d.innerHTML = 'DISPLAY'" ,
+		"4 * 9 / 7" ,
+		"location" ,
+		"[ 1 , 2 , 3 ] .map ( e => `* ${ e } *` )" ,
+		"( 1 + Math.sqrt( 5 ) ) / 2" ,
+	]
+	.map ( ( code , i ) => new Eval ( { title : "Eval" + (1+i) , code } ) ) ;
+
 }
 
 export namespace VM
@@ -53,25 +76,14 @@ export namespace VM
 	export class App
 	{
 		public curr = new Key ( Live < DM.Eval | undefined > ( undefined ) ) ;
-		public evals : Renn < DM.Eval > ;
+		public evals = new Renn < DM.Eval > ( DM.samples ) ;
 
 		constructor ()
 		{
 			const evals = times ( 5 , i => new DM.Eval ( { title : "Eval " + (1+i) } ) ) ;
-			this.evals = new Renn ( evals ) ;
 
 			this.curr.key.$ = this.evals.at ( 0 )?.target ;
 		}
-	}
-
-	class Index
-	{
-		constructor
-		(
-			ev : DM.Eval ,
-			key : Key < DM.Eval | ud >
-		)
-		{}
 	}
 }
 
@@ -103,28 +115,32 @@ export namespace VC
 
 	button
 	{
-		padding : 0.2ex  1em ;
+		min-width : 5em ;
+		padding : 0.5ex  1em ;
 	}
 
 	.TABS
 	{
+		margin-bottom : -0.7ex ;
 		cursor : default ;
 		display : flex ;
 		list-style : none ;
+		align-items : end ;
 		gap : 0.3ex ;
 	}
 
 	.TAB
 	{
-		border-radius : 1.6em  0.1ex  0.1ex  0.1ex ;
+		border-radius : 1.0em  1.0em  0.1ex  0.1ex ;
 		border : 1px solid hsl( 50  3%  55% ) ;
-		border-bottom : 3px solid  hsl( 50  3%  40% ) ;
-		padding : 0.5ex  1em ;
+		border-bottom : 0.4ex solid  hsl( 345  6%  80% ) ;
+		padding : 0.3ex  1.5em ;
 	}
 
 	.TAB._SELECTED
 	{
-		border-bottom : 4px  solid  hsl( 90  60%  60% ) ;
+		border-bottom : 0.4ex  solid  hsl( 90  60%  45% ) ;
+		background-color : hsl( 90  0%  96% ) ;
 	}
 
 	.EVAL
@@ -134,25 +150,46 @@ export namespace VC
 		grid-template-columns : 60%  40% ;
 	}
 
-	.EVAL._SELECTED { display : grid ; }
+	.EVAL._SELECTED
+	{
+		display : grid ;
+		gap : 1ex ;
+	}
 
 	.EDIT
 	{
 		display : flex ;
 		flex-direction : column ;
+		gap : 0.1ex ;
 	}
 
 	.EDIT textarea
 	{
 		flex-grow : 1 ;
 
-		background :  hsl( 225  55%  40% );
+		background :  hsl( 200  65%  40% );
 		resize : vertical ;
 
-		padding : 0.5ex ;
+		padding : 0.4ex ;
 		font-family : Consolas , monospace ;
 		font-size: 1.10rem ;
 		color : hsl( 0  0%  94% ) ;
+
+		tab-size : 4ex ;
+	}
+
+	.EDIT textarea::selection
+	{
+		background : hsl( 28  70%  70% ) ;
+		color : hsl( 0  0%  10% ) ;
+	}
+
+	.DISPLAY
+	{
+		display : flex ;
+		flex-direction : column ;
+		justify-content : center ;
+		align-items : center ;
 	}
 	` ;
 
@@ -194,19 +231,52 @@ export namespace VC
 			ef.section
 			(
 				{ class : "EDIT" } ,
-				Editor ( dm.code ) ,
-				Editor ( dm.output ) ,
-				Editor ( dm.input ) ,
+				Editor ( dm.code , dm ) ,
+				Editor ( dm.output , dm ) ,
+				Editor ( dm.input , dm ) ,
 			) ,
-			ef.section () ,
+			ef.section
+			(
+				{ class : "DISPLAY" , hook : { init : el => dm.display = el } } ,
+			) ,
 		) ;
 	}
 
-	const Editor = ( text : Live.str ) : DD.Node =>
+	const Editor = ( text : Live.str , ex : DM.iExecute ) : DD.Node =>
 	{
+		const keydown = ( ev : KeyboardEvent ) =>
+		{
+			if ( ev.ctrlKey && ev.key == "Enter" )
+			{
+				ex.execute () ;
+				ev.preventDefault () ;
+			}
+
+			else if ( ev.ctrlKey && ev.key == " " )
+			{
+				if ( ev.target instanceof HTMLTextAreaElement )
+				{
+					const el = ev.target ;
+					const text = el.value ;
+					const start = el.selectionStart ;
+					const end = el.selectionEnd ;
+
+					el.value =
+					(
+						text.substring ( 0 , start ) +
+						"\t" +
+						text.substring ( start )
+					) ;
+
+					el.selectionStart = start + 1 ; 
+					el.selectionEnd = end + 1 ;
+				}
+			}
+		} ;
+
 		return ef.textarea
 		(
-			{ biBind : { vInp : text } } ,
+			{ biBind : { vInp : text } , active : { keydown } } ,
 		) ;
 	}
 

@@ -197,20 +197,20 @@ body.NAVI_INLINE
 .NAVI_INLINE .TREE
 {
 	flex-grow : 1 ;
-	padding : 0.3ex ;
+	padding :  0ex  1ex  0.3ex 1ex ;
 }
 
 .NAVI_INLINE .INDEX
 {
 	display : inline ;
 	line-height : 1.9em ;
-	margin-right : 1px ;
+	margin-right : 0.3ex ;
 }
 
 .NAVI_INLINE .INDEX_HEAD
 {
 	border : 0.2ex  solid  hsl( 0  0%  40% / 80% ) ;
-	border-radius : 0.8ex 0.8ex 0.8ex 0.8ex ;
+	border-radius : 0.1ex 0.1ex 0.8ex 1.4ex ;
 
 	display : inline ;
 	padding : 0.4ex 1em  0.6ex 1em ;
@@ -244,7 +244,14 @@ body.NAVI_INLINE
 	
 	margin-inline : 1.0ex ;
 	padding-inline : 0.5ex ;
-	list-style 	: none ;
+
+	vertical-align : top ;
+}
+
+.NAVI_INLINE ul
+{
+	list-style : none ;
+	overflow : hidden ;
 }
 
 .NAVI_INLINE .INDEX:hover .INDEX_PARTS
