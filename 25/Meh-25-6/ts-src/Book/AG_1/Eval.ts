@@ -107,6 +107,7 @@ export namespace VC
 
 	.BAR
 	{
+		width : 100% ;
 		display : flex ;
 		padding : 0.7ex 1em ;
 
@@ -124,8 +125,10 @@ export namespace VC
 		margin-bottom : -0.7ex ;
 		cursor : default ;
 		display : flex ;
-		list-style : none ;
+
+		overflow-x : scroll ;
 		align-items : end ;
+		list-style : none ;
 		gap : 0.3ex ;
 	}
 

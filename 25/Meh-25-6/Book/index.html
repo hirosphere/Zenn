@@ -192,17 +192,20 @@ body.NAVI_INLINE
 	padding : 0px 1vw 3px ;
 	align-items : stretch ;
 	gap : 1ex ;
+	flex-wrap : wrap ;
 }
 
 .NAVI_INLINE .TREE
 {
 	flex-grow : 1 ;
+	display : flex ;
+	overflow : auto ;
 	padding :  0ex  1ex  0.3ex 1ex ;
 }
 
 .NAVI_INLINE .INDEX
 {
-	display : inline ;
+	display : flex ;
 	line-height : 1.9em ;
 	margin-right : 0.3ex ;
 }
@@ -212,21 +215,24 @@ body.NAVI_INLINE
 	border : 0.2ex  solid  hsl( 0  0%  40% / 80% ) ;
 	border-radius : 0.1ex 0.1ex 0.8ex 1.4ex ;
 
-	display : inline ;
-	padding : 0.4ex 1em  0.6ex 1em ;
+	display : flex ;
+	padding : 0.0ex 1em  0.0ex 1em ;
 	gap : 1ex ;
 }
 
 .NAVI_INLINE .INDEX_TITLE
 {
+	white-space : nowrap ;
 }
 
 .NAVI_INLINE .INDEX_THUMB
 {
+	border-radius : 0.3ex ;
+	border : 1px solid  hsl( 0  0%  80% ) ;
 	display : none ;
 	vertical-align : middle ;
 	margin-inline : 1ex -0.7em ;
-	padding : 0.5ex  1.0ex ;
+	padding : 0.0ex  1.0ex ;
 	font-family : Courier, monospace ;
 }
 
@@ -238,14 +244,12 @@ body.NAVI_INLINE
 {
 	border : solid  hsl( 0  0%  30% / 80% ) ;
 	border-width : 0ex  0.3ex  0.0ex  0.3ex ;
-	border-radius : 1ex 1ex  1ex 1ex ;
+	border-radius : 2ex 2ex  2ex 2ex ;
 
-	display : inline ;
+	display : flex ;
 	
 	margin-inline : 1.0ex ;
-	padding-inline : 0.5ex ;
-
-	vertical-align : top ;
+	padding-inline : 1.0ex ;
 }
 
 .NAVI_INLINE ul
@@ -256,24 +260,23 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .INDEX:hover .INDEX_PARTS
 {
-	border-color : hsl( 345  80%  70% ) ;
 }
 
 .NAVI_INLINE .TREE ul
 {
-	display : inline ;
+	display : flex ;
 }
 
 .NAVI_INLINE .TREE li
 {
-	display : inline ;
+	display : block ;
 }
 
 .NAVI_INLINE  .CLOCK
 {
 	border-radius : 0.9ex ;
 	background : hsl( 0  0%  100% / 40% ) ;
-	display : blick ;
+	display : block ;
 	padding : 1.0ex  1em ;
 	white-space : nowrap ;
 }

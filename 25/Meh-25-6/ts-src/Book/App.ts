@@ -21,7 +21,7 @@ namespace VM
 			"Eval" : { type : "Eval" , title : "Eval" } ,
 		//	"Tree" : { type : "Tree" , title : "Tree" , open : false , parts : tree ( "Tree" , 3 ) } ,
 		//	"Arbre" : { type : "Tree" , title : "Arbre" , open : false , parts : tree ( "Arbre" , 4 ) } ,
-		//	"Baum" : { type : "Tree" , title : "Baum" , open : true , parts : tree ( "Baum" , 5 ) } ,
+			"Baum" : { type : "Tree" , title : "Baum" , open : true , parts : tree ( "Baum" , 5 ) } ,
 		}
 	}
 
