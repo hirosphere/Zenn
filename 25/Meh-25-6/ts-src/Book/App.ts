@@ -1,6 +1,7 @@
 import { Live , ef , pl , DD , DOM as dom , log } from "../Meh/Meh.js" ;
 import * as BookBase from "./BookBase.js" ;
 import * as AG_1 from "./AG_1/AG_1.js" ;
+import * as IndexQst from "./IndexQst.js" ; ;
 
 /* Data Models */
 
@@ -21,6 +22,7 @@ namespace VM
 			"Eval" : { type : "Eval" , title : "Eval" } ,
 		//	"Tree" : { type : "Tree" , title : "Tree" , open : false , parts : tree ( "Tree" , 3 ) } ,
 		//	"Arbre" : { type : "Tree" , title : "Arbre" , open : false , parts : tree ( "Arbre" , 4 ) } ,
+			"Synth" : IndexQst.Synth ,
 			"Baum" : { type : "Tree" , title : "Baum" , open : true , parts : tree ( "Baum" , 5 ) } ,
 		}
 	}
@@ -30,11 +32,11 @@ namespace VM
 		if ( ++ depth > limit )  return ;
 
 		const rt : BookBase.VM.index [ "parts" ] = {} ;
-		path += ( path && "-" || "" ) ;
+		path += ( path && "" || "" ) ;
 
 		for ( let nom = 1 ; nom <= 5 ; nom ++ )
 		{
-			rt [ "i" + nom ] =
+			rt [ "" + nom ] =
 			{
 				type : "Tree" ,
 				title : title + " " + path + nom ,
@@ -132,9 +134,8 @@ namespace VC
 		(
 			{ class : [ "CONTENT_FRAME" , { CURRENT : index.selected } ] } ,
 
-			types [ index.type ] ?. ( index ) ??
-			
-			ef.main ( { class : "DEFAULT_CONTENT" } , ef.p ( index.title ) ) ,
+			types [ index.type ] ?. ( index )
+			?? ef.main ( { class : "DEFAULT_CONTENT" } , ef.p ( index.title ) ) ,
 		) ;
 	}
 
@@ -155,6 +156,7 @@ namespace VC
 
 			ef.section
 			(
+				{ class : "CLOCK" } ,
 				Clock ( () => vm.toggleNaviMode () ) ,
 			) ,
 		) ;
@@ -176,7 +178,7 @@ namespace VC
 
 		return ef.a
 		(
-			{ class : "CLOCK _LINK" , active : { click } , attrs : { href : "" } } ,
+			{ class : "CLOCK_LINK _LINK" , active : { click } , attrs : { href : "" } } ,
 			time
 		) ;
 	}

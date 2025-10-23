@@ -54,7 +54,7 @@ export namespace VM
 
 	export type index =
 	{
-		type : string ;
+		type ? : string ;
 		title : string ;
 		open ? : boolean ;
 		parts ? : { [ name : string ] : index }
@@ -81,7 +81,7 @@ export namespace VM
 			name ? : string
 		)
 		{
-			this.type = i.type ;
+			this.type = i.type ?? "" ;
 			this.title = Live ( i.title ) ;
 			this.name = Live ( name ?? "" ) ;
 			this.url = Live ( navi.make_url ( this ) ) ;

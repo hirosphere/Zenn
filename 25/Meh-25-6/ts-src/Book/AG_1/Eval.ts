@@ -1,4 +1,4 @@
-import { Live , Renn , Key , DD , ef , pl } from "../../Meh/Meh.js" ;
+import { Live , Renn , Key , DD , DOM , ef , pl } from "../../Meh/Meh.js" ;
 
 const log = console.log ;
 const ud = undefined ;
@@ -98,6 +98,11 @@ export namespace VC
 
 	:host { height : 100% ; }
 
+	*:focus
+	{
+		box-shadow : 0.2ex  0.2ex  0.3ex  hsl( 0  0%  60% ) ;
+	}
+
 	main
 	{
 		height : 100% ;
@@ -107,26 +112,33 @@ export namespace VC
 
 	.BAR
 	{
-		width : 100% ;
 		display : flex ;
-		padding : 0.7ex 1em ;
+		padding : 1.0ex 1em ;
 
-		gap : 1em ;
+		gap : 2em ;
 	}
 
-	button
+	.BUTTON_PAD
 	{
-		min-width : 5em ;
-		padding : 0.5ex  1em ;
+		min-width : 6em ;
+		display : flex ;
+		justify-content : center ;
+		align-items : center ;
+	}
+
+	.BUTTON_PAD  button
+	{
+		border-radius : 0.4ex ;
+		width : 10em ;
+		height : 3em ;
 	}
 
 	.TABS
 	{
-		margin-bottom : -0.7ex ;
+		margin-bottom : -1.0ex ;
 		cursor : default ;
 		display : flex ;
 
-		overflow-x : scroll ;
 		align-items : end ;
 		list-style : none ;
 		gap : 0.3ex ;
@@ -163,7 +175,7 @@ export namespace VC
 	{
 		display : flex ;
 		flex-direction : column ;
-		gap : 0.1ex ;
+		gap : 2px ;
 	}
 
 	.EDIT textarea
@@ -212,7 +224,11 @@ export namespace VC
 				ef.section
 				(
 					{ class : "BAR" } ,
-					Button ( "実行" , () => app.curr.key.$ ?.execute () ) ,
+					ef.section
+					(
+						{ class : "BUTTON_PAD" } ,
+						Button ( "実行" , () => app.curr.key.$ ?.execute () ) ,
+					) ,
 					Tabs ( app ) ,
 				) ,
 				ef.section
