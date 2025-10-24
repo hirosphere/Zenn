@@ -21,6 +21,7 @@
 html
 {
 	height : 100% ;
+	background : linear-gradient( 180deg , hsl( 210  70%  80% ) , hsl( 217  100%  100% ) ) ;
 }
 
 html
@@ -87,7 +88,7 @@ body.NAVI_INLINE
 
 .NAVI .INDEX_PARTS
 {
-	font-size : 97% ;
+	font-size : 98.0% ;
 }
 
 .NAVI ._LINK
@@ -203,24 +204,28 @@ body.NAVI_INLINE
 .NAVI_INLINE .TREE
 {
 	order : 1 ;
+	flex-grow : 1 ;
+
 	display : flex ;
 	overflow-x : scroll ;
+	scrollbar-width : none ;
 	padding :  0ex  1ex  0.3ex 1ex ;
 }
 
 .NAVI_INLINE .INDEX
 {
 	display : flex ;
+	align-items : stretch ;
 }
 
 .NAVI_INLINE .INDEX_HEAD
 {
 	border : 0.2ex  solid  hsl( 0  0%  40% / 60% ) ;
-	border-radius : 0.1ex 0.1ex 0.8ex 1.4ex ;
+	border-radius : 0.1ex 0.1ex 1.7ex 1.7ex ;
 
+	min-height : 1.8em;
 	display : flex ;
-	height : 2.0em ;
-	padding : 0  1em ;
+	padding-inline : 1.2em ;
 	align-items : stretch ;
 	gap : 1ex ;
 }
@@ -233,29 +238,36 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .INDEX_THUMB
 {
-	margin-right : -1em ;
+	margin-right : -1.5em ;
 	border-radius : 0.3ex ;
 	border : 0px solid  hsl( 0  0%  80% ) ;
 	display : none ;
-	padding : 0.0ex  1.4ex ;
-	font-family : Courier, monospace ;
+	padding : 0.0ex  1.0ex ;
+	font-family : monospace ;
+	font-size : 0.9em ;
+	color : hsl( 0  0%  40% ) ;
 }
 
-.NAVI_INLINE .INDEX_PARTS { display : none ; }
-.NAVI_INLINE .INDEX_THUMB._HAS_PARTS { display : inline ; }
+.NAVI_INLINE .INDEX_THUMB._HAS_PARTS { display : block ; }
 
+
+
+.NAVI_INLINE .INDEX_PARTS { display : none ; }
 
 .NAVI_INLINE .INDEX_PARTS._OPEN
 {
-	border : solid  hsl( 0  0%  30% / 40% ) ;
-	border-width : 0ex  0.2ex  0.03ex  0.9ex ;
+	border : solid  hsl( 0  0%  0% / 35% ) ;
+	border-width : 0  0.3ex  0.07ex  0.8ex ;
 	border-radius : 0.1ex 0.1ex  1.0ex 1.6ex ;
+	border-bottom-color : hsl( 0  0%  0 / 9% ) ;
+
+	background-color : hsl( 180  100%  100% / 3% ) ;
 
 	display : block ;
 	
-	margin-inline : 0.7ex  0.3ex ;
-	padding-inline : 0.7ex  0.7ex ;
-	padding-block : 0  0.10ex ;
+	margin-inline : 0.5ex  0.3ex ;
+	padding-inline : 0.6ex  0.7ex ;
+	padding-block : 0  0.1ex ;
 }
 
 .NAVI_INLINE ul
@@ -263,22 +275,23 @@ body.NAVI_INLINE
 	list-style : none ;
 	overflow : hidden ;
 	display : flex ;
-	gap : 0.4ex ;
-}
-
-.NAVI_INLINE .INDEX:hover .INDEX_PARTS
-{
+	gap : 0.2ex ;
+	align-items : stretch ;
 }
 
 .NAVI_INLINE .TREE ul
 {
 	display : flex ;
+	align-items : stretch ;
 }
 
 .NAVI_INLINE .TREE li
 {
-	display : block ;
+	display : flex ;
+	align-items : stretch ;
 }
+
+
 
 .NAVI_INLINE  .CLOCK
 {
@@ -290,7 +303,6 @@ body.NAVI_INLINE
 .NAVI_INLINE  .CLOCK_LINK
 {
 	border-radius : 0.9ex ;
-	background : hsl( 0  0%  100% / 40% ) ;
 	padding : 0.7ex 1vw ;
 	white-space : nowrap ;
 	font-size : 1.1em ;
@@ -298,7 +310,7 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .TREE > footer
 {
-	width : 0em ;
+	width : 10em ;
 }
 
 
@@ -325,8 +337,7 @@ body.NAVI_INLINE
 	width : 100% ;
 	height : 100% ;
 
-	background : hsl( 210  30%  65% ) ;
-	color : hsl( 0  0%  100% ) ;
+	color : hsl( 0  0%  10% ) ;
 
 	display : flex ;
 	flex-direction : column ;

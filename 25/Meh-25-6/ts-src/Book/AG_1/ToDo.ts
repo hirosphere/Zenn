@@ -118,7 +118,11 @@ export namespace VC
 {
 	const css = /* css */ `
 		
-		:host { height : 100% ; overflow : auto ; }
+		:host
+		{
+			height : 100% ; overflow : auto ;
+			background : white ;
+		}
 
 		* { box-sizing : border-box ; margin : 0 ; padding : 0 ; }
 

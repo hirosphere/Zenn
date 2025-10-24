@@ -106,21 +106,21 @@ export namespace VC
 	main
 	{
 		height : 100% ;
+		background : white ;
 		display : grid ;
 		grid-template-rows : auto  1fr ;
+		padding : 1px ;
 	}
 
 	.BAR
 	{
+		width : 100% ;
 		display : flex ;
-		padding : 1.0ex 1em ;
-
-		gap : 2em ;
+		gap : 0.5ex ;
 	}
 
 	.BUTTON_PAD
 	{
-		min-width : 6em ;
 		display : flex ;
 		justify-content : center ;
 		align-items : center ;
@@ -129,16 +129,19 @@ export namespace VC
 	.BUTTON_PAD  button
 	{
 		border-radius : 0.4ex ;
-		width : 10em ;
-		height : 3em ;
+		width : calc( 4em + 4vw ) ;
+		height : 2.2em ;
 	}
 
 	.TABS
 	{
-		margin-bottom : -1.0ex ;
+		flex-grow : 1 ;
+		border-bottom : 2px solid hsl( 0  0%  60% ) ;
+
 		cursor : default ;
 		display : flex ;
 
+		overflow : auto ;
 		align-items : end ;
 		list-style : none ;
 		gap : 0.3ex ;
@@ -168,7 +171,6 @@ export namespace VC
 	.EVAL._SELECTED
 	{
 		display : grid ;
-		gap : 1ex ;
 	}
 
 	.EDIT
@@ -188,7 +190,7 @@ export namespace VC
 		padding : 0.4ex ;
 		font-family : Consolas , monospace ;
 		font-size: 1.10rem ;
-		color : hsl( 0  0%  94% ) ;
+		color : hsl( 0  0%  100% ) ;
 
 		tab-size : 4ex ;
 	}
@@ -206,6 +208,8 @@ export namespace VC
 		justify-content : center ;
 		align-items : center ;
 	}
+
+
 	` ;
 
 
