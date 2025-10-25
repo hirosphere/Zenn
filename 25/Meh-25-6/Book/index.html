@@ -88,7 +88,7 @@ body.NAVI_INLINE
 
 .NAVI .INDEX_PARTS
 {
-	font-size : 98.0% ;
+	font-size : 98.6% ;
 }
 
 .NAVI ._LINK
@@ -126,7 +126,7 @@ body.NAVI_INLINE
 
 .NAVI_BLOCK .INDEX_HEAD
 {
-	border-radius : 0.6ex 0.1ex  0.1ex  0.6ex ;
+	border-radius : 0.9ex 0.1ex  0.1ex  0.9ex ;
 	border-bottom : 1px  dotted  hsl( 0  0%  0% / 35% ) ;
 
 	display : grid ;
@@ -142,8 +142,10 @@ body.NAVI_INLINE
 	padding : 0.6ex 1em ;
 }
 
-.NAVI_BLOCK .INDEX_THUMB
+.NAVI_BLOCK .INDEX_THUMB { display : none ; }
+.NAVI_BLOCK .INDEX_THUMB._HAS_PARTS
 {
+	display : block ;
 	padding : 0.5ex  1.5ex ;
 	font-family : Courier, monospace ;
 }
@@ -160,7 +162,6 @@ body.NAVI_INLINE
 
 	display : block ;
 	overflow : hidden ;
-	transition : height  1.1s ;
 }
 
 .NAVI_BLOCK ul
@@ -221,7 +222,7 @@ body.NAVI_INLINE
 .NAVI_INLINE .INDEX_HEAD
 {
 	border : 0.2ex  solid  hsl( 0  0%  40% / 60% ) ;
-	border-radius : 0.1ex 0.1ex 1.7ex 1.7ex ;
+	border-radius : 0.1ex 0.1ex 1.4ex 1.4ex ;
 
 	min-height : 1.8em;
 	display : flex ;

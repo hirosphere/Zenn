@@ -14,13 +14,13 @@ export type SP < K > =
 
 export class IDB
 {
-	stores = new Map < string , IDB.Store < any , any , any > > ;
-	core ? : IDBDatabase ;
+	public readonly stores = new Map < string , IDB.Store < any , any , any > > ;
+	public get core () : IDBDatabase | undefined { return this.#_core ; }
 
-	constructor ( protected schema : DBSchema )
+	constructor ( public readonly schema : DBSchema )
 	{}
 
-	init () : void
+	public init () : void
 	{
 		try
 		{
@@ -28,9 +28,13 @@ export class IDB
 
 			oreq.onsuccess = ev =>
 			{
-				this.core = oreq.result ;
-				log ( this.core ) ;
-				this.on_open_db () ;
+				this.#_core = oreq.result ;
+				this.#_available = true ;
+
+				log ( "IDB init onsuccess" , this.schema ) ;
+
+				this.on_init () ;
+				this.#_inits.forEach ( oper => oper () ) ;
 			}
 		
 			oreq.onupgradeneeded = ev =>
@@ -41,7 +45,7 @@ export class IDB
 		
 			oreq.onerror = ev =>
 			{
-				log ( ev ) ;
+				log ( "IDB init onerror" , ev ) ;
 			}
 		}
 		catch ( err )
@@ -50,7 +54,17 @@ export class IDB
 		}
 	}
 
-	on_open_db () : void {}
+	public set inits ( oper : () => void )
+	{
+		if ( this.#_available ) oper () ;
+		else  this.#_inits.push ( oper ) ;
+	}
+
+	#_core ? : IDBDatabase ;
+	#_available = false ;
+	#_inits : ( () => void ) [] = [] ;
+
+	protected on_init () : void {}
 }
 
 const make_store = ( db : IDBDatabase , stores : Map < string , IDB.Store < any , any , any > > ) =>
@@ -59,11 +73,10 @@ const make_store = ( db : IDBDatabase , stores : Map < string , IDB.Store < any 
 	(
 		store =>
 		{
-			log ( store.name , db.objectStoreNames.contains ( store.name ) )
 			if ( db.objectStoreNames.contains ( store.name ) == false )
 			{
 				db.createObjectStore ( store.name , store.param ) ;
-				log ( "create store" , store.name ) ;
+				log ( "ストア作成" , store.name ) ;
 			}
 		}
 	)
@@ -73,52 +86,76 @@ export namespace IDB
 {
 	export class Store < R extends object , K extends keyof R , KT extends ( number | string ) >
 	{
-		constructor ( public db : IDB , public name : string , public param : SP < K > )
+		constructor ( protected db : IDB , public readonly name : string , public readonly param : SP < K > )
 		{
 			db.stores.set ( name , this ) ;
 		}
 	
-		public add ( value : R , tr ? : IDBTransaction )
+		public add ( value : Omit < R , K > , tr ? : IDBTransaction )
 		{
 			const db = this.db.core ;
 			log ( db ) ;
 			if ( ! db )  return ;
+
 			tr ??= db.transaction ( [ this.name ] , "readwrite" ) ;
-			const preq = tr.objectStore ( this.name ) .add ( value ) ;
-			preq.onsuccess = () => log ( this.name , "add" , value )
+			const req = tr.objectStore ( this.name ) .add ( value ) ;
+			
+			req.onsuccess = () => log ( this.name , "add" , value )
 		}
 	
-		public set ( value : R & { K : KT } , tr ? : IDBTransaction )
+		public set ( value : R , tr ? : IDBTransaction ) : boolean
 		{
 			const db = this.db.core ;
-			log ( db ) ;
-			if ( ! db )  return ;
+			if ( ! db )  return false ;
+
 			tr ??= db.transaction ( [ this.name ] , "readwrite" ) ;
-			const preq = tr.objectStore ( this.name ) .put ( value ) ;
-			preq.onsuccess = () => log ( this.name , "set" , value )
+			const req = tr.objectStore ( this.name ) .put ( value ) ;
+			req.onsuccess = () => log ( this.name , "set" , value ) ;
+			
+			return true ;
 		}
 	
-		public async get ( key : KT , tr ? : IDBTransaction ) : Promise < R & { K : KT } >
+		public async get ( key : KT , tr ? : IDBTransaction ) : Promise < R | undefined >
 		{
-			const f = ( resolve : ( v : R & { K : KT } ) => void , reject : ( v ? : any ) => void ) =>
+			const f = ( resolve : ( v : R | undefined ) => void , reject : ( v ? : any ) => void ) =>
 			{
 				try
 				{
-					if( ! this.db.core ) throw new Error ( "Coreがないよ。" ) ;
+					if( ! this.db.core )
+					{
+						log ( "IDB.Store get" , "コアがないよ。" ) ;
+						resolve ( undefined ) ;
+						return ;
+					}
+
 					tr ??= this.db.core.transaction ( [ this.name ] , "readonly" ) ;
-					if( ! tr ) throw new Error () ;
+					if( ! tr )
+					{
+						log ( "IDB.Store get" , "transaction がないよ。" ) ;
+						resolve ( undefined ) ;
+						return ;
+					}
 	
 					const st = tr.objectStore ( this.name ) ;
-					const req = st.get ( key ) ;
-					req.onsuccess = ev =>
+					const g_req = st.get ( key ) ;
+
+					g_req.onsuccess = ev =>
 					{
-						resolve ( req.result ) ;
+						log ( "IDB.Store get onsuccess" , g_req.result ) ;
+						resolve ( g_req.result ) ;
+					}
+
+					g_req.onerror = ev =>
+					{
+						log ( "IDB.Store get" , "get req エラーだよ。" ) ;
+						resolve ( undefined ) ;
 					}
 				}
 	
 				catch ( err )
 				{
-					reject ( err ) ;
+					log ( "IDB.Store get : 未作成ストア"  , this.db.schema.name , this.name ) ;
+					resolve ( undefined ) ;
 				}
 			}
 	

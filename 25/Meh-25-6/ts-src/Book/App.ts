@@ -49,7 +49,7 @@ namespace VM
 	export class App
 	{
 		public readonly navi = new BookBase.VM.Navi ( index , this ) ;
-		public readonly navi_mode = Live < navi_mode > ( "NAVI_INLINE" ) ;
+		public readonly navi_mode = Live < navi_mode > ( "NAVI_BLOCK" ) ;
 
 		constructor ()
 		{
