@@ -214,7 +214,7 @@ export namespace VC
 
 	.LINKS button
 	{
-		border-radius : 0.5ex ;
+		border-radius : 0.4ex ;
 		border : 1px solid hsl( 0  0%  50% ) ;
 		min-width : 2em ;
 		padding-inline : 1ex ;
@@ -223,12 +223,13 @@ export namespace VC
 
 	.LINKS > ._EDIT
 	{
+		margin : 1ex ;
 		display : none ;
-		max-width : 45em ;
+		max-width : 50em ;
 		border-radius : 0.66ex ;
 		border : 0.1ex  solid  hsl( 0  0%  70% ) ;
 		background-color : hsl( 49  5%  97% ) ;
-		padding : 1.8ex 1.4ex ;
+		padding : 2ex 1.7ex ;
 		gap : 0.3ex  ;
 	}
 
@@ -300,7 +301,7 @@ export namespace VC
 					{ class : "_THUMB  FR AS" } ,
 					Button ( "Edit" , () => edit_show.$ = ! edit_show.$ ) ,
 					Button ( "+P" , () => VM.add_part ( dm ) ) ,
-					Button ( "X" , () => o?.delete () ) ,
+					o && Button ( "X" , () => { if ( confirm ( dm.title.$ + " を消去します。" ) ) o?.delete () ; } ) ,
 				)
 			) ,
 

@@ -60,7 +60,8 @@ export namespace VM
 		type ? : string ;
 		title : string ;
 		open ? : boolean ;
-		parts ? : { [ name : string ] : index }
+		parts ? : { [ name : string ] : index } ;
+		dyn_parts ? : ( index : index ) => index [] ;
 	}
 
 	export class Index
@@ -73,6 +74,7 @@ export namespace VM
 		public readonly url : Live.R.str ;
 		public readonly selected : Key.Match < Index | undefined > ;
 		public readonly has_parts : Live.R.bool ;
+		public readonly is_dyn_parts : boolean ;
 		public readonly open : Live.bool ;
 		public readonly thumb : Live.R.str ;
 
@@ -104,6 +106,7 @@ export namespace VM
 			this.parts = new Renn ( parts ) ;
 
 			this.has_parts = this.parts.length.trans_r ( length => length > 0 ) ;
+			this.is_dyn_parts = !! i.dyn_parts ;
 			this.thumb = this.open.trans_r ( state => this.has_parts.$ ? ( state ? ">" : "*"  ) : "" ) ;
 		}
 
@@ -173,11 +176,20 @@ export namespace VC
 			ev.preventDefault () ;
 			ev.stopPropagation () ;
 		} ;
+		
+		const _HAS_PARTS = vm.has_parts ;
+		const _DYN_PARTS = vm.is_dyn_parts ;
+
+		_DYN_PARTS && log ( "dyn parts" , vm.title.$ ) ;
+
+		const _T = vm.is_dyn_parts ;
+
+		_T && log ( vm.title.$ , "_T" , _T ) ;
 
 		return ef.span
 		(
 			{
-				class : [ "INDEX_THUMB" , { _HAS_PARTS : vm.has_parts } ] ,
+				class : [ "INDEX_THUMB" , { _HAS_PARTS , _DYN_PARTS , _T } ] ,
 				active : { click } ,
 			} ,
 			vm.thumb ,

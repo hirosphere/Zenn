@@ -161,7 +161,7 @@ export var VC;
 
 	.LINKS button
 	{
-		border-radius : 0.5ex ;
+		border-radius : 0.4ex ;
 		border : 1px solid hsl( 0  0%  50% ) ;
 		min-width : 2em ;
 		padding-inline : 1ex ;

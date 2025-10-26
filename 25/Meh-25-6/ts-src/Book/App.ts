@@ -1,5 +1,6 @@
 import { Live , ef , pl , DD , DOM as dom , log } from "../Meh/Meh.js" ;
 import * as BookBase from "./BookBase.js" ;
+import * as AG_0 from "./AG_0/AG_0.js" ;
 import * as AG_1 from "./AG_1/AG_1.js" ;
 import * as IndexQst from "./IndexQst.js" ; ;
 
@@ -16,14 +17,24 @@ namespace VM
 		open : true ,
 		parts :
 		{
-			"Eki" : { type : "Eki_Q1" , title : "駅名表示" } ,
-			"Treem" : { type : "Treem" , title : "Extreem" } ,
-			"Todo" : { type : "Todo" , title : "Todo" } ,
 			"Eval" : { type : "Eval" , title : "Eval" } ,
-		//	"Tree" : { type : "Tree" , title : "Tree" , open : false , parts : tree ( "Tree" , 3 ) } ,
-		//	"Arbre" : { type : "Tree" , title : "Arbre" , open : false , parts : tree ( "Arbre" , 4 ) } ,
-			"Synth" : IndexQst.Synth ,
-			"Baum" : { type : "Tree" , title : "Baum" , open : true , parts : tree ( "Baum" , 5 ) } ,
+			"AG_1" :
+			{
+				title : "AG 1" ,
+				open : true ,
+				parts :
+				{
+					"JMA_EQ" : { type : "JMA_EQ" , title : "地震リスト" } ,
+					"Eki" : { type : "Eki_Q1" , title : "駅名表示" } ,
+					"Treem" : { type : "Treem" , title : "Extreem" } ,
+					"Todo" : { type : "Todo" , title : "Todo" } ,
+					"Tonne" : { type : "Tonne" , title : "Tonne" } ,
+					"Dyndex" : IndexQst.Dyndex ,
+					"Tree" : { type : "Tree" , title : "Tree" , open : false , parts : tree ( "Tree" , 3 ) } ,
+					"Arbre" : { type : "Tree" , title : "Arbre" , open : false , parts : tree ( "Arbre" , 4 ) } ,
+				} ,
+			} ,
+			"Baum" : { type : "Tree" , title : "Baum" , open : false , parts : tree ( "Baum" , 5 ) } ,
 		}
 	}
 
@@ -121,11 +132,14 @@ namespace VC
 
 	const types : types =
 	{
-		"Root" : index => AG_1.Root.VC.App () ,
-		"Eki_Q1" : index =>  AG_1.EkiApp ( "../../../" ) ,
-		"Treem" : index => AG_1.Extreem.VC.Applet () ,
-		"Todo" : index => AG_1.ToDo () ,
-		"Eval" : index => AG_1.Eval.VC.EvalApp () ,
+		"Root"    : index => AG_0.Root.VC.App () ,
+		"Eval"    : index => AG_0.Eval.VC.EvalApp () ,
+		"Dyndex" : index => IndexQst.VC.Page ( index ) ,
+		"Eki_Q1"  : index => AG_1.EkiApp ( "../../../" ) ,
+		"Treem"   : index => AG_1.Extreem.VC.Applet () ,
+		"Todo"    : index => AG_1.ToDo () ,
+		"JMA_EQ"  : index => AG_1.JMA_EQ.VC.App () ,
+		"Tonne"   : index => AG_1.Tonne.VC.App () ,
 	}
 
 	const ContentFrame = ( index : BookBase.VM.Index , types : types ) : DD.Node =>
