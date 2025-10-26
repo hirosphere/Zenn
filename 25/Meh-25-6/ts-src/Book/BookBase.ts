@@ -14,7 +14,10 @@ export namespace VM
 		constructor ( iv : index , private client : NaviClient )
 		{
 			this.root = new Index ( this , iv ) ;
-			this.page.key.add_ref ( { vChan : ch => ch != this && this.on_page_changed () } ) ;
+			this.page.key.add_ref
+			(
+				{ vChan : ( { changer } ) => changer != this && this.on_page_changed () }
+			) ;
 		}
 
 		public initiate ( defaultIndex : Index  = this.root ) : void

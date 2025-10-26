@@ -133,7 +133,7 @@ export class MehElement < E extends DD.TargetDOMElement >  extends MehNode
 		
 		if ( typeof dec == "string" )
 		{
-			this.el.classList.add ( ... dec.split ( /\s+/g ) ) ;
+			this.el.classList.add ( ... ClassPlace.to_set ( dec ) ) ;
 		}
 
 		else if ( dec instanceof Live.Core && typeof dec.$ == "string" )
@@ -274,18 +274,28 @@ class ClassPlace
 {
 	constructor ( protected el : Element , ) {}
 
-	set classNames ( v : string )
+	set classNames ( class_names : string )
 	{
-		const rem = this.#prev ;
-		const mow = new Set < string > ( v.split ( /\s+/g ) ) ;
+		const rem = this.#_prev ;
+		// const mow = new Set < string > ( class_names.split ( /\s+/g ) ) ;
+		// mow.delete ( "" ) ;
+
+		const mow = ClassPlace.to_set ( class_names ) ;
 
 		this.el.classList.remove ( ... rem .difference ( mow ) ) ;
 		this.el.classList.add ( ... mow ) ;
 
-		this.#prev = mow ;
+		this.#_prev = mow ;
 	}
 
-	#prev = new Set < string > ;
+	#_prev = new Set < string > ;
+
+	static to_set ( class_names : string ) : Set < string >
+	{
+		const set = new Set ( class_names.split ( /\s+/g ) ) ;
+		set.delete ( "" ) ;
+		return set ;
+	}
 }
 
 const setAttribute = ( ns : string , el : Element , name : string , value : any ) : void =>

@@ -108,7 +108,7 @@ export namespace Live
 
 	export type Ref = Life.Ref &
 	{
-		vChan ( changer : object | undefined ) : void ; 
+		vChan ( i : { changer : object | undefined , initial : boolean } ) : void ; 
 	}
 }
 
@@ -136,7 +136,7 @@ export namespace Live
 		public override [ life_add_ref ] ( ref : Ref ) : void
 		{
 			super [ life_add_ref ] ( ref ) ;
-			ref.vChan ( undefined ) ;
+			ref.vChan ( { changer : undefined , initial : true } ) ;
 		}
 
 		public abstract [ ls_set ] ( newv : V , ch ? : object ) : void ;
@@ -152,10 +152,10 @@ export namespace Live
 			return new Trans < TR , V > ( this , tr ) ;
 		}
 
-		protected [ ls_notify ] ( ch : object | undefined ) : void
+		protected [ ls_notify ] ( changer : object | undefined ) : void
 		{
-			this [ refs ] .forEach ( ref => ref.vChan ( ch ) ) ;
-			this [ agg ] && ( ch != this [ agg ] ) && this [ agg ] [ agg_echan ] () ;
+			this [ refs ] .forEach ( ref => ref.vChan ( { changer , initial : false } ) ) ;
+			this [ agg ] && ( changer != this [ agg ] ) && this [ agg ] [ agg_echan ] () ;
 		}
 	}
 

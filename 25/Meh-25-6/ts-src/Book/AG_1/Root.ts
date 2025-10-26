@@ -1,4 +1,4 @@
-import { Live , Ease , Renn , DD , ef , pl , IDB , } from "../../Meh/Meh.js" ;
+import { Live , Ease , Renn , Order , DD , ef , pl , IDB , } from "../../Meh/Meh.js" ;
 
 const log = console.log ;
 const uned = undefined ;
@@ -40,8 +40,6 @@ export namespace DM
 			this.url   = i ?.url   ??  "" ;
 
 			this.parts = i ?.parts ?.map ( e => new links ( e ) ) ?? [] ;
-
-			log ( "links" , i , this )
 		}
 	}
 
@@ -141,7 +139,7 @@ export namespace VM
 			log ( data ) ;
 
 			const st = this.dm.$ = Ease ( data as DM.app ) ;
-			st.add_ref ( { vChan : () => this.save () } ) ;
+			st.add_ref ( { vChan : ( { initial } ) => ! initial && this.save () } ) ;
 		}
 	}
 
@@ -156,36 +154,110 @@ export namespace VC
 	const css = /* css */ `
 
 	* { box-sizing : bourder-box ; margin : 0 ; padding : 0 ; }
+
+	:host
+	{
+		height : 100% ;
+		background : white ;
+		overflow : auto ;
+	}
 	
 	main
 	{
-		padding : 1em ;
+		padding : 2em 1em ;
 	}
 	
 	main , input , textarea , button  { color : hsl( 0  0%  16% ) ; }
 
-	input
-	{
-		padding : 0.44ex  1ex ;
-		font-family : Consolas ;
-	}
-
 	.FR { display : flex ; }
 	.FC { display : flex ;  flex-direction : column ; }
 	.PX { padding : 1ex ; }
+	.AC { align-items : center ; }
+	.AS { align-items : stretch ; }
 	.GX { gap : 1ex ; }
 	.GP { gap : 1px ; }
 
+	.LINKS_FRAME
+	{
+		width : min( 95% , 60em ) ;
+	}
+
+	.LINKS
+	{
+	}
+
+	.LINKS > ._HEAD
+	{
+		background : hsl( 210  10%  50% / 0% ) ;
+		border-bottom : 0.1ex  dotted  hsl( 0  0%  80% ) ;
+		padding : 0 ;
+	}
+
+	.LINKS > ._HEAD > ._THUMB
+	{
+		padding-block : 0.4em ;
+		gap : 0.33ex ;
+	}
+
 	.LINKS a
 	{
-		padding : 0.1ex 0.6ex ;
+		display : block ;
+		padding : 0.5ex 0.8ex ;
 		text-decoration : none ;
 		color : hsl( 0  0%  14% ) ;
 	}
 
-	.LINKS a:hover
+	.LINKS a[href]:hover
 	{
 		background : hsl( 0  0%  30% / 10% ) ;
+	}
+
+	.LINKS button
+	{
+		border-radius : 0.5ex ;
+		border : 1px solid hsl( 0  0%  50% ) ;
+		min-width : 2em ;
+		padding-inline : 1ex ;
+		font-family : Consolas  monospace ;
+	}
+
+	.LINKS > ._EDIT
+	{
+		display : none ;
+		max-width : 45em ;
+		border-radius : 0.66ex ;
+		border : 0.1ex  solid  hsl( 0  0%  70% ) ;
+		background-color : hsl( 49  5%  97% ) ;
+		padding : 1.8ex 1.4ex ;
+		gap : 0.3ex  ;
+	}
+
+	.LINKS > ._EDIT._SHOW
+	{
+		display : flex ;
+	}
+
+	.LINKS > ._EDIT  input
+	{
+		border-radius : 0.7ex ;
+		border : 0.1ex  solid  hsl( 0  0%  70% ) ;
+		font-size : 1.0em ;
+		padding : 0.44ex  1ex ;
+		font-family : Consolas ;
+	}
+
+	.LINKS > ._PARTS:not(:empty)
+	{
+		margin-left : 0.1ex ;
+		border-left : 0.2ex  solid  hsl( 0  0%  70% ) ;
+		border-right : 0.1ex  solid  hsl( 0  0%  95% ) ;
+		padding-block : 0.0ex ;
+		padding-inline : 3%  2% ;
+	}
+
+	footer
+	{
+		height : 60vh ;
 	}
 
 	`;
@@ -199,40 +271,50 @@ export namespace VC
 			{ shadow : css } ,
 			ef.main
 			(
-				ef.h1 ( "Root" ) ,
-				pl.key ( app.dm , e => e && Links ( e.links ) )
+				{ class : "FC AC" } ,
+				ef.section
+				(
+					{ class : "LINKS_FRAME  FC" } ,
+					pl.key ( app.dm , e => e && Links ( e.links ) ) ,
+				) ,
+				ef.footer () ,
 			)
 		) ;
 	}
 
-	export const Links = ( dm : DM.Links ) : DD.Node =>
+	export const Links = ( dm : DM.Links , o ? : Order < any > ) : DD.Node =>
 	{
+		const edit_show = Live ( false ) ;
+
 		return ef.section
 		(
-			{ class : "LINKS" } ,
+			{ class : "LINKS  FC" } ,
 
 			ef.section
 			(
-				ef.h3 ( Link ( dm ) ) ,
+				{ class : " _HEAD   FR AC GX" } ,
+				ef.p ( { style : { flexGrow : "1" } } , Link ( dm ) ) ,
+
 				ef.section
 				(
-					{  } ,
-					Button ( "E" , () => {} ) ,
+					{ class : "_THUMB  FR AS" } ,
+					Button ( "Edit" , () => edit_show.$ = ! edit_show.$ ) ,
 					Button ( "+P" , () => VM.add_part ( dm ) ) ,
+					Button ( "X" , () => o?.delete () ) ,
 				)
 			) ,
 
 			ef.section
 			(
-				{ class : "FC PX GP" } ,
+				{ class : [ "_EDIT  PX GP" , { FC : edit_show , _SHOW : edit_show } ] } ,
 				Input ( dm.title ) ,
 				Input ( dm.url ) ,
 			) ,
 
 			ef.section
 			(
-				{ class : "PX" } ,
-				pl.each ( dm.parts.renn , dm => Links ( dm ) ) ,
+				{ class : "_PARTS" } ,
+				pl.each ( dm.parts.renn , ( dm , o ) => Links ( dm , o ) ) ,
 			) ,
 		) ;
 	}
@@ -244,7 +326,7 @@ export namespace VC
 
 	const Link = ( dm : DM.Links ) =>
 	{
-		const href = dm.url ;
+		const href = dm.url.trans_r ( url => url.length ? url : undefined ) ;
 
 		return ef.a
 		(

@@ -66,7 +66,7 @@ export var VC;
 `;
     const css = /* css */ `
 
-		:host {}
+		:host { background : white ; }
 
 		h1 { padding : 1ex ; text-align : center ; }
 

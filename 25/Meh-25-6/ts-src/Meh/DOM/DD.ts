@@ -1,5 +1,5 @@
 import { Plain , Live , Renn , Order } from "../Model/Model.js" ;
-import { MehElement } from "./Node.js";
+import { MehElement } from "./MehNode.js";
 
 export type TargetDOMElement = HTMLElement | SVGElement | MathMLElement ;
 
@@ -13,7 +13,7 @@ export type ElementSpec < E extends TargetDOMElement > =
 	class ? : Class ;
 	style ? : Style ;
 	shadow ? : Shadow ;
-	attrs ? : Props < E > ;
+	attrs ? : Attrs < E > ;
 	props ? : Props < E > ;
 	biBind ? : BB ;
 	passive ? : Actions ;
@@ -34,6 +34,14 @@ export type ClassSwitch = Record < string , llr < boolean > > ;
 export type Style =
 {
 	[ name in keyof CSSStyleDeclaration ] ? : llr < CSSStyleDeclaration [ name ] > ;
+};
+
+export type Attrs < E extends TargetDOMElement > =
+{
+	[
+		name in keyof E  as
+			E [ name ] extends ( number | string | boolean ) ? name : never
+	] ? : llr < E [ name ] | undefined > ;
 };
 
 export type Props < E extends TargetDOMElement > =
