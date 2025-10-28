@@ -1,0 +1,44 @@
+const log = console.log ;
+
+export function df ( format : string , date : Date = new Date )
+{
+	return format.replace
+	(
+		/YYYY|YY|Y|MM|M|DD|D|B|hh|h|mm|m|ss|s|xxxx|x|S|L/g ,
+		( m ) => df_table [ m ] ?. ( date ) ?? m
+	);
+}
+
+function trim ( num : number , dig : number )
+{
+	return ( num + "" ).padStart ( dig , "0" ).slice ( - dig ) ;
+}
+
+const df_table : { [ name : string ] : ( date : Date ) => string } =
+{
+	"YYYY" : date => trim ( date.getFullYear () , 4 ) ,
+	"YY"   : date => trim ( date.getFullYear () , 2 ) ,
+	"MM"   : date => trim ( date.getMonth () + 1 , 2 ) ,
+	"DD"   : date => trim ( date.getDate () , 2 ) ,
+
+	"Y"    : date => date.getFullYear ()  + "" ,
+	"M"    : date => date.getMonth () + 1 + "" ,
+	"D"    : date => date.getDate + "" ,
+
+	"B"    : date => youbi [ date.getDay () ] ,
+
+	"hh"   : date => trim ( date.getHours () , 2 ) ,
+	"mm"   : date => trim ( date.getMinutes () , 2 ) ,
+	"ss"   : date => trim ( date.getSeconds () , 2 ) ,
+	"xxxx"   : date => trim ( date.getMilliseconds () , 4 ) ,
+
+	"h"   : date => date.getHours () + "" ,
+	"m"   : date => date.getMinutes () + "" ,
+	"s"   : date => date.getSeconds () + "" ,
+	"x"   : date => date.getMilliseconds () + "" ,
+
+	"S"    : date => date.toString () ,
+	"L"    : date => date.toLocaleString () ,
+} ;
+
+const youbi = [ "日" , "月" , "火" , "水" , "木" , "金" , "土" ] ;

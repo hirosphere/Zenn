@@ -18,8 +18,6 @@ namespace DM
 		(
 			( src : src_record, n : number ) =>
 			{
-				;
-				
 				const diff = list.get ( src.eid ) ;
 				if
 				(
@@ -27,7 +25,7 @@ namespace DM
 					diff && ( src.ser > diff.ser )
 				)
 				{
-					log ( src.ser , diff ?.ser )
+					src.eid = eid ( src.eid ) ;
 					list.set ( src.eid , src ) ;
 				}
 			}
@@ -53,7 +51,15 @@ namespace DM
 		"json": string ,
 		"en_ttl": string ,
 		"en_anm": string 
+	}
 
+	function eid ( s : string ) : string
+	{
+		return s.replace
+		(
+			/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/ ,
+			( z , y , m , d , h , mi , s ) => `${ y }.${ m }.${ d } ${ h }:${ m }:${ s }`
+		) ;
 	}
 }
 
@@ -152,6 +158,7 @@ export namespace VC
 		) ;
 	}
 
+
 	/* */
 
 	const css = /* css */ `
@@ -161,14 +168,16 @@ export namespace VC
 	:host
 	{
 		height : 100% ;
-		overflow : auto ;
-		background : white ;
 	}
 
 	main
 	{
+		width : 70em ;
+		background : white ;
+
 		display : flex ;
 		flex-direction : column ;
+		overflow : auto ;
 		padding : 1em ;
 		align-items : center ;
 		gap : 1ex ;

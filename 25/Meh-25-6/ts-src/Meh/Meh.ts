@@ -2,7 +2,7 @@ export * as Model from "./Model/Model.js" ;
 export { Life , Live , Ease , Renn , Order , Key } from "./Model/Model.js" ;
 export * as DOM from "./DOM/DOM.js" ;
 export { DD , ef , sf , pl , add } from "./DOM/DOM.js" ;
-export { Focus , IDB } from "./App/App.js" ;
+export { Focus , IDB , df } from "./App/App.js" ;
 
 export const log = console.log ;
 

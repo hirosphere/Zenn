@@ -107,16 +107,16 @@ export namespace VC
 	{
 		height : 100% ;
 		background : white ;
-		display : grid ;
-		grid-template-rows : auto  1fr ;
+		display : flex ;
+		flex-direction : column ;
 		padding : 1px ;
 	}
 
 	.BAR
 	{
-		width : 100% ;
 		display : flex ;
-		gap : 0.5ex ;
+		padding : 0.4ex 0.4ex  0.09ex ;
+		gap : 1.0ex ;
 	}
 
 	.BUTTON_PAD
@@ -135,13 +135,13 @@ export namespace VC
 
 	.TABS
 	{
-		flex-grow : 1 ;
 		border-bottom : 2px solid hsl( 0  0%  60% ) ;
 
 		cursor : default ;
 		display : flex ;
-
 		overflow : auto ;
+		scrollbar-width : none ;
+
 		align-items : end ;
 		list-style : none ;
 		gap : 0.3ex ;
@@ -152,7 +152,8 @@ export namespace VC
 		border-radius : 1.0em  1.0em  0.1ex  0.1ex ;
 		border : 1px solid hsl( 50  3%  55% ) ;
 		border-bottom : 0.4ex solid  hsl( 345  6%  80% ) ;
-		padding : 0.3ex  1.5em ;
+		padding : 0.6ex  min( 1.6em , 3vw ) ;
+		text-align : center ;
 	}
 
 	.TAB._SELECTED
@@ -161,11 +162,17 @@ export namespace VC
 		background-color : hsl( 90  0%  96% ) ;
 	}
 
+	.EVALS
+	{
+		height : 100% ;
+	}
+
 	.EVAL
 	{
 		height : 100% ;
 		display : none ;
-		grid-template-columns : 60%  40% ;
+		grid-template-columns : 65fr  35fr ;
+		overflow : auto ;
 	}
 
 	.EVAL._SELECTED
@@ -203,6 +210,8 @@ export namespace VC
 
 	.DISPLAY
 	{
+		background : white ;
+
 		display : flex ;
 		flex-direction : column ;
 		justify-content : center ;

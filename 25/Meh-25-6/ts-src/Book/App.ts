@@ -1,4 +1,4 @@
-import { Live , ef , pl , DD , DOM as dom , log } from "../Meh/Meh.js" ;
+import { Live , ef , pl , DD , DOM as dom , df , log } from "../Meh/Meh.js" ;
 import * as BookBase from "./BookBase.js" ;
 import * as AG_0 from "./AG_0/AG_0.js" ;
 import * as AG_1 from "./AG_1/AG_1.js" ;
@@ -28,7 +28,7 @@ namespace VM
 					"Eki" : { type : "Eki_Q1" , title : "駅名表示" } ,
 					"Treem" : { type : "Treem" , title : "Extreem" } ,
 					"Todo" : { type : "Todo" , title : "Todo" } ,
-					"Tonne" : { type : "Tonne" , title : "Tonne" } ,
+					// "Tonne" : { type : "Tonne" , title : "Tonne" } ,
 					"Dyndex" : IndexQst.Dyndex ,
 					"Tree" : { type : "Tree" , title : "Tree" , open : false , parts : tree ( "Tree" , 3 ) } ,
 					"Arbre" : { type : "Tree" , title : "Arbre" , open : false , parts : tree ( "Arbre" , 4 ) } ,
@@ -60,7 +60,7 @@ namespace VM
 	export class App
 	{
 		public readonly navi = new BookBase.VM.Navi ( index , this ) ;
-		public readonly navi_mode = Live < navi_mode > ( "NAVI_BLOCK" ) ;
+		public readonly navi_mode = Live < navi_mode > ( "NAVI_INLINE" ) ;
 
 		constructor ()
 		{
@@ -134,7 +134,7 @@ namespace VC
 	{
 		"Root"    : index => AG_0.Root.VC.App () ,
 		"Eval"    : index => AG_0.Eval.VC.EvalApp () ,
-		"Dyndex" : index => IndexQst.VC.Page ( index ) ,
+		"Dyndex"  : index => IndexQst.VC.Page ( index ) ,
 		"Eki_Q1"  : index => AG_1.EkiApp ( "../../../" ) ,
 		"Treem"   : index => AG_1.Extreem.VC.Applet () ,
 		"Todo"    : index => AG_1.ToDo () ,
@@ -178,9 +178,20 @@ namespace VC
 
 	const Clock = ( action : () => void ) : DD.Node =>
 	{
-		const time = Live ( "" ) ;
+		const ymd = Live ( "" ) ;
+		const b = Live ( "" ) ;
+		const hms = Live ( "" ) ;
+		const ms = Live ( "" ) ;
 		
-		const update = () => time.$ = new Date ().toLocaleString () ;
+		const update = () =>
+		{
+			const date = new Date () ;
+			ymd.$ = df ( "YYYY.MM.DD" , date ) ;
+			b.$ = df ( "(B)" , date ) ;
+			hms.$ = df ( "hh:mm:ss" , date ) ;
+			ms.$ = df ( "xxxx" , date ) ;
+		}
+		
 		update () ;
 		setInterval ( update , 1000 ) ;
 
@@ -193,7 +204,10 @@ namespace VC
 		return ef.a
 		(
 			{ class : "CLOCK_LINK _LINK" , active : { click } , attrs : { href : "" } } ,
-			time
+			ef.span ( ymd ) ,
+			ef.span ( b ) ,
+			ef.span ( hms ) ,
+			// ef.span ( ms ) ,
 		) ;
 	}
 }
