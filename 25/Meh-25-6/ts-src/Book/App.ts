@@ -30,11 +30,11 @@ namespace VM
 					"Todo" : { type : "Todo" , title : "Todo" } ,
 					// "Tonne" : { type : "Tonne" , title : "Tonne" } ,
 					"Dyndex" : IndexQst.Dyndex ,
-					"Tree" : { type : "Tree" , title : "Tree" , open : false , parts : tree ( "Tree" , 3 ) } ,
-					"Arbre" : { type : "Tree" , title : "Arbre" , open : false , parts : tree ( "Arbre" , 4 ) } ,
+					// "Tree" : { type : "Tree" , title : "Tree" , open : false , parts : tree ( "Tree" , 3 ) } ,
+					// "Arbre" : { type : "Tree" , title : "Arbre" , open : false , parts : tree ( "Arbre" , 4 ) } ,
 				} ,
 			} ,
-			"Baum" : { type : "Tree" , title : "Baum" , open : false , parts : tree ( "Baum" , 5 ) } ,
+			// "Baum" : { type : "Tree" , title : "Baum" , open : false , parts : tree ( "Baum" , 5 ) } ,
 		}
 	}
 
@@ -57,10 +57,14 @@ namespace VM
 		return rt ;
 	}
 
+
+
+	/*  VM.App  */
+
 	export class App
 	{
 		public readonly navi = new BookBase.VM.Navi ( index , this ) ;
-		public readonly navi_mode = Live < navi_mode > ( "NAVI_INLINE" ) ;
+		public readonly navi_mode = Live < navi_mode > ( "NAVI_BLOCK" ) ;
 
 		constructor ()
 		{
@@ -201,9 +205,9 @@ namespace VC
 			ev.preventDefault () ;
 		}
 
-		return ef.a
+		return ef.button
 		(
-			{ class : "CLOCK_LINK _LINK" , active : { click } , attrs : { href : "" } } ,
+			{ class : "CLOCK_BUTTON" , active : { click } } ,
 			ef.span ( ymd ) ,
 			ef.span ( b ) ,
 			ef.span ( hms ) ,

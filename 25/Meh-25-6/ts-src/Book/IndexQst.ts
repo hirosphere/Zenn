@@ -1,22 +1,34 @@
 import { ef , pl , DD as dd , log } from "../Meh/Meh.js" ;
 import { VM , } from "./BookBase.js" ;
 
-export const Dyndex : VM.index = dyndex ( "Dyndex" ) ;
 
 
-function dyndex ( title : string , depth : number = 0 ) : VM.index
+const parts = [ "Un" , "Deux" , "Trois" ] ;
+
+function dyndex ( title : string , depth : number = 1 ) : VM.index
 {
 	const rt : VM.index =
 	{
 		type : "Dyndex" ,
 		title ,
-		dyn_parts : index => parts.map ( e => dyndex ( e , depth + 1 ) )	
+		open : depth == 1 ,
+		dyn_parts : index => Object.fromEntries
+		(
+			parts.map
+			(
+				name => [ name , dyndex ( `${ name } de ${ depth }` , depth + 1 ) ]
+			)
+		)	
 	}
 
 	return rt ;
 }
 
-const parts = [ "Un" , "Deux" , "Trois" ] ;
+export const Dyndex : VM.index = dyndex ( "Dyndex" ) ;
+
+
+
+/* */
 
 export namespace VC
 {

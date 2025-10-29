@@ -60,9 +60,11 @@ export namespace VM
 		type ? : string ;
 		title : string ;
 		open ? : boolean ;
-		parts ? : { [ name : string ] : index } ;
-		dyn_parts ? : ( index : index ) => index [] ;
+		parts ? : parts ;
+		dyn_parts ? : ( index : index ) => parts ;
 	}
+
+	export type parts = { [ name : string ] : index } ;
 
 	export class Index
 	{
@@ -74,14 +76,13 @@ export namespace VM
 		public readonly url : Live.R.str ;
 		public readonly selected : Key.Match < Index | undefined > ;
 		public readonly has_parts : Live.R.bool ;
-		public readonly is_dyn_parts : boolean ;
 		public readonly open : Live.bool ;
 		public readonly thumb : Live.R.str ;
 
 		constructor
 		(
-			navi : Navi ,
-			i : index ,
+			public readonly navi : Navi ,
+			private i : index ,
 			public readonly com ? : Index ,
 			name ? : string
 		)
@@ -94,19 +95,16 @@ export namespace VM
 			this.selected = navi.page.match ( this ) ;
 			this.open = Live ( i.open ?? false ) ;
 
-			const parts = Object.entries
-			(
-				i.parts ?? {} ) .map ( ( [ name , i ] ) =>
-				{
-					const index = new Index ( navi , i , this , name ) ;
-					this.parts_by_name.set ( name , index ) ;
-					return index ;
-				}
-			) ;
-			this.parts = new Renn ( parts ) ;
+			this.parts = new Renn ( this.make_parts ( i.parts ) ) ;
 
-			this.has_parts = this.parts.length.trans_r ( length => length > 0 ) ;
-			this.is_dyn_parts = !! i.dyn_parts ;
+			this.has_parts = this.parts.length.trans_r
+			(
+				length => length > 0 ||
+				i.dyn_parts != undefined
+			) ;
+
+			this.open.add_ref ( { vChan : () => this.make_dyn_parts () } ) ;
+			
 			this.thumb = this.open.trans_r ( state => this.has_parts.$ ? ( state ? ">" : "*"  ) : "" ) ;
 		}
 
@@ -130,7 +128,34 @@ export namespace VM
 
 		/* */
 
+		private make_dyn_parts () : void
+		{
+			const dyn_parts = this.i.dyn_parts ;
+			if ( ! dyn_parts )  return ;
+			if ( ! this.open.$ )  return ;
+			if ( this.dyn_parts_created )  return ;
+
+			log ( "make_dyn_parts" ) ;
+
+			this.parts.insert ( this.make_parts ( dyn_parts ( this.i ) ) ) ;
+			this.dyn_parts_created = true ;
+		}
+
+		private make_parts ( i ? : parts ) : Index []
+		{
+			return  Object.entries ( i ?? {} ) .map
+			(
+				( [ name , i ] ) =>
+				{
+					const index = new Index ( this.navi , i , this , name ) ;
+					this.parts_by_name.set ( name , index ) ;
+					return index ;
+				}
+			) ;
+		}
+
 		private parts_by_name = new Map < string , Index > ;
+		private dyn_parts_created = false ;
 	}
 
 }
@@ -178,18 +203,11 @@ export namespace VC
 		} ;
 		
 		const _HAS_PARTS = vm.has_parts ;
-		const _DYN_PARTS = vm.is_dyn_parts ;
-
-		_DYN_PARTS && log ( "dyn parts" , vm.title.$ ) ;
-
-		const _T = vm.is_dyn_parts ;
-
-		_T && log ( vm.title.$ , "_T" , _T ) ;
 
 		return ef.span
 		(
 			{
-				class : [ "INDEX_THUMB" , { _HAS_PARTS , _DYN_PARTS , _T } ] ,
+				class : [ "INDEX_THUMB" , { _HAS_PARTS  } ] ,
 				active : { click } ,
 			} ,
 			vm.thumb ,
