@@ -30,33 +30,10 @@ namespace VM
 					"Todo" : { type : "Todo" , title : "Todo" } ,
 					// "Tonne" : { type : "Tonne" , title : "Tonne" } ,
 					"Dyndex" : IndexQst.Dyndex ,
-					// "Tree" : { type : "Tree" , title : "Tree" , open : false , parts : tree ( "Tree" , 3 ) } ,
-					// "Arbre" : { type : "Tree" , title : "Arbre" , open : false , parts : tree ( "Arbre" , 4 ) } ,
 				} ,
 			} ,
-			// "Baum" : { type : "Tree" , title : "Baum" , open : false , parts : tree ( "Baum" , 5 ) } ,
 		}
 	}
-
-	function tree ( title : string , limit : number , path : string = "" , depth : number = 0 ) : BookBase.VM.index [ "parts" ]
-	{
-		if ( ++ depth > limit )  return ;
-
-		const rt : BookBase.VM.index [ "parts" ] = {} ;
-		path += ( path && "" || "" ) ;
-
-		for ( let nom = 1 ; nom <= 5 ; nom ++ )
-		{
-			rt [ "" + nom ] =
-			{
-				type : "Tree" ,
-				title : title + " " + path + nom ,
-				parts : tree ( title , limit , path + nom , depth )
-			}
-		}
-		return rt ;
-	}
-
 
 
 	/*  VM.App  */
@@ -77,20 +54,20 @@ namespace VM
 			s.$ = s.$ == "NAVI_INLINE" ? "NAVI_BLOCK" : "NAVI_INLINE"
 		}
 
-		public async urlToIndex ( path_ : string , query : Record < string , string > ) : Promise < BookBase.VM.Index | undefined >
+		public async index_url ( path_ : string , query : Record < string , string > ) : Promise < BookBase.VM.Index | undefined >
 		{
 			const root = this.navi.root ;
 			const path = String ( query.path ) ;
-			return root.from_path ( path.split ( "/" ) ) ;
+			return root.FromPath ( path.split ( "/" ) ) ;
 		}
 
-		public indexToURL ( index : BookBase.VM.Index ) : string
+		public url_index ( index : BookBase.VM.Index ) : string
 		{
 			const path = index.path.map ( index => encodeURIComponent ( index.name.$ ) ) .slice ( 1 ) ;
 			return `?path=${ path.join ( "/" ) }` ;
 		}
 
-		 public updateBrowserURL ( url : string ) : void
+		 public browser_update ( url : string ) : void
 		{
 			history.replaceState ( null , "" , url ) ;
 		}
@@ -114,16 +91,21 @@ namespace VC
 	{
 		const vm = new VM.App ;
 
+		function init () : void
+		{
+			vm.navi_mode.add_ref ( { vChan : () => vm.navi.page.curr.$ ?.ScrollTo ?.()  } ) ;
+		}
+
 		return ef.body
 		(
-			{ class : [ vm.navi_mode , "APP" ] , target : "body"  } ,
+			{ class : [ vm.navi_mode , "APP" ] , target : "body" , hook : { init }  } ,
 			NaviPane ( vm ) ,
 			ef.div
 			(
 				{ class : "CONTENT_SWITCH" } ,
 				pl.key
 				(
-					vm.navi.page.key ,
+					vm.navi.page.curr ,
 					index => index ? ContentFrame ( index , types ) : undefined
 				)
 			) ,

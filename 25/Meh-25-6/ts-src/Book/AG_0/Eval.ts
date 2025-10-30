@@ -76,7 +76,7 @@ export namespace VM
 		{
 			const evals = times ( 5 , i => new DM.Eval ( { title : "Eval " + (1+i) } ) ) ;
 
-			this.curr.key.$ = this.evals.at ( 0 )?.target ;
+			this.curr.curr.$ = this.evals.at ( 0 )?.target ;
 		}
 	}
 }
@@ -234,14 +234,14 @@ export namespace VC
 					ef.section
 					(
 						{ class : "BUTTON_PAD" } ,
-						Button ( "実行" , () => app.curr.key.$ ?.execute () ) ,
+						Button ( "実行" , () => app.curr.curr.$ ?.execute () ) ,
 					) ,
 					Tabs ( app ) ,
 				) ,
 				ef.section
 				(
 					{ class : "EVALS" } ,
-					pl.key ( app.curr.key , ev => ev ? Eval ( ev , app.curr.match ( ev ) ) : ud ) ,
+					pl.key ( app.curr.curr , ev => ev ? Eval ( ev , app.curr.match ( ev ) ) : ud ) ,
 				) ,
 			) ,
 		) ;

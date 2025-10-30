@@ -14,7 +14,7 @@ export namespace VM
 		constructor ( iv : index , private client : NaviClient )
 		{
 			this.root = new Index ( this , iv ) ;
-			this.page.key.add_ref
+			this.page.curr.add_ref
 			(
 				{ vChan : ( { changer } ) => changer != this && this.on_page_changed () }
 			) ;
@@ -25,32 +25,33 @@ export namespace VM
 			const path = location.pathname ;
 			const query = Object.fromEntries ( new URLSearchParams ( location.search ) ) ;
 
-			const index = await this.client.urlToIndex ( path , query ) ;
+			const index = await this.client.index_url ( path , query ) ;
 			index ?.open_macro_index () ;
+			index ?.ScrollTo ?.() ;
 
-			this.page.key.set ( index ?? defaultIndex , this ) ;
+			this.page.curr.set ( index ?? defaultIndex , this ) ;
 		}
 
 		public make_url ( index : Index ) : string
 		{
-			return this.client.indexToURL ( index ) ;
+			return this.client.url_index ( index ) ;
 		}
 
 		/*  */
 
 		private on_page_changed () : void
 		{
-			const index = this.page.key.$ ;
-			const url = index ? this.client.indexToURL ( index ) : "" ;
-			this.client.updateBrowserURL ?.( url ) ;
+			const index = this.page.curr.$ ;
+			const url = index ? this.client.url_index ( index ) : "" ;
+			this.client.browser_update ?.( url ) ;
 		}
 	}
 
 	export interface NaviClient
 	{
-		urlToIndex ( path : string , query : Record < string , string > ) : Promise < Index | undefined > ;
-		indexToURL ( index : Index ) : string ;
-		updateBrowserURL ? ( url : string ) : void ;
+		index_url ( path : string , query : Record < string , string > ) : Promise < Index | undefined > ;
+		url_index ( index : Index ) : string ;
+		browser_update ? ( url : string ) : void ;
 	}	
 
 
@@ -79,6 +80,8 @@ export namespace VM
 		public readonly has_parts : Live.R.bool ;
 		public readonly open : Live.bool ;
 		public readonly thumb : Live.R.str ;
+
+		public ScrollTo ? () : void ;
 
 		constructor
 		(
@@ -120,7 +123,7 @@ export namespace VM
 			this.com ?.open_macro_index () ;
 		}
 
-		public async from_path ( path : string [] ) : Promise < Index | undefined >
+		public async FromPath ( path : string [] ) : Promise < Index | undefined >
 		{
 			if ( path.length == 0 )  return ;
 			const name = path [ 0 ] ;
@@ -129,7 +132,7 @@ export namespace VM
 			log ( this.title.$ , this.parts.length.$ )
 			
 			const part = this.parts_by_name.get ( name ) ;
-			return await part ?.from_path ( path.slice ( 1 ) ) ?? part ;
+			return await part ?.FromPath ( path.slice ( 1 ) ) ?? part ;
 		}
 
 		public get path () : Index []
@@ -188,7 +191,7 @@ export namespace VC
 
 	const Head = ( vm : VM.Index ) : DD.Node =>
 	{
-		const click = ( ev : MouseEvent ) =>
+		const click = ( ev : MouseEvent ) : void =>
 		{
 			vm.selected.select () ;
 			ev.preventDefault () ;
@@ -196,11 +199,10 @@ export namespace VC
 
 		const init = ( el : HTMLElement ) : void =>
 		{
-			const vChan = () =>
-			{
-				vm.selected.$ && el.scrollIntoView ( { behavior : "auto" , block : "center" } ) ;
-			}
-			vm.selected.add_ref ( { vChan } ) ;
+			vm.ScrollTo = () => el.scrollIntoView
+			(
+				{ behavior : "instant" , block : "center" , inline : "center" }
+			) ;
 		}
 
 		return ef.a

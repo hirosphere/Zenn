@@ -3,23 +3,26 @@ import { VM , } from "./BookBase.js" ;
 
 
 
-function dyndex ( title : string , depth : number = 1 ) : VM.index
+function dyndex ( title : string , depth : number = 1 , path : number [] = [] ) : VM.index
 {
+	const sep = ( depth : number ) : string => depth % 4 == 3 ? "-" : "" ;
+	const pathlabel = path.map ( ( i , depth ) => i + sep ( depth ) ).join ( "" ) ;
+
+	const t = ( i : number ) =>
+	[
+		"" + i ,
+		dyndex ( `第${ depth }層 # ${ pathlabel}${ i }` , depth + 1 , [ ... path , i ] )
+	] ;
+	
+	const parts = () => times ( 10 , t ) ;
+	
 	const rt : VM.index =
 	{
 		type : "Dyndex" ,
 		title ,
 		open : depth == 1 ,
-		dyn_parts : index => Object.fromEntries
-		(
-			times
-			(
-				10 ,
-				( i ) => [ "" + i , dyndex ( `第${ depth }層 # ${ i }` , depth + 1 ) ]
-			)
-		)	
+		dyn_parts : index => Object.fromEntries ( parts () ) ,
 	}
-
 	return rt ;
 }
 
@@ -42,6 +45,8 @@ export namespace VC
 			) ,
 		) ;
 	}
+
+
 
 	/* */
 
