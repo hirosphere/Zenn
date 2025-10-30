@@ -89,9 +89,9 @@ body.NAVI_INLINE
 	color : hsl( 0  0%  90% ) ;
 }
 
-.NAVI .INDEX_PARTS
+.NAVI_INDEX
 {
-	font-size : 98.6% ;
+	font-size : 98% ;
 }
 
 .NAVI ._LINK
@@ -105,19 +105,18 @@ body.NAVI_INLINE
 	width : 100% ;
 	height : 100% ;
 
-	border-radius : 0.9ex ;
+	border-radius : 0.7ex ;
 	border : none ;
 	background : hsl( 0  0%  100% / 50% ) ;
 
 	display : flex ;
 	flex-wrap : wrap ;
-
 	justify-content : center ;
-	align-items : baseline ;
+	align-items : center ;
 	gap : 0.2ex  1ex ;
 	
 	font-family : 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif ;
-	font-size : 1.25em ;
+	font-size : 1.6em ;
 }
 
 .NAVI .CLOCK span
@@ -177,9 +176,9 @@ body.NAVI_INLINE
 .NAVI_BLOCK .INDEX_PARTS._OPEN
 {
 	margin : 0.3ex 0  0.3ex ;
-	border-radius : 1ex 0  0 1ex ;
-	border : solid  hsl( 230  45%  45% / 40% ) ;
-	border-width : 0.1ex  0  0.1ex 1.0ex ;
+	border-radius : 0.1ex 0  0 0.8ex ;
+	border : solid  hsl( 220  10%  45% ) ;
+	border-width : 0.1ex  0ex  0.1ex  2.2ex ;
 	padding : 0.3ex  0.0ex  0.3ex  0.3ex ;
 
 	display : block ;
@@ -195,10 +194,15 @@ body.NAVI_INLINE
 
 .NAVI_BLOCK .CLOCK
 {
-	height : 3em ;
+	margin : 0.3ex ;
 	border-radius : 0.9ex ;
 	display : block ;
 	text-align : center ;
+}
+
+.NAVI_BLOCK .CLOCK_BUTTON
+{
+	padding : 1ex  1ex ;
 }
 
 .NAVI_BLOCK .TREE footer
@@ -216,8 +220,8 @@ body.NAVI_INLINE
 	display : flex ;
 
 	padding-block : 0px ;
-	padding-inline : 0.3vw ;
-	gap : 0.18vw ;
+	padding-inline : 0.0vw ;
+	gap : 0.5ex ;
 
 	align-items : stretch ;
 	flex-wrap : nowrap ;
@@ -226,7 +230,6 @@ body.NAVI_INLINE
 .NAVI_INLINE .TREE
 {
 	order : 1 ;
-	flex-grow : 1 ;
 
 	display : flex ;
 	overflow-x : scroll ;
@@ -236,7 +239,7 @@ body.NAVI_INLINE
 	align-items : start ;
 }
 
-.NAVI_INLINE .INDEX
+.NAVI_INLINE .NAVI_INDEX
 {
 	display : flex ;
 	align-items : stretch ;
@@ -316,17 +319,17 @@ body.NAVI_INLINE
 
 .NAVI_INLINE  .CLOCK
 {
-	min-width : 30vw ;
+	min-width : max( 10em , 30vw ) ;
 
 	display : flex ;
-	padding : 0ex ;
+	padding : 0.5ex ;
 	justify-content : center ;
 	align-items : center ;
 }
 
 .NAVI_INLINE  .CLOCK_BUTTON
 {
-	padding-block : 0.15ex ;
+	padding : 0.2ex  1ex ;
 	white-space : nowrap ;
 }
 

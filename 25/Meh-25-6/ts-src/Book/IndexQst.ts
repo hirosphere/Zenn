@@ -1,9 +1,7 @@
-import { ef , pl , DD as dd , log } from "../Meh/Meh.js" ;
+import { ef , pl , DD as dd , times , log } from "../Meh/Meh.js" ;
 import { VM , } from "./BookBase.js" ;
 
 
-
-const parts = [ "Un" , "Deux" , "Trois" ] ;
 
 function dyndex ( title : string , depth : number = 1 ) : VM.index
 {
@@ -14,9 +12,10 @@ function dyndex ( title : string , depth : number = 1 ) : VM.index
 		open : depth == 1 ,
 		dyn_parts : index => Object.fromEntries
 		(
-			parts.map
+			times
 			(
-				name => [ name , dyndex ( `${ name } de ${ depth }` , depth + 1 ) ]
+				10 ,
+				( i ) => [ "" + i , dyndex ( `第${ depth }層 # ${ i }` , depth + 1 ) ]
 			)
 		)	
 	}
@@ -49,12 +48,17 @@ export namespace VC
 	const css = /* css */ `
 
 	* { box-sizing : border-box ;  margin : 0 ;  padding : 0 ;  line-height : 1 ; }
+
+	:host { height : 100% ; }
 	
 	main
 	{
+		height : 100% ;
+
 		display : flex ;
 		flex-direction : column ;
 		padding : 1ex ;
+		justify-content : center ;
 		align-items : center ;
 		gap : 1ex ;
 

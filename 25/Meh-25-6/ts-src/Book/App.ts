@@ -61,7 +61,7 @@ namespace VM
 
 	/*  VM.App  */
 
-	export class App
+	export class App  implements BookBase.VM.NaviClient
 	{
 		public readonly navi = new BookBase.VM.Navi ( index , this ) ;
 		public readonly navi_mode = Live < navi_mode > ( "NAVI_BLOCK" ) ;
@@ -77,20 +77,20 @@ namespace VM
 			s.$ = s.$ == "NAVI_INLINE" ? "NAVI_BLOCK" : "NAVI_INLINE"
 		}
 
-		urlToIndex ( path_ : string , query : Record < string , string > ) : BookBase.VM.Index | undefined
+		public async urlToIndex ( path_ : string , query : Record < string , string > ) : Promise < BookBase.VM.Index | undefined >
 		{
 			const root = this.navi.root ;
 			const path = String ( query.path ) ;
 			return root.from_path ( path.split ( "/" ) ) ;
 		}
 
-		indexToURL ( index : BookBase.VM.Index ) : string
+		public indexToURL ( index : BookBase.VM.Index ) : string
 		{
 			const path = index.path.map ( index => encodeURIComponent ( index.name.$ ) ) .slice ( 1 ) ;
 			return `?path=${ path.join ( "/" ) }` ;
 		}
 
-		updateBrowserURL ( url : string ) : void
+		 public updateBrowserURL ( url : string ) : void
 		{
 			history.replaceState ( null , "" , url ) ;
 		}

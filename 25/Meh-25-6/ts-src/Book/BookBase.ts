@@ -20,12 +20,13 @@ export namespace VM
 			) ;
 		}
 
-		public initiate ( defaultIndex : Index  = this.root ) : void
+		public async initiate ( defaultIndex : Index  = this.root ) : Promise < void >
 		{
 			const path = location.pathname ;
 			const query = Object.fromEntries ( new URLSearchParams ( location.search ) ) ;
 
-			const index = this.client.urlToIndex ( path , query )
+			const index = await this.client.urlToIndex ( path , query ) ;
+			index ?.open_macro_index () ;
 
 			this.page.key.set ( index ?? defaultIndex , this ) ;
 		}
@@ -45,12 +46,12 @@ export namespace VM
 		}
 	}
 
-	export type NaviClient =
+	export interface NaviClient
 	{
-		urlToIndex ( path : string , query : Record < string , string > ) : Index | undefined ;
+		urlToIndex ( path : string , query : Record < string , string > ) : Promise < Index | undefined > ;
 		indexToURL ( index : Index ) : string ;
 		updateBrowserURL ? ( url : string ) : void ;
-	}
+	}	
 
 
 	/* Index */
@@ -103,7 +104,7 @@ export namespace VM
 				i.dyn_parts != undefined
 			) ;
 
-			this.open.add_ref ( { vChan : () => this.make_dyn_parts () } ) ;
+			this.open.add_ref ( { vChan : () => this.open.$ && this.make_dyn_parts () } ) ;
 			
 			this.thumb = this.open.trans_r ( state => this.has_parts.$ ? ( state ? ">" : "*"  ) : "" ) ;
 		}
@@ -113,12 +114,22 @@ export namespace VM
 			this.open.$ = this.has_parts.$ && ! this.open.$
 		}
 
-		public from_path ( path : string [] ) : Index | undefined
+		public open_macro_index () : void
+		{
+			this.com ?.open.set ( true ) ;
+			this.com ?.open_macro_index () ;
+		}
+
+		public async from_path ( path : string [] ) : Promise < Index | undefined >
 		{
 			if ( path.length == 0 )  return ;
 			const name = path [ 0 ] ;
+			
+			await this.make_dyn_parts () ;
+			log ( this.title.$ , this.parts.length.$ )
+			
 			const part = this.parts_by_name.get ( name ) ;
-			return part ?.from_path ( path.slice ( 1 ) ) ?? part ;
+			return await part ?.from_path ( path.slice ( 1 ) ) ?? part ;
 		}
 
 		public get path () : Index []
@@ -128,17 +139,19 @@ export namespace VM
 
 		/* */
 
-		private make_dyn_parts () : void
+		private async make_dyn_parts () : Promise < void >
 		{
 			const dyn_parts = this.i.dyn_parts ;
+
 			if ( ! dyn_parts )  return ;
-			if ( ! this.open.$ )  return ;
 			if ( this.dyn_parts_created )  return ;
 
 			log ( "make_dyn_parts" ) ;
 
 			this.parts.insert ( this.make_parts ( dyn_parts ( this.i ) ) ) ;
 			this.dyn_parts_created = true ;
+
+			log ( this.parts.length.$ ) ;
 		}
 
 		private make_parts ( i ? : parts ) : Index []
@@ -167,7 +180,7 @@ export namespace VC
 	{
 		return ef.section
 		(
-			{ class : [ "INDEX" ] } ,
+			{ class : [ "NAVI_INDEX" ] } ,
 			Head ( vm ) ,
 			Parts ( vm ) ,
 		) ;
@@ -181,12 +194,22 @@ export namespace VC
 			ev.preventDefault () ;
 		} ;
 
+		const init = ( el : HTMLElement ) : void =>
+		{
+			const vChan = () =>
+			{
+				vm.selected.$ && el.scrollIntoView ( { behavior : "auto" , block : "center" } ) ;
+			}
+			vm.selected.add_ref ( { vChan } ) ;
+		}
+
 		return ef.a
 		(
 			{
 				class : [ "INDEX_HEAD  _LINK" , { _SELECTED : vm.selected } ] ,
 				attrs : { href : vm.url } ,
-				active : { click }
+				active : { click } ,
+				hook : { init } ,
 			} ,
 			ef.span ( { class : "INDEX_TITLE" } , vm.title ) ,
 			Thumb ( vm ) ,

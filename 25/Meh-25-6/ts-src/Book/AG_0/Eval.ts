@@ -1,16 +1,8 @@
-import { Live , Renn , Key , DD , DOM , ef , pl } from "../../Meh/Meh.js" ;
+import { Live , Renn , Key , DD , DOM , ef , pl , df , times } from "../../Meh/Meh.js" ;
 
 const log = console.log ;
 const ud = undefined ;
 type ud = undefined ;
-
-const times = < E > ( t : number , fn : ( i : number ) => E ) : E [] =>
-{
-	const rt : E [] = [] ;
-	for ( let i = 0 ;  i < t ;  i ++ )  rt [ i ] = fn ( i ) ;
-	return rt ;
-}
-
 
 
 /* */
@@ -46,7 +38,7 @@ export namespace DM
 
 			try
 			{
-				this.output.$ = eval ( this.code.$ ) ;
+				this.output.$ = String ( eval ( this.code.$ ) ) ;
 			}
 			catch ( exc )
 			{
@@ -56,6 +48,8 @@ export namespace DM
 	}
 
 	export type iExecute = { execute () : void ; }
+
+	const dom = DOM ;
 
 	/* */
 

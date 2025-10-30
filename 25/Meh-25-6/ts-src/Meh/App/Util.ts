@@ -42,3 +42,24 @@ const df_table : { [ name : string ] : ( date : Date ) => string } =
 } ;
 
 const youbi = [ "日" , "月" , "火" , "水" , "木" , "金" , "土" ] ;
+
+type times_arg = number |
+{
+	start ? : number ;
+	next : number ;
+} ;
+
+export function times < R = void > ( arg : times_arg , oper : ( i : number ) => R ) : R []
+{
+	const n = typeof arg == "number" ;
+	const start = n ? 0 : arg.start ?? 0 ;
+	const next = n ? arg : arg.next ;
+
+	const rt : R [] = [] ;
+	for ( let i = start ; i < next ; i ++ )
+	{
+		rt.push ( oper ( i ) ) ;
+	}
+	return rt ;
+}
+
