@@ -18,6 +18,7 @@ namespace VM
 		parts :
 		{
 			"Eval" : { type : "Eval" , title : "Eval" } ,
+			 "Eki_1" : AG_1.Eki_1.VM.root_index ( "../../../" ) ,
 			"AG_1" :
 			{
 				title : "AG 1" ,
@@ -29,9 +30,9 @@ namespace VM
 					"Treem" : { type : "Treem" , title : "Extreem" } ,
 					"Todo" : { type : "Todo" , title : "Todo" } ,
 					// "Tonne" : { type : "Tonne" , title : "Tonne" } ,
-					"Dyndex" : IndexQst.Dyndex ,
 				} ,
 			} ,
+			// "Dyndex" : IndexQst.Dyndex ,
 		}
 	}
 
@@ -135,7 +136,7 @@ namespace VC
 			{ class : [ "CONTENT_FRAME" , { CURRENT : index.selected } ] } ,
 
 			types [ index.type ] ?. ( index )
-			?? ef.main ( { class : "DEFAULT_CONTENT" } , ef.p ( index.title ) ) ,
+			?? ef.main ( { class : "DEFAULT_CONTENT" } , ef.h1 ( index.title ) ) ,
 		) ;
 	}
 

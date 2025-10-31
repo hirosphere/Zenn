@@ -19,11 +19,26 @@ export type Eki = Eki.Records ;
 
 export async function Eki ( dataPath : string = "../../../" ) : Promise < Eki.Records >
 {
-	return await Eki.create ( dataPath ) ;
+	return await Eki.make ( dataPath ) ;
 }
 
 export namespace Eki
 {
+	let records : Records | undefined = undefined ;
+	const initiate = Symbol () ;
+
+	export const make = async ( dataPath : string ) : Promise < Records > =>
+	{
+		if ( ! records )
+		{
+			records = new Records () ;
+			await records [ initiate ] ( dataPath ) ;	
+
+			log ( "Eki make" ) ;
+		}
+		return records ;
+	}
+
 	/* Index */
 
 	export type Index = { name : string ; parts ? : Index [] } ;
@@ -102,15 +117,6 @@ export namespace Eki
 
 	/* Records */
 
-
-	const initiate = Symbol () ;
-
-	export const create = async ( dataPath : string ) : Promise < Records > =>
-	{
-		const records = new Records () ;
-		await records [ initiate ] ( dataPath ) ;
-		return records ;
-	}
 
 	export class Records
 	{
@@ -227,7 +233,7 @@ export namespace Eki
 
 	/* Data Classes */
 
-	class Company
+	export class Company
 	{
 		constructor ( records : Records , public iv : string [] )
 		{
@@ -248,7 +254,7 @@ export namespace Eki
 		public get e_sort () : string { return this.iv [ 9 ] ; }
 	}
 
-	class Line
+	export class Line
 	{
 		constructor ( records : Records , public iv : string [] )
 		{
@@ -279,7 +285,7 @@ export namespace Eki
 		}
 	}
 
-	class Station
+	export class Station
 	{
 		constructor ( protected records : Records , public iv : string [] )
 		{
@@ -325,7 +331,7 @@ export namespace Eki
 
 	/*  */
 
-	const area_prefs : { [ name : string ] : string [] } =
+	export const area_prefs : { [ name : string ] : string [] } =
 	{
 		"北海道・東北" : [ "北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県", ] ,
 		"関東・甲信越" : [ "茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","山梨県","長野県","新潟県", ] ,
@@ -344,7 +350,7 @@ export namespace Eki
 	} ;
 
 
-	const pref_cd = Object.fromEntries( Object.entries( cd_pref ).map( ([ cd , title ]) => [ title , cd ] ) ) ;
+	export const pref_cd = Object.fromEntries( Object.entries( cd_pref ).map( ([ cd , title ]) => [ title , cd ] ) ) ;
 }
 
 

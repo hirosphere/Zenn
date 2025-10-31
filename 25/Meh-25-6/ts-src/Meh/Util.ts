@@ -1,4 +1,8 @@
-const log = console.log ;
+export type unedor < T > = T | undefined ;
+export type uned = undefined ;
+export const uned = undefined ;
+
+export const log = console.log ;
 
 export function df ( format : string , date : Date = new Date )
 {
@@ -9,9 +13,9 @@ export function df ( format : string , date : Date = new Date )
 	);
 }
 
-function trim ( num : number , dig : number )
+function trim ( val : number , dig : number )
 {
-	return ( num + "" ).padStart ( dig , "0" ).slice ( - dig ) ;
+	return ( val + "" ).padStart ( dig , "0" ).slice ( - dig ) ;
 }
 
 const df_table : { [ name : string ] : ( date : Date ) => string } =
@@ -30,7 +34,7 @@ const df_table : { [ name : string ] : ( date : Date ) => string } =
 	"hh"   : date => trim ( date.getHours () , 2 ) ,
 	"mm"   : date => trim ( date.getMinutes () , 2 ) ,
 	"ss"   : date => trim ( date.getSeconds () , 2 ) ,
-	"xxxx"   : date => trim ( date.getMilliseconds () , 4 ) ,
+	"xxxx" : date => trim ( date.getMilliseconds () , 4 ) ,
 
 	"h"   : date => date.getHours () + "" ,
 	"m"   : date => date.getMinutes () + "" ,

@@ -14,14 +14,12 @@ function dyndex ( title : string , depth : number = 1 , path : number [] = [] ) 
 		dyndex ( `第${ depth }層 # ${ pathlabel}${ i }` , depth + 1 , [ ... path , i ] )
 	] ;
 	
-	const parts = () => times ( 10 , t ) ;
-	
 	const rt : VM.index =
 	{
 		type : "Dyndex" ,
 		title ,
 		open : depth == 1 ,
-		dyn_parts : index => Object.fromEntries ( parts () ) ,
+		parts : index => Object.fromEntries ( times ( 4 , t ) ) ,
 	}
 	return rt ;
 }

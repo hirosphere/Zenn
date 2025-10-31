@@ -61,12 +61,14 @@ export namespace VM
 	{
 		type ? : string ;
 		title : string ;
+		cont ? : string ;
 		open ? : boolean ;
-		parts ? : parts ;
-		dyn_parts ? : ( index : index ) => parts ;
+		parts ? : u_parts ;
 	}
 
 	export type parts = { [ name : string ] : index } ;
+	export type u_parts = parts | ( ( index : index ) => Promise < parts > ) ;
+
 
 	export class Index
 	{
@@ -81,7 +83,7 @@ export namespace VM
 		public readonly open : Live.bool ;
 		public readonly thumb : Live.R.str ;
 
-		public ScrollTo ? () : void ;
+		public ScrollTo ? ( option ? : ScrollIntoViewOptions ) : void ;
 
 		constructor
 		(
@@ -99,12 +101,13 @@ export namespace VM
 			this.selected = navi.page.match ( this ) ;
 			this.open = Live ( i.open ?? false ) ;
 
-			this.parts = new Renn ( this.make_parts ( i.parts ) ) ;
+			const parts = typeof i.parts == "function" ? undefined : i.parts ;
+			this.parts = new Renn ( this.make_parts ( parts ) ) ;
 
 			this.has_parts = this.parts.length.trans_r
 			(
 				length => length > 0 ||
-				i.dyn_parts != undefined
+				typeof i.parts == "function"
 			) ;
 
 			this.open.add_ref ( { vChan : () => this.open.$ && this.make_dyn_parts () } ) ;
@@ -129,7 +132,7 @@ export namespace VM
 			const name = path [ 0 ] ;
 			
 			await this.make_dyn_parts () ;
-			log ( this.title.$ , this.parts.length.$ )
+			log ( "* from_path" , this.title.$ , this.parts.length.$ )
 			
 			const part = this.parts_by_name.get ( name ) ;
 			return await part ?.FromPath ( path.slice ( 1 ) ) ?? part ;
@@ -144,17 +147,23 @@ export namespace VM
 
 		private async make_dyn_parts () : Promise < void >
 		{
-			const dyn_parts = this.i.dyn_parts ;
+			const fn = this.i.parts ;
 
-			if ( ! dyn_parts )  return ;
 			if ( this.dyn_parts_created )  return ;
+			if ( ! fn || typeof fn != "function" )  return ;
 
-			log ( "make_dyn_parts" ) ;
+			const set = ( parts : parts ) : void =>
+			{
+				this.parts.insert ( this.make_parts ( parts ) ) ;
+				this.dyn_parts_created = true ;
+				log ( "make_dyn_parts" , this.title.$ , this.parts.length.$ ) ;
+			}
 
-			this.parts.insert ( this.make_parts ( dyn_parts ( this.i ) ) ) ;
+			const parts = await fn ( this.i ) ;
+			this.parts.insert ( this.make_parts ( parts ) ) ;
 			this.dyn_parts_created = true ;
 
-			log ( this.parts.length.$ ) ;
+			log ( "make_dyn_parts ***" ) ;
 		}
 
 		private make_parts ( i ? : parts ) : Index []
@@ -199,9 +208,9 @@ export namespace VC
 
 		const init = ( el : HTMLElement ) : void =>
 		{
-			vm.ScrollTo = () => el.scrollIntoView
+			vm.ScrollTo = ( option ) => el.scrollIntoView
 			(
-				{ behavior : "instant" , block : "center" , inline : "center" }
+				{ behavior : "instant" , block : "center" , inline : "center" , ... option }
 			) ;
 		}
 
@@ -239,13 +248,26 @@ export namespace VC
 		)
 	} ;
 
-	const Parts = ( vm : VM.Index ) : DD.Node => ef.section
-	(
-		{ class : [ "INDEX_PARTS" , { _OPEN : vm.open } ] } ,
-		ef.ul
+	const Parts = ( vm : VM.Index ) : DD.Node =>
+	{
+		function dblclick ( ev : MouseEvent ) : void
+		{
+			vm.ScrollTo ?. (  ) ;
+			ev.stopPropagation () ;
+		}
+
+		return ef.section
 		(
-			pl.each ( vm.parts , pvm => ef.li ( Index ( pvm ) ) ) ,
-		) ,
-	) ;
+			{ class : [ "INDEX_PARTS" , { _OPEN : vm.open } ] , active : { dblclick } } ,
+			pl.key
+			(
+				vm.open ,
+				state => state && ef.ul
+				(
+					pl.each ( vm.parts , pvm => ef.li ( Index ( pvm ) ) ) ,
+				) ,
+			) ,
+		)
+	}
 }
 

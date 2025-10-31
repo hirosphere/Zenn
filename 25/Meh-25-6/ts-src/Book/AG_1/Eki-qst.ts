@@ -14,7 +14,7 @@ namespace DM
 	{
 		log ( data_path ) ;
 
-		const eki = await Eki.create ( data_path ) ;
+		const eki = await Eki.make ( data_path ) ;
 		onload ( eki ) ;
 	} 
 }
