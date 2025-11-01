@@ -153,13 +153,14 @@ body.NAVI_INLINE
 	display : grid ;
 	grid-template-columns : 1fr auto ;
 
-	padding : 0.35ex ;
+	padding : 0.2ex ;
 	align-items : stretch ;
 }
 
 .NAVI_BLOCK .INDEX_TITLE
 {
-	padding : 0.6ex 1em ;
+	margin-inline : min( 1.7vw , 1.0em )  0.4vw ;
+	padding-block : 1.0ex ;
 	overflow : hidden ;
 	white-space : nowrap ;
 }
@@ -247,8 +248,13 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .INDEX_HEAD
 {
+	overflow : hidden ;
+
 	border : 0.2ex  solid  hsl( 0  0%  40% / 60% ) ;
 	border-radius : 0.1ex 0.1ex 1.0ex 1.0ex ;
+
+	max-width : 12em ;
+	min-width : 6em ;
 
 	display : flex ;
 	padding-inline : 1.0em ;
@@ -258,14 +264,17 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .INDEX_TITLE
 {
+	flex-grow : 1 ;
 	padding-block : 0.6ex 1.2ex ;
 	white-space : nowrap ;
+	overflow : hidden ;
+	text-align : center ;
 }
 
 .NAVI_INLINE .INDEX_THUMB._HAS_PARTS
 {
 	margin-right : -1.5em ;
-	border-radius : 0.3ex ;
+	border-radius : 0.0ex ;
 	border : 0px solid  hsl( 0  0%  80% ) ;
 	
 	display : flex ;
@@ -283,7 +292,7 @@ body.NAVI_INLINE
 {
 	border : solid  hsl( 0  0%  0% / 35% ) ;
 	border-width : 0  0.3ex  0.07ex  0.8ex ;
-	border-radius : 0.1ex 0.1ex  1.0ex 1.6ex ;
+	border-radius : 0.1ex 0.1ex  1.0ex 0.3ex ;
 	border-bottom-color : hsl( 0  0%  70% ) ;
 
 	background-color : hsl( 180  100%  100% / 3% ) ;

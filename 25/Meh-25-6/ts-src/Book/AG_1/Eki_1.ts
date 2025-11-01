@@ -20,7 +20,7 @@ export namespace VM
 			area =>
 			[
 				area ,
-				{ title : area , parts : () => prefs ( areas [ area ] , datapath ) }
+				{ title : area , parts : () => prefs ( areas [ area ] ) }
 			]
 		) ;
 
@@ -30,55 +30,57 @@ export namespace VM
 			parts : Object.fromEntries ( area_ents )
 		}
 		return rt ;
-	}
 
-	async function prefs ( list : string [] , datapath : string ) : Promise < BB.VM.parts >
-	{
-		const ents : [ string , BB.VM.index ] [] = [] ;
-		for ( const name of list )
+		/* */
+
+		async function prefs ( list : string [] ) : Promise < BB.VM.parts >
 		{
-			ents.push ( [ name , pref ( name , datapath ) ] ) ;
+			const ents : [ string , BB.VM.index ] [] = [] ;
+			for ( const name of list )
+			{
+				ents.push ( [ name , pref ( name ) ] ) ;
+			}
+			return Object.fromEntries ( ents )
 		}
-		return Object.fromEntries ( ents )
-	}
 
-	function pref ( title : string , datapath : string )
-	{
-		return { type : "pref" , title , parts : () => lines ( title , datapath ) } ;
-	}
-
-	async function lines ( pref : string , datapath : string ) : Promise < BB.VM.parts >
-	{
-		const r = await Eki.make ( datapath ) ;
-		const pref_cd = Eki.pref_cd [ pref ] ;
-		const lines = r.pref_line.items ( pref_cd ) ;
-
-		const ents : [ string , BB.VM.index ] [] = [] ;
-		for ( const r of lines )
+		function pref ( title : string )
 		{
-			ents.push ( [ r.line_name , line ( r ) ] ) ;
+			return { type : "pref" , title , parts : () => lines ( title ) } ;
 		}
-		return Object.fromEntries ( ents ) ;
-	}
 
-	function line ( line : Eki.Line ) : BB.VM.index
-	{
-		return { title : line.line_name } ;
-	}
-
-	async function stations ( r : Eki.Station [] )
-	{
-		const ents : [ string , BB.VM.index ] [] = [] ;
-		for ( const st of r )
+		async function lines ( pref : string ) : Promise < BB.VM.parts >
 		{
-			ents.push ( [ st.station_name , station ( st ) ] ) ;
+			const r = await Eki.make ( datapath ) ;
+			const pref_cd = Eki.pref_cd [ pref ] ;
+			const lines = r.pref_line.items ( pref_cd ) ;
+	
+			const ents : [ string , BB.VM.index ] [] = [] ;
+			for ( const r of lines )
+			{
+				ents.push ( [ r.line_name , line ( r ) ] ) ;
+			}
+			return Object.fromEntries ( ents ) ;
 		}
-		return Object.fromEntries ( ents ) ;
-	}
-
-	function station ( r : Eki.Station )
-	{
-		return { title : r.station_name } ;
+	
+		function line ( line : Eki.Line ) : BB.VM.index
+		{
+			return { title : line.line_name , parts : () => stations ( line.stations ) } ;
+		}
+	
+		async function stations ( list : Eki.Station [] )
+		{
+			const ents : [ string , BB.VM.index ] [] = [] ;
+			for ( const rec of list )
+			{
+				ents.push ( [ rec.station_name , station ( rec ) ] ) ;
+			}
+			return Object.fromEntries ( ents ) ;
+		}
+	
+		function station ( r : Eki.Station )
+		{
+			return { title : r.station_name } ;
+		}
 	}
 }
 
