@@ -74,6 +74,7 @@ export namespace VM
 
 				type : "EKI_1" ,
 				title : line.line_name ,
+				cont : line.line_cd ,
 				parts : () => stations ( line.stations )
 			} ;
 		}
