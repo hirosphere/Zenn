@@ -21,7 +21,6 @@
 html
 {
 	height : 100% ;
-	background : linear-gradient( 180deg , hsl( 207  83%  83% ) 0% , white 35% , white 70% , hsl( 90  80%  80% ) 97% ) ;
 	
 }
 
@@ -218,6 +217,8 @@ body.NAVI_INLINE
 .NAVI_INLINE .NAVI
 {
 	order : 1 ;
+
+	border-top : 0.1ex  solid  hsl( 0  0%  70% ) ;
 	display : flex ;
 
 	padding-block : 0px ;
@@ -250,7 +251,8 @@ body.NAVI_INLINE
 {
 	overflow : hidden ;
 
-	border : 0.2ex  solid  hsl( 0  0%  40% / 60% ) ;
+	border : 0.2ex  solid  hsl( 0  0%  40% / 65% ) ;
+	border-top-width : 0 ;
 	border-radius : 0.1ex 0.1ex 1.0ex 1.0ex ;
 
 	max-width : 12em ;
@@ -290,18 +292,18 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .INDEX_PARTS._OPEN
 {
-	border : solid  hsl( 0  0%  0% / 35% ) ;
-	border-width : 0  0.3ex  0.07ex  0.8ex ;
-	border-radius : 0.1ex 0.1ex  1.0ex 0.3ex ;
+	border : solid  hsl( 0  0%  0% / 88% ) ;
+	border-width : 0  0.5ex  0.00ex  0.5ex ;
+	border-radius : 0.1ex 0.1ex  1.0ex 1.0ex ;
 	border-bottom-color : hsl( 0  0%  70% ) ;
 
-	background-color : hsl( 180  100%  100% / 3% ) ;
+	background-color : hsl( 180  100%  0% / 0% ) ;
 
 	display : block ;
 	
 	margin-inline : 0.5ex  0.3ex ;
 	padding-inline : 0.6ex  0.7ex ;
-	padding-block : 0  0.2ex ;
+	padding-block : 0  0.0ex ;
 }
 
 .NAVI_INLINE ul

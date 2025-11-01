@@ -127,6 +127,7 @@ namespace VC
 		"Todo"    : index => AG_1.ToDo () ,
 		"JMA_EQ"  : index => AG_1.JMA_EQ.VC.App () ,
 		"Tonne"   : index => AG_1.Tonne.VC.App () ,
+		"EKI_1" : index => AG_1.Eki_1.VC.App ( index ) ,
 	}
 
 	const ContentFrame = ( index : BookBase.VM.Index , types : types ) : DD.Node =>

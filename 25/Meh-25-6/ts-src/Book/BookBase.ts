@@ -83,6 +83,8 @@ export namespace VM
 		public readonly open : Live.bool ;
 		public readonly thumb : Live.R.str ;
 
+		public get cont () : string { return this.i.cont ?? "" ; }
+
 		public ScrollTo ? ( option ? : ScrollIntoViewOptions ) : void ;
 
 		constructor

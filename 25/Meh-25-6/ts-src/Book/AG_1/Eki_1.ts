@@ -1,4 +1,4 @@
-
+import { DD , ef , pl , log } from "../../Meh/Meh.js" ;
 import * as BB from "../BookBase.js" ;
 import { Eki } from "../../API/Eki.js" ;
 
@@ -26,7 +26,9 @@ export namespace VM
 
 		const rt =		
 		{
+			type : "EKI_1" ,
 			title : "Eki.jp" ,
+			cont : "Root" ,
 			parts : Object.fromEntries ( area_ents )
 		}
 		return rt ;
@@ -45,7 +47,11 @@ export namespace VM
 
 		function pref ( title : string )
 		{
-			return { type : "pref" , title , parts : () => lines ( title ) } ;
+			return {
+				type : "EKI_1" ,
+				title ,
+				parts : () => lines ( title )
+			} ;
 		}
 
 		async function lines ( pref : string ) : Promise < BB.VM.parts >
@@ -64,7 +70,12 @@ export namespace VM
 	
 		function line ( line : Eki.Line ) : BB.VM.index
 		{
-			return { title : line.line_name , parts : () => stations ( line.stations ) } ;
+			return {
+
+				type : "EKI_1" ,
+				title : line.line_name ,
+				parts : () => stations ( line.stations )
+			} ;
 		}
 	
 		async function stations ( list : Eki.Station [] )
@@ -79,7 +90,11 @@ export namespace VM
 	
 		function station ( r : Eki.Station )
 		{
-			return { title : r.station_name } ;
+			return {
+				type : "EKI_1" ,
+				title : r.station_name ,
+				cont : r.station_cd
+			} ;
 		}
 	}
 }
@@ -89,5 +104,52 @@ export namespace VM
 
 export namespace VC
 {
-	;
+	/* CSS */
+
+	const css = /* css */ `
+	
+	* {  box-sizing : border-box ;  margin : 0 ;  padding : 0 ;  line-height : 1 ;  }
+
+	:host
+	{
+		height : 100% ;
+		background : white ;
+		overflow : auto ;
+	}
+	
+	
+	h1 { padding :  0.5ex  1ex ;  text-align : center ; }
+
+	.FR { display : flex ; }
+	.FC { display : flex ;  flex-direction : column ; }
+	
+	.PM { padding : 1em ; }
+	.PX { padding : 1ex ; }
+
+	.GX { padding : 1ex ; }
+	.JC { justify-content : center ; }
+	.AC { align-items : center ; }
+
+	main { height : 100% ; }
+	p { line-height : 1.3 ; }
+	
+	` ;
+
+
+	/* Conponents */
+
+	export function App ( index : BB.VM.Index ) : DD.Node
+	{
+		return ef.div
+		(
+			{ shadow : css } ,
+			ef.main
+			(
+				{ class : "FC  PM GX JC AC" } ,
+				ef.h1 ( index.title ) ,
+				ef.p ( index.type ) ,
+				ef.p ( index.cont ) ,
+			)
+		) ;
+	}
 }
