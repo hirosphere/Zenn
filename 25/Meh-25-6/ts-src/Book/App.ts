@@ -27,15 +27,15 @@ namespace VM
 		{
 			"Todo" : { type : "Todo" , title : "Todo" } ,
 			"Eval" : { type : "Eval" , title : "Eval" } ,
-			"eki-1" : new AG_1.Eki_1.VM.index.root ( "../../../" ) ,
 			"AG_1" :
 			{
 				title : "AG 1" ,
 				open : false ,
 				parts :
 				{
+					"Eki1" : new AG_1.Eki_1.VM.index.root ( "../../../" ) ,
+					"Eki" : { type : "Eki_Q1" , title : "階層タブ" } ,
 					"JMA_EQ" : { type : "JMA_EQ" , title : "地震リスト" } ,
-					"Eki" : { type : "Eki_Q1" , title : "駅名表示" } ,
 					"Treem" : { type : "Treem" , title : "Extreem" } ,
 					// "Tonne" : { type : "Tonne" , title : "Tonne" } ,
 				} ,
@@ -50,7 +50,7 @@ namespace VM
 	export class App  implements BookBase.VM.NaviClient
 	{
 		public readonly navi = new BookBase.VM.Navi ( index , this ) ;
-		public readonly navi_mode = Live < navi_mode > ( "NAVI_INLINE" ) ;
+		public readonly navi_mode = Live < navi_mode > ( "NAVI_BLOCK" ) ;
 
 		constructor ()
 		{

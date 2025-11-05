@@ -15,8 +15,8 @@ export namespace VM.index
 
 	export class root implements index
 	{
-		type = "Eki1" ;
-		title = "Eki.js {}" ;
+		type = "eki.1" ;
+		title = "駅データ.jp" ;
 		parts : parts ;
 
 		constructor ( datapath : string )
