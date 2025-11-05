@@ -61,7 +61,7 @@ export namespace VM
 	{
 		type ? : string ;
 		title : string ;
-		cont ? : string ;
+		cont ? : any ;
 		open ? : boolean ;
 		parts ? : u_parts ;
 	}
@@ -83,14 +83,14 @@ export namespace VM
 		public readonly open : Live.bool ;
 		public readonly thumb : Live.R.str ;
 
-		public get cont () : string { return this.i.cont ?? "" ; }
+		public get cont () : any { return this.i.cont ; }
 
 		public ScrollTo ? ( option ? : ScrollIntoViewOptions ) : void ;
 
 		constructor
 		(
 			public readonly navi : Navi ,
-			private i : index ,
+			public readonly i : index ,
 			public readonly com ? : Index ,
 			name ? : string
 		)
@@ -181,6 +181,8 @@ export namespace VM
 			) ;
 		}
 
+		/* */
+
 		private parts_by_name = new Map < string , Index > ;
 		private dyn_parts_created = false ;
 	}
@@ -216,11 +218,11 @@ export namespace VC
 			) ;
 		}
 
-		return ef.a
+		return ef.div
 		(
 			{
 				class : [ "INDEX_HEAD  _LINK" , { _SELECTED : vm.selected } ] ,
-				attrs : { href : vm.url } ,
+				// attrs : { href : vm.url } ,
 				active : { click } ,
 				hook : { init } ,
 			} ,
@@ -256,11 +258,16 @@ export namespace VC
 		{
 			vm.ScrollTo ?. (  ) ;
 			ev.stopPropagation () ;
+			ev.preventDefault () ;
 		}
 
 		return ef.section
 		(
-			{ class : [ "INDEX_PARTS" , { _OPEN : vm.open } ] , active : { dblclick } } ,
+			{
+				class : [ "INDEX_PARTS" , { _OPEN : vm.open } ] ,
+				// attrs : { title : vm.title } ,
+				active : { dblclick } ,
+			} ,
 			pl.key
 			(
 				vm.open ,

@@ -1,4 +1,4 @@
-import { Live , Renn , ef , pl , DD as dd , log } from "../../Meh/Meh.js" ;
+import { Live , Renn , ef , pl , DD as dd , df , log } from "../../Meh/Meh.js" ;
 import { jma } from "./jma_data.js" ;
 
 namespace DM
@@ -25,7 +25,8 @@ namespace DM
 					diff && ( src.ser > diff.ser )
 				)
 				{
-					src.eid = eid ( src.eid ) ;
+					src.ctt = ctt ( src.ctt ) ;
+					src.eid = ctt ( src.eid ) ;
 					list.set ( src.eid , src ) ;
 				}
 			}
@@ -53,12 +54,12 @@ namespace DM
 		"en_anm": string 
 	}
 
-	function eid ( s : string ) : string
+	function ctt ( s : string ) : string
 	{
 		return s.replace
 		(
 			/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/ ,
-			( z , y , m , d , h , mi , s ) => `${ y }.${ m }.${ d } ${ h }:${ m }:${ s }`
+			( z , y , m , d , h , mi , s ) => `${ y }-${ m }-${ d }-${ h }:${ mi }:${ s }`
 		) ;
 	}
 }
@@ -69,19 +70,89 @@ namespace VM
 	export class App
 	{
 		public readonly records = Live < DM.src_record [] | undefined > ( undefined ) ;
+		public readonly loadtime = Live ( "" ) ;
 
 		constructor ()
 		{
+			this.load () ;
+		}
+
+		load () : void
+		{
 			DM.load ( r => this.records.$ = r ) ;
+			this.loadtime.$ = df ( "YYYY.MM.DD (B) hh:mm:ss" ) ;
 		}
 	}
 }
 
 export namespace VC
 {
+	/* */
+
+	const css = /* css */ `
+	
+	* { box-sizing : border-box ;  margin : 0 ;  padding : 0 ;  line-height : 1 ; }
+
+	:host
+	{
+		height : 100% ;
+	}
+
+	main
+	{
+		width : 100em ;
+		background : white ;
+
+		display : flex ;
+		flex-direction : column ;
+		overflow : auto ;
+		padding : 1em ;
+		align-items : center ;
+		gap : 1ex ;
+	}
+
+	header
+	{
+		display : flex ;
+		align-items : center ;
+		gap : 1em ;
+	}
+
+	h1
+	{
+		text-align : center ;
+	}
+
+	button { padding : 1ex 1.2em ; }
+
+	table.EQ_LIST
+	{
+		cursor : default ;
+	}
+
+	td { padding-block : 0.7ex ; }
+
+	.EQ_LIST tr:hover
+	{
+		background : hsl( 90  40%  90% ) ;
+	}
+
+	.EQ_LIST td , .EQ_LIST th
+	{
+		padding-inline : 0.7ex ;
+		white-space : nowrap ;
+	}
+	
+	` ;
+
+	
+	/* */
+
 	export function App () : dd.Node
 	{
 		const vm = new VM.App ;
+
+		function click () { vm.load () ; }
 
 		return ef.div
 		(
@@ -91,7 +162,14 @@ export namespace VC
 			(
 				{  } ,
 
-				ef.h1 ( "JMA 地震リスト" ) ,
+				ef.header
+				(
+					{ class : "" } ,
+					ef.h1 ( "JMA 地震リスト" , ) ,
+					ef.button ( { passive : { click } } , "読み込み" ) ,
+					ef.span ( vm.loadtime ) ,
+				) ,
+
 				pl.key ( vm.records , rs => rs && Table ( rs ) ) ,
 			) ,
 		) ;
@@ -157,50 +235,5 @@ export namespace VC
 			text
 		) ;
 	}
-
-
-	/* */
-
-	const css = /* css */ `
-	
-	* { box-sizing : border-box ;  margin : 0 ;  padding : 0 ;  line-height : 1 ; }
-
-	:host
-	{
-		height : 100% ;
-	}
-
-	main
-	{
-		width : 70em ;
-		background : white ;
-
-		display : flex ;
-		flex-direction : column ;
-		overflow : auto ;
-		padding : 1em ;
-		align-items : center ;
-		gap : 1ex ;
-	}
-
-	h1  { text-align : center ; }
-
-	table.EQ_LIST
-	{
-		cursor : default ;
-	}
-
-	.EQ_LIST tr:hover
-	{
-		background : hsl( 90  40%  90% ) ;
-	}
-
-	.EQ_LIST td , .EQ_LIST th
-	{
-		padding-inline : 0.7ex ;
-		white-space : nowrap ;
-	}
-	
-	` ;
 }
 

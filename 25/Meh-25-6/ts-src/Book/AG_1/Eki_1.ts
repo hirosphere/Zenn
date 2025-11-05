@@ -8,98 +8,111 @@ export namespace DM
 
 
 
-
-export namespace VM
+export namespace VM.index
 {
-	export function root_index ( datapath : string ) : BB.VM.index
+	type index = BB.VM.index ;
+	type parts = BB.VM.parts ;
+
+	export class root implements index
 	{
-		const areas = Eki.area_prefs ;
-		
-		const area_ents =  Object.keys ( areas ) .map < [ string , BB.VM.index ] >
-		(
-			area =>
-			[
-				area ,
-				{ title : area , parts : () => prefs ( areas [ area ] ) }
-			]
-		) ;
+		type = "Eki1" ;
+		title = "Eki.js {}" ;
+		parts : parts ;
 
-		const rt =		
+		constructor ( datapath : string )
 		{
-			type : "EKI_1" ,
-			title : "Eki.jp" ,
-			cont : "Root" ,
-			parts : Object.fromEntries ( area_ents )
-		}
-		return rt ;
+			const ents = Object.keys ( Eki.AreaName_PrefList )  .map < [ string , BB.VM.index ] >
+			(
+				title => [ title , new area ( title , datapath ) ]
+			) ;
 
-		/* */
-
-		async function prefs ( list : string [] ) : Promise < BB.VM.parts >
-		{
-			const ents : [ string , BB.VM.index ] [] = [] ;
-			for ( const name of list )
-			{
-				ents.push ( [ name , pref ( name ) ] ) ;
-			}
-			return Object.fromEntries ( ents )
-		}
-
-		function pref ( title : string )
-		{
-			return {
-				type : "EKI_1" ,
-				title ,
-				parts : () => lines ( title )
-			} ;
-		}
-
-		async function lines ( pref : string ) : Promise < BB.VM.parts >
-		{
-			const r = await Eki.make ( datapath ) ;
-			const pref_cd = Eki.pref_cd [ pref ] ;
-			const lines = r.pref_line.items ( pref_cd ) ;
-	
-			const ents : [ string , BB.VM.index ] [] = [] ;
-			for ( const r of lines )
-			{
-				ents.push ( [ r.line_name , line ( r ) ] ) ;
-			}
-			return Object.fromEntries ( ents ) ;
-		}
-	
-		function line ( line : Eki.Line ) : BB.VM.index
-		{
-			return {
-
-				type : "EKI_1" ,
-				title : line.line_name ,
-				cont : line.line_cd ,
-				parts : () => stations ( line.stations )
-			} ;
-		}
-	
-		async function stations ( list : Eki.Station [] )
-		{
-			const ents : [ string , BB.VM.index ] [] = [] ;
-			for ( const rec of list )
-			{
-				ents.push ( [ rec.station_name , station ( rec ) ] ) ;
-			}
-			return Object.fromEntries ( ents ) ;
-		}
-	
-		function station ( r : Eki.Station )
-		{
-			return {
-				type : "EKI_1" ,
-				title : r.station_name ,
-				cont : r.station_cd
-			} ;
+			this.parts = Object.fromEntries ( ents ) ;
 		}
 	}
-}
 
+	class area implements index
+	{
+		type = "eki.1" ;
+
+		constructor ( public title : string , private datapath : string )
+		{}
+
+		parts = async () : Promise < parts > =>
+		{
+			const ents : [ string , BB.VM.index ] [] = [] ;
+
+			for ( const name of Eki.AreaName_PrefList [ this.title ] )
+			{
+				ents.push ( [ name , new pref ( name , this.datapath ) ] ) ;
+			}
+
+			return Object.fromEntries ( ents ) ;
+		}
+	}
+
+	class pref implements index
+	{
+		type = "eki.1" ;
+		constructor ( public title : string , private datapath : string )
+		{}
+
+		parts = async () : Promise < parts > =>
+		{
+			const eki = await Eki.make ( this.datapath ) ;
+			const lines = eki.pref_line.items
+			(
+				Eki.pref_cd [ this.title ]
+			) ;
+	
+			const ents : [ string , index ] [] = [] ;
+			for ( const rc of lines )
+			{
+				ents.push ( [ rc.line_name , new line ( rc ) ] ) ;
+			}
+
+			return Object.fromEntries ( ents ) ;
+		}
+	}
+
+	class line implements index
+	{
+		type = "eki.1" ;
+		title : string ;
+		cont : any ;
+
+		constructor ( private line : Eki.Line )
+		{
+			this.title = line.line_name ;
+			this.cont = line ;
+		}
+
+		parts = async () : Promise < parts > =>
+		{
+			const ents : [ string , BB.VM.index ] [] = [] ;
+
+			for ( const rec of this.line.Stations )
+			{
+				ents.push ( [ rec.StationName , new station ( rec ) ] ) ;
+			}
+
+			return Object.fromEntries ( ents ) ;
+		}
+	}
+
+	class station implements index
+	{
+		type = "eki.1" ;
+		title : string ;
+		cont : any ;
+
+		constructor ( rec : Eki.Station )
+		{
+			this.title = rec.StationName ;
+			this.cont = rec ;
+		}
+	}
+
+}
 
 
 
@@ -132,7 +145,11 @@ export namespace VC
 	.AC { align-items : center ; }
 
 	main { height : 100% ; }
+	h1 { line-height : 1.5 ; }
 	p { line-height : 1.3 ; }
+
+	ul { list-style : none ;  text-align : center ; }
+	li { line-height : 1.14 ; }
 	
 	` ;
 
@@ -141,16 +158,59 @@ export namespace VC
 
 	export function App ( index : BB.VM.Index ) : DD.Node
 	{
+		log ( "App index type" , index.cont ?.type )
+
 		return ef.div
 		(
 			{ shadow : css } ,
+
+			( index.cont ?.type == "Line" ) ?  Line ( index.cont ) :
+			( index.cont ?.type == "Station" ) ?  Station ( index.cont ) :
+			
 			ef.main
 			(
 				{ class : "FC  PM GX JC AC" } ,
 				ef.h1 ( index.title ) ,
-				ef.p ( index.type ) ,
-				ef.p ( index.cont ) ,
+				"...." ,
 			)
 		) ;
+	}
+	
+	function Line ( rc : Eki.Line ) : DD.Node
+	{
+		const ps : ( keyof Eki.Line ) [] = [ "company_cd" , "line_type" , "lat" , "lon" ] ;
+
+		return ef.main
+		(
+			{ class : "FC  PM GX JC AC" } ,
+			ef.h1 ( rc.line_name ) ,
+			ef.ul
+			(
+				... ps.map ( prop => ef.li ( `${ String ( prop ) } : ${ rc [ prop ] }` ) )
+			)
+		) ;
+	}
+	
+	function Station ( rc : Eki.Station ) : DD.Node
+	{
+		const ps : ( keyof Eki.Station ) [] = [ "post" , "PrefName" , "address" , "LineName" , "lat" , "lon" ] ;
+
+		return ef.main
+		(
+			{ class : "FC  PM GX JC AC" } ,
+			ef.h1 ( rc.StationName ) ,
+			ef.ul
+			(
+				... ps.map ( e => ef.li ( "" + rc [ e ] ) )
+			)
+		) ;
+	}
+
+	function flist ( v : any ) : string []
+	{
+		const rt : string [] = [] ;
+		if ( typeof v != "object" )  return rt ;
+		Object.keys ( v ).map ( name => rt.push ( `${ name }` ) ) ;
+		return rt ;
 	}
 }

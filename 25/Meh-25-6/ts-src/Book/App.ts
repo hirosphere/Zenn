@@ -8,6 +8,14 @@ import * as IndexQst from "./IndexQst.js" ; ;
 
 /* View Models */
 
+type kv =
+{
+	idb_name : string ,	
+}
+
+class KV < V >
+{}
+
 namespace VM
 {
 	const index : BookBase.VM.index =
@@ -17,22 +25,22 @@ namespace VM
 		open : true ,
 		parts :
 		{
+			"Todo" : { type : "Todo" , title : "Todo" } ,
 			"Eval" : { type : "Eval" , title : "Eval" } ,
-			 "Eki_1" : AG_1.Eki_1.VM.root_index ( "../../../" ) ,
+			"eki-1" : new AG_1.Eki_1.VM.index.root ( "../../../" ) ,
 			"AG_1" :
 			{
 				title : "AG 1" ,
-				open : true ,
+				open : false ,
 				parts :
 				{
 					"JMA_EQ" : { type : "JMA_EQ" , title : "地震リスト" } ,
 					"Eki" : { type : "Eki_Q1" , title : "駅名表示" } ,
 					"Treem" : { type : "Treem" , title : "Extreem" } ,
-					"Todo" : { type : "Todo" , title : "Todo" } ,
 					// "Tonne" : { type : "Tonne" , title : "Tonne" } ,
 				} ,
 			} ,
-			// "Dyndex" : IndexQst.Dyndex ,
+			"Dyndex" : IndexQst.Dyndex ,
 		}
 	}
 
@@ -72,12 +80,6 @@ namespace VM
 		{
 			history.replaceState ( null , "" , url ) ;
 		}
-	}
-
-	type url_query =
-	{
-		path : string ;
-		type : string ;
 	}
 
 	type navi_mode = "NAVI_INLINE" | "NAVI_BLOCK" ;
@@ -127,7 +129,7 @@ namespace VC
 		"Todo"    : index => AG_1.ToDo () ,
 		"JMA_EQ"  : index => AG_1.JMA_EQ.VC.App () ,
 		"Tonne"   : index => AG_1.Tonne.VC.App () ,
-		"EKI_1" : index => AG_1.Eki_1.VC.App ( index ) ,
+		"eki.1" : index => AG_1.Eki_1.VC.App ( index ) ,
 	}
 
 	const ContentFrame = ( index : BookBase.VM.Index , types : types ) : DD.Node =>

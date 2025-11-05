@@ -56,7 +56,9 @@ body.NAVI_INLINE
 
 .NAVI .TREE
 {
+	background-color : hsl( 210  40%  80% ) ;
 	cursor : default ;
+
 }
 
 .NAVI .INDEX_HEAD
@@ -158,7 +160,7 @@ body.NAVI_INLINE
 
 .NAVI_BLOCK .INDEX_TITLE
 {
-	margin-inline : min( 1.7vw , 1.0em )  0.4vw ;
+	margin-inline : min( 1.7vw , 0.8em )  0.4vw ;
 	padding-block : 1.0ex ;
 	overflow : hidden ;
 	white-space : nowrap ;
@@ -218,7 +220,7 @@ body.NAVI_INLINE
 {
 	order : 1 ;
 
-	border-top : 0.1ex  solid  hsl( 0  0%  70% ) ;
+	border-top : 0.2ex  solid  hsl( 0  0%  40% ) ;
 	display : flex ;
 
 	padding-block : 0px ;
@@ -249,11 +251,14 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .INDEX_HEAD
 {
+	margin-bottom : 0.2ex ;
+	margin-right : 0.5ex ;
+
 	overflow : hidden ;
 
-	border : 0.2ex  solid  hsl( 0  0%  40% / 65% ) ;
+	border : 0.2ex  solid  hsl( 0  0%  40% / 75% ) ;
 	border-top-width : 0 ;
-	border-radius : 0.1ex 0.1ex 1.0ex 1.0ex ;
+	border-radius : 0.1ex 0.1ex 0.0ex 0.0ex ;
 
 	max-width : 12em ;
 	min-width : 6em ;
@@ -292,17 +297,13 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .INDEX_PARTS._OPEN
 {
-	border : solid  hsl( 0  0%  0% / 88% ) ;
-	border-width : 0  0.5ex  0.00ex  0.5ex ;
+	border : solid  hsl( 0  0% 12% ) ;
+	border-width : 0  0.2ex  0.00ex  0.5ex ;
 	border-radius : 0.1ex 0.1ex  1.0ex 1.0ex ;
-	border-bottom-color : hsl( 0  0%  70% ) ;
-
-	background-color : hsl( 180  100%  0% / 0% ) ;
 
 	display : block ;
 	
-	margin-inline : 0.5ex  0.3ex ;
-	padding-inline : 0.6ex  0.7ex ;
+	padding-inline : 0.8ex  0.4ex ;
 	padding-block : 0  0.0ex ;
 }
 
@@ -311,7 +312,7 @@ body.NAVI_INLINE
 	list-style : none ;
 	overflow : hidden ;
 	display : flex ;
-	gap : 0.3ex ;
+	gap : - 0.2ex ;
 	align-items : start ;
 }
 

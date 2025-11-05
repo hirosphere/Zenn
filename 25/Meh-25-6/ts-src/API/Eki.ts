@@ -15,23 +15,23 @@ const log = console.log ;
 
 */
 
-export type Eki = Eki.Records ;
+export type Eki = Eki.RecordSet ;
 
-export async function Eki ( dataPath : string = "../../../" ) : Promise < Eki.Records >
+export async function Eki ( dataPath : string = "../../../" ) : Promise < Eki.RecordSet >
 {
 	return await Eki.make ( dataPath ) ;
 }
 
 export namespace Eki
 {
-	let records : Records | undefined = undefined ;
+	let records : RecordSet | undefined = undefined ;
 	const initiate = Symbol () ;
 
-	export const make = async ( dataPath : string ) : Promise < Records > =>
+	export const make = async ( dataPath : string ) : Promise < RecordSet > =>
 	{
 		if ( ! records )
 		{
-			records = new Records () ;
+			records = new RecordSet () ;
 			await records [ initiate ] ( dataPath ) ;	
 
 			log ( "Eki make" ) ;
@@ -46,14 +46,14 @@ export namespace Eki
 
 	class RootIndex
 	{
-		constructor ( private rc : Records )
+		constructor ( private rc : RecordSet )
 		{}
 
 		public get name () { return "駅データ.jp" ; }
 		
 		public get parts () : Index []
 		{
-			return Object.keys( area_prefs ).map ( label => new AreaIndex ( label , this.rc ) ) ;
+			return Object.keys( AreaName_PrefList ).map ( label => new AreaIndex ( label , this.rc ) ) ;
 		}
 	}
 
@@ -61,9 +61,9 @@ export namespace Eki
 	{
 		public readonly parts : PrefIndex [] ;
 
-		constructor ( public readonly name : string , rc : Records )
+		constructor ( public readonly name : string , rc : RecordSet )
 		{
-			this.parts = area_prefs [ name ] ?.map
+			this.parts = AreaName_PrefList [ name ] ?.map
 			(
 				pref => new PrefIndex ( pref , rc )
 			
@@ -76,7 +76,7 @@ export namespace Eki
 		public readonly name : string ;
 		public readonly parts : Index [] ;
 
-		constructor ( name : string , private rc : Records )
+		constructor ( name : string , private rc : RecordSet )
 		{
 			this.name = name ;
 
@@ -98,7 +98,7 @@ export namespace Eki
 		constructor ( line : Line )
 		{
 			this.name = line.line_name ;
-			this.parts = line.stations.map ( stat => new StationIndex ( stat ) ) ;
+			this.parts = line.Stations.map ( stat => new StationIndex ( stat ) ) ;
 		}
 	}
 
@@ -108,7 +108,7 @@ export namespace Eki
 
 		constructor ( stat : Station )
 		{
-			this.name = stat.station_name ;
+			this.name = stat.StationName ;
 		}
 	}
 
@@ -118,7 +118,7 @@ export namespace Eki
 	/* Records */
 
 
-	export class Records
+	export class RecordSet
 	{
 		/* インデックス */		
 
@@ -182,7 +182,7 @@ export namespace Eki
 
 		qst ()
 		{
-			const sn = ( scd : string ) => this.station.get ( scd )?.station_name ?? ".."
+			const sn = ( scd : string ) => this.station.get ( scd )?.StationName ?? ".."
 
 			const line_cd = "11308" ;
 			const l = this.line.get ( line_cd ) ;
@@ -235,7 +235,9 @@ export namespace Eki
 
 	export class Company
 	{
-		constructor ( records : Records , public iv : string [] )
+		public readonly type = "Company" ;
+
+		constructor ( records : RecordSet , public iv : string [] )
 		{
 			records.company.set ( this.company_cd , this ) ;
 		}
@@ -256,13 +258,15 @@ export namespace Eki
 
 	export class Line
 	{
-		constructor ( records : Records , public iv : string [] )
+		public readonly type = "Line" ;
+
+		constructor ( records : RecordSet , public iv : string [] )
 		{
 			records.line.set ( this.line_cd , this ) ;
 		}
 
 		readonly prefset = new Set < pref_cd > ;
-		readonly stations : Station [] = [] ;
+		readonly Stations : Station [] = [] ;
 
 		get line_cd () {  return this.iv [ 0 ] ; }
 		get company_cd () {  return this.iv [ 1 ] ; }
@@ -280,20 +284,22 @@ export namespace Eki
 
 		/* 駅リストと都道府県リストを初期化 */
 
-		[ initiate ] ( records : Records )
+		[ initiate ] ( records : RecordSet )
 		{
 		}
 	}
 
 	export class Station
 	{
-		constructor ( protected records : Records , public iv : string [] )
+		public readonly type = "Station" ;
+
+		constructor ( protected records : RecordSet , public iv : string [] )
 		{
 			/* 駅・路線・都道府県データの関連付け */
 
 			records.station.set ( this.station_cd , this ) ;
 			const line = records.line.get ( this.line_cd ) ;
-			line ?.stations.push ( this ) ;
+			line ?.Stations.push ( this ) ;
 			line ?.prefset.add ( this.pref_cd ) ;
 
 			records.pref_station.pushItem ( this.pref_cd , this ) ;
@@ -301,18 +307,18 @@ export namespace Eki
 
 
 			/* address の重複都道府県名を除去 */
-			iv [ 8 ] = iv [ 8 ].replace ( this.pref_name , "" ) ;
+			iv [ 8 ] = iv [ 8 ].replace ( this.PrefName , "" ) ;
 		}
 
-		get pref_name ()  {  return cd_pref [ this.pref_cd ] ;  }
-		get line ()  {  return this.records.line.get ( this.line_cd ) ?.line_name ?? ".."  }
+		get PrefName ()  {  return cd_pref [ this.pref_cd ] ;  }
+		get LineName ()  {  return this.records.line.get ( this.line_cd ) ?.line_name ?? ".."  }
 
 		readonly next : Station [] = [] ;
 		readonly prev : Station [] = [] ;
 
 		get station_cd () {  return this.iv [ 0 ] ; }
 		get station_g_cd () {  return this.iv [ 1 ] ; }
-		get station_name () {  return this.iv [ 2 ] ; }
+		get StationName () {  return this.iv [ 2 ] ; }
 		get station_name_k () {  return this.iv [ 3 ] ; }
 		get station_name_r () {  return this.iv [ 4 ] ; }
 		get line_cd () {  return this.iv [ 5 ] ; }
@@ -331,7 +337,7 @@ export namespace Eki
 
 	/*  */
 
-	export const area_prefs : { [ name : string ] : string [] } =
+	export const AreaName_PrefList : { [ name : string ] : string [] } =
 	{
 		"北海道・東北" : [ "北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県", ] ,
 		"関東・甲信越" : [ "茨城県","栃木県","群馬県","埼玉県","千葉県","東京都","神奈川県","山梨県","長野県","新潟県", ] ,
