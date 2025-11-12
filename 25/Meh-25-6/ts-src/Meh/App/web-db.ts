@@ -91,10 +91,9 @@ export namespace IDB
 			db.stores.set ( name , this ) ;
 		}
 	
-		public add ( value : Omit < R , K > , tr ? : IDBTransaction )
+		public add ( value : Omit < R , K > , tr ? : IDBTransaction ) : void
 		{
 			const db = this.db.core ;
-			log ( db ) ;
 			if ( ! db )  return ;
 
 			tr ??= db.transaction ( [ this.name ] , "readwrite" ) ;

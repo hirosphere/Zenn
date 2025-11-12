@@ -2,6 +2,15 @@ import { Live , Renn , Key , ef , pl , DD } from "../Meh/Meh.js" ;
 
 const log = console.log ;
 
+
+export interface app_constants
+{
+	readonly dataPath : string ;
+	readonly commonCSS : css ;
+} ;
+
+type css = string | CSSStyleDeclaration ;
+
 export namespace VM
 {
 	/* Navi */
@@ -62,10 +71,12 @@ export namespace VM
 		type ? : string ;
 		title : string ;
 		cont ? : any ;
+		page ? : page ;
 		open ? : boolean ;
 		parts ? : u_parts ;
 	}
 
+	export type page = string | DD.Node | ( ( index : index ) => DD.MehElement < any > ) ;
 	export type parts = { [ name : string ] : index } ;
 	export type u_parts = parts | ( ( index : index ) => Promise < parts > ) ;
 

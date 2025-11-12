@@ -15,6 +15,8 @@ export function Ease < V > ( val : V , agg ? : Agg ) : Ease < V >
 	: Live ( val , agg ) as any ;
 }
 
+type ctor < V > = new ( i : Partial < V > ) => V ;
+
 
 export type Ease < V > =
 (
@@ -28,6 +30,14 @@ export type Ease < V > =
 		Live < boolean > :
 		Live < V >
 ) ;
+
+export namespace Ease
+{
+	export function fromPartial < V > ( val : Partial < V > , ctor : ctor < V > , agg ? : Agg ) : Ease < V >
+	{
+		return Ease ( new ctor ( val ) , agg ) ;
+	}	
+}
 
 
 

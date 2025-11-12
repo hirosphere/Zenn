@@ -115,6 +115,8 @@ export namespace VM
 		public dm = Live < Ease < DM.app > | uned > ( uned ) ;
 		public store_name = "MAIN" as const ;
 
+		public json = Live ( "" ) ;
+
 		constructor ()
 		{
 			DM.db.inits = () => this.init () ;
@@ -131,14 +133,19 @@ export namespace VM
 			log ( "App save" , res ) ;
 		}
 
+		public make_json () : void
+		{
+			this.json.$ = JSON.stringify ( this.dm.$ ?.$ , null , "\t" ) ;
+		}
+
 		protected async init ()
 		{
 			const filet = ( await DM.db.KV_STORE.get ( this.store_name ) ) ;
-			const data = new DM.app ( filet ?.value ) ;
+			const data = filet ?.value as Partial < DM.app > ;
 
-			log ( data ) ;
+			log ( "Root init" , data ) ;
 
-			const st = this.dm.$ = Ease ( data as DM.app ) ;
+			const st = this.dm.$ = Ease.fromPartial ( data , DM.app ) ;
 			st.add_ref ( { vChan : ( { initial } ) => ! initial && this.save () } ) ;
 		}
 	}
@@ -171,9 +178,13 @@ export namespace VC
 
 	.FR { display : flex ; }
 	.FC { display : flex ;  flex-direction : column ; }
+
 	.PX { padding : 1ex ; }
+	
 	.AC { align-items : center ; }
 	.AS { align-items : stretch ; }
+	
+	.GM { gap : 1em ; }
 	.GX { gap : 1ex ; }
 	.GP { gap : 1px ; }
 
@@ -256,6 +267,18 @@ export namespace VC
 		padding-inline : 3%  2% ;
 	}
 
+	textarea
+	{
+		line-height : 1.3 ;
+		font-size : 0.96rem ;
+		font-family : "Consolas" ;
+		tab-size : 4ex ;
+		color : hsl( 0  0%  20% ) ;
+	}
+
+	button { padding : 1ex  1.2em ; }
+	.LINKS button { padding : 0ex  0.5ex ; }
+
 	footer
 	{
 		height : 60vh ;
@@ -272,13 +295,16 @@ export namespace VC
 			{ shadow : css } ,
 			ef.main
 			(
-				{ class : "FC AC" } ,
+				{ class : "FC GM AS" } ,
 				ef.section
 				(
 					{ class : "LINKS_FRAME  FC" } ,
 					pl.key ( app.dm , e => e && Links ( e.links ) ) ,
 				) ,
-				ef.footer () ,
+				ef.footer
+				(
+					JSONPane ( app ) ,
+				) ,
 			)
 		) ;
 	}
@@ -339,5 +365,18 @@ export namespace VC
 	const Input = ( s : Live.str ) => ef.input
 	(
 		{ class : "" , biBind : { vChan : s } }
+	) ;
+
+	const JSONPane = ( vm : VM.App ) : DD.MehElement => ef.section
+	(
+		{ class : "FC PX GX" } ,
+		ef.section
+		(
+			ef.button ( { passive : { click : () => vm.make_json () } } , "JSON" ) ,
+		) ,
+		ef.textarea
+		(
+			{ style : { display : "block" , height : "30em" } , biBind : { vChan : vm.json } }
+		) ,
 	) ;
 }

@@ -1,8 +1,10 @@
 import { Live , ef , pl , DD , DOM as dom , df , log } from "../Meh/Meh.js" ;
 import * as BookBase from "./BookBase.js" ;
+import * as Navi2 from "./Navi2.js" ;
 import * as AG_0 from "./AG_0/AG_0.js" ;
 import * as AG_1 from "./AG_1/AG_1.js" ;
-import * as IndexQst from "./IndexQst.js" ; ;
+import * as IndexQst from "./IndexQst.js" ;
+import * as ZTemplate from "./AG_Z/zTemplate.js" ;
 
 /* Data Models */
 
@@ -39,6 +41,14 @@ namespace VM
 					"Treem" : { type : "Treem" , title : "Extreem" } ,
 					// "Tonne" : { type : "Tonne" , title : "Tonne" } ,
 				} ,
+			} ,
+			"AG_Z" :
+			{
+				title : "AG Z" ,
+				parts :
+				{
+					tmpl : { title : "Template" , page : () => ZTemplate.VC.App () } ,
+				}
 			} ,
 			"Dyndex" : IndexQst.Dyndex ,
 		}
@@ -138,6 +148,7 @@ namespace VC
 		(
 			{ class : [ "CONTENT_FRAME" , { CURRENT : index.selected } ] } ,
 
+			( typeof index.i.page == "function" ? index.i.page ( index.i ) : index.i.page ) ??
 			types [ index.type ] ?. ( index )
 			?? ef.main ( { class : "DEFAULT_CONTENT" } , ef.h1 ( index.title ) ) ,
 		) ;
@@ -151,12 +162,8 @@ namespace VC
 		(
 			{ class : "NAVI" } ,
 
-			ef.section
-			(
-				{ class : "TREE" } ,
-				BookBase.VC.Index ( vm.navi.root ) ,
-				ef.footer () ,
-			) ,
+			Tree ( vm ) ,
+			// Navi2.VC.Tree ( vm.navi.root ) ,
 
 			ef.section
 			(
@@ -165,6 +172,13 @@ namespace VC
 			) ,
 		) ;
 	} ;
+
+	const Tree = ( vm : VM.App ) : DD.Node => ef.section
+	(
+		{ class : "TREE" } ,
+		BookBase.VC.Index ( vm.navi.root ) ,
+		ef.footer () ,
+	) ;
 
 	const Clock = ( action : () => void ) : DD.Node =>
 	{

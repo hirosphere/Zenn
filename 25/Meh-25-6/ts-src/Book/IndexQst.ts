@@ -18,7 +18,7 @@ function dyndex ( title : string , depth : number = 1 , path : number [] = [] ) 
 	{
 		type : "Dyndex" ,
 		title ,
-		open : depth == 1 ,
+		open : false ,
 		parts : index => Object.fromEntries ( times ( 4 , t ) ) ,
 	}
 	return rt ;

@@ -149,7 +149,7 @@ export namespace VC
 	p { line-height : 1.3 ; }
 
 	ul { list-style : none ;  text-align : center ; }
-	li { line-height : 1.14 ; }
+	li { line-height : 1.2 ; }
 	
 	` ;
 
@@ -198,10 +198,14 @@ export namespace VC
 		return ef.main
 		(
 			{ class : "FC  PM GX JC AC" } ,
+			ef.p ( rc.LineName ) ,
 			ef.h1 ( rc.StationName ) ,
 			ef.ul
 			(
-				... ps.map ( e => ef.li ( "" + rc [ e ] ) )
+				ef.li ( "〒" + rc.post ) ,
+				ef.li ( rc.PrefName + rc.address ) ,
+				ef.li ( "北緯 " + rc.lat ) ,
+				ef.li ( "東経 " + rc.lon ) ,
 			)
 		) ;
 	}

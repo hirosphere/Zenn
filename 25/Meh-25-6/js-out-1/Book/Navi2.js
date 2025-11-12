@@ -1,0 +1,12 @@
+import { ef } from "../Meh/Meh.js";
+export var VC;
+(function (VC) {
+    /* CSS */
+    const css = /* css */ ``;
+    /* Components */
+    function Tree(vm) {
+        return ef.section(ef.h1("Tree2"));
+    }
+    VC.Tree = Tree;
+})(VC || (VC = {}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiTmF2aTIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi90cy1zcmMvQm9vay9OYXZpMi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEVBQUUsRUFBRSxFQUFrQixNQUFNLGVBQWUsQ0FBRTtBQUdwRCxNQUFNLEtBQVcsRUFBRSxDQWlCbEI7QUFqQkQsV0FBaUIsRUFBRTtJQUVsQixTQUFTO0lBRVQsTUFBTSxHQUFHLEdBQUcsU0FBUyxDQUFDLEVBQUUsQ0FBRTtJQUkxQixnQkFBZ0I7SUFFaEIsU0FBZ0IsSUFBSSxDQUFHLEVBQWE7UUFFbkMsT0FBTyxFQUFFLENBQUMsT0FBTyxDQUVoQixFQUFFLENBQUMsRUFBRSxDQUFHLE9BQU8sQ0FBRSxDQUNqQixDQUFFO0lBQ0osQ0FBQztJQU5lLE9BQUksT0FNbkIsQ0FBQTtBQUNGLENBQUMsRUFqQmdCLEVBQUUsS0FBRixFQUFFLFFBaUJsQiJ9

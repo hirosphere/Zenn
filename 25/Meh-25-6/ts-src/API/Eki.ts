@@ -265,22 +265,22 @@ export namespace Eki
 			records.line.set ( this.line_cd , this ) ;
 		}
 
-		readonly prefset = new Set < pref_cd > ;
-		readonly Stations : Station [] = [] ;
+		public readonly prefset = new Set < pref_cd > ;
+		public readonly Stations : Station [] = [] ;
 
-		get line_cd () {  return this.iv [ 0 ] ; }
-		get company_cd () {  return this.iv [ 1 ] ; }
-		get line_name () {  return this.iv [ 2 ] ; }
-		get line_name_k () {  return this.iv [ 3 ] ; }
-		get line_name_h () {  return this.iv [ 4 ] ; }
-		get line_color_c () {  return this.iv [ 5 ] ; }
-		get line_color_t () {  return this.iv [ 6 ] ; }
-		get line_type () {  return this.iv [ 7 ] ; }
-		get lon () {  return this.iv [ 8 ] ; }
-		get lat () {  return this.iv [ 9 ] ; }
-		get zoom () {  return this.iv [ 10 ] ; }
-		get e_status () {  return this.iv [ 11 ] ; }
-		get e_sort () {  return this.iv [ 12 ] ; }
+		public get line_cd () {  return this.iv [ 0 ] ; }
+		public get company_cd () {  return this.iv [ 1 ] ; }
+		public get line_name () {  return this.iv [ 2 ] ; }
+		public get line_name_k () {  return this.iv [ 3 ] ; }
+		public get line_name_h () {  return this.iv [ 4 ] ; }
+		public get line_color_c () {  return this.iv [ 5 ] ; }
+		public get line_color_t () {  return this.iv [ 6 ] ; }
+		public get line_type () {  return this.iv [ 7 ] ; }
+		public get lon () {  return this.iv [ 8 ] ; }
+		public get lat () {  return this.iv [ 9 ] ; }
+		public get zoom () {  return this.iv [ 10 ] ; }
+		public get e_status () {  return this.iv [ 11 ] ; }
+		public get e_sort () {  return this.iv [ 12 ] ; }
 
 		/* 駅リストと都道府県リストを初期化 */
 
@@ -310,27 +310,27 @@ export namespace Eki
 			iv [ 8 ] = iv [ 8 ].replace ( this.PrefName , "" ) ;
 		}
 
-		get PrefName ()  {  return cd_pref [ this.pref_cd ] ;  }
-		get LineName ()  {  return this.records.line.get ( this.line_cd ) ?.line_name ?? ".."  }
+		public get PrefName ()  {  return cd_pref [ this.pref_cd ] ;  }
+		public get LineName ()  {  return this.records.line.get ( this.line_cd ) ?.line_name ?? ".."  }
 
-		readonly next : Station [] = [] ;
-		readonly prev : Station [] = [] ;
+		public readonly next : Station [] = [] ;
+		public readonly prev : Station [] = [] ;
 
-		get station_cd () {  return this.iv [ 0 ] ; }
-		get station_g_cd () {  return this.iv [ 1 ] ; }
-		get StationName () {  return this.iv [ 2 ] ; }
-		get station_name_k () {  return this.iv [ 3 ] ; }
-		get station_name_r () {  return this.iv [ 4 ] ; }
-		get line_cd () {  return this.iv [ 5 ] ; }
-		get pref_cd () {  return this.iv [ 6 ] ; }
-		get post () {  return this.iv [ 7 ] ; }
-		get address () {  return this.iv [ 8 ] ; }
-		get lon () {  return this.iv [ 9 ] ; }
-		get lat () {  return this.iv [ 10 ] ; }
-		get open_ymd () {  return this.iv [ 11 ] ; }
-		get close_ymd () {  return this.iv [ 12 ] ; }
-		get e_status () {  return this.iv [ 13 ] ; }
-		get e_sort () {  return this.iv [ 14 ] ; }
+		public get station_cd () {  return this.iv [ 0 ] ; }
+		public get station_g_cd () {  return this.iv [ 1 ] ; }
+		public get StationName () {  return this.iv [ 2 ] ; }
+		public get station_name_k () {  return this.iv [ 3 ] ; }
+		public get station_name_r () {  return this.iv [ 4 ] ; }
+		public get line_cd () {  return this.iv [ 5 ] ; }
+		public get pref_cd () {  return this.iv [ 6 ] ; }
+		public get post () {  return this.iv [ 7 ] ; }
+		public get address () {  return this.iv [ 8 ] ; }
+		public get lon () {  return this.iv [ 9 ] ; }
+		public get lat () {  return this.iv [ 10 ] ; }
+		public get open_ymd () {  return this.iv [ 11 ] ; }
+		public get close_ymd () {  return this.iv [ 12 ] ; }
+		public get e_status () {  return this.iv [ 13 ] ; }
+		public get e_sort () {  return this.iv [ 14 ] ; }
 	}
 
 
