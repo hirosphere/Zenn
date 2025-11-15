@@ -88,7 +88,7 @@ export namespace VC
 			ef.main
 			(
 				{ class : "FC  PM  AC" } ,
-				ef.h1 ( "App Template" ) ,
+				ef.h1 ( "HSL" ) ,
 			) ,
 		) ;
 	}

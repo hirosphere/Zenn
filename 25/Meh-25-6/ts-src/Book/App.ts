@@ -4,7 +4,7 @@ import * as Navi2 from "./Navi2.js" ;
 import * as AG_0 from "./AG_0/AG_0.js" ;
 import * as AG_1 from "./AG_1/AG_1.js" ;
 import * as IndexQst from "./IndexQst.js" ;
-import * as ZTemplate from "./AG_Z/zTemplate.js" ;
+import * as AG_Z from "./AG_Z/AG_Z.js" ;
 
 /* Data Models */
 
@@ -47,7 +47,8 @@ namespace VM
 				title : "AG Z" ,
 				parts :
 				{
-					tmpl : { title : "Template" , page : () => ZTemplate.VC.App () } ,
+					tmpl : { title : "Template" , page : () => AG_Z.Template.VC.App () } ,
+					hsl : { title : "HSL" , page : () => AG_Z.HSL.VC.App () } ,
 				}
 			} ,
 			"Dyndex" : IndexQst.Dyndex ,
