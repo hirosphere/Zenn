@@ -3,7 +3,7 @@ import { Plain , Live , } from "./LiveState.js" ;
 
 const log = console.log ;
 
-log ( "Marker" )
+
 
 
 /* */
@@ -65,6 +65,12 @@ export class Renn < T >  extends Life < Renn.Ref < T > >  implements Agg
 	}
 
 	/* */
+
+	public replace ( targets : T [] ) : void
+	{
+		this.clear () ;
+		this.insert ( targets ) ;
+	}
 
 	public get targets () : T []
 	{

@@ -3,7 +3,7 @@ import { jma } from "./jma_data.js" ;
 
 namespace DM
 {
-	export const load = async ( onload : ( r : src_record [] ) => void ) =>
+	export const load = async ( onload : ( r : record [] ) => void ) =>
 	{
 		 const res = await fetch( "https://www.jma.go.jp/bosai/quake/data/list.json" );
 		 if( res.status != 200 ) return ;
@@ -12,11 +12,11 @@ namespace DM
 
 		// const data = jma as src_record [] ;
 
-		const list = new Map < string , src_record > ;
+		const list = new Map < string , record > ;
 
 		data.forEach
 		(
-			( src : src_record, n : number ) =>
+			( src : record, n : number ) =>
 			{
 				const diff = list.get ( src.eid ) ;
 				if
@@ -35,7 +35,9 @@ namespace DM
 		onload ( [ ... list.values () ] ) ;
 	}
 
-	export type src_record =
+	export type Records = Renn < record > ;
+
+	export type record =
 	{
 		"ctt": string ,
 		"eid": string ,
@@ -69,8 +71,12 @@ namespace VM
 {
 	export class App
 	{
-		public readonly records = Live < DM.src_record [] | undefined > ( undefined ) ;
+		public readonly records = new Renn < DM.record > ;
 		public readonly loadtime = Live ( "" ) ;
+
+		graph = new Graph ( this.records ) ;
+
+		listVisible = Live ( true ) ;
 
 		constructor ()
 		{
@@ -79,9 +85,17 @@ namespace VM
 
 		load () : void
 		{
-			DM.load ( r => this.records.$ = r ) ;
+			DM.load ( r => this.records.replace ( r ) ) ;
 			this.loadtime.$ = df ( "YYYY.MM.DD (B) hh:mm:ss" ) ;
 		}
+	}
+
+	export class Graph
+	{
+		public visible = Live ( false ) ;
+
+		constructor ( public records : DM.Records )
+		{}
 	}
 }
 
@@ -96,24 +110,31 @@ export namespace VC
 	:host
 	{
 		height : 100% ;
+		background : white ;
 	}
+
+	.FR { display : flex ; }
+	.FC { display : flex ;  flex-direction : column ; }
+	.JC { justify-content : center ; }
+	.AC { align-items : center ; }
+	.AS { align-items : stretch ; }
+	.PX { padding : 1ex ; }
+	.GX { gap : 1ex ; }
 
 	main
 	{
-		width : 100em ;
-		background : white ;
+		height : 100% ;
 
-		display : flex ;
-		flex-direction : column ;
-		overflow : auto ;
-		padding : 1em ;
-		align-items : center ;
+		overflow : hidden ;
+		padding : 1px ;
+		align-items : stretch ;
 		gap : 1ex ;
 	}
 
 	header
 	{
 		display : flex ;
+		padding : 1ex ;
 		align-items : center ;
 		gap : 1em ;
 	}
@@ -125,9 +146,25 @@ export namespace VC
 
 	button { padding : 1ex 1.2em ; }
 
-	table.EQ_LIST
+	label
 	{
+		display : flex ;
+		gap : 0.36ex ;
+		align-items : center ;
+	}
+
+	.BODY
+	{
+		flex-grow : 10 ;
+	}
+
+	.EQ_LIST
+	{
+		flex-grow : 4.5 ;
+		height : 0 ;
 		cursor : default ;
+		overflow : auto ;
+		display : none ;
 	}
 
 	td { padding-block : 0.7ex ; }
@@ -142,7 +179,17 @@ export namespace VC
 		padding-inline : 0.7ex ;
 		white-space : nowrap ;
 	}
+
+	.GRAPH
+	{
+		flex-grow : 5.5 ;
+		overflow : auto ;
+		background : hsl( 235  60%  60% ) ;
+		display : none ;
+	}
 	
+	._SHOW { display : block ; }
+
 	` ;
 
 	
@@ -160,22 +207,33 @@ export namespace VC
 
 			ef.main
 			(
-				{  } ,
+				{ class : "FC AS" } ,
 
 				ef.header
 				(
-					{ class : "" } ,
+					{ class : "FR JC AC" } ,
 					ef.h1 ( "JMA 地震リスト" , ) ,
 					ef.button ( { passive : { click } } , "読み込み" ) ,
 					ef.span ( vm.loadtime ) ,
+					ef.section
+					(
+						{ class : "FR GX" } ,
+						Check ( "グラフ" , vm.graph.visible ) ,
+						Check ( "リスト" , vm.listVisible ) ,
+					) ,
 				) ,
 
-				pl.key ( vm.records , rs => rs && Table ( rs ) ) ,
+				ef.section
+				(
+					{ class : "BODY  FC " } ,
+					Graph ( vm.graph ) ,
+					List ( vm.records , vm.listVisible ) ,
+				) ,
 			) ,
 		) ;
 	}
 
-	const cols : { [ col in keyof DM.src_record ] ? : {} } =
+	const cols : { [ col in keyof DM.record ] ? : {} } =
 	{
 		eid : {} ,
 		ser : {} ,
@@ -194,14 +252,15 @@ export namespace VC
 		ttl : {} ,
 	} ;
 
-	function Table ( r : DM.src_record [] ) : dd.Node
+	function List ( rc : DM.Records , vis : Live.bool ) : dd.Node
 	{
-		return ef.table
+		const table = ef.table
 		(
-			{ class : "EQ_LIST" } ,
 			Header () ,
-			... r.map ( ( r , i ) => Row ( r , i ) ) ,
+			pl.each ( rc , ( r , o ) => Row ( r , o.$ ) ) ,
 		) ;
+
+		return ef.section ( { class : [ "EQ_LIST" , { _SHOW : vis } ] } , table ) ;
 	}
 
 	function Header () : dd.Node
@@ -216,14 +275,14 @@ export namespace VC
 		) ;
 	}
 
-	function Row ( r : DM.src_record , i : number ) : dd.Node
+	function Row ( r : DM.record , i : number ) : dd.Node
 	{
 		return ef.tr
 		(
 			Col ( ( i + 1 ) + "" ) ,
 			... Object.keys ( cols ) .map
 			(
-				prop => Col ( r [ prop as keyof DM.src_record ] )
+				prop => Col ( r [ prop as keyof DM.record ] )
 			)
 		) ;
 	}
@@ -235,5 +294,26 @@ export namespace VC
 			text
 		) ;
 	}
+
+	function Graph ( vm : VM.Graph ) : dd.Node
+	{
+		return ef.section
+		(
+			{ class : [ "GRAPH" , { _SHOW : vm.visible } ] } ,
+			"Graph"
+		) ;
+	}
+
+	const Check = ( label : string , state : Live.bool ) : dd.Node => ef.label
+	(
+		label ,
+		ef.input
+		(
+			{
+				attrs : { type : "checkbox" } ,
+				biBind : { chChan : state } ,
+			} ,
+		)
+	) ;
 }
 

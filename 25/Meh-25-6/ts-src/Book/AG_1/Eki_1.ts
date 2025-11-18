@@ -150,6 +150,31 @@ export namespace VC
 
 	ul { list-style : none ;  text-align : center ; }
 	li { line-height : 1.2 ; }
+
+	.STATION
+	{
+		font-size : min( 1.2em , 0.3rem + 1vw ) ;
+	}
+
+	.STATION ._LINE_NAME
+	{
+		font-size : calc( 1.2vw + 1em ) ;
+		font-weight : 200 ;
+	}
+
+	.STATION ._NAME
+	{
+		padding-block : 0.8em ;
+		font-size : calc( 10vw ) ;
+		white-space : nowrap ;
+		font-weight : 760 ;
+	}
+
+	.STATION li
+	{
+		line-height : 1.25 ;
+		font-weight : 210 ;
+	}
 	
 	` ;
 
@@ -197,9 +222,9 @@ export namespace VC
 
 		return ef.main
 		(
-			{ class : "FC  PM GX JC AC" } ,
-			ef.p ( rc.LineName ) ,
-			ef.h1 ( rc.StationName ) ,
+			{ class : "STATION  FC PM GX JC AC" } ,
+			ef.p ( { class : "_LINE_NAME" } , rc.LineName ) ,
+			ef.p ( { class : "_NAME" , style : { ... trim ( rc.StationName ) } } , rc.StationName ) ,
 			ef.ul
 			(
 				ef.li ( "〒" + rc.post ) ,
@@ -210,11 +235,29 @@ export namespace VC
 		) ;
 	}
 
-	function flist ( v : any ) : string []
+	function trim ( letter : string )
 	{
-		const rt : string [] = [] ;
-		if ( typeof v != "object" )  return rt ;
-		Object.keys ( v ).map ( name => rt.push ( `${ name }` ) ) ;
-		return rt ;
+		const len = letter.length ;
+		const [ space = 0 , sc_x = 1 , sc_y = 1 ] = trim_table [ len ] ?? [] ;
+
+		return {
+			letterSpacing : space + "em" ,
+			marginRight : - space + "em" ,
+			transform : `scale( ${ sc_x } , ${ sc_y } )` ,
+		} ;
 	}
+
+	const trim_table : { [ len : number ] : number [] } =
+	{
+		1 : [ 0 , 1.24 ] ,
+		2 : [ 1.0 , 1.14 ] ,
+		3 : [ 0.5 , 1.1 ] ,
+		4 : [ 0.20 , 1.05 ] ,
+		5 : [ 0.07 , 1.05 ] ,
+		6 : [ 0.04 , 1.05 ] ,
+		7 : [ 0.0 , 1.0 , 1.03 ] ,
+		8 : [ - 0.03 , 0.90 , 1.06 ] ,
+		9 : [ - 0.03 , 0.80 , 1.08 ] ,
+		10 : [ - 0.03 , 0.75 , 1.1 ] ,
+	} ;
 }

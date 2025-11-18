@@ -8,7 +8,7 @@ export type DBSchema =
 
 export type SP < K > =
 {
-	keyPath : K ;
+	keyPath ? : K ;
 	autoIncrement ? : boolean ;
 } ;
 

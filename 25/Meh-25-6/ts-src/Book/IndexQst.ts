@@ -19,7 +19,7 @@ function dyndex ( title : string , depth : number = 1 , path : number [] = [] ) 
 		type : "Dyndex" ,
 		title ,
 		open : false ,
-		parts : index => Object.fromEntries ( times ( 4 , t ) ) ,
+		parts : index => Object.fromEntries ( times ( 10 , t ) ) ,
 	}
 	return rt ;
 }

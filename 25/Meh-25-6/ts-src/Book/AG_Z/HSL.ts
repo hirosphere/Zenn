@@ -36,9 +36,27 @@ export namespace VM
 	export class App
 	{
 		public available = Live ( false ) ;
-		public root = DM.Node ( {} ) ;
+		public display = new Display ;
 
-		protected kv = new KVS < DM.node > ( "MB_2511_TEMPLATE" ) ;
+		// protected kv = new KVS < DM.node > ( "MB_2511_TEMPLATE" ) ;
+	}
+
+	export class Display
+	{
+		public items = Ease < hsl [] > ;
+	}
+
+	type display =
+	{
+		items : hsl [] ;
+		div : number ;
+	}
+
+	type hsl =
+	{
+		hue : number ;
+		sat : number ;
+		light : number ;
 	}
 }
 

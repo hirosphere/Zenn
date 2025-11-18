@@ -36,7 +36,7 @@ namespace VM
 				parts :
 				{
 					"Eki1" : new AG_1.Eki_1.VM.index.root ( "../../../" ) ,
-					"Eki" : { type : "Eki_Q1" , title : "階層タブ" } ,
+					"Eki" : { type : "Eki_Q1" , title : "駅データ 階層タブ" } ,
 					"JMA_EQ" : { type : "JMA_EQ" , title : "地震リスト" } ,
 					"Treem" : { type : "Treem" , title : "Extreem" } ,
 					// "Tonne" : { type : "Tonne" , title : "Tonne" } ,
