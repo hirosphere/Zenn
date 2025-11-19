@@ -278,7 +278,7 @@ export namespace VC
 	{
 		const n : [ number , number ] [] = s.match ( /\d/g ) ?.map
 		(
-			( m , n ) => [ n * 0.1 , note_t [ Number ( m ) ] - 11 ?? 0 ]
+			( m , n ) => [ 0.1 , note_t [ Number ( m ) ] - 11 ]
 		) ?? [] ;
 
 		Tone.voice.sch ( n ) ;

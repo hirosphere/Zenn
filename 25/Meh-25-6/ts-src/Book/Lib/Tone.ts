@@ -55,7 +55,12 @@ class Voice
 		this.#_osc?.detune.cancelScheduledValues ( t ) ;
 		notes.forEach
 		(
-			n => this.#_osc?.detune.setValueAtTime ( n [ 1 ] * 100 , t += n [ 0 ] )
+			n =>
+			{
+				const r = this.#_osc?.detune.setValueAtTime ( n [ 1 ] * 100 , t ) ;
+				t += n [ 0 ] ;
+				return r ;
+			}
 		) ;
 
 		this.trigger () ;
