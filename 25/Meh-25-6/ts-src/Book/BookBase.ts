@@ -218,8 +218,15 @@ export namespace VC
 		const click = ( ev : MouseEvent ) : void =>
 		{
 			vm.selected.select () ;
+			ev.stopPropagation () ;
 			ev.preventDefault () ;
 		} ;
+
+		const dblclick = ( ev : MouseEvent ) : void =>
+		{
+			ev.preventDefault () ;
+			ev.stopPropagation () ;
+		} 
 
 		const init = ( el : HTMLElement ) : void =>
 		{
@@ -232,9 +239,9 @@ export namespace VC
 		return ef.div
 		(
 			{
-				class : [ "INDEX_HEAD  _LINK" , { _SELECTED : vm.selected } ] ,
+				class : [ "INDEX_HEAD" , { _SELECTED : vm.selected } ] ,
 				// attrs : { href : vm.url } ,
-				active : { click } ,
+				active : { click , dblclick } ,
 				hook : { init } ,
 			} ,
 			ef.span ( { class : "INDEX_TITLE" } , vm.title ) ,

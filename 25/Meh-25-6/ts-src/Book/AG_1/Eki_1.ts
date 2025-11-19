@@ -160,6 +160,7 @@ export namespace VC
 	{
 		font-size : calc( 1.2vw + 1em ) ;
 		font-weight : 200 ;
+		font-weight : 350 ;
 	}
 
 	.STATION ._NAME
@@ -173,7 +174,7 @@ export namespace VC
 	.STATION li
 	{
 		line-height : 1.25 ;
-		font-weight : 210 ;
+		font-weight : 201 ;
 	}
 	
 	` ;
@@ -218,8 +219,6 @@ export namespace VC
 	
 	function Station ( rc : Eki.Station ) : DD.Node
 	{
-		const ps : ( keyof Eki.Station ) [] = [ "post" , "PrefName" , "address" , "LineName" , "lat" , "lon" ] ;
-
 		return ef.main
 		(
 			{ class : "STATION  FC PM GX JC AC" } ,
@@ -235,10 +234,10 @@ export namespace VC
 		) ;
 	}
 
-	function trim ( letter : string )
+	function trim ( letter : string ) : Partial < CSSStyleDeclaration >
 	{
 		const len = letter.length ;
-		const [ space = 0 , sc_x = 1 , sc_y = 1 ] = trim_table [ len ] ?? [] ;
+		const [ space = 0 , sc_x = 1 , sc_y = 1 ] = trim_table [ len ] ?? scale ( len ) ;
 
 		return {
 			letterSpacing : space + "em" ,
@@ -247,17 +246,22 @@ export namespace VC
 		} ;
 	}
 
+	function scale ( len : number ) : number []
+	{
+		const spc = ( len - 7 )
+		const x = ( 7 / len ) * 1.1 ;
+		const y = ( len - 7 )  * 0.015  + 1 ;
+		return [ 0 , x , y ] ;
+	}
+
 	const trim_table : { [ len : number ] : number [] } =
 	{
+		0 : [] ,
 		1 : [ 0 , 1.24 ] ,
 		2 : [ 1.0 , 1.14 ] ,
 		3 : [ 0.5 , 1.1 ] ,
 		4 : [ 0.20 , 1.05 ] ,
 		5 : [ 0.07 , 1.05 ] ,
 		6 : [ 0.04 , 1.05 ] ,
-		7 : [ 0.0 , 1.0 , 1.03 ] ,
-		8 : [ - 0.03 , 0.90 , 1.06 ] ,
-		9 : [ - 0.03 , 0.80 , 1.08 ] ,
-		10 : [ - 0.03 , 0.75 , 1.1 ] ,
 	} ;
 }
