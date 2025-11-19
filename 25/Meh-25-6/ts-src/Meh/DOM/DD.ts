@@ -1,5 +1,5 @@
 import { Plain , Live , Renn , Order } from "../Model/Model.js" ;
-import { MehElement as Mel } from "./MehNode.js";
+import { MehElement } from "./MehNode.js";
 
 export type TargetDOMElement = HTMLElement | SVGElement | MathMLElement ;
 
@@ -140,6 +140,6 @@ export namespace PartsPlace
 	}
 }
 
-export type MehElement < E extends TargetDOMElement = any > = Mel < E > ;
+export type Mel < E extends TargetDOMElement = any > = MehElement < E > ;
 export type Node = Text | Mel < any > ;
 export type Part = Node | PartsPlace | undefined ;

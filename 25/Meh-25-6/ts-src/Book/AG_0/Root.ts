@@ -367,7 +367,7 @@ export namespace VC
 		{ class : "" , biBind : { vChan : s } }
 	) ;
 
-	const JSONPane = ( vm : VM.App ) : DD.MehElement => ef.section
+	const JSONPane = ( vm : VM.App ) : DD.Mel => ef.section
 	(
 		{ class : "FC PX GX" } ,
 		ef.section

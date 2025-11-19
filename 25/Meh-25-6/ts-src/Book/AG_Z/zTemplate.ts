@@ -80,7 +80,7 @@ export namespace VC
 
 	/* Components */
 
-	export function App () : DD.MehElement
+	export function App () : DD.Mel
 	{
 		return ef.div
 		(

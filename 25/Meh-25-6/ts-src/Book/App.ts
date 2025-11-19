@@ -1,4 +1,4 @@
-import { Live , ef , pl , DD , DOM as dom , df , log } from "../Meh/Meh.js" ;
+import { Live , Ease , ef , pl , DD , DOM as dom , df , log } from "../Meh/Meh.js" ;
 import * as BookBase from "./BookBase.js" ;
 import * as Navi2 from "./Navi2.js" ;
 import * as AG_0 from "./AG_0/AG_0.js" ;
@@ -58,19 +58,51 @@ namespace VM
 
 	/*  VM.App  */
 
-	export class App  implements BookBase.VM.NaviClient
+	class Perm < V >
+	{
+		public readonly ps : Ease < V > ;
+
+		constructor
+		(
+			public readonly StorageName : string ,
+			protected readonly ctor : new ( p : Partial < V > ) => V
+		)
+		{
+			this.ps = Ease ( this.load () ) ;
+		}
+
+		protected load () : V
+		{
+			let v : V | undefined ;
+
+			log ( "Perm load" , this.StorageName , this.ctor.name ) ;
+
+			try { v = JSON.parse ( localStorage.getItem ( this.StorageName ) ?? "" ) ; }
+			catch ( exc ) {}
+			
+			return new this.ctor ( v ?? {} ) ;
+		}
+
+		save () : void
+		{}
+	}
+
+
+
+	export class App extends Perm < app >  implements BookBase.VM.NaviClient
 	{
 		public readonly navi = new BookBase.VM.Navi ( index , this ) ;
-		public readonly navi_mode = Live < navi_mode > ( "NAVI_BLOCK" ) ;
+		// public readonly navi_mode = Live < navi_mode > ( "NAVI_INLINE" ) ;
 
 		constructor ()
 		{
+			super ( "MB_2511_APP" , app ) ;
 			this.navi.initiate ( this.navi.root ) ;
 		}
 
 		toggleNaviMode ()
 		{
-			const s = this.navi_mode ;
+			const s = this.ps.navi_mode ;
 			s.$ = s.$ == "NAVI_INLINE" ? "NAVI_BLOCK" : "NAVI_INLINE"
 		}
 
@@ -87,9 +119,19 @@ namespace VM
 			return `?path=${ path.join ( "/" ) }` ;
 		}
 
-		 public browser_update ( url : string ) : void
+		public browser_update ( url : string ) : void
 		{
 			history.replaceState ( null , "" , url ) ;
+		}
+	}
+
+	class app
+	{
+		public navi_mode : navi_mode = "NAVI_BLOCK" ;
+
+		constructor ( p : Partial < app > )
+		{
+			this.navi_mode = p.navi_mode ?? "NAVI_BLOCK" ;
 		}
 	}
 
@@ -107,12 +149,12 @@ namespace VC
 
 		function init () : void
 		{
-			vm.navi_mode.add_ref ( { vChan : () => vm.navi.page.curr.$ ?.ScrollTo ?.()  } ) ;
+			vm.ps.navi_mode.add_ref ( { vChan : () => vm.navi.page.curr.$ ?.ScrollTo ?.()  } ) ;
 		}
 
 		return ef.body
 		(
-			{ class : [ vm.navi_mode , "APP" ] , target : "body" , hook : { init }  } ,
+			{ class : [ vm.ps.navi_mode , "APP" ] , target : "body" , hook : { init }  } ,
 			NaviPane ( vm ) ,
 			ef.div
 			(
@@ -192,7 +234,7 @@ namespace VC
 		{
 			const date = new Date () ;
 			ymd.$ = df ( "YYYY.MM.DD" , date ) ;
-			b.$ = df ( "(B)" , date ) ;
+			b.$ = df ( "B" , date ) ;
 			hms.$ = df ( "hh:mm:ss" , date ) ;
 			ms.$ = df ( "xxxx" , date ) ;
 		}
@@ -209,9 +251,9 @@ namespace VC
 		return ef.button
 		(
 			{ class : "CLOCK_BUTTON" , active : { click } } ,
-			ef.span ( ymd ) ,
-			ef.span ( b ) ,
-			ef.span ( hms ) ,
+			ef.span ( { class : "_YMD" } , ymd ) ,
+			ef.span ( { class : "_B" } , b ) ,
+			ef.span ( { class : "_HMS" } , hms ) ,
 			// ef.span ( ms ) ,
 		) ;
 	}

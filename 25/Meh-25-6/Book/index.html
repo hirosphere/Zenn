@@ -44,6 +44,7 @@ body.NAVI_INLINE
 {
 	display : flex ;
 	flex-direction : column ;
+	overflow : hidden ;
 }
 
 
@@ -51,7 +52,7 @@ body.NAVI_INLINE
 
 .NAVI
 {
-	background-color : hsl( 190  50%  88% ) ;
+	background : hsl( 240  35%  45% ) ;
 }
 
 .NAVI .TREE
@@ -61,7 +62,7 @@ body.NAVI_INLINE
 
 .NAVI .INDEX_HEAD
 {
-	background-color : hsl( 0  0%  100% / 90% ) ;
+	background-color : hsl( 0  0%  100% ) ;
 
 	display : flex ;
 	align-items : center ;
@@ -69,7 +70,7 @@ body.NAVI_INLINE
 
 .NAVI .INDEX_HEAD:hover
 {
-	background-color : hsl(  0  0%  95% / 90% ) ;
+	background-color : hsl(  0  0%  95% ) ;
 }
 
 .NAVI .INDEX_HEAD._SELECTED
@@ -103,9 +104,9 @@ body.NAVI_INLINE
 	width : 100% ;
 	height : 100% ;
 
-	border-radius : 0.7ex ;
+	border-radius : 0.1ex ;
 	border : none ;
-	background : hsl( 0  0%  100% / 50% ) ;
+	background : hsl( 0  0%  80% ) ;
 
 	display : flex ;
 	flex-wrap : wrap ;
@@ -114,13 +115,12 @@ body.NAVI_INLINE
 	gap : 0.2ex  1ex ;
 	
 	font-family : 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif ;
-	font-size : 1.8em ;
 }
 
-.NAVI .CLOCK span
-{
-	white-space : nowrap ;
-}
+.NAVI .CLOCK span { white-space : nowrap ; }
+.NAVI .CLOCK ._YMD { font-size : 1.0em ; font-weight : 300 ; }
+.NAVI .CLOCK ._B   { font-size : 1.3em ; font-weight : 300 ; }
+.NAVI .CLOCK ._HMS { font-size : 2.6em ; font-weight : 300 ; }
 
 
 
@@ -128,7 +128,7 @@ body.NAVI_INLINE
 
 .NAVI_BLOCK .NAVI
 {
-	width : calc( 180px + 8vw ) ;
+	width : calc( 140px + 9vw ) ;
 	display : grid ;
 	grid-template-rows :  1fr  auto ;
 
@@ -177,9 +177,10 @@ body.NAVI_INLINE
 {
 	margin : 0.3ex 0  0.3ex ;
 	border-radius : 0.1ex 0  0 0.8ex ;
-	border : solid  hsl( 220  10%  45% ) ;
+	border : solid  hsl( 220  10%  65% ) ;
 	border-width : 0.1ex  0ex  0.1ex  0.2ex ;
-	padding : 0.3ex  0.0ex  0.3ex  0.3ex ;
+	padding-block : 0.3ex  0.3ex ;
+	padding-inline : 0.5ex  0.0ex ;
 
 	display : block ;
 	overflow : hidden ;
@@ -223,7 +224,6 @@ body.NAVI_INLINE
 
 	padding-block : 0px ;
 	padding-inline : 0.0vw ;
-	gap : 0  0.5ex ;
 
 	justify-content : center ;
 	align-items : stretch ;
@@ -237,7 +237,7 @@ body.NAVI_INLINE
 	scrollbar-width : none ;
 
 	padding-block : 0ex 0.2ex ;
-	padding-inline : 40vw ;
+	padding-inline : 15vw  40vw ;
 	align-items : start ;
 }
 
@@ -249,7 +249,7 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .INDEX_HEAD
 {
-	margin-bottom : 0.2ex ;
+	margin-bottom : 0.0ex ;
 	margin-right : 0.5ex ;
 
 	overflow : hidden ;
@@ -295,13 +295,13 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .INDEX_PARTS._OPEN
 {
-	border : solid  hsl( 0  0% 12% ) ;
+	border : solid  hsl( 0  0%  70% ) ;
 	border-width : 0  0.2ex  0.00ex  0.5ex ;
 	border-radius : 0.1ex 0.1ex  1.0ex 1.0ex ;
 
 	display : block ;
 	
-	padding-inline : 0.8ex  0.4ex ;
+	padding-inline : 0.6ex  0.6ex ;
 	padding-block : 0  0.0ex ;
 }
 
@@ -326,7 +326,7 @@ body.NAVI_INLINE
 	min-width : max( 10em , 24vw ) ;
 
 	display : flex ;
-	padding : 0.5ex ;
+	padding : 0.1ex ;
 	justify-content : center ;
 	align-items : center ;
 }

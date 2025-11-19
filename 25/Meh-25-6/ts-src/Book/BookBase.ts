@@ -76,7 +76,7 @@ export namespace VM
 		parts ? : u_parts ;
 	}
 
-	export type page = string | DD.Node | ( ( index : index ) => DD.MehElement < any > ) ;
+	export type page = string | DD.Node | ( ( index : index ) => DD.Mel < any > ) ;
 	export type parts = { [ name : string ] : index } ;
 	export type u_parts = parts | ( ( index : index ) => Promise < parts > ) ;
 
@@ -275,16 +275,20 @@ export namespace VC
 		function dblclick ( ev : MouseEvent ) : void
 		{
 			vm.ScrollTo ?. (  ) ;
+			cancel ( ev ) ;
+		}
+		
+		function cancel ( ev : MouseEvent ) : void
+		{
 			ev.stopPropagation () ;
 			ev.preventDefault () ;
 		}
-
+		
 		return ef.section
 		(
 			{
 				class : [ "INDEX_PARTS" , { _OPEN : vm.open } ] ,
-				// attrs : { title : vm.title } ,
-				active : { dblclick } ,
+				active : { dblclick , mousedown : cancel , mouseup : cancel } ,
 			} ,
 			pl.key
 			(

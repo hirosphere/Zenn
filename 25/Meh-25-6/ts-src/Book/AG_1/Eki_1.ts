@@ -1,6 +1,8 @@
 import { DD , ef , pl , log } from "../../Meh/Meh.js" ;
 import * as BB from "../BookBase.js" ;
 import { Eki } from "../../API/Eki.js" ;
+import { Tone } from "../Lib/Tone.js" ;
+import { Range } from "../Lib/UI.Range.js" ;
 
 export namespace DM
 {
@@ -115,7 +117,6 @@ export namespace VM.index
 }
 
 
-
 export namespace VC
 {
 	/* CSS */
@@ -140,7 +141,9 @@ export namespace VC
 	.PM { padding : 1em ; }
 	.PX { padding : 1ex ; }
 
-	.GX { padding : 1ex ; }
+	.GM { gap : 1em ; }
+	.GX { gap : 1ex ; }
+	
 	.JC { justify-content : center ; }
 	.AC { align-items : center ; }
 
@@ -150,6 +153,24 @@ export namespace VC
 
 	ul { list-style : none ;  text-align : center ; }
 	li { line-height : 1.2 ; }
+
+	.LINE footer { height : 50em ; }
+
+	.LINE table
+	{
+		border-collapse : collapse ;
+		cursor : default ;
+		border : none ;
+	}
+
+	.LINE td
+	{
+		border-bottom : 1px solid hsl( 90  10%  88% ) ;
+		padding : 0.9ex 1.2ex ;
+		white-space : nowrap ;
+	}
+	.LINE tr:hover td { border-bottom : 1px  solid  hsl( 90  60%  30% ) ; }
+
 
 	.STATION
 	{
@@ -184,8 +205,6 @@ export namespace VC
 
 	export function App ( index : BB.VM.Index ) : DD.Node
 	{
-		log ( "App index type" , index.cont ?.type )
-
 		return ef.div
 		(
 			{ shadow : css } ,
@@ -195,27 +214,80 @@ export namespace VC
 			
 			ef.main
 			(
-				{ class : "FC  PM GX JC AC" } ,
+				{ class : "FC PM GX JC" } ,
 				ef.h1 ( index.title ) ,
 				"...." ,
 			)
 		) ;
 	}
+
+
+	/* Line */
 	
 	function Line ( rc : Eki.Line ) : DD.Node
 	{
 		const ps : ( keyof Eki.Line ) [] = [ "company_cd" , "line_type" , "lat" , "lon" ] ;
 
+		const vol : Range.vm =
+		{
+			title : "Volume" ,
+			value : Tone.volume ,
+			max : 1 ,
+			step : 0.001 ,
+			lv : v => ( v * 100 ).toFixed ( 0 ) ,
+		} ;
+
 		return ef.main
 		(
-			{ class : "FC  PM GX JC AC" } ,
+			{ class : "LINE  FC PM GM" , passive : { mousedown : () => Tone.start () } } ,
 			ef.h1 ( rc.line_name ) ,
+			ef.section
+			(
+				{  } ,
+				Range ( vol ) ,
+			) ,
 			ef.ul
 			(
 				... ps.map ( prop => ef.li ( `${ String ( prop ) } : ${ rc [ prop ] }` ) )
-			)
+			) ,
+			ef.table
+			(
+				... rc.Stations.map ( ( st , i ) => StationListItem ( i , st ) )
+			) ,
+			ef.footer ( "---" )
 		) ;
 	}
+
+	function StationListItem ( i : number , st : Eki.Station ) : DD.Mel
+	{
+
+		return ef.tr
+		(
+			{ style : { fontWeight : "300" } } ,
+			ef.td ( { style : { fontWeight : "500" } } , i + 1 ) ,
+			ef.td ( { style : { fontWeight : "900" } } , st.StationName ) ,
+			ef.td ( { passive : { mouseover : () => notes ( st.post ) } } , "〒" , st.post ) ,
+			ef.td ( st.address ) ,
+			ef.td ( { passive : { mouseover : () => notes ( st.lat ) } } , st.lat ) ,
+			ef.td ( { passive : { mouseover : () => notes ( st.lon ) } } , st.lon ) ,
+			ef.td ( "( " , st.PrefName , " )" ) ,
+		) ;
+	}
+
+	function notes ( s : string ) : void
+	{
+		const n : [ number , number ] [] = s.match ( /\d/g ) ?.map
+		(
+			( m , n ) => [ n * 0.1 , note_t [ Number ( m ) ] - 11 ?? 0 ]
+		) ?? [] ;
+
+		Tone.voice.sch ( n ) ;
+	}
+
+	const note_t = [ 0 , 12 , 14 , 16 , 17 , 19 , 21 , 23 , 24 , 26 ] ;
+
+
+	/* Station */
 	
 	function Station ( rc : Eki.Station ) : DD.Node
 	{
