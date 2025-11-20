@@ -245,6 +245,7 @@ export namespace VC
 			(
 				{  } ,
 				Range ( vol ) ,
+				Range ( { title : "Tempo" , value : Tone.tempo , max : 300 , min : 20 } ) , 
 			) ,
 			ef.ul
 			(
@@ -278,7 +279,7 @@ export namespace VC
 	{
 		const n : [ number , number ] [] = s.match ( /\d/g ) ?.map
 		(
-			( m , n ) => [ 0.1 , note_t [ Number ( m ) ] - 11 ]
+			( m , n ) => [ 8 , note_t [ Number ( m ) ] - 11 ]
 		) ?? [] ;
 
 		Tone.voice.sch ( n ) ;

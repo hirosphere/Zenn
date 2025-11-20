@@ -8,6 +8,7 @@ const log = console.log ;
 export const Tone = new class Tone
 {
 	public readonly volume = Live ( 0.2 ) ;
+	public readonly tempo = Live ( 120 ) ;
 
 	public start () : void
 	{
@@ -32,7 +33,7 @@ export const Tone = new class Tone
 	protected get ac () : AudioContext { return this.#_ac ??= new AudioContext () ; }
 	#_ac ? : AudioContext ;
 
-	get voice () : Voice { return this.#_voice ??= new Voice ( this.ac , this.make () ) ; }
+	get voice () : Voice { return this.#_voice ??= new Voice ( this.ac , this.make () , this.tempo ) ; }
 	
 	#_gain ? : GainNode ;
 	#_voice ? : Voice ;
@@ -43,13 +44,15 @@ export const Tone = new class Tone
 
 class Voice
 {
-	constructor ( private ac : AudioContext , private dest : AudioNode )
+	constructor ( private ac : AudioContext , private dest : AudioNode , private tempo : Live.num )
 	{}
 
 	public sch ( notes : [ number , number ] [] ) : void
 	{
 		if ( this.ac.state != "running" )  return ;
+		
 		const ac = this.make () ;
+		const batt = ( 240 / this.tempo.$ ) ;
 
 		let t = ac.currentTime ;
 		this.#_osc?.detune.cancelScheduledValues ( t ) ;
@@ -58,7 +61,7 @@ class Voice
 			n =>
 			{
 				const r = this.#_osc?.detune.setValueAtTime ( n [ 1 ] * 100 , t ) ;
-				t += n [ 0 ] ;
+				t += batt / n [ 0 ] ;
 				return r ;
 			}
 		) ;
