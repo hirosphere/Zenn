@@ -145,7 +145,6 @@ export namespace VM
 			const name = path [ 0 ] ;
 			
 			await this.make_dyn_parts () ;
-			log ( "* from_path" , this.title.$ , this.parts.length.$ )
 			
 			const part = this.parts_by_name.get ( name ) ;
 			return await part ?.FromPath ( path.slice ( 1 ) ) ?? part ;

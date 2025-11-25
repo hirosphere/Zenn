@@ -39,6 +39,11 @@ export const Tone = new class Tone
 	#_voice ? : Voice ;
 }
 
+export namespace Tone
+{
+	export type note = [ number , number ] ;
+}
+
 
 /*  */
 
@@ -55,33 +60,33 @@ class Voice
 		const batt = ( 240 / this.tempo.$ ) ;
 
 		let t = ac.currentTime ;
-		this.#_osc?.detune.cancelScheduledValues ( t ) ;
+		
 		notes.forEach
 		(
-			n =>
-			{
-				const r = this.#_osc?.detune.setValueAtTime ( n [ 1 ] * 100 , t ) ;
-				t += batt / n [ 0 ] ;
-				return r ;
-			}
+			note => t = this.sch_note ( t , note , batt )
 		) ;
-
-		this.trigger () ;
 	}
 
-	public trigger () : void
+	protected sch_note ( start : number , note : Tone.note , batt : number ) : number /* next time */
 	{
-		if ( this.ac.state != "running" )  return ;
-		const ac = this.make () ;
+		const key = note [ 1 ] ;
+		const len = batt / note [ 0 ] ;
 
-		const a = 0.001 ;
-		const d = 0.5 ;
+		const a = 0.0005 ;
+		const d = len * 0.1 ;
+		const r = 0.01 ;
 
-		let t = ac.currentTime ;
-		this.#_gain ?.gain.cancelAndHoldAtTime ( t ) ;
-		// this.#_gain ?.gain.cancelScheduledValues ( t ) ;
-		this.#_gain ?.gain.setTargetAtTime ( 1 , t += a , a ) ;
-		this.#_gain ?.gain.setTargetAtTime ( 0 , t += d , d ) ;
+		this.#_osc  ?.detune.cancelAndHoldAtTime ( start ) ;
+		this.#_osc  ?.detune.setValueAtTime ( key * 100 , start ) ;
+		this.#_gain ?.gain  .cancelAndHoldAtTime ( start ) ;
+
+		let t = start ;
+
+		this.#_gain ?.gain  .setTargetAtTime ( 1 , t += a , a ) ;
+		this.#_gain ?.gain  .setTargetAtTime ( 0.5 , t += d , d ) ;
+		this.#_gain ?.gain  .setTargetAtTime ( 0 , t , r ) ;
+
+		return start + len ;
 	}
 
 	private make () : AudioContext

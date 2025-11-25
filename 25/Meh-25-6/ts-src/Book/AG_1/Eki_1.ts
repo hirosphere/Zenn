@@ -261,25 +261,32 @@ export namespace VC
 
 	function StationListItem ( i : number , st : Eki.Station ) : DD.Mel
 	{
+		const lat = ll ( st.lat ) ;
+		const lon = ll ( st.lon ) ;
 
 		return ef.tr
 		(
 			{ style : { fontWeight : "300" } } ,
 			ef.td ( { style : { fontWeight : "500" } } , i + 1 ) ,
 			ef.td ( { style : { fontWeight : "900" } } , st.StationName ) ,
-			ef.td ( { passive : { mouseover : () => notes ( st.post ) } } , "〒" , st.post ) ,
+			ef.td ( { passive : { mousedown : () => notes ( st.post ) } } , "〒" , st.post ) ,
 			ef.td ( st.address ) ,
-			ef.td ( { passive : { mouseover : () => notes ( st.lat ) } } , st.lat ) ,
-			ef.td ( { passive : { mouseover : () => notes ( st.lon ) } } , st.lon ) ,
+			ef.td ( { passive : { mousedown : () => notes ( lat ) } } , lat ) ,
+			ef.td ( { passive : { mousedown : () => notes ( lon ) } } , lon ) ,
 			ef.td ( "( " , st.PrefName , " )" ) ,
 		) ;
+	}
+
+	function ll ( ll : string ) : string
+	{
+		return ( + ll ).toFixed ( 6 ) ;
 	}
 
 	function notes ( s : string ) : void
 	{
 		const n : [ number , number ] [] = s.match ( /\d/g ) ?.map
 		(
-			( m , n ) => [ 8 , note_t [ Number ( m ) ] - 11 ]
+			( m , n ) => [ 16 , note_t [ Number ( m ) ] ]
 		) ?? [] ;
 
 		Tone.voice.sch ( n ) ;
