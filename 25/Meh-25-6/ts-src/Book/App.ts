@@ -69,6 +69,8 @@ namespace VM
 		)
 		{
 			this.ps = Ease ( this.load () ) ;
+
+			window.addEventListener ( "beforeunload" , () => { this.save () ; } ) ;
 		}
 
 		protected load () : V
@@ -84,7 +86,9 @@ namespace VM
 		}
 
 		save () : void
-		{}
+		{
+			localStorage.setItem ( this.StorageName , JSON.stringify ( this.ps.$ ) ) ;
+		}
 	}
 
 
@@ -92,7 +96,6 @@ namespace VM
 	export class App extends Perm < app >  implements BookBase.VM.NaviClient
 	{
 		public readonly navi = new BookBase.VM.Navi ( index , this ) ;
-		// public readonly navi_mode = Live < navi_mode > ( "NAVI_INLINE" ) ;
 
 		constructor ()
 		{

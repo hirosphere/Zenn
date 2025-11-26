@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>HSL Branch</title>
+	<link rel="stylesheet" href="./Common.css" />
+<style>
+
+main
+{
+	display : flex  ;
+	flex-direction : column ;
+
+	padding : 1ex ;
+	gap : 1ex ;
+	align-items : center ;
+}
+
+h1 { padding : 1em ; }
+
+.DISPLAY
+{
+	width : 100% ;
+	height : 40vh ;
+
+	display : flex ;
+	flex-direction : column ;
+	justify-content : center ;
+	align-items : center ;
+
+	font-family : 'Courier New', Courier, monospace ;
+}
+
+.RANGES
+{
+	width : 100% ;
+}
+
+.RANGE
+{
+	width : 100% ;
+	margin-bottom : 1px ;
+
+	background-color : hsl( 0  0%  0% / 10% ) ;
+	border-radius : 0.2ex ;
+	height : 2.8em ;
+	cursor : default ;
+	
+	display : grid ;
+	grid-template-columns : 3em 1fr 4em ;
+	padding-inline : 1em ;
+	align-items : center ;
+	column-gap : 1ex ;
+
+	font-family : 'Courier New', Courier, monospace ;
+}
+
+.RANGE .range
+{
+}
+
+.RANGE .vu
+{
+	display : grid ;
+	grid-template-columns : auto  1.2em ;
+	text-align : right ;
+}
+
+.RANGE .unit
+{
+	margin-left : 0.2ex ;
+	text-align : left ;
+	font-size: 80%	;
+	color : hsl( 0  0%  38% ) ;
+}
+
+
+
+</style>
+</head>
+<body>
+	<script type="module">
+
+		import {  } from "../js-out-1/Q-1/HSL Branch.js" ;
+
+	</script>
+</body>
+</html>

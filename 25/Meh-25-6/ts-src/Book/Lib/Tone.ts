@@ -5,15 +5,15 @@ const uned = undefined ;
 
 const log = console.log ;
 
-export const Tone = new class Tone
+export class Tone
 {
 	public readonly volume = Live ( 0.2 ) ;
 	public readonly tempo = Live ( 120 ) ;
+	public readonly transpose = Live ( 0 ) ;
 
 	public start () : void
 	{
 		this.ac.resume () ;
-		log ( "Tone start" ) ;
 	}
 
 	protected make () : AudioNode
@@ -33,7 +33,7 @@ export const Tone = new class Tone
 	protected get ac () : AudioContext { return this.#_ac ??= new AudioContext () ; }
 	#_ac ? : AudioContext ;
 
-	get voice () : Voice { return this.#_voice ??= new Voice ( this.ac , this.make () , this.tempo ) ; }
+	get voice () : Voice { return this.#_voice ??= new Voice ( this.ac , this.make () , this ) ; }
 	
 	#_gain ? : GainNode ;
 	#_voice ? : Voice ;
@@ -49,7 +49,7 @@ export namespace Tone
 
 class Voice
 {
-	constructor ( private ac : AudioContext , private dest : AudioNode , private tempo : Live.num )
+	constructor ( private ac : AudioContext , private dest : AudioNode , private tone : Tone )
 	{}
 
 	public sch ( notes : [ number , number ] [] ) : void
@@ -57,7 +57,7 @@ class Voice
 		if ( this.ac.state != "running" )  return ;
 		
 		const ac = this.make () ;
-		const batt = ( 240 / this.tempo.$ ) ;
+		const batt = ( 240 / this.tone.tempo.$ ) ;
 
 		let t = ac.currentTime ;
 		
@@ -69,11 +69,11 @@ class Voice
 
 	protected sch_note ( start : number , note : Tone.note , batt : number ) : number /* next time */
 	{
-		const key = note [ 1 ] ;
+		const key = note [ 1 ] + this.tone.transpose.$ ;
 		const len = batt / note [ 0 ] ;
 
 		const a = 0.0005 ;
-		const d = len * 0.1 ;
+		const d = len * 0.5 ;
 		const r = 0.01 ;
 
 		this.#_osc  ?.detune.cancelAndHoldAtTime ( start ) ;

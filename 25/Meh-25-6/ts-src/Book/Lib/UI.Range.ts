@@ -25,7 +25,7 @@ export function Range ( vm : Range.vm , css ? : string ) : DD.Mel
 		) ,
 	) ;
 
-	return ef.div ( { shadow : css ?? Range.def_css } , con ) ;
+	return ef.div ( { shadow : css } , con ) ;
 }
 
 function tos ( ll ? : Live.R.ll.num ) : Live.R.ll.str | undefined
@@ -53,6 +53,7 @@ export namespace Range
 	.RANGE
 	{
 		display : grid ;
+		padding-block : 1ex ;
 		gap : 1ex ;
 	}
 

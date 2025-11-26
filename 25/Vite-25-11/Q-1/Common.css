@@ -1,0 +1,64 @@
+* { box-sizing : border-box ; margin : 0 ; padding : 0 ; }
+
+.FV { display : flex ; flex-direction : column ; }
+.FH { display : flex ; flex-direction : row ; }
+
+.FWR { flex-wrap : wrap ; }
+
+.PGMM { padding : 1em ; gap : 1em ; }
+.PGXX { padding : 1ex ; gap : 1ex ; }
+
+.PM { padding : 1em ; }
+.GM {  gap : 1em ; }
+.PX { padding : 1ex ; }
+.GX {  gap : 1ex ; }
+
+.JC { justify-content : center ; }
+.AC { align-items : center ; }
+
+.OA { overflow : auto ; }
+
+.Wnw { white-space : nowrap ; }
+
+a { PADDING : 0.1ex 0.6ex ; text-decoration : none ; color : hsl( 0  0%  20% ) ; }
+a:hover { background-color : hsl( 0  0%  0 / 10% ) ; }
+button
+{
+	border-radius : 1ex ;
+	padding: 1ex 1em ;
+	white-space : nowrap ;
+}
+
+html
+{
+	background-color : hsl( 215  88%  88% ) ;
+	color : hsl( 0  0%  13% ) ;
+
+	padding-inline : 1vw ;
+	font-family : "YuGothic" , sans-serif ;
+}
+
+body
+{
+	margin-inline : auto ;
+	background-color : oklch( 100%  0%  0 ) ;
+	
+	max-width : 1200px ;
+	min-height : 100vh ;
+
+	overflow : auto ;
+}
+
+main
+{
+	flex-grow : 1 ;
+}
+
+h1 , h2 , h3 , h4 { padding : 0.75ex ; text-align: center; }
+
+footer
+{
+	margin : 2px ;
+	background : hsl( 50  5%  93% ) ;
+	padding : 2em ;
+}

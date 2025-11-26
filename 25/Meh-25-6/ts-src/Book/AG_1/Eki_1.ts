@@ -4,11 +4,40 @@ import { Eki } from "../../API/Eki.js" ;
 import { Tone } from "../Lib/Tone.js" ;
 import { Range } from "../Lib/UI.Range.js" ;
 
+const tone = new Tone () ;
+
 export namespace DM
 {
 }
 
 
+export namespace VM
+{
+	document.addEventListener
+	(
+		"visibilitychange" ,
+		ev =>
+		{
+			const st = document.visibilityState ;
+			log ( "visibilitychange" , st ) ;
+			tone.voice.sch
+			(
+				st == "visible" ? [ [ 32 , 12 ] , [ 32 , 17 ] , [ 32 , 21 ] ] :
+				st == "hidden" ? [ [ 32 , 12 ] , [ 32 , 16 ] , [ 32 , 19 ] ] :
+				[ [ 32 , 24 ] , [ 32 , 12 ] ]
+			) ;
+		}
+	) ;
+
+	window.addEventListener
+	(
+		"pagehide" ,
+		ev =>
+		{
+			log ( "pagehide" , ev.persisted ) ;
+		}
+	) ;
+}
 
 export namespace VM.index
 {
@@ -113,7 +142,6 @@ export namespace VM.index
 			this.cont = rec ;
 		}
 	}
-
 }
 
 
@@ -171,7 +199,6 @@ export namespace VC
 	}
 	.LINE tr:hover td { border-bottom : 1px  solid  hsl( 90  60%  30% ) ; }
 
-
 	.STATION
 	{
 		font-size : min( 1.2em , 0.3rem + 1vw ) ;
@@ -197,6 +224,15 @@ export namespace VC
 		line-height : 1.25 ;
 		font-weight : 201 ;
 	}
+
+	.RANGE
+	{
+		display : flex ;
+		padding-block : 1ex ;
+		gap : 1ex ;
+	}
+
+	.RANGE input { width : 350px }
 	
 	` ;
 
@@ -225,13 +261,13 @@ export namespace VC
 	/* Line */
 	
 	function Line ( rc : Eki.Line ) : DD.Node
-	{
+	{	
 		const ps : ( keyof Eki.Line ) [] = [ "company_cd" , "line_type" , "lat" , "lon" ] ;
 
 		const vol : Range.vm =
 		{
 			title : "Volume" ,
-			value : Tone.volume ,
+			value : tone.volume ,
 			max : 1 ,
 			step : 0.001 ,
 			lv : v => ( v * 100 ).toFixed ( 0 ) ,
@@ -239,13 +275,14 @@ export namespace VC
 
 		return ef.main
 		(
-			{ class : "LINE  FC PM GM" , passive : { mousedown : () => Tone.start () } } ,
+			{ class : "LINE  FC PM GM" , passive : { mousedown : () => tone.start () } } ,
 			ef.h1 ( rc.line_name ) ,
 			ef.section
 			(
-				{  } ,
+				{ class : "TONE" } ,
 				Range ( vol ) ,
-				Range ( { title : "Tempo" , value : Tone.tempo , max : 300 , min : 20 } ) , 
+				Range ( { title : "Tempo" , value : tone.tempo , max : 300 , min : 20 } ) , 
+				Range ( { title : "Trans" , value : tone.transpose , max : 48 , min : -48 } ) , 
 			) ,
 			ef.ul
 			(
@@ -289,7 +326,7 @@ export namespace VC
 			( m , n ) => [ 16 , note_t [ Number ( m ) ] ]
 		) ?? [] ;
 
-		Tone.voice.sch ( n ) ;
+		tone.voice.sch ( n ) ;
 	}
 
 	const note_t = [ 0 , 12 , 14 , 16 , 17 , 19 , 21 , 23 , 24 , 26 ] ;

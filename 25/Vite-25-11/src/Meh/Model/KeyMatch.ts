@@ -1,0 +1,68 @@
+import { Live } from "./LiveState.js" ;
+
+const log = console.log ;
+
+export class Key < K >
+{
+	constructor
+	(
+		public readonly curr : Live < K >
+	)
+	{
+		this.#_curr = this.curr.$ ;
+		this.curr.add_ref ( { vChan : () => this.update () } ) ;
+	}
+
+	public match ( key : K ) : Key.Match < K >
+	{
+		let match = this.#_items.get ( key ) ;
+
+		if ( ! match )
+		{
+			match = new Key.Match < K > ( this , key ) ;
+			this.#_items.set ( key , match ) ;	
+		}
+		
+		return match ;
+	}
+
+	/* */
+
+	protected update () : void
+	{
+		const old_key = this.#_curr ;
+		const new_key = this.#_curr = this.curr.$ ;
+
+		this.update_item ( old_key ) ;
+		this.update_item ( new_key ) ;
+	}
+
+	protected update_item ( key : K ) : void
+	{
+		const item = this.#_items.get ( key ) ;
+		if ( item ) item.$ = key === this.curr.$ ;
+	}
+
+	#_items = new Map < K , Key.Match < K > > ;
+	#_curr : K ;
+}
+
+export namespace Key
+{
+	export class Match < K >  extends Live.Leaf < boolean >
+	{
+		constructor
+		(
+			protected srv : Key < K > ,
+			public readonly key : K ,
+		)
+		{
+			super ( srv.curr.$ === key ) ;
+		}
+
+		public select () : void
+		{
+			this.srv.curr.$ = this.key ;
+		}
+	}
+}

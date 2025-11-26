@@ -1,0 +1,25 @@
+
+* { box-sizing : border-box ; }
+
+.app
+{
+	padding-inline : 10% ;
+}
+
+.EVAL
+{
+}
+
+.EVAL > .EDIT
+{
+	display : grid ;
+	grid-template-rows : 1fr 1fr 1fr ;
+}
+
+.EVAL textarea
+{
+	width : 600px ;
+	height : 200px ;
+	background-color: hsl( 180  100%  30% );
+	color : hsl( 180  0%  100% ) ;
+}
