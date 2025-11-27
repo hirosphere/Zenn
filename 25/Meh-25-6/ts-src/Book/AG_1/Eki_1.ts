@@ -282,7 +282,7 @@ export namespace VC
 				{ class : "TONE" } ,
 				Range ( vol ) ,
 				Range ( { title : "Tempo" , value : tone.tempo , max : 300 , min : 20 } ) , 
-				Range ( { title : "Trans" , value : tone.transpose , max : 48 , min : -48 } ) , 
+				Range ( { title : "Trans" , value : tone.transpose , max : 36 , min : -36 } ) , 
 			) ,
 			ef.ul
 			(
@@ -298,8 +298,8 @@ export namespace VC
 
 	function StationListItem ( i : number , st : Eki.Station ) : DD.Mel
 	{
-		const lat = ll ( st.lat ) ;
-		const lon = ll ( st.lon ) ;
+		const lat = ( + st.lat ) .toFixed ( 6 ) ;
+		const lon = ( + st.lon ) .toFixed ( 6 ) ;
 
 		return ef.tr
 		(
@@ -314,11 +314,6 @@ export namespace VC
 		) ;
 	}
 
-	function ll ( ll : string ) : string
-	{
-		return ( + ll ).toFixed ( 6 ) ;
-	}
-
 	function notes ( s : string ) : void
 	{
 		const n : [ number , number ] [] = s.match ( /\d/g ) ?.map
@@ -329,7 +324,7 @@ export namespace VC
 		tone.voice.sch ( n ) ;
 	}
 
-	const note_t = [ 0 , 12 , 14 , 16 , 17 , 19 , 21 , 23 , 24 , 26 ] ;
+	const note_t = [ 60 , 72 , 74 , 76 , 77 , 79 , 81 , 83 , 84 , 86 ] ;
 
 
 	/* Station */

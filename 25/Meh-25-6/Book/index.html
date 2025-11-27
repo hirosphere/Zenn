@@ -52,7 +52,7 @@ body.NAVI_INLINE
 
 .NAVI
 {
-	background : hsl( 240  2%  80% ) ;
+	background : hsl( 210  50%  94% ) ;
 }
 
 .NAVI .TREE
@@ -106,7 +106,7 @@ body.NAVI_INLINE
 
 	border-radius : 0.1ex ;
 	border : none ;
-	background : hsl( 80  5%  94% ) ;
+	background : hsl( 200  20%  80% ) ;
 
 	display : flex ;
 	flex-wrap : wrap ;
@@ -120,7 +120,7 @@ body.NAVI_INLINE
 .NAVI .CLOCK span { white-space : nowrap ; }
 .NAVI .CLOCK ._YMD { font-size : 1.0em ; font-weight : 300 ; }
 .NAVI .CLOCK ._B   { font-size : 0.9em ; font-weight : 300 ; }
-.NAVI .CLOCK ._HMS { font-size : 3.0em ; font-weight : 300 ; }
+.NAVI .CLOCK ._HMS { font-size : 2.8em ; font-weight : 300 ; }
 
 
 
@@ -139,7 +139,7 @@ body.NAVI_INLINE
 {
 	overflow-y : scroll ;
 	scrollbar-width : none ;
-	padding-block : 1em ;
+	padding-block : 2em 1em ;
 	padding-inline : 1.6vw  0.2ex ;
 }
 
@@ -207,7 +207,7 @@ body.NAVI_INLINE
 .NAVI_BLOCK .NAVI .CLOCK_BUTTON
 {
 	padding : 1.0em  1em ;
-	font-size : min( 0.8em , 0.3ex + 1.0vw ) ;
+	font-size : min( 1.0em , 0.3ex + 1.0vw ) ;
 }
 
 .NAVI_BLOCK .TREE footer
@@ -236,12 +236,15 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .TREE
 {
+	flex-grow : 10 ;
+
 	display : flex ;
 	overflow-x : scroll ;
 	scrollbar-width : none ;
 
-	padding-block : 0ex 0.2ex ;
-	padding-inline : 15vw  40vw ;
+	padding-block : 0ex 0.4ex ;
+	padding-inline : 1ex ;
+	justify-content : center ;
 	align-items : start ;
 }
 
@@ -327,6 +330,8 @@ body.NAVI_INLINE
 
 .NAVI_INLINE  .CLOCK
 {
+	flex-grow : 1.01 ;
+
 	display : flex ;
 	padding : 0.1ex ;
 	justify-content : center ;
@@ -335,7 +340,8 @@ body.NAVI_INLINE
 
 .NAVI_INLINE  .CLOCK_BUTTON
 {
-	padding : 0.2ex  1ex ;
+	padding-block : 0.2ex ;
+	padding-inline : 2.2ex ;
 	white-space : nowrap ;
 }
 

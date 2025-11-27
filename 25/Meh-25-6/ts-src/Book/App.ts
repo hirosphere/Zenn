@@ -49,6 +49,14 @@ namespace VM
 				{
 					tmpl : { title : "Template" , page : () => AG_Z.Template.VC.App () } ,
 					hsl : { title : "HSL" , page : () => AG_Z.HSL.VC.App () } ,
+					"01" :
+					{
+						title : "01",
+						parts :
+						{
+							"MIDIKey" : { title : "MIDI Key" , page : () => AG_Z.Z01.MIDIKey.VC.App () } ,
+						}
+					}
 				}
 			} ,
 			"Dyndex" : IndexQst.Dyndex ,

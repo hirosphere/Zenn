@@ -157,6 +157,7 @@ export namespace VC
 		.TODO_ITEM:hover { background : hsl( 50  3%  83% ) ; }
 
 		.TODO_ITEM ._TEXT { overflow : hidden ; }
+		.TODO_ITEM ._CB  { accent-color : hsl( 100  40%  40% ) ; }
 
 		.EDITOR
 		{
@@ -241,7 +242,7 @@ export namespace VC
 		return ef.li
 		(
 			{ class : "TODO_ITEM" } ,
-			ef.input ( { attrs : { type : "checkbox" } , biBind : { chInp : i.completed } } ) ,
+			ef.input ( { class : "_CB" , attrs : { type : "checkbox" } , biBind : { chInp : i.completed } } ) ,
 			ef.input ( { class : "_TEXT" , biBind : { vChan : i.title } } ) ,
 			ef.button ( { passive : { click () { o.delete () ; } } } , "削除" ) ,
 		) ;

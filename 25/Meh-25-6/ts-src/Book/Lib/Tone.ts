@@ -77,7 +77,7 @@ class Voice
 		const r = 0.01 ;
 
 		this.#_osc  ?.detune.cancelAndHoldAtTime ( start ) ;
-		this.#_osc  ?.detune.setValueAtTime ( key * 100 , start ) ;
+		this.#_osc  ?.detune.setValueAtTime ( ( key - 69 ) * 100 , start ) ;
 		this.#_gain ?.gain  .cancelAndHoldAtTime ( start ) ;
 
 		let t = start ;
