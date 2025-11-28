@@ -1,4 +1,5 @@
 import { Live , Ease , Renn , Key , DOM , DD , ef , pl , df , KVS , times , log } from "../../../Meh/Meh.js" ;
+import { Range } from "../../Lib/UI.Range.js" ;
 import * as BB from "../../BookBase.js";
 
 type uned = undefined ;
@@ -37,30 +38,34 @@ export namespace VM
 	{
 		public available = Live ( false ) ;
 
+		public vis =
+		{
+			table : Live ( true ) ,
+			ctrl : Live ( true ) ,
+		}
+
+		public pitch = Live ( 440 ) ;
 		public keys = times
 		(
 			128 ,
-			key => new Key ( key )
+			key => new Key ( this.pitch , key )
 		) ;
 	}
 
 	export class Key
 	{
-		constructor ( public key : number )
+		constructor ( protected pitch : Live.R.num , public key : number )
 		{
-			;
+			this.freq = this.pitch.trans_r ( pitch => pitch * Math.pow ( 2 , ( key - 69 ) / 12 ) ) ; ;
 		}
+
+		public freq : Live.R.num ;
 
 		public get name () : string
 		{
 			const key = this.key % 12 ;
-			const oct = Math.floor ( this.key / 12 ) ;
+			const oct = Math.floor ( this.key / 12 ) - 1 ;
 			return nametable [ key ] + oct ;
-		}
-
-		public get freq () : number
-		{
-			return 440 * Math.pow ( 2 , ( this.key - 69 ) / 12 ) ;
 		}
 	}
 
@@ -106,10 +111,18 @@ export namespace VC
 
 	h1 { text-align : center ; }
 
+	.NOTE_TABLE
+	{
+		cursor : default ;
+		min-width : 40vw ;
+		overflow : auto ;
+	}
+
 	td
 	{
-		padding : 0.7ex 1ex ;
+		padding : 1.2ex 1ex ;
 		border-bottom : 1px dotted hsl( 0  0%  70% ) ;
+		font-size : 1.2em ;
 	}
 	
 	` ;
@@ -127,7 +140,14 @@ export namespace VC
 			ef.main
 			(
 				{ class : "FC  PM  ASt  GX" } ,
-				ef.h1 ( "MIDI Key" ) ,
+				ef.section
+				(
+					{ class : "FR AC GX" } ,
+					ef.h1 ( "MIDI Key" ) ,
+					CheckBox ( "Table" , vm.vis.table ) ,
+					CheckBox ( "Ctrl" , vm.vis.ctrl ) ,
+				) ,
+				Ctrl ( vm ) ,
 				Table ( vm ) ,
 			) ,
 		) ;
@@ -137,6 +157,7 @@ export namespace VC
 	{
 		return ef.table
 		(
+			{ class : "NOTE_TABLE" } ,
 			... vm.keys.map ( key => Row ( vm , key ) ) ,
 		) ;
 	}
@@ -145,10 +166,23 @@ export namespace VC
 	{
 		return ef.tr
 		(
-			ef.td ( vm.key ) ,
-			ef.td ( vm.name ) ,
-			ef.td ( vm.freq ) ,
+			ef.td ( { style : { fontWeight : "400" } } , vm.key ) ,
+			ef.td ( { style : { fontWeight : "600" } } , vm.name ) ,
+			ef.td ( { style : { fontWeight : "300" } } , vm.freq ) ,
 		) ;
 	}
+
+	const Ctrl = ( vm : VM.App ) : DD.Mel => ef.section
+	(
+		{ class : "FC PM" } ,
+		Range ( { title : "Pitch" , value : vm.pitch , min : 220 , max : 880 } ) ,
+	) ;
+
+	const CheckBox = ( label : string | Live.R.str , state : Live.bool ) : DD.Mel => ef.label
+	(
+		{ class : "FR GX" } ,
+		ef.input ( { attrs : { type : "checkbox" } , biBind : { chChan : state } } ) ,
+		ef.span ( label ) ,
+	) ;
 }
 
