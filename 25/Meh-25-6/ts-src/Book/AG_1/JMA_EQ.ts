@@ -1,4 +1,4 @@
-import { Live , Renn , ef , pl , DD as dd , df , log } from "../../Meh/Meh.js" ;
+import { Live , Renn , Key , ef , pl , DD as dd , df , log } from "../../Meh/Meh.js" ;
 import { jma } from "./jma_data.js" ;
 
 namespace DM
@@ -8,25 +8,27 @@ namespace DM
 		 const res = await fetch( "https://www.jma.go.jp/bosai/quake/data/list.json" );
 		 if( res.status != 200 ) return ;
 
-		const data = await res.json();
+		const data = await res.json() as record [];
 
 		// const data = jma as src_record [] ;
 
 		const list = new Map < string , record > ;
+		const start = new Date () .getTime () / day_ms - 30
+
+		data.sort ( ( a , b ) => + b.eid - + a.eid ) ;
 
 		data.forEach
 		(
 			( src : record, n : number ) =>
 			{
 				const diff = list.get ( src.eid ) ;
-				if
-				(
-					! diff ||
-					diff && ( src.ser > diff.ser )
-				)
+
+				if ( diff == undefined || src.ser > diff.ser )
 				{
-					src.ctt = ctt ( src.ctt ) ;
-					src.eid = ctt ( src.eid ) ;
+					src.day_phase = new Date ( ctt ( src.eid ) ).getTime () / day_ms - start ;
+					src.date = ctt ( src.eid , "/" , " " , ":" , "" ) ;
+					src.pos = pos ( src.cod ) ;
+					src.q = "" + src.pos.x ;
 					list.set ( src.eid , src ) ;
 				}
 			}
@@ -34,6 +36,8 @@ namespace DM
 
 		onload ( [ ... list.values () ] ) ;
 	}
+
+	const day_ms = 24 * 3600 * 1000 ;
 
 	export type Records = Renn < record > ;
 
@@ -53,15 +57,28 @@ namespace DM
 		"maxi": string ,
 		"json": string ,
 		"en_ttl": string ,
-		"en_anm": string 
+		"en_anm": string ,
+
+		day_phase : number ,
+		date : string ,
+		pos : pos ,
+		q : string ,
 	}
 
-	function ctt ( s : string ) : string
+	type pos = { x : number ; y : number ; z : number ; } ;
+
+	function pos ( cod : string ) : pos
+	{
+		const [ x = 0 , y = 0 , z = 0 ] = cod.match ( /([-+][\d\.]+)/g ) ?? [] ;
+		return { x : + x , y : + y , z : + z } ;
+	}
+
+	function ctt ( s : string , s1 = "-" , s2 = "T" , s3 = ":" , s4 = ".000+09:00" ) : string
 	{
 		return s.replace
 		(
 			/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/ ,
-			( z , y , m , d , h , mi , s ) => `${ y }-${ m }-${ d }-${ h }:${ mi }:${ s }`
+			( z , y , m , d , h , mi , s ) => y + s1 + m + s1 + d + s2 + h + s3 + mi + s3 + s + s4
 		) ;
 	}
 }
@@ -74,7 +91,8 @@ namespace VM
 		public readonly records = new Renn < DM.record > ;
 		public readonly loadtime = Live ( "" ) ;
 
-		graph = new Graph ( this.records ) ;
+		public  itemHover = new Key ( Live < DM.record | undefined > ( undefined ) ) ;
+		public  graph = new Graph ( this.records , this.itemHover ) ;
 
 		listVisible = Live ( true ) ;
 
@@ -83,7 +101,7 @@ namespace VM
 			this.load () ;
 		}
 
-		load () : void
+		public load () : void
 		{
 			DM.load ( r => this.records.replace ( r ) ) ;
 			this.loadtime.$ = df ( "YYYY.MM.DD (B) hh:mm:ss" ) ;
@@ -92,9 +110,13 @@ namespace VM
 
 	export class Graph
 	{
-		public visible = Live ( false ) ;
+		public visible = Live ( true ) ;
 
-		constructor ( public records : DM.Records )
+		constructor
+		(
+			public records : DM.Records ,
+			public hover : Key < DM.record | undefined >
+		)
 		{}
 	}
 }
@@ -182,10 +204,19 @@ export namespace VC
 
 	.GRAPH
 	{
-		flex-grow : 5.5 ;
+		cursor : default ;
+
+		flex-grow : 4.5 ;
 		overflow : auto ;
-		background : hsl( 235  60%  60% ) ;
-		display : none ;
+		background : hsl( 235  50%  25% ) ;
+		color : hsl( 0  0%  100% / 80% ) ;
+		position : relative ;
+	}
+
+	.GRAPH ._HOVER
+	{
+		color : hsl( 225  20%  20% ) ;
+		background : hsl( 225  40%  70% ) ;
 	}
 	
 	._SHOW { display : block ; }
@@ -200,6 +231,14 @@ export namespace VC
 		const vm = new VM.App ;
 
 		function click () { vm.load () ; }
+
+		const json = Live ( "JSON" ) ;
+		const json_update = () =>
+		{
+			const r = vm.records.orders.map ( o => o.target ) ;
+			json.$ = JSON.stringify ( r , null , "\t" ) ;
+		} ;
+		vm.records.add_ref ( { insert : json_update } ) ;
 
 		return ef.div
 		(
@@ -227,40 +266,22 @@ export namespace VC
 				(
 					{ class : "BODY  FC " } ,
 					Graph ( vm.graph ) ,
-					List ( vm.records , vm.listVisible ) ,
+					List ( vm ) ,
 				) ,
+				// ef.section ( ef.textarea ( { style : { width : "800px" , height : "100px" } , props : { value : json } } ) , ) ,
 			) ,
 		) ;
 	}
 
-	const cols : { [ col in keyof DM.record ] ? : {} } =
-	{
-		eid : {} ,
-		ser : {} ,
-	//	ctt : {} ,
-	//	at : {} ,
-	//	rdt : {} ,
-		acd : {} ,
-		anm : {} ,
-		cod : {} ,
-	//	en_anm : {} ,
-	//	en_ttl : {} ,
-		ift : {} ,
-	//	json : {} ,
-		mag : {} ,
-		maxi : {} ,
-		ttl : {} ,
-	} ;
-
-	function List ( rc : DM.Records , vis : Live.bool ) : dd.Node
+	function List ( app : VM.App ) : dd.Node
 	{
 		const table = ef.table
 		(
 			Header () ,
-			pl.each ( rc , ( r , o ) => Row ( r , o.$ ) ) ,
+			pl.each ( app.records , ( r , o ) => Row ( r , o.$ , app.itemHover.match ( r ) ) ) ,
 		) ;
 
-		return ef.section ( { class : [ "EQ_LIST" , { _SHOW : vis } ] } , table ) ;
+		return ef.section ( { class : [ "EQ_LIST" , { _SHOW : app.listVisible } ] } , table ) ;
 	}
 
 	function Header () : dd.Node
@@ -268,26 +289,31 @@ export namespace VC
 		return ef.tr
 		(
 			ef.th ( "No" ) ,
-			... Object.entries ( cols ) .map
-			(
-				( [ prop , s ] ) => ef.th ( prop )
-			)
+			... [ "date" , "ser" , "acd" , "anm" , "cod" , "ift" , "mag" , "maxi" , "ttl" , "day" , "pos" ] .map ( title => ef.th ( title ) )
 		) ;
 	}
 
-	function Row ( r : DM.record , i : number ) : dd.Node
+	function Row ( r : DM.record , i : number , hover : Key.Match < DM.record | undefined > ) : dd.Node
 	{
 		return ef.tr
 		(
+			{ passive : { mouseover : () => hover.select () } } ,
 			Col ( ( i + 1 ) + "" ) ,
-			... Object.keys ( cols ) .map
-			(
-				prop => Col ( r [ prop as keyof DM.record ] )
-			)
+			Col ( r.date ) ,
+			Col ( r.ser ) ,
+			Col ( r.acd ) ,
+			Col ( r.anm ) ,
+			Col ( r.cod ) ,
+			Col ( r.ift ) ,
+			Col ( r.mag ) ,
+			Col ( r.maxi ) ,
+			Col ( r.ttl ) ,
+			Col ( r.day_phase ) ,
+			Col ( r.pos.x ) ,
 		) ;
 	}
 
-	function Col ( text : string ) : dd.Node
+	function Col ( text : string | number ) : dd.Node
 	{
 		return ef.td
 		(
@@ -297,10 +323,39 @@ export namespace VC
 
 	function Graph ( vm : VM.Graph ) : dd.Node
 	{
+		const style : dd.Style =
+		{}
+
 		return ef.section
 		(
-			{ class : [ "GRAPH" , { _SHOW : vm.visible } ] } ,
-			"Graph"
+			{
+				class : "GRAPH FC JC AC " ,
+				style : { display : vm.visible.trans_r ( s => s ? "" : "none" ) } ,
+			} ,
+			pl.each ( vm.records , r => Plot ( r , vm.hover.match ( r ) ) ) ,
+		) ;
+	}
+
+	function Plot ( m : DM.record , hover : Live.R.bool ) : dd.Mel
+	{
+		const day = m.day_phase ;
+		const lat = (  35 - m.pos.x ) ;
+
+		const scale = 0.4 * Math.sqrt ( Math.pow ( 32 , ( + m.mag || 0 ) * 0.4 ) ) ;
+
+		const style : dd.Style =
+		{
+			display : "block" ,
+			position : "absolute" ,
+			transform : `translate( ${ ( day ) * 30 }em , ${ 20 + lat * 1.0 }em )  scale( ${ scale } )` ,
+		}
+
+		const title = `${ m.anm } M${ m.mag } ${ m.date }` ;
+
+		return ef.div
+		(
+			{ class : { _HOVER : hover } , attrs : { title } , style } ,
+			ef.div ( { style : { paddingTop : "0.75ex" } } , "*" )
 		) ;
 	}
 

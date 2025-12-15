@@ -204,7 +204,8 @@ export namespace VC
 				) ,
 				ef.textarea
 				(
-					{ class : "JSON" , props : { value : app.doc.trans_r ( o => JSON.stringify ( o , null , "\t" ) ) } }
+					{ class : "JSON" , props : { value : Live.trans_r ( app.doc , o => JSON.stringify ( o , null , "\t" ) ) } }
+
 				) ,
 				ef.p ( app.windowSize )
 		)

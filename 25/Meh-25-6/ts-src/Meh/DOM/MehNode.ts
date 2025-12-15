@@ -20,11 +20,12 @@ export abstract class MehNode
 			const ref =
 			{
 				source : text ,
-				vChan : () => update ( Plain.get ( text ) ) ,
+				vChan : () => update ( Live.get ( text ) ) ,
 			}
 
 			this.#srcs.add ( ref ) ;
-			Plain.add_ref ( text , ref ) ;
+			// Live.add_ref ( text , ref ) ;
+			text.add_ref ( ref ) ;
 		}
 
 		else  update ( text ) ;
@@ -231,7 +232,7 @@ export class MehElement < E extends DD.TargetDOMElement >  extends MehNode
 			ev =>
 			{
 				const v = ( ev.target as any ) [ prop ] ;
-				Plain.set ( state , cv?.set ( v ) ?? v ) ;
+				Live.set ( state , cv?.set ( v ) ?? v ) ;
 			}
 		) ;
 	}

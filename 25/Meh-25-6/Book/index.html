@@ -29,6 +29,7 @@ html
 	color : hsl( 0  0%  12% ) ;
 }
 
+a { text-decoration : none ; }
 
 /* body */
 
@@ -52,7 +53,7 @@ body.NAVI_INLINE
 
 .NAVI
 {
-	background : hsl( 210  50%  94% ) ;
+	background : hsl( 210  55%  90% ) ;
 }
 
 .NAVI .TREE
@@ -99,6 +100,11 @@ body.NAVI_INLINE
 	color : hsl( 0  0%  20% ) ;
 }
 
+.NAVI > .Ctrl
+{
+	overflow : hidden ;
+}
+
 .NAVI > .CLOCK > .CLOCK_BUTTON
 {
 	width : 100% ;
@@ -106,7 +112,7 @@ body.NAVI_INLINE
 
 	border-radius : 0.1ex ;
 	border : none ;
-	background : hsl( 200  20%  80% ) ;
+	background : hsl( 190  50%  84% ) ;
 
 	display : flex ;
 	flex-wrap : wrap ;
@@ -118,9 +124,9 @@ body.NAVI_INLINE
 }
 
 .NAVI .CLOCK span { white-space : nowrap ; }
-.NAVI .CLOCK ._YMD { font-size : 1.2em ; font-weight : 300 ; }
-.NAVI .CLOCK ._B   { font-size : 1.1em ; font-weight : 300 ; }
-.NAVI .CLOCK ._HMS { font-size : 2.8em ; font-weight : 300 ; }
+.NAVI .CLOCK ._YMD { font-size : 1.1em ; font-weight : 300 ; }
+.NAVI .CLOCK ._B   { font-size : 0.9em ; font-weight : 300 ; }
+.NAVI .CLOCK ._HMS { font-size : 2.9em ; font-weight : 300 ; }
 
 
 
@@ -193,6 +199,16 @@ body.NAVI_INLINE
 	overflow : hidden ;
 }
 
+.NAVI_BLOCK .TREE footer
+{
+	height : 60vh ;
+}
+
+.NAVI_BLOCK .CTRL
+{
+	padding-inline : 1em ;
+}
+
 .NAVI_BLOCK .CLOCK
 {
 	margin : 0.0ex ;
@@ -208,11 +224,6 @@ body.NAVI_INLINE
 {
 	padding : 1.0em  1em ;
 	font-size : min( 1.0em , 0.7ex + 1.0vw ) ;
-}
-
-.NAVI_BLOCK .TREE footer
-{
-	height : 60vh ;
 }
 
 
@@ -236,7 +247,7 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .TREE
 {
-	flex-grow : 10 ;
+	flex-grow : 1 ;
 
 	display : flex ;
 	overflow-x : scroll ;
@@ -330,8 +341,6 @@ body.NAVI_INLINE
 
 .NAVI_INLINE  .CLOCK
 {
-	flex-grow : 1.01 ;
-
 	display : flex ;
 	padding : 0.1ex ;
 	justify-content : center ;

@@ -1,0 +1,13 @@
+{
+	"manifest_version": 3,
+	"name": "馬隠し 25-12-14 C",
+	"version": "1.0",
+	"description": "特定の語彙を含むツイートの引用画像の透過性を制御",
+	"content_scripts": [
+	  {
+		"matches": ["https://x.com/*"],
+		"js": ["content.js"],
+		"run_at": "document_idle"
+	  }
+	]
+  }

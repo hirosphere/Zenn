@@ -1,9 +1,15 @@
-import { Live } from "../../Meh/Meh.js" ;
+import { Live , ef , DD , } from "../../Meh/Meh.js" ;
+import { Range } from "./UI.Range.js" ;
 
 type uned = undefined ;
 const uned = undefined ;
 
 const log = console.log ;
+
+export type eg =
+{
+
+}
 
 export class Tone
 {
@@ -109,3 +115,17 @@ class Voice
 	#_gain ? : GainNode ;
 }
 
+export namespace VC
+{
+	export const Player = ( tone : Tone ) : DD.Mel =>
+	{
+		return ef.section
+		(
+			{ class : "PLAYER" } ,
+			ef.section
+			(
+				Range ( { title : "Volume" , value : tone.volume , min : 0 , max : 1 , step : 0.01 , lv : v => ( v * 100 ).toFixed ( 0 ) } ) ,
+			) ,
+		) ;
+	}
+}

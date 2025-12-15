@@ -1,6 +1,6 @@
-import { Live , Ease , Renn , Key , DOM , DD , ef , pl , df , KVS , times , log } from "../../../Meh/Meh.js" ;
+import { Live , Ease , Renn , Key , DOM , DD , ef , pl , df , times , log } from "../../../Meh/Meh.js" ;
 import { Range } from "../../Lib/UI.Range.js" ;
-import * as BB from "../../BookBase.js";
+import * as Tone from "../../Lib/Tone.js" ;
 
 type uned = undefined ;
 const uned = undefined ;
@@ -13,7 +13,7 @@ const uned = undefined ;
 export namespace DM
 {
 	export type Node = Ease < node > ;
-	export function Node ( i : Partial < node > ) : Node { return Ease.fromPartial ( i , node ) }
+	export function Node ( i : Ease.dp < node > ) : Node { return Ease.fromPartial ( i , node ) }
 
 	export class node
 	{
@@ -21,11 +21,11 @@ export namespace DM
 		depth : number ;
 		parts : node [] ;
 
-		constructor ( i : Partial < node > )
+		constructor ( i ? : Ease.dp < node > )
 		{
-			this.title = i.title ?? "" ;
-			this.depth = i.depth ?? 0 ;
-			this.parts = i.parts ?.map ( p => new node ( p ) ) ?? [] ;
+			this.title = i ?.title ?? "" ;
+			this.depth = i ?.depth ?? 0 ;
+			this.parts = i ?.parts ?.map ( p => new node ( p ?? {} ) ) ?? [] ;
 		}
 	}
 }
@@ -50,6 +50,8 @@ export namespace VM
 			128 ,
 			key => new Key ( this.pitch , key )
 		) ;
+
+		public tone = new Tone.Tone ;
 	}
 
 	export class Key
@@ -71,9 +73,9 @@ export namespace VM
 
 	const nametable =
 	[
-		"C" , "C♯" , "D" , "D♯" ,
-		"E" , "F" , "F♯" , "G" ,
-		"G♯" , "A" , "A♯" , "B"
+		"C" , "C#" , "D" , "D#" ,
+		"E" , "F" , "F#" , "G" ,
+		"G#" , "A" , "A#" , "B"
 	] ;
 }
 
@@ -114,15 +116,28 @@ export namespace VC
 	.NOTE_TABLE
 	{
 		cursor : default ;
-		min-width : 40vw ;
-		overflow : auto ;
+		width : 100% ;
 	}
 
-	td
+	.NOTE_TABLE td
 	{
 		padding : 1.2ex 1ex ;
 		border-bottom : 1px dotted hsl( 0  0%  70% ) ;
 		font-size : 1.2em ;
+	}
+
+	.NOTE_TABLE tr:hover td
+	{
+		background : hsl( 90  20%  98% ) ;
+	}
+
+	.RANGE
+	{
+		display : grid ;
+		padding-block : 1ex ;
+		grid-template-columns : 4em  300px 5em ;
+		gap : 1ex ;
+		font-family : courier ;
 	}
 	
 	` ;
@@ -139,10 +154,10 @@ export namespace VC
 			{ shadow : css } ,
 			ef.main
 			(
-				{ class : "FC  PM  ASt  GX" } ,
+				{ class : "FC  PM  AS  GX" } ,
 				ef.section
 				(
-					{ class : "FR AC GX" } ,
+					{ class : " FR AC GX" } ,
 					ef.h1 ( "MIDI Key" ) ,
 					CheckBox ( "Table" , vm.vis.table ) ,
 					CheckBox ( "Ctrl" , vm.vis.ctrl ) ,
@@ -155,10 +170,14 @@ export namespace VC
 
 	const Table = ( vm : VM.App ) : DD.Node =>
 	{
-		return ef.table
+		return ef.section
 		(
-			{ class : "NOTE_TABLE" } ,
-			... vm.keys.map ( key => Row ( vm , key ) ) ,
+			{ class : "NOTE_WRP  OA" , style : { flexGrow : "3" , display : vis ( vm.vis.table ) } } ,
+			ef.table
+			(
+				{ class : "NOTE_TABLE" } ,
+				... vm.keys.map ( key => Row ( vm , key ) ) ,
+			)
 		) ;
 	}
 
@@ -166,15 +185,23 @@ export namespace VC
 	{
 		return ef.tr
 		(
-			ef.td ( { style : { fontWeight : "400" } } , vm.key ) ,
-			ef.td ( { style : { fontWeight : "600" } } , vm.name ) ,
-			ef.td ( { style : { fontWeight : "300" } } , vm.freq ) ,
+			{ passive : { mousedown : () => playnote ( vm.key , app.tone ) } } ,
+			ef.td ( { style : { width : "4em" , fontWeight : "400" } } , vm.key ) ,
+			ef.td ( { style : { width : "4em" , fontWeight : "700" } } , vm.name ) ,
+			ef.td ( { style : { width : "10em" , fontWeight : "300" } } , vm.freq.trans_r ( v => v.toFixed ( 2 ) ) ) ,
+			ef.td () ,
 		) ;
+	}
+
+	const playnote = ( key : number , tone : Tone.Tone ) : void =>
+	{
+		tone.voice.sch ( [ [ 16 , key ] ] ) ;
 	}
 
 	const Ctrl = ( vm : VM.App ) : DD.Mel => ef.section
 	(
-		{ class : "FC PM" } ,
+		{ class : "FC PM" , style : { flexGrow : "1" , display : vis ( vm.vis.ctrl ) } } ,
+		Tone.VC.Player ( vm.tone ) ,
 		Range ( { title : "Pitch" , value : vm.pitch , min : 220 , max : 880 } ) ,
 	) ;
 
@@ -184,5 +211,7 @@ export namespace VC
 		ef.input ( { attrs : { type : "checkbox" } , biBind : { chChan : state } } ) ,
 		ef.span ( label ) ,
 	) ;
+
+	const vis = ( ls : Live.bool ) => ls.trans_r ( s => s ? "" : "none" ) ;
 }
 

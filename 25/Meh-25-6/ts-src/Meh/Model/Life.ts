@@ -1,7 +1,5 @@
 const log = console.log ;
 
-log ( "Life" )
-
 
 export const ru = Symbol () ;
 export const life_term = Symbol () ;
@@ -53,9 +51,9 @@ export namespace Life
 {
 	/* methods */
 
-	export const add_ref = < R extends Ref > ( life : Life < R > , ref : R ) => life [ life_add_ref ] ( ref ) ;
+	export const add_ref    = < R extends Ref > ( life : Life < R > , ref : R ) => life [ life_add_ref ] ( ref ) ;
 	export const remove_ref = < R extends Ref > ( life : Life < R > , ref : R ) => life [ life_remove_ref ] ( ref ) ;
-	export const terminate = < R extends Ref > ( life : Life < R > ) => life [ life_term ] () ;
+	export const terminate  = < R extends Ref > ( life : Life < R > ) => life [ life_term ] () ;
 
 	/* Ref */
 

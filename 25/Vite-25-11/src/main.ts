@@ -1,18 +1,18 @@
 import './style.css'
 
-import { dom , dd } from "./Meh/index.ts" ;
+import { DOM , DD , ef } from "./Meh/Meh.ts" ;
 
 const log = console.log ;
-
-dom ; dd ;
 
 const e = document.getElementById ( "app" ) ;
 
 e && tinyeval ( e ) ;
 
-log ( dom.dd ) ;
+const f = () : DD.Mel => ef.section
+(
+	{  } ,
+)
 
-( v : dom.dd.Node ) => v.at ( 0 ) ;
 
 function tinyeval( com : Element ) : void
 {

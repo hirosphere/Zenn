@@ -1,4 +1,4 @@
-import { Live , Ease , Renn , Order , DD , ef , pl , IDB , } from "../../Meh/Meh.js" ;
+import { Live , Ease , Renn , Order , DD , ef , pl , Store , } from "../../Meh/Meh.js" ;
 
 const log = console.log ;
 const uned = undefined ;
@@ -13,9 +13,9 @@ export namespace DM
 		links : links ;
 		shapes : shape []
 
-		constructor ( i : Partial < app > )
+		constructor ( i ? : Ease.dp < app > )
 		{
-			this.text = i ?.text ?? "class {} 埼京 !!" ;
+			this.text = i ?.text ?? "" ;
 
 			this.links = new links ( i ?.links ) ;
 
@@ -34,7 +34,7 @@ export namespace DM
 		url   : string ;
 		parts : links [] ;
 
-		constructor ( i ? : Partial < links > )
+		constructor ( i ? : Ease.dp < links > )
 		{
 			this.title = i ?.title ??  "リンク" ;
 			this.url   = i ?.url   ??  "" ;
@@ -53,7 +53,7 @@ export namespace DM
 		size : xy ;
 		color : hsl ;
 
-		constructor ( i ? : Partial < shape > )
+		constructor ( i ? : Ease.dp < shape > )
 		{
 			this.pos   = new xy  ( i ?.pos ) ;
 			this.size  = new xy  ( i ?.size ) ;
@@ -67,7 +67,7 @@ export namespace DM
 		sat : number ;
 		light : number ;
 
-		constructor ( i ? : Partial < hsl > )
+		constructor ( i ? : Ease.dp < hsl > )
 		{
 			this.hue   = i ?.hue   ??  90 ;
 			this.sat   = i ?.sat   ??  0.65 ;
@@ -80,7 +80,7 @@ export namespace DM
 		x : number ;
 		y : number ;
 
-		constructor ( i ? : Partial < xy > )
+		constructor ( i ? : Ease.dp < xy > )
 		{
 			this.x = i ?.x  ?? 0 ;
 			this.y = i ?.y  ?? 0 ;
@@ -96,13 +96,13 @@ export namespace DM
 		value : any ;
 	} ;
 
-	export const db = new class extends IDB
+	export const db = new class extends Store.IDB
 	{
 		public KV_STORE ;
 		constructor ()
 		{
 			super ( { name : "IDB_Q25_1025" , version : 100 } ) ;
-			this.KV_STORE = new IDB.Store < kv_store , "key" , string > ( this , "KV_STORE" , { keyPath : "key" } ) ;
+			this.KV_STORE = new Store.IDB.Store < kv_store , "key" , string > ( this , "KV_STORE" , { keyPath : "key" } ) ;
 			this.init () ;
 		}
 	}
@@ -141,7 +141,7 @@ export namespace VM
 		protected async init ()
 		{
 			const filet = ( await DM.db.KV_STORE.get ( this.store_name ) ) ;
-			const data = filet ?.value as Partial < DM.app > ;
+			const data = filet ?.value as Ease.dp < DM.app > ;
 
 			log ( "Root init" , data ) ;
 
@@ -353,7 +353,7 @@ export namespace VC
 
 	const Link = ( dm : DM.Links ) =>
 	{
-		const href = dm.url.trans_r ( url => url.length ? url : undefined ) ;
+		const href = Live.trans_r ( dm.url , url => url.length ? url : undefined ) ;
 
 		return ef.a
 		(

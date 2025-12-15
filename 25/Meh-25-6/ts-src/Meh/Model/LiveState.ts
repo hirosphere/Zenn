@@ -2,8 +2,6 @@ import { Life , refs , life_add_ref , life_remove_ref , Agg , agg , agg_echan } 
 
 const log = console.log ;
 
-log ( "Live" ) ;
-
 /* ---- LiveState ----  */
 
 export const ls_set = Symbol () ;
@@ -11,36 +9,6 @@ export const ls_get = Symbol () ;
 export const ls_notify = Symbol () ;
 const ls_trans = Symbol () ;
 const ls_trans_r = Symbol () ;
-
-
-/* Foundation */
-
-export type Plain < V > = Plain.R < V > &
-{
-	[ ls_set ] ( newv : V , ch ? : object ) : void ;
-	[ ls_trans ] < TR > ( tr : Live.trans < TR , V > ) : Live < TR > ;
-}
-
-export namespace Plain
-{
-	export type R < V > = Life < Live.Ref > &
-	{
-		[ ls_get ] () : V ;
-		[ ls_trans_r ] < TR > ( tr : Live.trans_r < TR , V > ) : Live.R < TR > ;
-	}
-
-	/** */
-
-	export const set = < T > ( ls : Plain < T > , newv : T , ch ? : object ) : void => ls [ ls_set ] ( newv , ch ) ;
-	export const get = < T > ( ls : Plain.R < T > ) : T => ls [ ls_get ] () ;
-	export const mute = < T > ( ls : Plain < T > , m : ( v : T ) => T , ch ? : object ) => { set ( ls , m ( get ( ls ) ) , ch ) }
-	export const trans = < R , T  > ( ls : Plain < T > , tr : Live.trans < R , T > ) =>    ls [ ls_trans ] ( tr ) ;
-	export const trans_r = < R , T  > ( ls : Plain < T > , tr : Live.trans_r < R , T > ) =>    ls [ ls_trans_r ] ( tr ) ;
-
-	export const add_ref = < T > ( ls : Plain.R < T > , ref : Live.Ref ) => Life.add_ref ( ls , ref ) ;
-	export const remove_ref = < T > ( ls : Plain.R < T > , ref : Live.Ref ) => Life.remove_ref ( ls , ref ) ;
-}
-
 
 
 /* Main */
@@ -57,25 +25,8 @@ export type Live < V > = Live.R < V > & Plain < V > &
 	trans < TR > ( tr : Live.trans < TR , V > ) : Live < TR > ;
 }
 
-export namespace Live
+export namespace Live   /* Readonly */
 {
-	/* helper types */
-
-	export type str = Live < string > ;
-	export type num = Live < number > ;
-	export type bool = Live < boolean > ;
-
-	export type ll < V > = Live < V > | V ;
-
-	export namespace ll
-	{
-		export type str = Live < string > | string ;
-		export type num = Live < number > | number ;
-		export type bool = Live < boolean > | boolean ;	
-	}
-
-	/* Readonly */
-
 	export type R < V > = Plain.R < V > &
 	{
 		readonly $ : V ;
@@ -103,6 +54,24 @@ export namespace Live
 			export type bool = R < boolean > | boolean ;	
 		}
 	}
+}
+
+export namespace Live
+{
+	/* helper types */
+
+	export type str = Live < string > ;
+	export type num = Live < number > ;
+	export type bool = Live < boolean > ;
+
+	export type ll < V > = Live < V > | V ;
+
+	export namespace ll
+	{
+		export type str = Live < string > | string ;
+		export type num = Live < number > | number ;
+		export type bool = Live < boolean > | boolean ;	
+	}
 
 	/* Refference */
 
@@ -111,6 +80,41 @@ export namespace Live
 		vChan ( i : { changer : object | undefined , initial : boolean } ) : void ; 
 	}
 }
+
+
+
+
+/* Plain */
+
+export namespace Live
+{
+	export const set     = < T > ( ls : Plain   < T > , newv : T , ch ? : object ) : void => ls [ ls_set ] ( newv , ch ) ;
+	export const get     = < T > ( ls : Plain.R < T > ) : T => ls [ ls_get ] () ;
+	export const mute    = < T > ( ls : Plain   < T > , m : ( v : T ) => T , ch ? : object ) => { set ( ls , m ( get ( ls ) ) , ch ) }
+
+	export const trans   = < R , T  > ( ls : Plain < T > , tr : Live.trans < R , T > ) =>    ls [ ls_trans ] ( tr ) ;
+	export const trans_r = < R , T  > ( ls : Plain < T > , tr : Live.trans_r < R , T > ) =>    ls [ ls_trans_r ] ( tr ) ;
+
+	export const add_ref    = < T > ( ls : Plain.R < T > , ref : Live.Ref ) => Life.add_ref ( ls , ref ) ;
+	export const remove_ref = < T > ( ls : Plain.R < T > , ref : Live.Ref ) => Life.remove_ref ( ls , ref ) ;
+}
+
+export type Plain < V > = Plain.R < V > &
+{
+	[ ls_set ] ( newv : V , ch ? : object ) : void ;
+	[ ls_trans ] < TR > ( tr : Live.trans < TR , V > ) : Live < TR > ;
+}
+
+export namespace Plain
+{
+	export type R < V > = Life < Live.Ref > &
+	{
+		[ ls_get ] () : V ;
+		[ ls_trans_r ] < TR > ( tr : Live.trans_r < TR , V > ) : Live.R < TR > ;
+	}
+}
+
+
 
 export namespace Live
 {
@@ -131,7 +135,7 @@ export namespace Live
 		public trans_r < TR > ( tr : trans_r < TR , V > ) : R < TR > { return this [ ls_trans_r ] ( tr ) ; }
 
 
-		/* Suppin */
+		/* Plain */
 
 		public override [ life_add_ref ] ( ref : Ref ) : void
 		{

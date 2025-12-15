@@ -1,5 +1,5 @@
 import { Life , life_add_ref , refs , Agg  , agg , agg_echan } from "./Life.js" ;
-import { Plain , Live , } from "./LiveState.js" ;
+import { Live , } from "./LiveState.js" ;
 
 const log = console.log ;
 
@@ -106,10 +106,10 @@ export class Renn < T >  extends Life < Renn.Ref < T > >  implements Agg
 	{
 		for ( let pos = start ; pos < this.#_orders.length ; pos ++ )
 		{
-			Plain.set ( this.#_orders [ pos ] , pos , this ) ;
+			Live.set ( this.#_orders [ pos ] , pos , this ) ;
 		}
 		
-		Plain.set ( this.#_length , this.#_orders.length ) ;
+		Live.set ( this.#_length , this.#_orders.length ) ;
 	}
 
 	#_orders : OI < T > [] ;
@@ -168,21 +168,21 @@ export class OI < T >  extends Live.Leaf < number >  implements O < T >
 
 	public delete () : void
 	{
-		this.renn.delete ( Plain.get ( this ) , 1 ) ;
+		this.renn.delete ( Live.get ( this ) , 1 ) ;
 	}
 
 	public get next () : Order < T > | undefined
 	{
-		return this.renn.orders [ ( Plain.get ( this ) ) + 1 ] ;
+		return this.renn.orders [ ( Live.get ( this ) ) + 1 ] ;
 	}
 
 	public get prev () : Order < T > | undefined
 	{
-		return this.renn.orders [ ( Plain.get ( this ) ) - 1 ] ;
+		return this.renn.orders [ ( Live.get ( this ) ) - 1 ] ;
 	}
 
 	public override toString ()
 	{
-		return Plain.get ( this ) ;
+		return Live.get ( this ) ;
 	}
 }

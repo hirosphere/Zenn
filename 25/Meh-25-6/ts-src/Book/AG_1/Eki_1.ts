@@ -19,7 +19,6 @@ export namespace VM
 		ev =>
 		{
 			const st = document.visibilityState ;
-			log ( "visibilitychange" , st ) ;
 			tone.voice.sch
 			(
 				st == "visible" ? [ [ 32 , 12 ] , [ 32 , 17 ] , [ 32 , 21 ] ] :
@@ -307,9 +306,9 @@ export namespace VC
 			ef.td ( { style : { fontWeight : "500" } } , i + 1 ) ,
 			ef.td ( { style : { fontWeight : "900" } } , st.StationName ) ,
 			ef.td ( { passive : { mousedown : () => notes ( st.post ) } } , "〒" , st.post ) ,
-			ef.td ( st.address ) ,
 			ef.td ( { passive : { mousedown : () => notes ( lat ) } } , lat ) ,
 			ef.td ( { passive : { mousedown : () => notes ( lon ) } } , lon ) ,
+			ef.td ( st.address ) ,
 			ef.td ( "( " , st.PrefName , " )" ) ,
 		) ;
 	}

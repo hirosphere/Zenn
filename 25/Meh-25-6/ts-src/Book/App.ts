@@ -51,10 +51,12 @@ namespace VM
 					hsl : { title : "HSL" , page : () => AG_Z.HSL.VC.App () } ,
 					"01" :
 					{
-						title : "01",
+						title : "Z01",
 						parts :
 						{
 							"MIDIKey" : { title : "MIDI Key" , page : () => AG_Z.Z01.MIDIKey.VC.App () } ,
+							"Session" : { title : "Session" , page : () => AG_Z.Z01.Session.VC.App () } ,
+							"AudioTL" : { title : "Audio TL" , page : () => AG_Z.Z01.AutioTL.VC.App () } ,
 						}
 					}
 				}
@@ -192,7 +194,6 @@ namespace VC
 		"Treem"   : index => AG_1.Extreem.VC.Applet () ,
 		"Todo"    : index => AG_1.ToDo () ,
 		"JMA_EQ"  : index => AG_1.JMA_EQ.VC.App () ,
-		"Tonne"   : index => AG_1.Tonne.VC.App () ,
 		"eki.1" : index => AG_1.Eki_1.VC.App ( index ) ,
 	}
 
@@ -219,6 +220,8 @@ namespace VC
 			Tree ( vm ) ,
 			// Navi2.VC.Tree ( vm.navi.root ) ,
 
+			Ctrl ( vm ) ,
+
 			ef.section
 			(
 				{ class : "CLOCK" } ,
@@ -233,6 +236,17 @@ namespace VC
 		BookBase.VC.Index ( vm.navi.root ) ,
 		ef.footer () ,
 	) ;
+
+	const Ctrl = ( vm : VM.App ) : DD.Mel =>
+	{
+		const url = vm.navi.page.curr.trans_r ( index => index?.url.$ ?? "**" ) ;
+
+		return ef.section
+		(
+			{ class : "CTRL" } ,
+			ef.a ( { attrs : { href : url , target : "_blank" } } , "*" )
+		) ;
+	}
 
 	const Clock = ( action : () => void ) : DD.Node =>
 	{

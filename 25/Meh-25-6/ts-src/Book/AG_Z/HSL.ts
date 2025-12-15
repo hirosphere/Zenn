@@ -1,4 +1,4 @@
-import { Live , Ease , Renn , Key , DOM , DD , ef , pl , df , KVS , log } from "../../Meh/Meh.js" ;
+import { Live , Ease , Renn , Key , DOM , DD , ef , pl , df , log } from "../../Meh/Meh.js" ;
 import * as BB from "../BookBase.js";
 
 type uned = undefined ;
@@ -12,7 +12,7 @@ const uned = undefined ;
 export namespace DM
 {
 	export type Node = Ease < node > ;
-	export function Node ( i : Partial < node > ) : Node { return Ease.fromPartial ( i , node ) }
+	export function Node ( i : Ease.dp < node > ) : Node { return Ease.fromPartial ( i , node ) }
 
 	export class node
 	{
@@ -20,11 +20,11 @@ export namespace DM
 		depth : number ;
 		parts : node [] ;
 
-		constructor ( i : Partial < node > )
+		constructor ( i ? : Ease.dp < node > )
 		{
-			this.title = i.title ?? "" ;
-			this.depth = i.depth ?? 0 ;
-			this.parts = i.parts ?.map ( p => new node ( p ) ) ?? [] ;
+			this.title = i ?.title ?? "" ;
+			this.depth = i ?.depth ?? 0 ;
+			this.parts = i ?.parts ?.map ( p => new node ( p ?? {} ) ) ?? [] ;
 		}
 	}
 }

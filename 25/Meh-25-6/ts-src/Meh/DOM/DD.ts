@@ -72,6 +72,28 @@ export type BB =  /** BidirectionalBinds */
 	chChan ? : Plain < boolean > ;
 }
 
+( x : HTMLInputElement ) => x.valueAsNumber + 555 ;
+
+type BBX < E extends Element , T extends string = never > =
+(
+	E extends ( HTMLInputElement ) ?
+	(
+		T extends "checkbox" ? bb < boolean > :
+		T extends "number" | "range" ? bb < number > :
+		bb < string >
+	) :
+	E extends ( HTMLTextAreaElement ) ?
+		bb < string >
+	: never
+) ;
+
+type bb < T > =
+{
+	input ? : Plain < T > ;
+	change ? : Plain < T > ;
+} ;
+
+
 export type Focus = Plain.R < boolean > ;
 
 
