@@ -61,7 +61,7 @@ export var VM;
             this.has_parts = this.parts.length.trans_r(length => length > 0 ||
                 typeof i.parts == "function");
             this.open.add_ref({ vChan: () => this.open.$ && this.make_dyn_parts() });
-            this.thumb = this.open.trans_r(state => this.has_parts.$ ? (state ? ">" : "*") : "");
+            this.thumb = this.open.trans_r(state => this.has_parts.$ ? (state ? "*" : ">") : "");
         }
         toggle_open() {
             this.open.$ = this.has_parts.$ && !this.open.$;

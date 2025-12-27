@@ -125,7 +125,7 @@ export namespace VM
 
 			this.open.add_ref ( { vChan : () => this.open.$ && this.make_dyn_parts () } ) ;
 			
-			this.thumb = this.open.trans_r ( state => this.has_parts.$ ? ( state ? ">" : "*"  ) : "" ) ;
+			this.thumb = this.open.trans_r ( state => this.has_parts.$ ? ( state ? "*" : ">"  ) : "" ) ;
 		}
 
 		public toggle_open () : void

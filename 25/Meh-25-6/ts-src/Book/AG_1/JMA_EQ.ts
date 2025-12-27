@@ -149,7 +149,6 @@ export namespace VC
 
 		overflow : hidden ;
 		padding : 1px ;
-		align-items : stretch ;
 		gap : 1ex ;
 	}
 
@@ -157,13 +156,14 @@ export namespace VC
 	{
 		display : flex ;
 		padding : 1ex ;
-		align-items : center ;
 		gap : 1em ;
+
+		white-space : nowrap ;
+		overflow : auto ;
 	}
 
 	h1
 	{
-		text-align : center ;
 	}
 
 	button { padding : 1ex 1.2em ; }
@@ -250,12 +250,11 @@ export namespace VC
 
 			ef.main
 			(
-				{ class : "FC AS" } ,
+				{ class : "FC" } ,
 
 				ef.header
 				(
-					{ class : "FR JC AC" } ,
-					ef.h1 ( "JMA 地震リスト" , ) ,
+					{ class : "FR AC" } ,
 					ef.button ( { passive : { click } } , "読み込み" ) ,
 					ef.span ( vm.loadtime ) ,
 					ef.section
