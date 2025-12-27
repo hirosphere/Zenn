@@ -2,7 +2,7 @@
 function work ( el )
 {
 	if ( el ?. getAttribute ?. ( "data-testid" ) != "cellInnerDiv" )  return ;
-	if ( ! el.textContent?.match ( /高市|早苗|河野|党|自民|エプスタイン|内閣/ ) )  return ;
+	if ( ! el.textContent?.match ( /高市|早苗|河野|党|自民|エプスタイン|内閣|農相/ ) )  return ;
 
 	const al = el.getElementsByTagName ( "article" )?.[ 0 ]?.querySelectorAll ( "[aria-labelledby]" ) ;
 	al && al [ 0 ] && quote ( al [ 0 ] ) ;

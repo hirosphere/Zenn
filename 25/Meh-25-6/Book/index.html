@@ -53,12 +53,13 @@ body.NAVI_INLINE
 
 .NAVI
 {
-	background : hsl( 210  55%  90% ) ;
+	background : hsl( 215  60%  85% ) ;
 }
 
 .NAVI .TREE
 {
 	cursor : default ;
+	font-size : 0.9em ;
 }
 
 .NAVI .INDEX_HEAD
@@ -91,7 +92,6 @@ body.NAVI_INLINE
 
 .NAVI_INDEX
 {
-	font-size : 98% ;
 }
 
 .NAVI ._LINK
@@ -134,6 +134,8 @@ body.NAVI_INLINE
 
 .NAVI_BLOCK .NAVI
 {
+	border-right : 1px  solid  hsl( 215  25%  80% ) ;
+
 	width : calc( 100px + 13vw ) ;
 	display : grid ;
 	grid-template-rows :  1fr  auto ;
@@ -181,15 +183,21 @@ body.NAVI_INLINE
 
 .NAVI_BLOCK .INDEX_PARTS._OPEN
 {
-	margin : 0.3ex 0  0.3ex ;
-	border-radius : 0.1ex 0  0 0.8ex ;
-	border : solid  hsl( 220  10%  65% ) ;
-	border-width : 0.1ex  0ex  0.1ex  0.2ex ;
-	padding-block : 0.3ex  0.3ex ;
-	padding-inline : 0.5ex  0.0ex ;
+	margin-block : 0.72ex ;
+	margin-inline : 0.2ex  0 ;
+	border-radius : 0.5ex 0  0 0.5ex ;
+	border : solid  hsl( 220  10%  55% ) ;
+	border-top-width : 0.1ex ;
+	border-bottom-width : 0.1ex ;
+	border-left-width : 0.3ex ;
+	border-right-width : 0.2ex ;
+	padding-block : 0.72ex ;
+	padding-inline : 0.8ex  0.0ex ;
 
 	display : block ;
 	overflow : hidden ;
+
+	font-size : 101% ;
 }
 
 .NAVI_BLOCK ul
@@ -249,14 +257,20 @@ body.NAVI_INLINE
 {
 	flex-grow : 1 ;
 
+	max-width : 100% ;
 	display : flex ;
-	overflow-x : scroll ;
-	scrollbar-width : none ;
 
 	padding-block : 0ex 0.4ex ;
 	padding-inline : 1ex ;
 	justify-content : center ;
 	align-items : start ;
+}
+
+.NAVI_INLINE .TREE_ALIGN_FRAME
+{
+	max-width : 100% ;
+	overflow-x : scroll ;
+	scrollbar-width : none ;
 }
 
 .NAVI_INLINE .NAVI_INDEX
@@ -268,7 +282,7 @@ body.NAVI_INLINE
 .NAVI_INLINE .INDEX_HEAD
 {
 	margin-bottom : 0.0ex ;
-	margin-right : 0.5ex ;
+	margin-right : 0.2ex ;
 
 	overflow : hidden ;
 
@@ -313,7 +327,9 @@ body.NAVI_INLINE
 
 .NAVI_INLINE .INDEX_PARTS._OPEN
 {
-	border : solid  hsl( 0  0%  70% ) ;
+	margin-inline : 0.3ex ;
+
+	border : solid  hsl( 0  0%  45% ) ;
 	border-width : 0  0.2ex  0.00ex  0.5ex ;
 	border-radius : 0.1ex 0.1ex  1.0ex 1.0ex ;
 
@@ -399,7 +415,13 @@ body.NAVI_INLINE
 </head>
 
 <body>
-	<script type="module" src="../js-out-1/Book/App.js" ></script>
+	<script type="module">
+
+		import {  } from "../js-out-1/Book/App.js" ;
+
+		// new SharedWorker ( "../js-out-1/Meh/Store/Worker.js" ) ;
+
+	</script>
 </body>
 
 

@@ -39,7 +39,6 @@ namespace VM
 					"Eki" : { type : "Eki_Q1" , title : "駅データ 階層タブ" } ,
 					"JMA_EQ" : { type : "JMA_EQ" , title : "地震リスト" } ,
 					"Treem" : { type : "Treem" , title : "Extreem" } ,
-					// "Tonne" : { type : "Tonne" , title : "Tonne" } ,
 				} ,
 			} ,
 			"AG_Z" :
@@ -47,18 +46,11 @@ namespace VM
 				title : "AG Z" ,
 				parts :
 				{
-					tmpl : { title : "Template" , page : () => AG_Z.Template.VC.App () } ,
-					hsl : { title : "HSL" , page : () => AG_Z.HSL.VC.App () } ,
-					"01" :
-					{
-						title : "Z01",
-						parts :
-						{
-							"MIDIKey" : { title : "MIDI Key" , page : () => AG_Z.Z01.MIDIKey.VC.App () } ,
-							"Session" : { title : "Session" , page : () => AG_Z.Z01.Session.VC.App () } ,
-							"AudioTL" : { title : "Audio TL" , page : () => AG_Z.Z01.AutioTL.VC.App () } ,
-						}
-					}
+					"MIDIKey" : { title : "MIDI Key" , page : () => AG_Z.Z01.MIDIKey.VC.App () } ,
+					"Session" : { title : "Session"  , page : () => AG_Z.Z01.Session.VC.App () } ,
+					"AudioTL" : { title : "Audio TL" , page : () => AG_Z.Z01.AutioTL.VC.App () } ,
+					"IDBPerm" : { title : "IDB Perm" , page : index => AG_Z.Z01.IDBPerm.VC.App () } ,
+					"Form1"   : { title : "Form 1"   , page : index => AG_Z.Z01.Form1.App () } ,
 				}
 			} ,
 			"Dyndex" : IndexQst.Dyndex ,
@@ -233,7 +225,11 @@ namespace VC
 	const Tree = ( vm : VM.App ) : DD.Node => ef.section
 	(
 		{ class : "TREE" } ,
-		BookBase.VC.Index ( vm.navi.root ) ,
+		ef.div
+		(
+			{ class : "TREE_ALIGN_FRAME" } ,
+			BookBase.VC.Index ( vm.navi.root ) ,
+		) ,
 		ef.footer () ,
 	) ;
 

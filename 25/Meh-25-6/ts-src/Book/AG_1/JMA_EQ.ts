@@ -213,7 +213,11 @@ export namespace VC
 		position : relative ;
 	}
 
-	.GRAPH ._HOVER
+	.PLOT
+	{
+	}
+
+	.PLOT._HOVER
 	{
 		color : hsl( 225  20%  20% ) ;
 		background : hsl( 225  40%  70% ) ;
@@ -332,30 +336,41 @@ export namespace VC
 				class : "GRAPH FC JC AC " ,
 				style : { display : vm.visible.trans_r ( s => s ? "" : "none" ) } ,
 			} ,
-			pl.each ( vm.records , r => Plot ( r , vm.hover.match ( r ) ) ) ,
+			pl.each ( vm.records , r => Plot ( r , vm.hover ) ) ,
 		) ;
 	}
 
-	function Plot ( m : DM.record , hover : Live.R.bool ) : dd.Mel
+	function Plot ( r : DM.record , hoverkey : Key <DM.record | undefined  > ) : dd.Mel
 	{
-		const day = m.day_phase ;
-		const lat = (  35 - m.pos.x ) ;
+		const day = r.day_phase ;
+		const lat = (  35 - r.pos.x ) ;
 
-		const scale = 0.4 * Math.sqrt ( Math.pow ( 32 , ( + m.mag || 0 ) * 0.4 ) ) ;
+		const scale = 0.4 * Math.sqrt ( Math.pow ( 32 , ( + r.mag || 0 ) * 0.4 ) ) ;
 
 		const style : dd.Style =
 		{
 			display : "block" ,
 			position : "absolute" ,
-			transform : `translate( ${ ( day ) * 30 }em , ${ 20 + lat * 1.0 }em )  scale( ${ scale } )` ,
+			width : "0.4em" ,
+			height : "0.4em" ,
+			transform : `translate( ${ ( day ) * 30 }em , ${ 20 + lat * 2.0 }em )  scale( ${ scale } )` ,
 		}
 
-		const title = `${ m.anm } M${ m.mag } ${ m.date }` ;
+		const title = `${ r.anm } M${ r.mag } ${ r.date }` ;
 
 		return ef.div
 		(
-			{ class : { _HOVER : hover } , attrs : { title } , style } ,
-			ef.div ( { style : { paddingTop : "0.75ex" } } , "*" )
+			{
+				class : [ "PLOT" , { _HOVER : hoverkey.match ( r ) } ] ,
+				attrs : { title } ,
+				passive :
+				{
+					mouseover () { hoverkey.curr.$ = r } ,
+					mouseleave () { hoverkey.curr.$ = undefined ; } ,
+				} ,
+				style
+			} ,
+			ef.div ( { style : { marginLeft : "-0.035em" , marginTop : "-0.157ex" } } , "*" )
 		) ;
 	}
 

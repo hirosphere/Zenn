@@ -122,7 +122,7 @@ export namespace IDB
 				{
 					if( ! this.db.core )
 					{
-						log ( "IDB.Store get" , "コアがないよ。" ) ;
+						log ( "IDB.Store get ! core " ) ;
 						resolve ( undefined ) ;
 						return ;
 					}

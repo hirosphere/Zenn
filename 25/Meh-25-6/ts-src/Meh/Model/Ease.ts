@@ -4,7 +4,14 @@ import { Renn } from "./Renn.js" ;
 
 const log = console.log ;
 
-/* */
+/* タイプ名を表すフィールド名を定義 */
+
+const tf = "type" ;  /* type name field name */
+type tf = typeof tf ;
+type tobject < t extends string = string > = { readonly [ tf ] ? : t } ;
+
+
+/* Ease */
 
 export type Ease < V > =
 (
@@ -23,11 +30,6 @@ export type Branch < V extends tobject > = Live < V > & Agg & { [ Ease.type ] ? 
 {
 	[ name in keyof V ] : name extends tf ? never : Ease < V [ name ] >;
 } ;
-
-const tf = "type" ;  /* type name field name */
-type tf = typeof tf ;
-type tobject = { readonly [ tf ] ? : string } ;
-
 
 export type Row < E > = Live < E [] > & Agg &
 {

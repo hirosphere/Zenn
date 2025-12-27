@@ -49,6 +49,8 @@ export namespace VM
 		}
 	}
 
+	type node = counter | hsl | { type : "" } ;
+
 	function node ( i : Ease.dp < node > ) : node
 	{
 		switch ( i.type )
@@ -61,7 +63,6 @@ export namespace VM
 	}
 
 	export type Node = Ease < node > ;
-	type node = counter | hsl | { type : "" } ;
 
 	export type Counter = Ease < counter > ;
 	export type HSL = Ease < hsl > ;
