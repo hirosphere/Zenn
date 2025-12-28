@@ -12,19 +12,28 @@ namespace VC
 		(
 			{
 				shadow : [ common.css , css ] ,
-				passive :
-				{
-					mousedown  : () => log ( "mousedown"  ) ,
-					mouseup    : () => log ( "mouseup"    ) ,
-					touchstart : () => log ( "touchstart" ) ,
-					touchend   : () => log ( "touchend"   ) ,
-				} ,
 			} ,
 			ef.main
 			(
 				ef.h1( "Nav dev " ) ,
 				ef.p ( new Date ().toLocaleString () ) ,
+				Counter () ,
+				Counter () ,
+				Counter () ,
 			) ,
+		) ;
+	}
+
+	const Counter = () =>
+	{
+		const count = Live ( 100 ) ;
+
+		return ef.section
+		(
+			{ class : "FR GX JC AC" } ,
+			ef.button ( { passive : { click : () => count.$ -= 1 , } } , "-1" ) ,
+			ef.button ( { passive : { click : () => count.$ += 1 , } } , "+1" ) ,
+			ef.span( { style : { fontSize : "3em" } } , count ) ,
 		) ;
 	}
 
@@ -37,6 +46,12 @@ namespace VC
 	main
 	{
 		text-align : center ;
+	}
+
+	button
+	{
+		min-width : 4em ;
+		padding : 1.2ex 1.2em ;
 	}
 	
 	` ;
