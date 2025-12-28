@@ -89,8 +89,8 @@ type BBX < E extends Element , T extends string = never > =
 
 type bb < T > =
 {
-	input ? : Plain < T > ;
-	change ? : Plain < T > ;
+	type : "input" | "change" ;
+	value ? : Plain < T > ;
 } ;
 
 
