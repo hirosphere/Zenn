@@ -1,5 +1,7 @@
 
 const bcast = new BroadcastChannel ( "BC" ) ;
+// const sw = new SharedWorker ( "../js-out-1/Meh/Store/Worker.js" ) ;
+
 
 export class Perm
 {

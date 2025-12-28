@@ -76,7 +76,7 @@ const make_store = ( db : IDBDatabase , stores : Map < string , IDB.Store < any 
 			if ( db.objectStoreNames.contains ( store.name ) == false )
 			{
 				db.createObjectStore ( store.name , store.param ) ;
-				log ( "ストア作成" , store.name ) ;
+				log ( "IDB : ストア作成" , store.name ) ;
 			}
 		}
 	)
@@ -151,15 +151,15 @@ export namespace IDB
 					}
 				}
 	
-				catch ( err )
+				catch ( exc )
 				{
-					log ( "IDB.Store get : 未作成ストア"  , this.db.schema.name , this.name ) ;
+					log ( "IDB.Store get"  , this.db.schema.name , this.name , exc ) ;
 					resolve ( undefined ) ;
 				}
 			}
 	
 			return new Promise ( f ) ;
 		}
-	}	
+	}
 }
 
