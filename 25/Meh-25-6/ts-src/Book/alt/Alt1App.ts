@@ -100,7 +100,7 @@ namespace VC
 			ef.main
 			(
 				{ class : "FC PM GM" } ,
-				ef.h1( "Nav dev " ) ,
+				ef.h1( "Nav dev A" ) ,
 				ef.p ( new Date ().toLocaleString () ) ,
 				ef.section
 				(
@@ -140,6 +140,7 @@ namespace VC
 
 	const Counter = ( mo : VM.Counter , font : Live.R.str ) =>
 	{
+
 		return ef.section
 		(
 			{ class : "FR GX JC AC  CONTER" , style : { fontFamily : font } } ,
