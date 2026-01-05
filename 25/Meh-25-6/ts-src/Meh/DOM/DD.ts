@@ -9,10 +9,11 @@ type llr < V > = V | Plain.R < V > ;
 
 export type ElementSpec < E extends TargetDOMElement > =
 {
-	target ? : string ;
+	target ? : E ;
 	class ? : Class ;
 	style ? : Style ;
-	shadow ? : Shadow ;
+	shadow ? : CSS ;
+	css ? : CSS ;
 	attrs ? : Attrs < E > ;
 	props ? : Props < E > ;
 	biBind ? : BB ;
@@ -104,7 +105,7 @@ export type Hook < E extends TargetDOMElement > =
 	term ? ( el : E ) : void ;
 };
 
-export type Shadow = llr < string > | CSSStyleSheet | ( llr < string > | CSSStyleSheet ) [] ;
+export type CSS = llr < string > | CSSStyleSheet | ( llr < string > | CSSStyleSheet ) [] ;
 
 
 

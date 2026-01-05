@@ -46,14 +46,6 @@ namespace VM
 {
 	export class App
 	{
-		public readonly ps : Perm.Item < DM.app > ;
-
-		constructor ()
-		{
-			const perm = new Perm ( "PS_2512A" ) ;
-
-			this.ps = perm.item < DM.app > ( { name : "MAIN" } ) ;
-		}
 	}
 }
 

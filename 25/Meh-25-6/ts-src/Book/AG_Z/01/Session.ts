@@ -237,8 +237,8 @@ export namespace VC
 
 	function NodeContent ( m : VM.Node ) : DD.Mel
 	{
-		if ( m [ Ease.type ] == "counter" ) return Counter ( m ) ;
-		if ( m [ Ease.type ] == "hsl" ) return HSL ( m ) ;
+		if ( m.type == "counter" ) return Counter ( m ) ;
+		if ( m.type == "hsl" ) return HSL ( m ) ;
 
 		return ef.section ( ef.h2 ( "Item" ) ) ;
 	}

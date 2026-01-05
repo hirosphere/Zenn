@@ -2,7 +2,7 @@ import { Ease } from "../Model/Ease.js" ;
 
 const log = console.log ;
 
-export class Session < V >
+export class Session < V extends object >
 {
 	public readonly value : Ease < V > ;
 
@@ -34,7 +34,7 @@ export class Session < V >
 	}
 }
 
-function parse < V >
+function parse < V extends object >
 (
 	ctor : Ease.ctor < V > ,
 	json : string

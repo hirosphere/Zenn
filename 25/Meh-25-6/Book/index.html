@@ -24,7 +24,7 @@ html
 	
 }
 
-html
+html , a
 {
 	color : hsl( 0  0%  12% ) ;
 }
@@ -39,8 +39,6 @@ body.NAVI_BLOCK
 {
 	display : flex ;
 	flex-direction : row ;
-
-	background: lightblue ;
 }
 
 body.NAVI_INLINE
@@ -48,8 +46,6 @@ body.NAVI_INLINE
 	display : flex ;
 	flex-direction : column ;
 	overflow : hidden ;
-
-	background: pink ;
 }
 
 
@@ -57,7 +53,7 @@ body.NAVI_INLINE
 
 .NAVI
 {
-	background : hsl( 215  60%  85% ) ;
+	background : linear-gradient( 180deg , hsl( 215  60%  85% ) , hsl( 215  50%  90% ) ) ;
 }
 
 .NAVI .TREE
@@ -116,7 +112,7 @@ body.NAVI_INLINE
 
 	border-radius : 0.1ex ;
 	border : none ;
-	background : hsl( 190  50%  84% ) ;
+	background : linear-gradient( 180deg , hsl( 180  50%  90% ) , hsl( 180  50%  60% )  ) ;
 
 	display : flex ;
 	flex-wrap : wrap ;
@@ -421,7 +417,9 @@ body.NAVI_INLINE
 <body>
 	<script type="module">
 
-		import {  } from "../js-out-1/Book/App.js" ;
+		import { VC } from "../js-out-1/Book/App.js" ;
+
+		VC.App ( document.body ) ;
 
 		// new SharedWorker ( "../js-out-1/Meh/Store/Worker.js" ) ;
 

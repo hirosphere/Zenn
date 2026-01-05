@@ -1,4 +1,4 @@
-import { Life , Live , Renn , Ease , Key , Store , DOM , DD , ef , pl , log } from "../../Meh/Meh.js" ;
+import { Life , Live , Renn , Ease , Key , Store , DOM , DD , ef , pl , times , log } from "../../Meh/Meh.js" ;
 import { life_add_ref } from "../../Meh/Model/Life.js";
 import * as common from "./common.js" ;
 
@@ -45,7 +45,7 @@ namespace VM
 		}
 	}
 
-	const navi_mode = [ "NM_BLOCK" , "MN_INLINE" ] ;
+	const navi_mode = [ "NM_BLOCK" , "NM_INLINE" ] ;
 	type navi_mode = typeof navi_mode [ number ] ;
 
 	export type Counter = Ease < counter > ;
@@ -86,32 +86,36 @@ namespace VM
 	] ;
 }
 
-namespace VC
+export namespace VC
 {
-	export const App = () : DD.Mel =>
+	export const App = ( body : HTMLBodyElement ) : DD.Mel =>
 	{
 		const app = new VM.App ;
 
-		return ef.div
+		return ef.body
 		(
 			{
-				shadow : [ common.css , css ] ,
+				target : body ,
+				class : app.navi_mode ,
+				css : [ common.css , css ] ,
 			} ,
 			ef.main
 			(
 				{ class : "FC PM GM" } ,
 				ef.h1( "Nav dev A" ) ,
+				ef.p ( Store.Perm.sid ) ,
 				ef.p ( new Date ().toLocaleString () ) ,
 				ef.section
 				(
 					{ class : "FR GX JC AC" } ,
-					 ef.button ( { passive : { click : () => app.toggle_nm () } } , app.navi_mode ) ,
+					ef.button ( { passive : { click : () => app.toggle_nm () } } , app.navi_mode ) ,
 					ef.p ( app.ss.navi_mode_i ) ,
 				) ,
 				FontSelector ( app.ss.counter_font_i ) ,
 				ef.p ( { style : { height : "5em" } } , app.counter_font ) ,
 				pl.each ( app.ss.counters.renn , m => Counter ( m , app.counter_font ) ) ,
 			) ,
+			Navi ( app ) ,
 		) ;
 	}
 
@@ -150,16 +154,60 @@ namespace VC
 		) ;
 	}
 
+	const Navi = ( app : VM.App ) : DD.Mel =>
+	{
+		const list = times ( 10 , n => `Item ${ n + 1 }` ) ;
+
+		return ef.section
+		(
+			{} ,
+			ef.nav
+			(
+				ef.ul
+				(
+					...list.map ( i => ef.li ( i ) )
+				) ,
+			) ,
+		) ;
+	}
+
 	/* css */
 
 	const css = /* css */ `
 	
 	* { color : hsl( 0  0%  30% ) ; }
 
-	main
+	/* layout */
+
+	:host {  }
+	main { text-align : center ; }
+
+	.NM_BLOCK > main { background : pink ; }
+
+	.NM_INLINE > main { background : skyblue ; }
+
+	/* Navi */
+
+	nav ul
 	{
-		text-align : center ;
+		cursor : default ;
+		list-style : none ;
 	}
+
+	nav li
+	{
+		padding : 0.2ex  1ex ;
+	}
+
+	nav li:hover { background : hsl( 0  0%  97% ) ; }
+
+	.NM_INLINE nav ul
+	{
+
+	}
+	
+
+	/* parts */
 
 	button
 	{
@@ -181,11 +229,6 @@ namespace VC
 		max-width : 80vw ;
 		font-size : 1.3em ;  color : hsl( 0  0%  10% ) ;
 	}
-	
+
 	` ;
 }
-
-export const main = ( ce : string ) =>
-{
-	DOM.add ( VC.App () , ce ) ;
-} ;

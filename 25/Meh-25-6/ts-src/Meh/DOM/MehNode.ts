@@ -10,25 +10,25 @@ export abstract class MehNode
 
 	protected bindState
 	(
-		text : any ,
+		state : any ,
 		update : ( new_v : any ) => void ,
 	
 	) : void
 	{
-		if ( text instanceof Live.Core )
+		if ( state instanceof Live.Core )
 		{
 			const ref =
 			{
-				source : text ,
-				vChan : () => update ( Live.get ( text ) ) ,
+				source : state ,
+				vChan : () => update ( Live.get ( state ) ) ,
 			}
 
 			this.#srcs.add ( ref ) ;
 			// Live.add_ref ( text , ref ) ;
-			text.add_ref ( ref ) ;
+			state.add_ref ( ref ) ;
 		}
 
-		else  update ( text ) ;
+		else  update ( state ) ;
 	}
 
 	public terminate ()
@@ -101,11 +101,15 @@ export class MehElement < E extends DD.TargetDOMElement >  extends MehNode
 			if ( dec.shadow !== undefined )
 			{
 				const root = this.el.attachShadow ( { mode : "open" } ) ;
-				this.setShadow ( dec.shadow , root ) ;
+				this.setCSS ( dec.shadow , root ) ;
 				this.#_parts = PartsPlace.create ( parts , root ) ;
 			}
 
-			else  this.#_parts = PartsPlace.create ( parts , this.el ) ;
+			else
+			{
+				dec.css && this.setCSS ( dec.css , document ) ;
+				this.#_parts = PartsPlace.create ( parts , this.el ) ;
+			}
 		}
 
 		/* Hook */
@@ -165,11 +169,11 @@ export class MehElement < E extends DD.TargetDOMElement >  extends MehNode
 		}
 	}
 
-	protected setShadow ( dec : DD.Shadow , root : ShadowRoot ) : void
+	protected setCSS ( dec : DD.CSS , root : Document | ShadowRoot ) : void
 	{
 		if ( dec instanceof Array )
 		{
-			dec.forEach ( dec => this.setShadow ( dec , root ) ) ;
+			dec.forEach ( dec => this.setCSS ( dec , root ) ) ;
 			return ;
 		}
 
@@ -259,7 +263,7 @@ const makeElement = ( ns : string , type : string , dec : DD.ElementSpec < any >
 {
 	const rt =
 	(
-		dec.target && document.querySelector ( dec.target ) ||
+		dec.target ||
 		(
 			ns ?
 				document.createElementNS ( ns , type ) :
@@ -278,9 +282,6 @@ class ClassPlace
 	set classNames ( class_names : string )
 	{
 		const rem = this.#_prev ;
-		// const mow = new Set < string > ( class_names.split ( /\s+/g ) ) ;
-		// mow.delete ( "" ) ;
-
 		const mow = ClassPlace.to_set ( class_names ) ;
 
 		this.el.classList.remove ( ... rem .difference ( mow ) ) ;

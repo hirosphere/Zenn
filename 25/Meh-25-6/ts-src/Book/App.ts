@@ -146,9 +146,9 @@ namespace VM
 
 /* View Components */
 
-namespace VC
+export namespace VC
 {
-	export const App = () : DD.Node =>
+	export const App = ( body : HTMLBodyElement ) : DD.Node =>
 	{
 		const vm = new VM.App ;
 
@@ -159,7 +159,7 @@ namespace VC
 
 		return ef.body
 		(
-			{ class : [ vm.ps.navi_mode , "APP" ] , target : "body" , hook : { init }  } ,
+			{ class : [ vm.ps.navi_mode , "APP" ] , target : body , hook : { init }  } ,
 			NaviPane ( vm ) ,
 			ef.div
 			(
@@ -279,7 +279,4 @@ namespace VC
 		) ;
 	}
 }
-
-
-dom.add ( VC.App () , "html" ) ;
 

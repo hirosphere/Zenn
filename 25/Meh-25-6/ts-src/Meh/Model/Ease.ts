@@ -26,10 +26,17 @@ export type Ease < V > =
 		Live < V >
 ) ;
 
-export type Branch < V extends tobject > = Live < V > & Agg & { [ Ease.type ] ? : V [ tf ] } &
+
+export type Branch < V extends tobject > = Live < V > & Agg &
 {
-	[ name in keyof V ] : name extends tf ? never : Ease < V [ name ] >;
-} ;
+	[ name in keyof V ] : name extends tf ? V [ name ] : Ease < V [ name ] >;
+}
+
+
+export type Branch_ < V extends tobject > = Live < V > & Agg &
+{
+	[ name in keyof V ] : name extends tf ? V [ name ] : Ease < V [ name ] >;
+}
 
 export type Row < E > = Live < E [] > & Agg &
 {
@@ -41,6 +48,8 @@ export type Row < E > = Live < E [] > & Agg &
 	clear () : void ;
 }
 
+
+
 /* */
 
 
@@ -50,7 +59,7 @@ export function Ease < V > ( val : V , agg ? : Agg ) : Ease < V >
 	(
 		val instanceof Array ?
 			new RowImp ( val , agg ) as any
-			: new EaseBranchImp ( val , agg ) as any
+			: new BranchImp ( val , agg ) as any
 	)
 	: Live ( val , agg ) as any ;
 }
@@ -58,7 +67,7 @@ export function Ease < V > ( val : V , agg ? : Agg ) : Ease < V >
 
 export namespace Ease
 {
-	export function fromPartial < V >
+	export function fromPartial < V extends object >
 	(
 		i : dp < V > ,
 		ctor : ctor < V > ,
@@ -69,25 +78,29 @@ export namespace Ease
 		return Ease < V > ( new ctor ( i ) , agg ) ;
 	}
 
-	export type dp < V > =  /** Deep Partial */
+	export type dp < V extends object > = dp_i < V > /** Deep Partial */ ;
+
+	export type dp_i < V > =
 	(
 		V extends object ?
 		(
-			V extends Array < infer E > ?
-				Array < dp < E > > :
-				{ [ prop in keyof V ] ? : dp < V [ prop ] > }
+			V extends ( infer E ) [] ? dp_i < E > [] :
+			{
+				[ P in keyof V ] ? : dp_i < V[P]  >
+			}
 		) :
 		V
 	) ;
 
-	export type ctor < V > = new ( i ? : dp < V > ) => V ;
-
-	export const type = Symbol () ;
+	export type ctor < V extends object > = new ( i ? : dp < V > ) => V ;
 }
 
 
 
-/* Imp */
+
+
+
+/* RowImp */
 
 export class RowImp < E >  extends Live.Core < E [] >  implements Row < E >
 {
@@ -146,17 +159,20 @@ export class RowImp < E >  extends Live.Core < E [] >  implements Row < E >
 	#_renn = new Renn < Ease < E > > ( [] , this ) ;
 }
 
-export class EaseBranchImp < V extends object >
-  extends Live.Core < V >
-  implements Live < V > , Agg
+
+
+
+/* BranchImp */
+
+export class BranchImp < V extends object >  extends Live.Core < V >  implements tobject , Agg
 {
-	public readonly [ Ease.type ] ? : string ;
+	readonly type ? : string ;
 
 	constructor ( val : V , agg ? : Agg )
 	{
 		super ( agg ) ;
 
-		this [ Ease.type ] = ( val as any ) ?. [ tf ] ;
+		this.type = ( val as any ) ?. [ tf ] ;
 
 		Object.entries ( val ) .forEach
 		(
@@ -175,7 +191,7 @@ export class EaseBranchImp < V extends object >
 
 	public [ ls_get ] () : V
 	{
-		const rt : any = { [ tf ] : this [ Ease.type ] } ;
+		const rt : any = { [ tf ] : this.type } ;
 		Object.entries ( this ).forEach
 		(
 			( [ name , ls ] ) => {

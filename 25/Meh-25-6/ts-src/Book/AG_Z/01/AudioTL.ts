@@ -82,6 +82,78 @@ export namespace VM
 
 export namespace VC
 {
+	/* Components */
+
+	export function App () : DD.Mel
+	{
+		const vm = new VM.App ;
+
+		return ef.div
+		(
+			{ shadow : css } ,
+			ef.main
+			(
+				{ class : "FC  PM  AS  GX" } ,
+				ef.section
+				(
+					{ class : " FR AC GX" } ,
+					ef.h1 ( "Audio Timeline" ) ,
+					CheckBox ( "Table" , vm.vis.table ) ,
+					CheckBox ( "Ctrl" , vm.vis.ctrl ) ,
+				) ,
+				Ctrl ( vm ) ,
+			) ,
+		) ;
+	}
+
+	const Table = ( vm : VM.App ) : DD.Node =>
+	{
+		return ef.section
+		(
+			{ class : "NOTE_WRP  OA" , style : { flexGrow : "3" , display : vis ( vm.vis.table ) } } ,
+			ef.table
+			(
+				{ class : "NOTE_TABLE" } ,
+				... vm.keys.map ( key => Row ( vm , key ) ) ,
+			)
+		) ;
+	}
+
+	const Row = ( app : VM.App , vm : VM.Key ) : DD.Node =>
+	{
+		return ef.tr
+		(
+			{ style : { fontSize : "1.2em" } } ,
+			ef.td ( { style : { fontWeight : "400" } } , vm.key ) ,
+			ef.td ( { style : { fontWeight : "700" } } , vm.name ) ,
+			ef.td ( { style : { fontWeight : "300" } } , vm.freq.trans_r ( v => v.toFixed ( 2 ) ) ) ,
+		) ;
+	}
+
+	const Ctrl = ( vm : VM.App ) : DD.Mel => ef.section
+	(
+		{ class : "FC PM" , style : { flexGrow : "1" , display : vis ( vm.vis.ctrl ) } } ,
+		ef.section
+		(
+			{ class : "FR GX AC" } ,
+		) ,
+		Muse.VC.PlayerA ( vm.player , { main : "PLAYER  FC GX" , ctrl : "CTRL FR GM AC" } ) ,
+		Range ( { title : "Pitch" , value : vm.pitch , min : 220 , max : 880 } ) ,
+	) ;
+
+	const CheckBox = ( label : string | Live.R.str , state : Live.bool ) : DD.Mel => ef.label
+	(
+		{ class : "FR GX" } ,
+		ef.input ( { attrs : { type : "checkbox" } , biBind : { chChan : state } } ) ,
+		ef.span ( label ) ,
+	) ;
+
+	const vis = ( ls : Live.bool ) => ls.trans_r ( s => s ? "" : "none" ) ;
+
+
+
+
+
 	/* CSS */
 
 	const css = /* css */ `
@@ -139,75 +211,5 @@ export namespace VC
 	}
 	
 	` ;
-
-
-	/* Components */
-
-	export function App () : DD.Mel
-	{
-		const vm = new VM.App ;
-
-		return ef.div
-		(
-			{ shadow : css } ,
-			ef.main
-			(
-				{ class : "FC  PM  AS  GX" } ,
-				ef.section
-				(
-					{ class : " FR AC GX" } ,
-					ef.h1 ( "Audio Timeline" ) ,
-					CheckBox ( "Table" , vm.vis.table ) ,
-					CheckBox ( "Ctrl" , vm.vis.ctrl ) ,
-				) ,
-				Ctrl ( vm ) ,
-				Table ( vm ) ,
-			) ,
-		) ;
-	}
-
-	const Table = ( vm : VM.App ) : DD.Node =>
-	{
-		return ef.section
-		(
-			{ class : "NOTE_WRP  OA" , style : { flexGrow : "3" , display : vis ( vm.vis.table ) } } ,
-			ef.table
-			(
-				{ class : "NOTE_TABLE" } ,
-				... vm.keys.map ( key => Row ( vm , key ) ) ,
-			)
-		) ;
-	}
-
-	const Row = ( app : VM.App , vm : VM.Key ) : DD.Node =>
-	{
-		return ef.tr
-		(
-			{ style : { fontSize : "1.2em" } } ,
-			ef.td ( { style : { fontWeight : "400" } } , vm.key ) ,
-			ef.td ( { style : { fontWeight : "700" } } , vm.name ) ,
-			ef.td ( { style : { fontWeight : "300" } } , vm.freq.trans_r ( v => v.toFixed ( 2 ) ) ) ,
-		) ;
-	}
-
-	const Ctrl = ( vm : VM.App ) : DD.Mel => ef.section
-	(
-		{ class : "FC PM" , style : { flexGrow : "1" , display : vis ( vm.vis.ctrl ) } } ,
-		ef.section
-		(
-			{ class : "FR GX AC" } ,
-		) ,
-		Muse.VC.PlayerA ( vm.player , { main : "PLAYER  FC GX" , ctrl : "CTRL FR GM AC" } ) ,
-		Range ( { title : "Pitch" , value : vm.pitch , min : 220 , max : 880 } ) ,
-	) ;
-
-	const CheckBox = ( label : string | Live.R.str , state : Live.bool ) : DD.Mel => ef.label
-	(
-		{ class : "FR GX" } ,
-		ef.input ( { attrs : { type : "checkbox" } , biBind : { chChan : state } } ) ,
-		ef.span ( label ) ,
-	) ;
-
-	const vis = ( ls : Live.bool ) => ls.trans_r ( s => s ? "" : "none" ) ;
 }
 
