@@ -29,11 +29,8 @@ export namespace VM
 		}
 
 		public pitch = Live ( 440 ) ;
-		public keys = times
-		(
-			128 ,
-			key => new Key ( this.pitch , key )
-		) ;
+
+		public readonly pallet = new VM.Pallet () ;
 
 		constructor ()
 		{
@@ -78,6 +75,93 @@ export namespace VM
 	] ;
 }
 
+export namespace VM
+{
+	export class Pallet
+	{
+		public readonly perm = Ease.fromPartial ( {} , permstate ) ;
+		public readonly items = times ( 11 , n => new PalletItem ( n - 5 ) ) ;
+
+		constructor ()
+		{
+			this.perm.mode.$ = "Pryu" ;
+		}
+	}
+
+	export class PalletItem
+	{
+		constructor
+		(
+			public readonly indexphase : number ,
+		)
+		{}
+	}
+
+
+	class permstate
+	{
+		mode : scale_type ;
+		shift : number ;
+
+		constructor ( i ? : Ease.dp < permstate > )
+		{
+			this.mode = i ?.mode ?? "Pmaj" ;
+			this.shift = i ?.shift ?? 0 ;
+		}
+	}
+
+
+	const scales =
+	{
+		"Pmin" : [ -7 , -3 , -1 ,  0 ,  4 ] ,
+		"Pmaj" : [ -3 ,  0 ,  2 ,  4 ,  7 ] ,
+		"Pryu" : [  0 ,  4 ,  5 ,  7 ,  9 ] ,
+		"S"    : [ -1 ,  0 ,  2 ,  4 ,  5 ,  7 ,  9 ]
+	
+	} ;
+	
+	
+	const doremi_table = [ "Do" , "Do#" , "Re" , "Re#" , "Mi" , "Fa" , "Fa#" , "Sol" , "Sol#" , "Ra" , "Ra#" , "Si" ] ;
+	
+	
+	const doremi = ( index : number , pal : number [] ) =>
+	{
+		const oct = Math.floor ( index / pal.length ) ;
+		const keyindex = pmod ( index , pal.length ) ;
+		const key = pal [ keyindex ] ;
+		const name = doremi_table [ pmod ( key , 12 ) ] ;
+		return [ oct , key , name ] .join ( " , " ) ;
+	}
+	
+	
+	const pmod = ( n : number , d : number ) =>
+	{
+		const  f = n % d ;
+		return  f < 0 ? f + d : f ;
+	}
+	
+	
+	export type scale_type = keyof typeof scales ;
+
+	export class Tranpose
+	{
+		public readonly p1 = Live ( 0 ) ;
+		public readonly p2 = Live ( 0 ) ;
+	}
+
+	const Transpose = () =>
+	{
+		const t =
+		[
+			[  -5 , -2 ,  1 ,  4 ,  7  ] ,
+			[  -6 , -3 ,  0 ,  3 ,  6  ] ,
+			[  -7 , -4 , -1 ,  2 ,  5  ] ,
+		] ;
+
+		;
+	}
+
+}
 
 
 export namespace VC
@@ -93,7 +177,7 @@ export namespace VC
 			{ shadow : css } ,
 			ef.main
 			(
-				{ class : "FC  PM  AS  GX" } ,
+				{ class : "FC  PM  GX" } ,
 				ef.section
 				(
 					{ class : " FR AC GX" } ,
@@ -102,37 +186,14 @@ export namespace VC
 					CheckBox ( "Ctrl" , vm.vis.ctrl ) ,
 				) ,
 				Ctrl ( vm ) ,
+				Pallet ( vm.pallet ) ,
 			) ,
-		) ;
-	}
-
-	const Table = ( vm : VM.App ) : DD.Node =>
-	{
-		return ef.section
-		(
-			{ class : "NOTE_WRP  OA" , style : { flexGrow : "3" , display : vis ( vm.vis.table ) } } ,
-			ef.table
-			(
-				{ class : "NOTE_TABLE" } ,
-				... vm.keys.map ( key => Row ( vm , key ) ) ,
-			)
-		) ;
-	}
-
-	const Row = ( app : VM.App , vm : VM.Key ) : DD.Node =>
-	{
-		return ef.tr
-		(
-			{ style : { fontSize : "1.2em" } } ,
-			ef.td ( { style : { fontWeight : "400" } } , vm.key ) ,
-			ef.td ( { style : { fontWeight : "700" } } , vm.name ) ,
-			ef.td ( { style : { fontWeight : "300" } } , vm.freq.trans_r ( v => v.toFixed ( 2 ) ) ) ,
 		) ;
 	}
 
 	const Ctrl = ( vm : VM.App ) : DD.Mel => ef.section
 	(
-		{ class : "FC PM" , style : { flexGrow : "1" , display : vis ( vm.vis.ctrl ) } } ,
+		{ class : "FC PM" , style : { display : vis ( vm.vis.ctrl ) } } ,
 		ef.section
 		(
 			{ class : "FR GX AC" } ,
@@ -149,6 +210,47 @@ export namespace VC
 	) ;
 
 	const vis = ( ls : Live.bool ) => ls.trans_r ( s => s ? "" : "none" ) ;
+
+	/* Pallet */
+
+	const Pallet = ( vm : VM.Pallet ) : DD.Mel =>
+	{
+		return ef.section
+		(
+			{ class : "FC GX" } ,
+			ef.section
+			(
+				{  } ,
+				LN ( "Shift" , vm.perm.shift ) ,
+			) ,
+			ef.section
+			(
+				{ class : "FR  GX" } ,
+				... vm.items.map ( vm => PalletItem ( vm ) )
+			) ,
+		) ;
+	}
+
+	const LN = ( title : string , ls : Live.num ) : DD.Mel => ef.label
+	(
+		{ class : "FR  GX" } ,
+		ef.span( title ) , 
+		ef.input ( { biBind : { vChanN : ls } } )
+	) ;
+
+	const PalletItem = ( vm : VM.PalletItem ) : DD.Mel =>
+	{
+		return ef.label
+		(
+			{ class : "FC GX AC" } ,
+			ef.span ( vm.indexphase ) ,
+			ef.input
+			(
+				{ attrs : { type : "radio" , name : "pi_shift" } } ,
+				vm.indexphase ,
+			) ,
+		) ;
+	}
 
 
 
