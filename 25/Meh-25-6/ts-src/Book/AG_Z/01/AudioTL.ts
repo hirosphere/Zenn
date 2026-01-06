@@ -242,7 +242,7 @@ export namespace VC
 	{
 		return ef.label
 		(
-			{ class : "FC GX AC" } ,
+			{ class : "FC GX AC" , style : { padding : "0 0.4ex" } } ,
 			ef.span ( vm.indexphase ) ,
 			ef.input
 			(
@@ -305,9 +305,11 @@ export namespace VC
 
 	.RANGE
 	{
+		max-width : 600px ;
+
 		display : grid ;
 		padding-block : 1ex ;
-		grid-template-columns : 4em  300px 5em ;
+		grid-template-columns : 3.5em  auto 3em ;
 		gap : 1ex ;
 		font-family : courier ;
 	}
