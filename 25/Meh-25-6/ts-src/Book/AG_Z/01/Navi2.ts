@@ -100,6 +100,12 @@ namespace VM
 			}
 		}
 
+		public part_select () : void
+		{
+			this.page_selected.select () ;
+			this.navi_selected.select () ;
+		}
+
 		public async make_dyn_parts () : Promise < void >
 		{
 			if ( this.partsmaked )  return ;
@@ -213,17 +219,15 @@ export namespace VC
 
 	const Peer = ( vm : VM.Index ) : DD.Mel =>
 	{
-		log ( "Peer" , vm.title.$ ) ;
 		const display = Live.trans_r ( vm.navi_selected , s => s ? "" : "none" ) ;
 
 		vm.make_dyn_parts () ;
 
 		return ef.div
 		(
-			{ class : "PEER" } ,
+			{ class : "PEER" , style : { display } } ,
 			ef.ul
 			(
-				{ style : { display } } ,
 				pl.each
 				(
 					vm.parts ,
@@ -243,7 +247,6 @@ export namespace VC
 
 		const keydown = ( ev : KeyboardEvent ) : void =>
 		{
-			// log ( ev.key ) ;
 			switch ( ev.key )
 			{
 				case " "     :  vm .page_selected .select () ;  break ;
@@ -261,7 +264,7 @@ export namespace VC
 			) ,
 			ef.div
 			(
-				{ class : "_THUMB"  , passive : { click : () => vm.navi_selected.select () }} ,
+				{ class : "_THUMB"  , passive : { click : () => vm.part_select () }} ,
 				">"
 			)
 		) ;
@@ -269,7 +272,9 @@ export namespace VC
 
 
 	const css = /* CSS */ `
-	
+
+	.Q { border-left : 1ex solid black ; }
+
 	:host
 	{
 		height : 100% ;
@@ -282,57 +287,73 @@ export namespace VC
 		display : grid ;
 		grid-template-columns : auto  1fr ;
 
+		overflow : hidden ;
 		padding : 1ex ;
 	}
 
 	.SIDE
 	{
-		width : 235px ;
-		background-color : hsl( 215  65%  90% ) ;
 		overflow : hidden ;
+
+		height : 100% ;
+		width : 245px ;
+		background-color : hsl( 215  65%  100% ) ;
+
+		display : flex ;
+		flex-direction : column ;
 	}
 
 	.NAVI
 	{
+		overflow : hidden ;
+
+		flex-grow : 1 ;
 		cursor : default ;
-		height : 100% ;
 
 		display : flex ;
 		flex-direction : column ;
 
 		padding-block : 1ex ;
 		padding-inline : 1.0em  ;
-		gap : 1ex ;
-		overflow : hidden ;
+		gap : 1em ;
 	}
 
 	.PATH
 	{
+		background : hsl( 210  60%  94% ) ;
+
+		display : flex ;
+		flex-direction : column ;
+
 		list-style : none ;
 		padding-left : 0 ;
 	}
 
 	.PEER_FRAME
 	{
-		overflow : auto ;
-		scrollbar-width : none ;
+		overflow : hidden ;
+		flex-grow : 1 ;
 	}
 
 	.PEER
 	{
+		height : 100% ;
+		overflow : auto ;
+		scrollbar-width : none ;
 	}
 
 	.PEER > ul
 	{
+		background : hsl( 180  60%  94% ) ;
+
 		list-style : none ;
 		padding-left : 0 ;
 	}
 
 	.INDEX
 	{
-		background-color : hsl( 215  0%  100% ) ;
 		display : flex ;
-		padding-inline : 1.2ex  0.5ex ;
+		padding-inline : 0.5ex  0.5ex ;
 		gap : 0.8ex ;
 	}
 
@@ -347,6 +368,9 @@ export namespace VC
 		flex-grow : 1 ;
 		padding-block : 1.2ex ;
 		padding-inline : 1ex ;
+
+		white-space : nowrap ;
+		overflow : hidden ;
 	}
 
 	.NAVI  .INDEX > ._THUMB
