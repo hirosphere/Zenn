@@ -146,6 +146,8 @@ export namespace Eki
 		{
 			const dataRoot = dataPath + "DataSource/Eki/" ;
 
+			log (  dataRoot) ;
+
 			/* 読み込みは二次構築を兼ねる */
 			
 			/* 会社データを読み込み */

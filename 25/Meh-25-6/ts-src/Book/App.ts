@@ -51,6 +51,8 @@ namespace VM
 					"AudioTL" : { title : "Audio TL" , page : () => AG_Z.Z01.AutioTL.VC.App () } ,
 					"IDBPerm" : { title : "IDB Perm" , page : index => AG_Z.Z01.IDBPerm.VC.App () } ,
 					"Form1"   : { title : "Form 1"   , page : index => AG_Z.Z01.Form1.App () } ,
+					"Cludenik" : { title : "Cludenik" , page : index => AG_Z.Z01.Cludenik.VC.App () } ,
+					"Navi2"   : { title : "Navi2" , page : index => AG_Z.Z01.Navi2.VC.App ( "../../../" ) } ,
 				}
 			} ,
 			"Dyndex" : IndexQst.Dyndex ,
@@ -78,8 +80,6 @@ namespace VM
 		protected load () : V
 		{
 			let v : V | undefined ;
-
-			log ( "Perm load" , this.StorageName , this.ctor.name ) ;
 
 			try { v = JSON.parse ( localStorage.getItem ( this.StorageName ) ?? "" ) ; }
 			catch ( exc ) {}
@@ -154,7 +154,7 @@ export namespace VC
 
 		function init () : void
 		{
-			vm.ps.navi_mode.add_ref ( { vChan : () => vm.navi.page.curr.$ ?.ScrollTo ?.()  } ) ;
+			vm.ps.navi_mode.add_ref ( { vChan : () => vm.navi.page.key.$ ?.ScrollTo ?.()  } ) ;
 		}
 
 		return ef.body
@@ -166,7 +166,7 @@ export namespace VC
 				{ class : "CONTENT_SWITCH" } ,
 				pl.key
 				(
-					vm.navi.page.curr ,
+					vm.navi.page.key ,
 					index => index ? ContentFrame ( index , types ) : undefined
 				)
 			) ,
@@ -235,7 +235,7 @@ export namespace VC
 
 	const Ctrl = ( vm : VM.App ) : DD.Mel =>
 	{
-		const url = vm.navi.page.curr.trans_r ( index => index?.url.$ ?? "**" ) ;
+		const url = vm.navi.page.key.trans_r ( index => index?.url.$ ?? "**" ) ;
 
 		return ef.section
 		(

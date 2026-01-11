@@ -38,7 +38,7 @@ export class Perm < SD extends StoresDef >
 	
 				open_req.onsuccess = ev =>
 				{
-					log ( "Perm create_db () open_req onsuccess" , this.schema ) ;
+					// log ( "Perm create_db () open_req onsuccess" , this.schema ) ;
 
 					resolve ( open_req.result ) ;
 				}
@@ -66,9 +66,8 @@ export class Perm < SD extends StoresDef >
 
 		return new Promise ( fn )
 	}
-
-	static readonly sid = next_session () ;
 }
+
 
 const make_stores = ( db : IDBDatabase , stores : StoresDef ) : void =>
 {
@@ -83,6 +82,7 @@ const make_stores = ( db : IDBDatabase , stores : StoresDef ) : void =>
 	log ( "new" , newlist.difference ( oldlist ) ) ;
 	log ( "old" , oldlist.difference ( newlist ) ) ;
 }
+
 
 export namespace Perm
 {
@@ -231,25 +231,6 @@ class node
 }
 
 
-/* */
-
-function next_session () : string
-{
-	const ss_name = "MEH_PERM_SESSION_ID" ;
-	const id = sessionStorage.getItem ( ss_name ) ;
-	if ( id )  return id ;
-
-	/* */
-
-	const ls_name = "MEH_PERM_NEXT_SESSION_ID" ;
-	let next = Number ( localStorage.getItem ( ls_name ) ) ?? 1 ;
-	localStorage.setItem ( ls_name , JSON.stringify ( ++ next ) ) ;
-
-	const rt = "SID-" + next ;
-	sessionStorage.setItem ( ss_name , rt ) ;
-	return rt ;
-}
-
 
 
 class main
@@ -274,31 +255,4 @@ class todo
 		this.completed = i ?.completed ?? false ;
 	}
 }
-
-
-const p = new Perm
-({
-	idb_name : "PQ_2601" ,
-	version : 1 ,
-	stores : { main , todo } ,
-}) ;
-
-const quest = async () =>
-{
-	const new_id = `${ Math.random ().toString ( 36 ) }` ;
-
-	const ok = await p.s.todo.set
-	(
-		{ type : "todo" , title : "Vladimir " + Math.floor ( Math.random () * 100 ) , completed : true } ,
-		new_id
-	) ;
-
-	const val = ok && await p.s.todo.get ( new_id ) ;
-
-	log ( "Perm quest add id" , ok , val ) ;
-}
-
-
-quest () ;
-
 

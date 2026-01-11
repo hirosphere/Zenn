@@ -92,8 +92,6 @@ export class PartsPlace
 
 	protected makePart ( dec : DD.Node , rel ? : Node ) : MehNode
 	{
-		rel && log ( "rel" , rel?.nodeName ) ;
-
 		const mn = dec instanceof MehElement ? dec : new MehText ( dec ) ;
 		this.cel.insertBefore ( mn.node , rel ?? null ) ;
 		return mn ;

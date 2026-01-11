@@ -23,7 +23,7 @@ export namespace VM
 		constructor ( iv : index , private client : NaviClient )
 		{
 			this.root = new Index ( this , iv ) ;
-			this.page.curr.add_ref
+			this.page.key.add_ref
 			(
 				{ vChan : ( { changer } ) => changer != this && this.on_page_changed () }
 			) ;
@@ -38,7 +38,7 @@ export namespace VM
 			index ?.open_macro_index () ;
 			index ?.ScrollTo ?.() ;
 
-			this.page.curr.set ( index ?? defaultIndex , this ) ;
+			this.page.key.set ( index ?? defaultIndex , this ) ;
 		}
 
 		public make_url ( index : Index ) : string
@@ -50,7 +50,7 @@ export namespace VM
 
 		private on_page_changed () : void
 		{
-			const index = this.page.curr.$ ;
+			const index = this.page.key.$ ;
 			const url = index ? this.client.url_index ( index ) : "" ;
 			this.client.browser_update ?.( url ) ;
 		}

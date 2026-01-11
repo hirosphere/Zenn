@@ -89,13 +89,3 @@ class todo_item
 }
 
 
-
-
-const kvs = new KVS < todo > ( "Q_KVS_25_1112" ) ;
-const rec = kvs.record ( "TODO_1" , todo ) ;
-
-( await rec.get () ) .items.push ( { title : "" , completed : false } ) ;
-log ( rec )
-
-
-

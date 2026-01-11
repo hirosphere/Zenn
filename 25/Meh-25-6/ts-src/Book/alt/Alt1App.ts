@@ -103,7 +103,6 @@ export namespace VC
 			(
 				{ class : "FC PM GM" } ,
 				ef.h1( "Nav dev A" ) ,
-				ef.p ( Store.Perm.sid ) ,
 				ef.p ( new Date ().toLocaleString () ) ,
 				ef.section
 				(

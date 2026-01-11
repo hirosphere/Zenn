@@ -364,8 +364,8 @@ export namespace VC
 				attrs : { title } ,
 				passive :
 				{
-					mouseover () { hoverkey.curr.$ = r } ,
-					mouseleave () { hoverkey.curr.$ = undefined ; } ,
+					mouseover () { hoverkey.key.$ = r } ,
+					mouseleave () { hoverkey.key.$ = undefined ; } ,
 				} ,
 				style
 			} ,

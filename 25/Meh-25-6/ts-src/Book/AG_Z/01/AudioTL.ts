@@ -217,12 +217,13 @@ export namespace VC
 	{
 		return ef.section
 		(
-			{ class : "FC GX" } ,
+			{ class : "FC GX AC" } ,
 			ef.section
 			(
 				{  } ,
 				LN ( "Shift" , vm.perm.shift ) ,
 			) ,
+			PalletDisplay ( vm ) ,
 			ef.section
 			(
 				{ class : "FR  GX" } ,
@@ -231,18 +232,22 @@ export namespace VC
 		) ;
 	}
 
-	const LN = ( title : string , ls : Live.num ) : DD.Mel => ef.label
-	(
-		{ class : "FR  GX" } ,
-		ef.span( title ) , 
-		ef.input ( { biBind : { vChanN : ls } } )
-	) ;
+	const PalletDisplay = ( vm : VM.Pallet ) : DD.Mel =>
+	{
+		return ef.section
+		(
+			ef.table
+			(
+				ef.tr ( ... times ( 10 , n => ef.td ( n ) ) ) ,
+			)
+		) ;
+	}
 
 	const PalletItem = ( vm : VM.PalletItem ) : DD.Mel =>
 	{
 		return ef.label
 		(
-			{ class : "FC GX AC" , style : { padding : "0 0.4ex" } } ,
+			{ class : "FC GX AC" , style : { padding : "0  0.4ex" } } ,
 			ef.span ( vm.indexphase ) ,
 			ef.input
 			(
@@ -251,6 +256,13 @@ export namespace VC
 			) ,
 		) ;
 	}
+
+	const LN = ( title : string , ls : Live.num ) : DD.Mel => ef.label
+	(
+		{ class : "FR GX AC" } ,
+		ef.span( title ) , 
+		ef.input ( { class : "F12" , biBind : { vChanN : ls } } )
+	) ;
 
 
 
@@ -277,6 +289,8 @@ export namespace VC
 	.PX { padding : 1ex ; }
 	.GM { gap : 1em ; }
 	.GX { gap : 1ex ; }
+
+	.F12 { font-size : 1.2em ; }
 
 	button { padding : 0.8ex  1em ; }
 

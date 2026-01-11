@@ -11,33 +11,6 @@ export namespace DM
 }
 
 
-export namespace VM
-{
-	document.addEventListener
-	(
-		"visibilitychange" ,
-		ev =>
-		{
-			const st = document.visibilityState ;
-			tone.voice.sch
-			(
-				st == "visible" ? [ [ 32 , 12 ] , [ 32 , 17 ] , [ 32 , 21 ] ] :
-				st == "hidden" ? [ [ 32 , 12 ] , [ 32 , 16 ] , [ 32 , 19 ] ] :
-				[ [ 32 , 24 ] , [ 32 , 12 ] ]
-			) ;
-		}
-	) ;
-
-	window.addEventListener
-	(
-		"pagehide" ,
-		ev =>
-		{
-			log ( "pagehide" , ev.persisted ) ;
-		}
-	) ;
-}
-
 export namespace VM.index
 {
 	type index = BB.VM.index ;

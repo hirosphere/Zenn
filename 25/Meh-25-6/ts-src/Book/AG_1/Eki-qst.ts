@@ -191,7 +191,7 @@ namespace VC
 		vm.parts.length ? Tabs ( vm ) : uned ,
 		pl.key
 		(
-			vm.curr_part.curr ,
+			vm.curr_part.key ,
 			pvm => ( pvm ? Index( pvm ) : uned ) ,
 		) ,
 	) ;

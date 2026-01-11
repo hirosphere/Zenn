@@ -31,8 +31,6 @@ export class IDB
 				this.#_core = oreq.result ;
 				this.#_available = true ;
 
-				log ( "IDB init onsuccess" , this.schema ) ;
-
 				this.on_init () ;
 				this.#_inits.forEach ( oper => oper () ) ;
 			}
@@ -122,7 +120,6 @@ export namespace IDB
 				{
 					if( ! this.db.core )
 					{
-						log ( "IDB.Store get ! core " ) ;
 						resolve ( undefined ) ;
 						return ;
 					}
