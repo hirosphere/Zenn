@@ -105,7 +105,13 @@ namespace VM
 			this.page_match.select () ;
 		}
 
-		public move () : void		/*    */
+		public exit () : void
+		{
+			this.page_match.select () ;
+			this.com ?.peer_match.select () ;
+		}
+
+		public move () : void
 		{
 			this.page_match.select () ;
 			this.peer_match.select () ;
@@ -195,8 +201,8 @@ export namespace VC
 		return ef.nav
 		(
 			{ class : "NAVI" } ,
-			Path ( vm.path ) ,
 			PeerFrame ( vm ) ,
+			Path ( vm.path ) ,
 		) ;
 	}
 
@@ -233,12 +239,12 @@ export namespace VC
 		return ef.section
 		(
 			{ class : "PEER" , style : { display } } ,
-			ef.h3
+			ef.div
 			(
 				{ class : [ "INDEX" , { _SELECTED : vm.page_match } ] } ,
-				ef.span ( { class : "_TITLE" , passive : { click : () => vm.select () } } , vm.title ) ,
+				ef.h3 ( { class : "_TITLE" , passive : { click : () => vm.select () } } , vm.title ) ,
+				vm.com && ef.span ( { class : "_THUMB" , passive : { click : () => vm.exit () }} , "^" ) ,
 			) ,
-			ef.hr () ,
 			ef.ul
 			(
 				pl.each ( vm.parts , vm => PeerIndex ( vm ) , )
@@ -249,8 +255,8 @@ export namespace VC
 	const PeerIndex = ( vm : VM.Index ) : DD.Mel => ef.li
 	(
 		{ class : [ "INDEX" , { _SELECTED : vm.page_match } ] } ,
-		ef.div ( { class : "_TITLE" , passive : { click : () => vm.page_match.select () } } , vm.title , ) ,
-		ef.div ( { class : "_THUMB" , passive : { click : () => vm.move () }} , ">" ) ,
+		ef.span ( { class : "_TITLE" , passive : { click : () => vm.select () } } , vm.title , ) ,
+		ef.span ( { class : "_THUMB" , passive : { click : () => vm.move () }} , "v" ) ,
 	) ;
 
 
@@ -299,12 +305,10 @@ export namespace VC
 		gap : 1em ;
 	}
 
-	.NAVI > hr:first-child { display : none ; }
-
 	.PATH
 	{
 		display : flex ;
-		flex-direction : column ;
+		flex-direction : column-reverse ;
 
 		list-style : none ;
 		padding-left : 0 ;
@@ -318,15 +322,15 @@ export namespace VC
 
 	.PEER
 	{
-		border-bottom : 1ex  solid  hsl( 90  50%  50% ) ;
 		height : 100% ;
 
 		display : grid ;
 		grid-template-rows : auto  auto  1fr ;
+		gap : 1em ;
 	}
 
-	.PEER > h3 { text-align : center ; }
 	.PEER > hr { margin-block : 0.6ex ; }
+	.PEER > h3 { overflow : hidden ; }
 	.PEER > ul
 	{
 		overflow : auto ;
@@ -338,30 +342,31 @@ export namespace VC
 
 	.INDEX
 	{
-		display : flex ;
-		padding-inline : 0.1ex  0.1ex ;
-		gap : 0.8ex ;
-	}
+		border-bottom : 1px  solid  transparent ;
 
-	.INDEX._SELECTED
-	{
-		background : hsl( 0  0%  12% ) ;
-		color : hsl( 0  0%  90% ) ;
+		display : flex ;
+		gap : 0.1ex ;
 	}
 
 	.INDEX > ._TITLE
 	{
 		flex-grow : 1 ;
-		padding-block : 1.1ex ;
+		padding-block : 1.0ex ;
 		padding-inline : 1ex  0.7ex ;
 
 		white-space : nowrap ;
 		overflow : hidden ;
 	}
 
+	.INDEX._SELECTED > ._TITLE
+	{
+		background : hsl( 0  0%  12% ) ;
+		color : hsl( 0  0%  90% ) ;
+	}
+
 	.INDEX > ._THUMB
 	{
-		background : hsl( 0  0%  50% / 10% ) ;
+		background : hsl( 55  5%  95% ) ;
 
 		font-family : 'Consolas' , monospace ;
 		padding : 1.3ex 1.6ex ;
@@ -369,8 +374,18 @@ export namespace VC
 
 	.PATH > .INDEX > ._TITLE
 	{
-		padding-block : 0.8ex ;
+		padding-block : 0.9ex ;
+		text-align : center ;
 	} 
+
+	.PEER > .INDEX > h3._TITLE
+	{
+		width : 6em ;
+		overflow : hidden ;
+		white-space : nowrap ;
+		text-overflow : ellipse ;
+		text-align : center ;
+	}
 
 	.CONTENT
 	{
