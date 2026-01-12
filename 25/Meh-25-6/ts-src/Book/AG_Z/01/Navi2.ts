@@ -71,8 +71,8 @@ namespace VM
 		public readonly title : Live < string > ;
 		public readonly parts = new Renn < Index > ;
 
-		public readonly page_selected : Key.Match < Index | undefined > ;
-		public readonly navi_selected : Key.Match < Index | undefined > ;
+		public readonly pagesel : Key.Match < Index | undefined > ;
+		public readonly navisel : Key.Match < Index | undefined > ;
 
 		protected partsmaked = false ;
 
@@ -86,8 +86,8 @@ namespace VM
 		{
 			this.title = Live ( i.title ) ;
 
-			this.page_selected = navi.page.match ( this ) ;
-			this.navi_selected = navi.navi.match ( this ) ;
+			this.pagesel = navi.page.match ( this ) ;
+			this.navisel = navi.navi.match ( this ) ;
 
 			if ( i.parts && typeof i.parts != "function" )
 			{
@@ -100,10 +100,25 @@ namespace VM
 			}
 		}
 
-		public part_select () : void
+		public exit () : void		/*    */
 		{
-			this.page_selected.select () ;
-			this.navi_selected.select () ;
+			this.pagesel.select () ;
+
+			log ( "path_select" , this.com ?.title.$ ) ;
+
+			if ( this.com )  this.com.navisel.select () ;
+			else             this.navisel.select () ;
+		}
+
+		public select () : void
+		{
+			this.pagesel.select () ;
+		}
+
+		public enter () : void		/*    */
+		{
+			this.pagesel.select () ;
+			this.navisel.select () ;
 		}
 
 		public async make_dyn_parts () : Promise < void >
@@ -178,7 +193,7 @@ export namespace VC
 				class : "CONTENT" ,
 				style :
 				{
-					display : Live.trans_r ( index.page_selected , s => s ? "" : "none" )
+					display : Live.trans_r ( index.pagesel , s => s ? "" : "none" )
 				}
 			} ,
 			ef.h1 ( { class : "TC" } , index.title ) ,
@@ -191,6 +206,7 @@ export namespace VC
 		(
 			{ class : "NAVI" } ,
 			Path ( vm.path ) ,
+			ef.hr () ,
 			Peers ( vm ) ,
 		) ;
 	}
@@ -203,8 +219,18 @@ export namespace VC
 			pl.each
 			(
 				vm ,
-				vm => ef.li ( Index ( vm , "path" ) ) ,
+				vm => ef.li ( PathIndex ( vm ) ) ,
 			)
+		) ;
+	}
+
+	const PathIndex = ( vm : VM.Index ) : DD.Mel =>
+	{
+		return ef.section
+		(
+			{ class : [ "INDEX" , { _SELECTED : vm.pagesel } ] , } ,
+			ef.span ( { class : "_TITLE" , passive : { click : () => vm.exit () } } , vm.title ) ,
+			// ef.span ( { class : "_THUMB" , passive : { click : () => vm.exit () } } , "^" ) ,
 		) ;
 	}
 
@@ -219,7 +245,7 @@ export namespace VC
 
 	const Peer = ( vm : VM.Index ) : DD.Mel =>
 	{
-		const display = Live.trans_r ( vm.navi_selected , s => s ? "" : "none" ) ;
+		const display = Live.trans_r ( vm.navisel , s => s ? "" : "none" ) ;
 
 		vm.make_dyn_parts () ;
 
@@ -231,42 +257,19 @@ export namespace VC
 				pl.each
 				(
 					vm.parts ,
-					vm => ef.li ( Index ( vm , "peer" ) ) ,
+					vm => ef.li ( PeerIndex ( vm ) ) ,
 				)
 			)
 		) ;
-		
-}
+	}
 	
-	const Index = ( vm : VM.Index , radioname : string ) : DD.Mel =>
+	const PeerIndex = ( vm : VM.Index ) : DD.Mel =>
 	{
-		const click = ( ev : MouseEvent ) : void =>
-		{
-			vm.page_selected.select () ;
-		}
-
-		const keydown = ( ev : KeyboardEvent ) : void =>
-		{
-			switch ( ev.key )
-			{
-				case " "     :  vm .page_selected .select () ;  break ;
-				case "Enter" :  vm .navi_selected .select () ;  break ;
-			}
-		}
-
 		return ef.section
 		(
-			{ class : [ "INDEX" , { _SELECTED : vm.page_selected } ] } ,
-			ef.div
-			(
-				{ class : "_TITLE" , passive : { click } } ,
-				vm.title ,
-			) ,
-			ef.div
-			(
-				{ class : "_THUMB"  , passive : { click : () => vm.part_select () }} ,
-				">"
-			)
+			{ class : [ "INDEX" , { _SELECTED : vm.pagesel } ] } ,
+			ef.div ( { class : "_TITLE" , passive : { click : () => vm.pagesel.select () } } , vm.title , ) ,
+			ef.div ( { class : "_THUMB" , passive : { click : () => vm.enter () }} , ">" ) ,
 		) ;
 	}
 
@@ -278,7 +281,7 @@ export namespace VC
 	:host
 	{
 		height : 100% ;
-		color : hsl( 0  0%  30% ) ;
+		color : hsl( 0  0%  10% ) ;
 	}
 
 	.ROOT
@@ -296,7 +299,7 @@ export namespace VC
 		overflow : hidden ;
 
 		height : 100% ;
-		width : 245px ;
+		width : 230px ;
 		background-color : hsl( 215  65%  100% ) ;
 
 		display : flex ;
@@ -320,8 +323,6 @@ export namespace VC
 
 	.PATH
 	{
-		background : hsl( 210  60%  94% ) ;
-
 		display : flex ;
 		flex-direction : column ;
 
@@ -344,8 +345,6 @@ export namespace VC
 
 	.PEER > ul
 	{
-		background : hsl( 180  60%  94% ) ;
-
 		list-style : none ;
 		padding-left : 0 ;
 	}
@@ -371,12 +370,13 @@ export namespace VC
 
 		white-space : nowrap ;
 		overflow : hidden ;
+		text-align : center ;
 	}
 
 	.NAVI  .INDEX > ._THUMB
 	{
-		font-family : monospace ;
-		padding : 1.3ex 1.3ex ;
+		font-family : 'Consolas' , monospace ;
+		padding : 1.3ex 1.6ex ;
 	}
 
 	.INDEX > ._THUMB:hover
