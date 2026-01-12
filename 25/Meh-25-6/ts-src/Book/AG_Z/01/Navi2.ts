@@ -33,8 +33,8 @@ namespace VM
 
 	export class Navi
 	{
-		public readonly page = new Key ( Live < Index | undefined > ( undefined ) ) ;
-		public readonly navi = new Key ( Live < Index | undefined > ( undefined ) ) ;
+		public readonly curr_page = new Key ( Live < Index | undefined > ( undefined ) ) ;
+		public readonly curr_peer = new Key ( Live < Index | undefined > ( undefined ) ) ;
 		public readonly path = new Path ;
 		
 		public readonly root : Index ;
@@ -43,15 +43,15 @@ namespace VM
 		{
 			this.root = new Index ( i , "" , this , undefined ) ;
 
-			Live.add_ref ( this.navi.key , { vChan : () => { this.path.index = this.navi.key.$ } } ) ;
+			Live.add_ref ( this.curr_peer.key , { vChan : () => { this.path.index = this.curr_peer.key.$ ?.com } } ) ;
 
-			this.navi.key.$ = this.root ;
-			this.page.key.$ = this.root ;
+			this.curr_peer.key.$ = this.root ;
+			this.curr_page.key.$ = this.root ;
 		}
 
 		public peerSelect ( index ? : Index ) : void
 		{
-			this.navi.key.$ = index ;
+			this.curr_peer.key.$ = index ;
 		}
 	}
 
@@ -71,8 +71,8 @@ namespace VM
 		public readonly title : Live < string > ;
 		public readonly parts = new Renn < Index > ;
 
-		public readonly pagesel : Key.Match < Index | undefined > ;
-		public readonly navisel : Key.Match < Index | undefined > ;
+		public readonly page_match : Key.Match < Index | undefined > ;
+		public readonly peer_match : Key.Match < Index | undefined > ;
 
 		protected partsmaked = false ;
 
@@ -81,13 +81,13 @@ namespace VM
 			protected i : index ,
 			public readonly name : string ,
 			protected navi : Navi ,
-			protected com : Index | undefined
+			public readonly com : Index | undefined
 		)
 		{
 			this.title = Live ( i.title ) ;
 
-			this.pagesel = navi.page.match ( this ) ;
-			this.navisel = navi.navi.match ( this ) ;
+			this.page_match = navi.curr_page.match ( this ) ;
+			this.peer_match = navi.curr_peer.match ( this ) ;
 
 			if ( i.parts && typeof i.parts != "function" )
 			{
@@ -100,25 +100,15 @@ namespace VM
 			}
 		}
 
-		public exit () : void		/*    */
-		{
-			this.pagesel.select () ;
-
-			log ( "path_select" , this.com ?.title.$ ) ;
-
-			if ( this.com )  this.com.navisel.select () ;
-			else             this.navisel.select () ;
-		}
-
 		public select () : void
 		{
-			this.pagesel.select () ;
+			this.page_match.select () ;
 		}
 
-		public enter () : void		/*    */
+		public move () : void		/*    */
 		{
-			this.pagesel.select () ;
-			this.navisel.select () ;
+			this.page_match.select () ;
+			this.peer_match.select () ;
 		}
 
 		public async make_dyn_parts () : Promise < void >
@@ -178,7 +168,7 @@ export namespace VC
 				) ,
 				pl.key
 				(
-					navi.page.key ,
+					navi.curr_page.key ,
 					index => index && Content ( index )
 				)
 			) ,
@@ -193,7 +183,7 @@ export namespace VC
 				class : "CONTENT" ,
 				style :
 				{
-					display : Live.trans_r ( index.pagesel , s => s ? "" : "none" )
+					display : Live.trans_r ( index.page_match , s => s ? "" : "none" )
 				}
 			} ,
 			ef.h1 ( { class : "TC" } , index.title ) ,
@@ -206,8 +196,7 @@ export namespace VC
 		(
 			{ class : "NAVI" } ,
 			Path ( vm.path ) ,
-			ef.hr () ,
-			Peers ( vm ) ,
+			PeerFrame ( vm ) ,
 		) ;
 	}
 
@@ -216,67 +205,56 @@ export namespace VC
 		return ef.ul
 		(
 			{ class : "PATH" } ,
-			pl.each
-			(
-				vm ,
-				vm => ef.li ( PathIndex ( vm ) ) ,
-			)
+			pl.each ( vm , vm => PathIndex ( vm ) ) ,
 		) ;
 	}
 
-	const PathIndex = ( vm : VM.Index ) : DD.Mel =>
-	{
-		return ef.section
-		(
-			{ class : [ "INDEX" , { _SELECTED : vm.pagesel } ] , } ,
-			ef.span ( { class : "_TITLE" , passive : { click : () => vm.exit () } } , vm.title ) ,
-			// ef.span ( { class : "_THUMB" , passive : { click : () => vm.exit () } } , "^" ) ,
-		) ;
-	}
+	const PathIndex = ( vm : VM.Index ) : DD.Mel => ef.li
+	(
+		{ class : [ "INDEX" , { _SELECTED : vm.page_match ?? false } ] , } ,
+		ef.span ( { class : "_TITLE" , passive : { click : () => vm.move () } } , vm.title ) ,
+	) ;
 
-	const Peers = ( vm : VM.Navi ) : DD.Part =>
+	const PeerFrame = ( vm : VM.Navi ) : DD.Part =>
 	{
 		return ef.div
 		(
 			{ class : "PEER_FRAME" } ,
-			pl.key ( vm.navi.key , index => index && Peer ( index ) )
+			pl.key ( vm.curr_peer.key , index => index && Peer ( index ) )
 		) ;
 	}
 
 	const Peer = ( vm : VM.Index ) : DD.Mel =>
 	{
-		const display = Live.trans_r ( vm.navisel , s => s ? "" : "none" ) ;
+		const display = Live.trans_r ( vm.peer_match , s => s ? "" : "none" ) ;
 
 		vm.make_dyn_parts () ;
 
-		return ef.div
+		return ef.section
 		(
 			{ class : "PEER" , style : { display } } ,
+			ef.h3
+			(
+				{ class : [ "INDEX" , { _SELECTED : vm.page_match } ] } ,
+				ef.span ( { class : "_TITLE" , passive : { click : () => vm.select () } } , vm.title ) ,
+			) ,
+			ef.hr () ,
 			ef.ul
 			(
-				pl.each
-				(
-					vm.parts ,
-					vm => ef.li ( PeerIndex ( vm ) ) ,
-				)
+				pl.each ( vm.parts , vm => PeerIndex ( vm ) , )
 			)
 		) ;
 	}
 	
-	const PeerIndex = ( vm : VM.Index ) : DD.Mel =>
-	{
-		return ef.section
-		(
-			{ class : [ "INDEX" , { _SELECTED : vm.pagesel } ] } ,
-			ef.div ( { class : "_TITLE" , passive : { click : () => vm.pagesel.select () } } , vm.title , ) ,
-			ef.div ( { class : "_THUMB" , passive : { click : () => vm.enter () }} , ">" ) ,
-		) ;
-	}
+	const PeerIndex = ( vm : VM.Index ) : DD.Mel => ef.li
+	(
+		{ class : [ "INDEX" , { _SELECTED : vm.page_match } ] } ,
+		ef.div ( { class : "_TITLE" , passive : { click : () => vm.page_match.select () } } , vm.title , ) ,
+		ef.div ( { class : "_THUMB" , passive : { click : () => vm.move () }} , ">" ) ,
+	) ;
 
 
 	const css = /* CSS */ `
-
-	.Q { border-left : 1ex solid black ; }
 
 	:host
 	{
@@ -321,6 +299,8 @@ export namespace VC
 		gap : 1em ;
 	}
 
+	.NAVI > hr:first-child { display : none ; }
+
 	.PATH
 	{
 		display : flex ;
@@ -338,21 +318,28 @@ export namespace VC
 
 	.PEER
 	{
+		border-bottom : 1ex  solid  hsl( 90  50%  50% ) ;
 		height : 100% ;
-		overflow : auto ;
-		scrollbar-width : none ;
+
+		display : grid ;
+		grid-template-rows : auto  auto  1fr ;
 	}
 
+	.PEER > h3 { text-align : center ; }
+	.PEER > hr { margin-block : 0.6ex ; }
 	.PEER > ul
 	{
+		overflow : auto ;
+		scrollbar-width : none ;
+
+		padding : 0 ;
 		list-style : none ;
-		padding-left : 0 ;
 	}
 
 	.INDEX
 	{
 		display : flex ;
-		padding-inline : 0.5ex  0.5ex ;
+		padding-inline : 0.1ex  0.1ex ;
 		gap : 0.8ex ;
 	}
 
@@ -365,24 +352,25 @@ export namespace VC
 	.INDEX > ._TITLE
 	{
 		flex-grow : 1 ;
-		padding-block : 1.2ex ;
-		padding-inline : 1ex ;
+		padding-block : 1.1ex ;
+		padding-inline : 1ex  0.7ex ;
 
 		white-space : nowrap ;
 		overflow : hidden ;
-		text-align : center ;
 	}
 
-	.NAVI  .INDEX > ._THUMB
+	.INDEX > ._THUMB
 	{
+		background : hsl( 0  0%  50% / 10% ) ;
+
 		font-family : 'Consolas' , monospace ;
 		padding : 1.3ex 1.6ex ;
 	}
 
-	.INDEX > ._THUMB:hover
+	.PATH > .INDEX > ._TITLE
 	{
-		background : hsl( 0  0%  50% / 10% ) ;
-	}
+		padding-block : 0.8ex ;
+	} 
 
 	.CONTENT
 	{
