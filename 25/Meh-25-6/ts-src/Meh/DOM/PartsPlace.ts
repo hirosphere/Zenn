@@ -1,5 +1,6 @@
 import { Life , Renn , Order } from "../Model/Model.js" ;
 import { DD , MehElement, MehText , MehNode } from "./DOM.js" ;
+import { on_connect } from "./priv.js" ;
 
 const log = console.log ;
 
@@ -93,8 +94,33 @@ export class PartsPlace
 	protected makePart ( dec : DD.Node , rel ? : Node ) : MehNode
 	{
 		const mn = dec instanceof MehElement ? dec : new MehText ( dec ) ;
+		if ( on_connect in mn )
+		{
+			log ( "makePart" , mn.node.nodeName , this.cel.isConnected ) ;
+
+			if ( this.cel.isConnected )
+			{
+				mn [ on_connect ] ?. () ;
+			}
+			else
+			{
+				( this.#_on_connect_client ??= [] ) .push ( mn ) ;
+				this [ on_connect ] ??= this.#_on_connect ;	
+			}
+		}
 		this.cel.insertBefore ( mn.node , rel ?? null ) ;
 		return mn ;
+	}
+
+	[ on_connect ] ? () : void ;
+	#_on_connect_client ? : MehNode [] ;
+
+	#_on_connect () : void
+	{
+		this.#_on_connect_client ?.forEach
+		(
+			client => client [ on_connect ] ?. ()
+		)
 	}
 
 	public terminate () : void

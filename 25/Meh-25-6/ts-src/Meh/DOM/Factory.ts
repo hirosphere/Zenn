@@ -2,6 +2,10 @@ import { Live } from "../Model/Model.js";
 import { TargetDOMElement } from "./DD.js";
 import { DD , MehElement  } from "./DOM.js" ;
 import { PartsPlace , createPartsPlace } from "./PartsPlace.js" ;
+import { on_connect } from "./priv.js" ;
+
+const log = console.log ;
+
 
 
 /* HTMLドキュメントに MehElement / Text を追加 */
@@ -19,11 +23,20 @@ export const add =
 
 	if ( cel == null )  return ;
 
-	return PartsPlace.create
+	const ppl = PartsPlace.create
 	(
 		dec instanceof Array ? dec : [ dec ] ,
 		cel ,
 	) ;
+
+	log ( "add" , cel.isConnected ) ;
+
+	if ( cel.isConnected )
+	{
+		ppl ?. [ on_connect ] ?. () ;
+	}
+
+	return ppl ;
 }
 
 

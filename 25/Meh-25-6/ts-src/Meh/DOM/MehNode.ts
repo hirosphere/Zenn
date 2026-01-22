@@ -1,7 +1,13 @@
 import { Life , Plain , Live } from "../Model/Model.js" ;
 import * as DD from "./DD.js" ;
 import { PartsPlace } from "./PartsPlace.js" ;
+import { on_connect } from "./priv.js" ;
 
+const log = console.log ;
+
+
+
+/* */
 
 export abstract class MehNode
 {
@@ -30,6 +36,8 @@ export abstract class MehNode
 
 		else  update ( state ) ;
 	}
+
+	[ on_connect ] ? () : void ;
 
 	public terminate ()
 	{
@@ -114,10 +122,17 @@ export class MehElement < E extends DD.TargetDOMElement >  extends MehNode
 
 		/* Hook */
 
-		if ( dec.hook )
+		const hook = dec.hook ;
+
+		if ( hook )
 		{
-			dec.hook.el = this.el ;
-			dec.hook.init?. ( this.el ) ;
+			hook.el = this.el ;
+			if ( hook.connect )
+			{
+				this.#_hook = hook ;
+				this [ on_connect ] = this.#_on_connect ;
+			}
+			hook.init ?.( this.el ) ;
 		}
 	}
 
@@ -125,6 +140,14 @@ export class MehElement < E extends DD.TargetDOMElement >  extends MehNode
 	{
 		return this.el ;
 	}
+
+	#_on_connect () : void
+	{
+		this.#_parts ?. [ on_connect ] ?. () ;
+		this.#_hook ?. connect ?. ( this.el ) ;
+	}
+
+	#_hook ? : DD.Hook < any > ;
 
 	/* */
 
@@ -316,3 +339,4 @@ const sncv =
 	set ( v : string ) { return Number ( v ) } ,
 	get ( v : number ) { return String ( v ) }
 } ;
+

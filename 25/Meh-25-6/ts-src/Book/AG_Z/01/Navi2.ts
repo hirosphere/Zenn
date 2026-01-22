@@ -192,7 +192,11 @@ export namespace VC
 					display : Live.trans_r ( index.page_match , s => s ? "" : "none" )
 				}
 			} ,
-			ef.p ( { class : "TC" , style : { fontSize : "24px" , } } , index.title ) ,
+			ef.section
+			(
+				{ class : "CARD" } ,
+				ef.p ( { class : "TC" , style : { fontSize : "24px" , } } , index.title ) ,
+			) ,
 		) ;
 	}
 
@@ -261,11 +265,11 @@ export namespace VC
 	
 	const PeerIndex = ( vm : VM.Index ) : DD.Mel =>
 	{
-		const hook :DD.Hook < HTMLSpanElement > =
+		const hook : DD.Hook < HTMLSpanElement > =
 		{
-			init ( el )
+			connect ( el ) : void
 			{
-				log ( "init" , el.clientHeight )
+				log ( vm.title.$ , el.clientHeight )
 			}
 		}
 
@@ -311,7 +315,7 @@ export namespace VC
 
 		height : 100% ;
 		width : 250px ;
-		background-color : hsl( 215  65%  100% ) ;
+		background-color : hsl( 215  65%  90% ) ;
 
 		display : flex ;
 		flex-direction : column ;
@@ -329,16 +333,20 @@ export namespace VC
 
 		padding-block : 1ex ;
 		padding-inline : 1.0em  ;
-		gap : 1em ;
+		gap : 1ex ;
+
+		color : hsl( 0  0%  25% ) ;
 	}
 
-	.PATH
+	.PATH:not(:empty)
 	{
+		background-color : hsl( 0  0%  100% ) ;
+
 		display : flex ;
 		flex-direction : column ;
 
 		list-style : none ;
-		padding-left : 0 ;
+		padding : 1ex ;
 	}
 
 	.PEER_FRAME
@@ -349,6 +357,7 @@ export namespace VC
 
 	.PEER
 	{
+		background-color : hsl( 0  0%  100% ) ;
 		height : 100% ;
 
 		display : grid ;
@@ -396,27 +405,26 @@ export namespace VC
 		display : flex ;
 		align-items : center ;
 		font-family : 'Consolas' , monospace ;
-		color : hsl( 0  0%  40% ) ;
+		color : hsl( 0  0%  50% ) ;
 
 	}
 
 	.PATH .INDEX
 	{
-		padding-block : 0.8ex ;
+		padding-block : 0.4ex ;
 		text-align : center ;
 	}
 
 	.PATH ._TITLE
 	{
+		display : inline-block ;
+		
 		border-bottom : 1px  dotted  hsl( 0  0%  50% ) ;
+		min-width : 7em ;
 
-		padding-block : 0.1ex ;
-		padding-inline : 0.7ex ;
+		padding-block : 0  0.6ex ;
+		padding-inline : 0.5ex ;
 		text-align : center ;
-	}
-
-	.PATH ._TITLE > span
-	{
 	}
 
 	.PEER .INDEX
@@ -436,13 +444,30 @@ export namespace VC
 		overflow : hidden ;
 		
 		white-space : nowrap ;
-		text-overflow : ellipse ;
 		text-align : center ;
 	}
 
 	.CONTENT
 	{
 		padding : 1ex ;
+
+		display : flex ;
+		flex-wrap : wrap ;
+
+		justify-content : center ;
+		align-items : center ;
+
+		gap : 1ex ;
+	}
+
+	.CONTENT .CARD
+	{
+		flex : 0  1  350px ;
+		height : 250px ;
+
+		display : flex ;
+		justify-content : center ;
+		align-items : center ;
 	}
 	
 	

@@ -102,6 +102,7 @@ export type Hook < E extends TargetDOMElement > =
 {
 	el ? : E ;
 	init ? ( el : E ) : void ;
+	connect ? ( el : E ) : void ;
 	term ? ( el : E ) : void ;
 };
 
