@@ -1,6 +1,14 @@
-import { Live , Renn , Key , DD , ef , pl , times , log } from "../../../Meh/Meh.js" ;
+import { Live , Ease , Renn , Key , DD , ef , pl , times , log } from "../../../Meh/Meh.js" ;
 import * as common from "../../Common.js" ;
 import * as eki from "../../../API/EkiIndex.js" ;
+
+namespace PM   /* permanent model */
+{
+	class app
+	{
+		;
+	}
+}
 
 namespace VM
 {
@@ -111,7 +119,7 @@ namespace VM
 			this.com ?.navi_match.select () ;
 		}
 
-		public move () : void
+		public enter () : void
 		{
 			this.page_match.select () ;
 			this.navi_match.select () ;
@@ -195,7 +203,14 @@ export namespace VC
 			ef.section
 			(
 				{ class : "CARD" } ,
-				ef.p ( { class : "TC" , style : { fontSize : "24px" , } } , index.title ) ,
+				ef.p
+				(
+					{
+						class : "TC" ,
+						style : { fontSize : "24px" , ... lettertrim ( index.title.$ , 12 ) }
+					} ,
+					index.title
+				) ,
 			) ,
 		) ;
 	}
@@ -223,7 +238,7 @@ export namespace VC
 	(
 		{
 			class : [ "INDEX" , { _SELECTED : vm.page_match ?? false } ] ,
-			passive : { click : () => vm.move () }
+			passive : { click : () => vm.enter () }
 		} ,
 		ef.span ( { class : "_TITLE" } , vm.title ) ,
 	) ;
@@ -249,7 +264,14 @@ export namespace VC
 			ef.div
 			(
 				{ class : [ "INDEX" , { _SELECTED : vm.page_match } ] } ,
-				ef.h3 ( { class : "_TITLE" , passive : { click : () => vm.select () } } , vm.title ) ,
+				ef.h3
+				(
+					{
+						class : "_TITLE" ,
+						passive : { click : () => vm.select () }
+					} ,
+					ef.div ( { style : lettertrim ( vm.title.$ , 9 ) } , vm.title ) ,
+				) ,
 				vm.com && ef.span
 				(
 					{ class : "_THUMB" , passive : { click : () => vm.exit () }} ,
@@ -265,7 +287,7 @@ export namespace VC
 	
 	const PeerIndex = ( vm : VM.Index ) : DD.Mel =>
 	{
-		const hook : DD.Hook < HTMLSpanElement > =
+		const hook : DD.Hook < HTMLDivElement > =
 		{
 			connect ( el ) : void
 			{
@@ -276,13 +298,48 @@ export namespace VC
 		return ef.li
 		(
 			{ class : [ "INDEX" , { _SELECTED : vm.page_match } ] } ,
-			ef.span ( { class : "_TITLE" , passive : { click : () => vm.select () } , hook } , vm.title , ) ,
+			ef.div
+			(
+				{ class : "_TITLE" , passive : { click : () => vm.select () } , hook } ,
+				ef.div ( { style : lettertrim ( vm.title.$ , 10 ) } , vm.title ) ,
+			) ,
 			ef.span
 			(
-				{ class : "_THUMB" , passive : { click : () => vm.move () }} ,
+				{ class : "_THUMB" , passive : { click : () => vm.enter () }} ,
 				ef.span ( { class : "_MK" } , "v" ) ,
 			)
 		) ;
+	}
+
+
+	function lettertrim ( letter : string , limit : number ) : Partial < CSSStyleDeclaration >
+	{
+		const len = letter.length ;
+
+		const scale : Partial < CSSStyleDeclaration > | undefined = len > limit ?
+		{
+			transform : `scale(${ limit / len } , ${ 1 } )` ,
+		
+		} : undefined ;
+
+
+		const rt : Partial < CSSStyleDeclaration > =
+		{
+			whiteSpace : "nowrap" ,
+			textAlignLast : "justify" ,
+
+			... trimtable [ letter.length ] ,
+			... scale ,
+		} ;
+
+		return rt ;
+	}
+
+	const trimtable : { [ index :number ] : Partial < CSSStyleDeclaration > } =
+	{
+		2 : { width : "2.05em" , } ,
+		3 : { width : "3.05em" , } ,
+		4 : { width : "4.05em" , } ,
 	}
 
 
@@ -340,6 +397,7 @@ export namespace VC
 
 	.PATH:not(:empty)
 	{
+		border-radius : 0.7ex ;
 		background-color : hsl( 0  0%  100% ) ;
 
 		display : flex ;
@@ -357,23 +415,41 @@ export namespace VC
 
 	.PEER
 	{
-		background-color : hsl( 0  0%  100% ) ;
+		border-radius : 0.7ex ;
+		overflow : clip ;
+
+		background-color : white ;
 		height : 100% ;
 
 		display : grid ;
-		grid-template-rows : auto  auto  1fr ;
-		gap : 1ex ;
+		grid-template-rows : auto  1fr ;
+		padding-block : 0em  0.6ex ;
+		padding-inline : 1px ;
+		gap : 1.0ex ;
 	}
 
-	.PEER > hr { margin-block : 0.6ex ; }
-	.PEER > h3 { overflow : hidden ; }
+	.PEER h3
+	{
+		overflow : hidden ;
+		margin-block : 0.2ex ;
+		font-size : 1.15em ;
+	}
+
 	.PEER > ul
 	{
+		background : white ;
+
 		overflow : auto ;
 		scrollbar-width : none ;
 
-		padding : 0 ;
+		padding-block : 0.6ex ;
+		padding-inline : 1px ;
 		list-style : none ;
+	}
+
+	.INDEX
+	{
+		border-radius : 0.2ex ;
 	}
 
 	.INDEX._SELECTED
@@ -385,21 +461,22 @@ export namespace VC
 	.INDEX > ._TITLE
 	{
 		flex-grow : 1 ;
-
-		white-space : nowrap ;
+		border-radius : 0.5ex ;
 		overflow : hidden ;
 	}
 
 	.INDEX > ._THUMB
 	{
 		display : flex ;
-		padding : 0.3ex  0.3ex ;
+		padding : 0.3ex  0.4ex ;
 		align-items : stretch ;
 	}
 
 	.INDEX > ._THUMB > ._MK
 	{
-		background : hsl( 55  5%  95% / 80% ) ;
+		border-radius : 0.5ex ;
+
+		background : hsl( 55  5%  93% / 90% ) ;
 		padding-inline : 1.2ex ;
 
 		display : flex ;
@@ -429,7 +506,7 @@ export namespace VC
 
 	.PEER .INDEX
 	{
-		border-bottom : 1px  dotted  hsl( 0  0%  50% ) ;
+		border-bottom : 1px  dotted  hsl( 0  0%  60% ) ;
 
 		display : flex ;
 		gap : 0.1ex ;
@@ -439,12 +516,14 @@ export namespace VC
 	{
 		width : 6em ;
 
-		padding-block : 1.10ex ;
+		display : flex ;
+		justify-content : center ;
+
+		padding-block : 1.15ex ;
 		padding-inline : 1ex  0.7ex ;
 		overflow : hidden ;
 		
 		white-space : nowrap ;
-		text-align : center ;
 	}
 
 	.CONTENT
@@ -462,6 +541,9 @@ export namespace VC
 
 	.CONTENT .CARD
 	{
+		background : hsl( 95  45%  45% ) ;
+		color : white ;
+
 		flex : 0  1  350px ;
 		height : 250px ;
 
