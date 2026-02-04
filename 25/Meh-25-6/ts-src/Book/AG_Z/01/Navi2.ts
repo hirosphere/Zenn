@@ -1,4 +1,4 @@
-import { Live , Ease , Renn , Key , DD , ef , pl , times , log } from "../../../Meh/Meh.js" ;
+import { Life , Live , Ease , Renn , Key , DD , ef , pl , times , log } from "../../../Meh/Meh.js" ;
 import * as common from "../../Common.js" ;
 import * as eki from "../../../API/EkiIndex.js" ;
 
@@ -74,7 +74,7 @@ namespace VM
 
 	/* */
 
-	export class Index
+	export class Index extends Life < any >
 	{
 		public readonly title : Live < string > ;
 		public readonly parts = new Renn < Index > ;
@@ -92,6 +92,8 @@ namespace VM
 			public readonly com : Index | undefined
 		)
 		{
+			super () ;
+
 			this.title = Live ( i.title ) ;
 
 			this.page_match = navi.curr_page.match ( this ) ;
@@ -160,6 +162,8 @@ namespace VM
 
 	type dynamic_parts = () => Promise < static_parts > ;
 	type static_parts = { [ name : string ] : index } ;
+
+	new Intl.NumberFormat ( "ja-JP" , { style : "currency" , currency : "JPY" } ) ;
 }
 
 export namespace VC
@@ -258,18 +262,21 @@ export namespace VC
 
 		vm.make_dyn_parts () ;
 
+		const radioname = `RG ${ Live.ru ( vm ) }` ;
+
 		return ef.section
 		(
 			{ class : "PEER" , style : { display } } ,
 			ef.div
 			(
 				{ class : [ "INDEX" , { _SELECTED : vm.page_match } ] } ,
-				ef.h3
+				ef.label
 				(
 					{
-						class : "_TITLE" ,
+						class : "_HEAD _TITLE" ,
 						passive : { click : () => vm.select () }
 					} ,
+					radio ( vm , radioname ) ,
 					ef.div ( { style : lettertrim ( vm.title.$ , 9 ) } , vm.title ) ,
 				) ,
 				vm.com && ef.span
@@ -280,14 +287,14 @@ export namespace VC
 			) ,
 			ef.ul
 			(
-				pl.each ( vm.parts , vm => PeerIndex ( vm ) , )
+				pl.each ( vm.parts , vm => PeerIndex ( vm , radioname ) , )
 			)
 		) ;
 	}
 	
-	const PeerIndex = ( vm : VM.Index ) : DD.Mel =>
+	const PeerIndex = ( vm : VM.Index , radioname : string ) : DD.Mel =>
 	{
-		const hook : DD.Hook < HTMLDivElement > =
+		const hook : DD.Hook < HTMLLabelElement > =
 		{
 			connect ( el ) : void
 			{
@@ -295,12 +302,23 @@ export namespace VC
 			}
 		}
 
+		const keydown = ( ev : KeyboardEvent ) : void =>
+		{
+			// log ( ev.key ) ;
+
+			if ( ev.key == "Enter" )
+			{
+				ev.shiftKey ? vm.com ?.exit () : vm.enter () ;
+			}
+		}
+
 		return ef.li
 		(
 			{ class : [ "INDEX" , { _SELECTED : vm.page_match } ] } ,
-			ef.div
+			ef.label
 			(
-				{ class : "_TITLE" , passive : { click : () => vm.select () } , hook } ,
+				{ class : "_TITLE" , passive : { click : () => vm.select () , keydown } , hook } ,
+				radio ( vm , radioname ) ,
 				ef.div ( { style : lettertrim ( vm.title.$ , 10 ) } , vm.title ) ,
 			) ,
 			ef.span
@@ -308,6 +326,18 @@ export namespace VC
 				{ class : "_THUMB" , passive : { click : () => vm.enter () }} ,
 				ef.span ( { class : "_MK" } , "v" ) ,
 			)
+		) ;
+	}
+
+	const radio = ( vm : VM.Index , radioname : string ) =>
+	{
+		return ef.input
+		(
+			{
+				attrs : { type : "radio" , name : radioname , title : radioname } ,
+				props : { checked : vm.page_match } ,
+				style : { width : "0" } ,
+			}
 		) ;
 	}
 
@@ -371,11 +401,14 @@ export namespace VC
 		overflow : hidden ;
 
 		height : 100% ;
-		width : 250px ;
+		width : 240px ;
 		background-color : hsl( 215  65%  90% ) ;
 
 		display : flex ;
 		flex-direction : column ;
+
+		padding-block : 0.8ex ;
+		padding-inline : 0.8ex  ;
 	}
 
 	.NAVI
@@ -388,9 +421,7 @@ export namespace VC
 		display : flex ;
 		flex-direction : column ;
 
-		padding-block : 1ex ;
-		padding-inline : 1.0em  ;
-		gap : 1ex ;
+		gap : 0.8ex ;
 
 		color : hsl( 0  0%  25% ) ;
 	}
@@ -424,15 +455,16 @@ export namespace VC
 		display : grid ;
 		grid-template-rows : auto  1fr ;
 		padding-block : 0em  0.6ex ;
-		padding-inline : 1px ;
-		gap : 1.0ex ;
+		padding-inline : 0px ;
+		gap : 0.8ex ;
 	}
 
-	.PEER h3
+	.PEER ._HEAD
 	{
 		overflow : hidden ;
 		margin-block : 0.2ex ;
-		font-size : 1.15em ;
+		font-size : 1.08em ;
+		font-weight : bold ;
 	}
 
 	.PEER > ul
@@ -442,7 +474,7 @@ export namespace VC
 		overflow : auto ;
 		scrollbar-width : none ;
 
-		padding-block : 0.6ex ;
+		padding-block : 0.5ex ;
 		padding-inline : 1px ;
 		list-style : none ;
 	}
@@ -519,7 +551,7 @@ export namespace VC
 		display : flex ;
 		justify-content : center ;
 
-		padding-block : 1.15ex ;
+		padding-block : 1.3ex ;
 		padding-inline : 1ex  0.7ex ;
 		overflow : hidden ;
 		

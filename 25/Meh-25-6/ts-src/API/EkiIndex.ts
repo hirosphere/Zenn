@@ -44,8 +44,6 @@ class pref implements index
 
 	public async parts () : Promise < static_parts >
 	{
-		log ( "index pref parts" , this?.title ) ;
-
 		const eki = await Eki.make ( this.datapath ) ;
 		const lines = eki.pref_line.items
 		(

@@ -97,6 +97,8 @@ export namespace Live
 
 	export const add_ref    = < T > ( ls : Plain.R < T > , ref : Live.Ref ) => Life.add_ref ( ls , ref ) ;
 	export const remove_ref = < T > ( ls : Plain.R < T > , ref : Live.Ref ) => Life.remove_ref ( ls , ref ) ;
+
+	export const ru = Life.ru ;
 }
 
 export type Plain < V > = Plain.R < V > &

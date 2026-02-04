@@ -1,7 +1,7 @@
 const log = console.log ;
 
 
-export const ru = Symbol () ;
+const life_ru = Symbol () ;
 export const life_term = Symbol () ;
 export const life_add_ref = Symbol () ;
 export const life_remove_ref = Symbol () ;
@@ -39,10 +39,10 @@ export class Life < R extends Life.Ref >
 		this [ refs ] .clear () ;
 		life_count -- ;
 
-		log ( "term" , this [ ru ] , life_count )
+		log ( "term" , this [ life_ru ] , life_count )
 	}
 
-	protected [ ru ] = next_ru ++ ;
+	public [ life_ru ] = next_ru ++ ;
 	protected [ agg ] ? : Agg ;
 	protected [ refs ] = new Set < R > ;
 }
@@ -54,6 +54,7 @@ export namespace Life
 	export const add_ref    = < R extends Ref > ( life : Life < R > , ref : R ) => life [ life_add_ref ] ( ref ) ;
 	export const remove_ref = < R extends Ref > ( life : Life < R > , ref : R ) => life [ life_remove_ref ] ( ref ) ;
 	export const terminate  = < R extends Ref > ( life : Life < R > ) => life [ life_term ] () ;
+	export const ru = ( life : Life < any > ) : number => life [ life_ru ] ;
 
 	/* Ref */
 

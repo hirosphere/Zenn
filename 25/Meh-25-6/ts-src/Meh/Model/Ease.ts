@@ -1,4 +1,4 @@
-import { ru , Agg , agg , agg_echan , } from "./Life.js" ;
+import { Agg , agg , agg_echan , } from "./Life.js" ;
 import { Live , ls_set , ls_get , ls_notify } from "./LiveState.js" ;
 import { Renn } from "./Renn.js" ;
 
