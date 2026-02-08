@@ -47,6 +47,8 @@ namespace VM
 		
 		public readonly root : Index ;
 
+		public readonly peer_focused = Live ( false ) ;
+
 		constructor ( i : index )
 		{
 			this.root = new Index ( i , "" , this , undefined ) ;
@@ -163,7 +165,15 @@ namespace VM
 	type dynamic_parts = () => Promise < static_parts > ;
 	type static_parts = { [ name : string ] : index } ;
 
-	new Intl.NumberFormat ( "ja-JP" , { style : "currency" , currency : "JPY" } ) ;
+	/*  */
+
+	class Focus
+	{
+		constructor ( container : Live.bool )
+		{
+			;
+		}
+	}
 }
 
 export namespace VC
@@ -252,17 +262,18 @@ export namespace VC
 		return ef.div
 		(
 			{ class : "PEER_FRAME" } ,
-			pl.key ( vm.curr_peer.key , index => index && Peer ( index ) )
+			pl.key ( vm.curr_peer.key , index => index && Peer ( index , vm.peer_focused ) )
 		) ;
 	}
 
-	const Peer = ( vm : VM.Index ) : DD.Mel =>
+	const Peer = ( vm : VM.Index , focused : Live.bool ) : DD.Mel =>
 	{
 		const display = Live.trans_r ( vm.navi_match , s => s ? "" : "none" ) ;
 
 		vm.make_dyn_parts () ;
 
-		const radioname = `RG ${ Live.ru ( vm ) }` ;
+		// const radioname = `RG ${ Live.ru ( vm ) }` ;
+		const radioname = `PEER_RADIO_GROUP` ;
 
 		return ef.section
 		(
@@ -276,7 +287,6 @@ export namespace VC
 						class : "_HEAD _TITLE" ,
 						passive : { click : () => vm.select () }
 					} ,
-					radio ( vm , radioname ) ,
 					ef.div ( { style : lettertrim ( vm.title.$ , 9 ) } , vm.title ) ,
 				) ,
 				vm.com && ef.span
@@ -287,12 +297,12 @@ export namespace VC
 			) ,
 			ef.ul
 			(
-				pl.each ( vm.parts , vm => PeerIndex ( vm , radioname ) , )
+				pl.each ( vm.parts , vm => PeerIndex ( vm , focused ) , )
 			)
 		) ;
 	}
 	
-	const PeerIndex = ( vm : VM.Index , radioname : string ) : DD.Mel =>
+	const PeerIndex = ( vm : VM.Index , focused : Live.bool ) : DD.Mel =>
 	{
 		const hook : DD.Hook < HTMLLabelElement > =
 		{
@@ -317,8 +327,11 @@ export namespace VC
 			{ class : [ "INDEX" , { _SELECTED : vm.page_match } ] } ,
 			ef.label
 			(
-				{ class : "_TITLE" , passive : { click : () => vm.select () , keydown } , hook } ,
-				radio ( vm , radioname ) ,
+				{
+					class : "_TITLE" ,
+					passive : { click : () => vm.select () , keydown } ,
+					hook
+				} ,
 				ef.div ( { style : lettertrim ( vm.title.$ , 10 ) } , vm.title ) ,
 			) ,
 			ef.span
@@ -328,19 +341,6 @@ export namespace VC
 			)
 		) ;
 	}
-
-	const radio = ( vm : VM.Index , radioname : string ) =>
-	{
-		return ef.input
-		(
-			{
-				attrs : { type : "radio" , name : radioname , title : radioname } ,
-				props : { checked : vm.page_match } ,
-				style : { width : "0" } ,
-			}
-		) ;
-	}
-
 
 	function lettertrim ( letter : string , limit : number ) : Partial < CSSStyleDeclaration >
 	{
