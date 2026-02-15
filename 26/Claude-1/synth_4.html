@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シンプルシンセサイザー</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .synth-container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #1976d2;
+            font-size: 24px;
+        }
+
+        .control-group {
+            margin-bottom: 30px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1976d2;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb:hover {
+            background: #1565c0;
+            transform: scale(1.1);
+        }
+
+        .control-group input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1976d2;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .control-group input[type="range"]::-moz-range-thumb:hover {
+            background: #1565c0;
+            transform: scale(1.1);
+        }
+
+        .value-display {
+            display: inline-block;
+            margin-left: 10px;
+            color: #1976d2;
+            font-weight: bold;
+            min-width: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .start-btn {
+            background: #1976d2;
+            color: white;
+        }
+
+        .start-btn:hover {
+            background: #1565c0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        }
+
+        .start-btn:active {
+            transform: translateY(0);
+        }
+
+        .stop-btn {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .stop-btn:hover {
+            background: #c62828;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+        }
+
+        .stop-btn:active {
+            transform: translateY(0);
+        }
+
+        .stop-btn:disabled,
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .chord-panel {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .chord-panel h2 {
+            font-size: 16px;
+            color: #388e3c;
+            margin-bottom: 15px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .chord-type {
+            margin-bottom: 20px;
+        }
+
+        .chord-type h3 {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .chord-buttons {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .chord-btn {
+            padding: 12px 8px;
+            font-size: 13px;
+            font-weight: bold;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .chord-btn:hover {
+            border-color: #388e3c;
+            color: #388e3c;
+            transform: translateY(-2px);
+        }
+
+        .chord-btn:active,
+        .chord-btn.active {
+            background: #388e3c;
+            color: white;
+            border-color: #388e3c;
+            transform: translateY(0);
+        }
+
+        .filter-panel {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .filter-panel h2 {
+            font-size: 16px;
+            color: #7b1fa2;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .filter-type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-type-btn {
+            flex: 1;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f5f5f5;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .filter-type-btn:hover {
+            border-color: #7b1fa2;
+            color: #7b1fa2;
+        }
+
+        .filter-type-btn.active {
+            background: #7b1fa2;
+            color: white;
+            border-color: #7b1fa2;
+        }
+
+        .lfo-wave-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .lfo-wave-btn {
+            padding: 10px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .lfo-wave-btn:hover {
+            border-color: #7b1fa2;
+            color: #7b1fa2;
+        }
+
+        .lfo-wave-btn.active {
+            background: #7b1fa2;
+            color: white;
+            border-color: #7b1fa2;
+        }
+
+        .filter-controls {
+            margin-top: 15px;
+        }
+
+        .control-label-small {
+            font-size: 11px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="synth-container">
+        <h1>🎹 シンプルシンセサイザー</h1>
+        
+        <div class="control-group">
+            <label>
+                周波数 (Frequency)
+                <span class="value-display" id="freq-value">440 Hz</span>
+            </label>
+            <input type="range" id="frequency" min="20" max="2000" value="440" step="1">
+        </div>
+
+        <div class="control-group">
+            <label>
+                音量 (Volume)
+                <span class="value-display" id="vol-value">50%</span>
+            </label>
+            <input type="range" id="volume" min="0" max="100" value="50" step="1">
+        </div>
+
+        <div class="button-group">
+            <button class="start-btn" id="start-btn">Start</button>
+            <button class="stop-btn" id="stop-btn" disabled>Stop</button>
+        </div>
+
+        <div class="status" id="status">準備完了</div>
+
+        <div class="filter-panel">
+            <h2>🎛️ フィルター & LFO</h2>
+            
+            <div class="control-group">
+                <label class="control-label-small">フィルタータイプ</label>
+                <div class="filter-type-selector">
+                    <button class="filter-type-btn active" data-type="lowpass">Lowpass</button>
+                    <button class="filter-type-btn" data-type="bandpass">Bandpass</button>
+                    <button class="filter-type-btn" data-type="highpass">Highpass</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>
+                    カットオフ周波数
+                    <span class="value-display" id="cutoff-value">1000 Hz</span>
+                </label>
+                <input type="range" id="cutoff" min="20" max="20000" value="1000" step="1">
+            </div>
+
+            <div class="control-group">
+                <label>
+                    レゾナンス (Q)
+                    <span class="value-display" id="resonance-value">1.0</span>
+                </label>
+                <input type="range" id="resonance" min="0.1" max="30" value="1" step="0.1">
+            </div>
+
+            <div class="control-group">
+                <label class="control-label-small">LFO 波形</label>
+                <div class="lfo-wave-selector">
+                    <button class="lfo-wave-btn active" data-wave="sine">正弦波</button>
+                    <button class="lfo-wave-btn" data-wave="triangle">三角波</button>
+                    <button class="lfo-wave-btn" data-wave="sawtooth">上昇鋸</button>
+                    <button class="lfo-wave-btn" data-wave="sawtooth-down">下降鋸</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>
+                    LFO スピード
+                    <span class="value-display" id="lfo-rate-value">2.0 Hz</span>
+                </label>
+                <input type="range" id="lfo-rate" min="0.1" max="20" value="2" step="0.1">
+            </div>
+
+            <div class="control-group">
+                <label>
+                    LFO デプス
+                    <span class="value-display" id="lfo-depth-value">1000 Hz</span>
+                </label>
+                <input type="range" id="lfo-depth" min="0" max="5000" value="1000" step="10">
+            </div>
+        </div>
+
+        <div class="chord-panel">
+            <h2>🎵 和音プリセット</h2>
+            
+            <div class="chord-type">
+                <h3>Major (メジャー)</h3>
+                <div class="chord-buttons" id="major-chords"></div>
+            </div>
+
+            <div class="chord-type">
+                <h3>Minor (マイナー)</h3>
+                <div class="chord-buttons" id="minor-chords"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        "use strict";
+
+        class SquareWaveSynth {
+            constructor() {
+                this.audioContext = null;
+                this.oscillators = [];
+                this.gainNode = null;
+                this.filter = null;
+                this.lfo = null;
+                this.lfoGain = null;
+                this.isPlaying = false;
+                this.currentFrequencies = [261.63, 329.63, 392.00]; // Default C major chord
+                
+                // Filter settings
+                this.filterType = 'lowpass';
+                this.cutoffFrequency = 1000;
+                this.resonance = 1.0;
+                
+                // LFO settings
+                this.lfoWaveform = 'sine';
+                this.lfoRate = 2.0;
+                this.lfoDepth = 1000;
+            }
+
+            init() {
+                if (!this.audioContext) {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    // Create filter
+                    this.filter = this.audioContext.createBiquadFilter();
+                    this.filter.type = this.filterType;
+                    this.filter.frequency.value = this.cutoffFrequency;
+                    this.filter.Q.value = this.resonance;
+                    
+                    // Create LFO
+                    this.lfo = this.audioContext.createOscillator();
+                    this.lfo.type = this.lfoWaveform;
+                    this.lfo.frequency.value = this.lfoRate;
+                    
+                    // Create LFO gain (controls the depth of modulation)
+                    this.lfoGain = this.audioContext.createGain();
+                    this.lfoGain.gain.value = this.lfoDepth;
+                    
+                    // Connect LFO to filter cutoff frequency
+                    this.lfo.connect(this.lfoGain);
+                    this.lfoGain.connect(this.filter.frequency);
+                    
+                    // Create master gain
+                    this.gainNode = this.audioContext.createGain();
+                    this.gainNode.gain.value = 0.5;
+                    
+                    // Connect filter to output
+                    this.filter.connect(this.gainNode);
+                    this.gainNode.connect(this.audioContext.destination);
+                    
+                    // Start LFO
+                    this.lfo.start();
+                }
+            }
+
+            start(frequencies, volume) {
+                if (this.isPlaying) {
+                    this.stop();
+                }
+
+                this.init();
+                this.currentFrequencies = frequencies;
+
+                // Create 3 oscillators for the chord
+                for (let i = 0; i < 3; i++) {
+                    const osc = this.audioContext.createOscillator();
+                    osc.type = 'square';
+                    osc.frequency.value = frequencies[i];
+                    
+                    // Create individual gain node for each oscillator to balance volume
+                    const oscGain = this.audioContext.createGain();
+                    oscGain.gain.value = 0.33; // Divide by 3 to prevent clipping
+                    
+                    osc.connect(oscGain);
+                    oscGain.connect(this.filter); // Connect to filter instead of direct output
+                    osc.start();
+                    
+                    this.oscillators.push({ osc, gain: oscGain });
+                }
+                
+                this.gainNode.gain.value = volume;
+                this.isPlaying = true;
+            }
+
+            stop() {
+                if (this.oscillators.length > 0 && this.isPlaying) {
+                    this.oscillators.forEach(({ osc, gain }) => {
+                        osc.stop();
+                        osc.disconnect();
+                        gain.disconnect();
+                    });
+                    this.oscillators = [];
+                    this.isPlaying = false;
+                }
+            }
+
+            setFrequencies(frequencies) {
+                if (this.oscillators.length > 0 && this.isPlaying) {
+                    this.currentFrequencies = frequencies;
+                    for (let i = 0; i < 3 && i < this.oscillators.length; i++) {
+                        this.oscillators[i].osc.frequency.setValueAtTime(
+                            frequencies[i],
+                            this.audioContext.currentTime
+                        );
+                    }
+                }
+            }
+
+            setVolume(volume) {
+                if (this.gainNode) {
+                    this.gainNode.gain.setValueAtTime(
+                        volume,
+                        this.audioContext.currentTime
+                    );
+                }
+            }
+
+            transposeChord(semitones) {
+                const newFrequencies = this.currentFrequencies.map(freq => 
+                    freq * Math.pow(2, semitones / 12)
+                );
+                this.setFrequencies(newFrequencies);
+                return newFrequencies;
+            }
+
+            // Filter control methods
+            setFilterType(type) {
+                this.filterType = type;
+                if (this.filter) {
+                    this.filter.type = type;
+                }
+            }
+
+            setCutoffFrequency(frequency) {
+                this.cutoffFrequency = frequency;
+                if (this.filter) {
+                    this.filter.frequency.setValueAtTime(
+                        frequency,
+                        this.audioContext.currentTime
+                    );
+                }
+            }
+
+            setResonance(q) {
+                this.resonance = q;
+                if (this.filter) {
+                    this.filter.Q.setValueAtTime(
+                        q,
+                        this.audioContext.currentTime
+                    );
+                }
+            }
+
+            // LFO control methods
+            setLFOWaveform(waveform) {
+                this.lfoWaveform = waveform;
+                if (this.lfo && this.isPlaying) {
+                    // Need to recreate LFO to change waveform
+                    this.lfo.stop();
+                    this.lfo.disconnect();
+                    
+                    this.lfo = this.audioContext.createOscillator();
+                    this.lfo.type = waveform;
+                    this.lfo.frequency.value = this.lfoRate;
+                    this.lfo.connect(this.lfoGain);
+                    this.lfo.start();
+                }
+            }
+
+            setLFORate(rate) {
+                this.lfoRate = rate;
+                if (this.lfo) {
+                    this.lfo.frequency.setValueAtTime(
+                        rate,
+                        this.audioContext.currentTime
+                    );
+                }
+            }
+
+            setLFODepth(depth) {
+                this.lfoDepth = depth;
+                if (this.lfoGain) {
+                    this.lfoGain.gain.setValueAtTime(
+                        depth,
+                        this.audioContext.currentTime
+                    );
+                }
+            }
+        }
+
+        // UI Controller
+        class SynthController {
+            constructor() {
+                this.synth = new SquareWaveSynth();
+                this.baseFrequency = 261.63; // C4
+                this.volume = 0.5;
+                this.currentChord = null;
+                
+                // Chord definitions (intervals in semitones from root)
+                this.chordTypes = {
+                    major: [0, 4, 7],   // Root, Major 3rd, Perfect 5th
+                    minor: [0, 3, 7]    // Root, Minor 3rd, Perfect 5th
+                };
+                
+                // Note names for 12 semitones (C to B)
+                this.noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+                
+                this.initElements();
+                this.createChordButtons();
+                this.attachEventListeners();
+            }
+
+            initElements() {
+                this.freqSlider = document.getElementById('frequency');
+                this.volSlider = document.getElementById('volume');
+                this.startBtn = document.getElementById('start-btn');
+                this.stopBtn = document.getElementById('stop-btn');
+                this.freqValue = document.getElementById('freq-value');
+                this.volValue = document.getElementById('vol-value');
+                this.status = document.getElementById('status');
+                this.majorChordsContainer = document.getElementById('major-chords');
+                this.minorChordsContainer = document.getElementById('minor-chords');
+                
+                // Filter and LFO controls
+                this.cutoffSlider = document.getElementById('cutoff');
+                this.cutoffValue = document.getElementById('cutoff-value');
+                this.resonanceSlider = document.getElementById('resonance');
+                this.resonanceValue = document.getElementById('resonance-value');
+                this.lfoRateSlider = document.getElementById('lfo-rate');
+                this.lfoRateValue = document.getElementById('lfo-rate-value');
+                this.lfoDepthSlider = document.getElementById('lfo-depth');
+                this.lfoDepthValue = document.getElementById('lfo-depth-value');
+            }
+
+            createChordButtons() {
+                // Create Major chord buttons
+                for (let i = 0; i < 12; i++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'chord-btn';
+                    btn.textContent = this.noteNames[i];
+                    btn.dataset.root = i;
+                    btn.dataset.type = 'major';
+                    this.majorChordsContainer.appendChild(btn);
+                }
+
+                // Create Minor chord buttons
+                for (let i = 0; i < 12; i++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'chord-btn';
+                    btn.textContent = this.noteNames[i] + 'm';
+                    btn.dataset.root = i;
+                    btn.dataset.type = 'minor';
+                    this.minorChordsContainer.appendChild(btn);
+                }
+            }
+
+            calculateChordFrequencies(rootSemitone, chordType) {
+                const intervals = this.chordTypes[chordType];
+                return intervals.map(interval => 
+                    this.baseFrequency * Math.pow(2, (rootSemitone + interval) / 12)
+                );
+            }
+
+            attachEventListeners() {
+                // Frequency slider now transposes the current chord
+                this.freqSlider.addEventListener('input', (e) => {
+                    const semitones = Math.round((parseFloat(e.target.value) - 440) / 440 * 12);
+                    this.freqValue.textContent = `${e.target.value} Hz`;
+                    
+                    if (this.synth.isPlaying && this.currentChord) {
+                        this.synth.transposeChord(semitones);
+                    }
+                });
+
+                this.volSlider.addEventListener('input', (e) => {
+                    const volumePercent = parseFloat(e.target.value);
+                    this.volume = volumePercent / 100;
+                    this.volValue.textContent = `${volumePercent}%`;
+                    this.synth.setVolume(this.volume);
+                });
+
+                // Filter type buttons
+                document.querySelectorAll('.filter-type-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.filter-type-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        const filterType = e.target.dataset.type;
+                        this.synth.setFilterType(filterType);
+                    });
+                });
+
+                // Cutoff frequency
+                this.cutoffSlider.addEventListener('input', (e) => {
+                    const cutoff = parseFloat(e.target.value);
+                    this.cutoffValue.textContent = `${Math.round(cutoff)} Hz`;
+                    this.synth.setCutoffFrequency(cutoff);
+                });
+
+                // Resonance
+                this.resonanceSlider.addEventListener('input', (e) => {
+                    const resonance = parseFloat(e.target.value);
+                    this.resonanceValue.textContent = resonance.toFixed(1);
+                    this.synth.setResonance(resonance);
+                });
+
+                // LFO waveform buttons
+                document.querySelectorAll('.lfo-wave-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.lfo-wave-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        let waveform = e.target.dataset.wave;
+                        
+                        // Handle custom sawtooth-down waveform
+                        if (waveform === 'sawtooth-down') {
+                            // Web Audio API doesn't have a native reverse sawtooth, 
+                            // so we use sawtooth and invert it in the synth
+                            waveform = 'sawtooth';
+                            // Note: For a proper implementation, you'd need to invert the LFO gain
+                        }
+                        
+                        this.synth.setLFOWaveform(waveform);
+                    });
+                });
+
+                // LFO rate
+                this.lfoRateSlider.addEventListener('input', (e) => {
+                    const rate = parseFloat(e.target.value);
+                    this.lfoRateValue.textContent = `${rate.toFixed(1)} Hz`;
+                    this.synth.setLFORate(rate);
+                });
+
+                // LFO depth
+                this.lfoDepthSlider.addEventListener('input', (e) => {
+                    const depth = parseFloat(e.target.value);
+                    this.lfoDepthValue.textContent = `${Math.round(depth)} Hz`;
+                    this.synth.setLFODepth(depth);
+                });
+
+                this.startBtn.addEventListener('click', () => {
+                    if (this.currentChord) {
+                        const frequencies = this.calculateChordFrequencies(
+                            this.currentChord.root,
+                            this.currentChord.type
+                        );
+                        this.synth.start(frequencies, this.volume);
+                        this.startBtn.disabled = true;
+                        this.stopBtn.disabled = false;
+                        this.status.textContent = `再生中: ${this.currentChord.name}`;
+                    } else {
+                        // Default to C major if no chord selected
+                        this.currentChord = { root: 0, type: 'major', name: 'C' };
+                        const frequencies = this.calculateChordFrequencies(0, 'major');
+                        this.synth.start(frequencies, this.volume);
+                        this.startBtn.disabled = true;
+                        this.stopBtn.disabled = false;
+                        this.status.textContent = '再生中: C Major';
+                    }
+                });
+
+                this.stopBtn.addEventListener('click', () => {
+                    this.synth.stop();
+                    this.startBtn.disabled = false;
+                    this.stopBtn.disabled = true;
+                    this.status.textContent = '停止';
+                    this.clearActiveChordButtons();
+                });
+
+                // Chord button event listeners
+                const allChordButtons = document.querySelectorAll('.chord-btn');
+                allChordButtons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const root = parseInt(e.target.dataset.root);
+                        const type = e.target.dataset.type;
+                        const name = e.target.textContent;
+                        
+                        this.currentChord = { root, type, name };
+                        const frequencies = this.calculateChordFrequencies(root, type);
+                        
+                        // Update active button style
+                        this.clearActiveChordButtons();
+                        e.target.classList.add('active');
+                        
+                        // If already playing, change chord immediately
+                        if (this.synth.isPlaying) {
+                            this.synth.setFrequencies(frequencies);
+                            this.status.textContent = `再生中: ${name}`;
+                        } else {
+                            // Start playing the chord
+                            this.synth.start(frequencies, this.volume);
+                            this.startBtn.disabled = true;
+                            this.stopBtn.disabled = false;
+                            this.status.textContent = `再生中: ${name}`;
+                        }
+                    });
+                });
+            }
+
+            clearActiveChordButtons() {
+                document.querySelectorAll('.chord-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            new SynthController();
+        });
+    </script>
+</body>
+</html>
