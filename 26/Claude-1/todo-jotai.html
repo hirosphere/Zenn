@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jotai ToDo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e10;
+    --surface: #1a1a1e;
+    --border: #2a2a30;
+    --accent: #e8ff47;
+    --accent2: #ff4f7b;
+    --text: #f0f0f2;
+    --muted: #666672;
+    --done: #3a3a42;
+  }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 3rem 1rem 6rem;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 620px;
+  }
+
+  /* ─── Header ─── */
+  header {
+    margin-bottom: 2.5rem;
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 8vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  h1 span {
+    color: var(--accent);
+  }
+
+  /* ─── Stats bar ─── */
+  .stats {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 90px;
+    transition: border-color 0.2s;
+  }
+
+  .stat:hover { border-color: var(--accent); }
+
+  .stat-num {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .stat-num.accent { color: var(--accent); }
+  .stat-num.accent2 { color: var(--accent2); }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* ─── Progress bar ─── */
+  .progress-wrap {
+    margin-top: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 100px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+  }
+
+  /* ─── Input ─── */
+  .input-row {
+    display: flex;
+    gap: 0.75rem;
+    margin: 2rem 0 1.5rem;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    padding: 0.85rem 1.2rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  input[type="text"]::placeholder { color: var(--muted); }
+  input[type="text"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(232,255,71,0.08);
+  }
+
+  button.add-btn {
+    background: var(--accent);
+    color: #0e0e10;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.85rem 1.4rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.12s, background 0.2s;
+  }
+
+  button.add-btn:hover { background: #d4e83a; transform: scale(1.03); }
+  button.add-btn:active { transform: scale(0.97); }
+
+  /* ─── Filters ─── */
+  .filters {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .filter-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0.35rem 0.9rem;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover { border-color: var(--text); color: var(--text); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #0e0e10; }
+
+  /* ─── Todo list ─── */
+  #todo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    list-style: none;
+  }
+
+  .todo-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    transition: border-color 0.2s, opacity 0.3s, transform 0.3s;
+    animation: slideIn 0.3s cubic-bezier(0.4,0,0.2,1) both;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .todo-item:hover { border-color: #3a3a44; }
+  .todo-item.done { opacity: 0.5; }
+
+  /* custom checkbox */
+  .check-btn {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    background: none;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background 0.2s, border-color 0.2s;
+    color: #0e0e10;
+  }
+
+  .check-btn:hover { border-color: var(--accent); }
+  .check-btn.checked { background: var(--accent); border-color: var(--accent); }
+
+  .check-btn svg { display: none; }
+  .check-btn.checked svg { display: block; }
+
+  .todo-text {
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    transition: color 0.2s;
+  }
+
+  .todo-item.done .todo-text {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+
+  .del-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    padding: 0.2rem;
+    display: grid;
+    place-items: center;
+    border-radius: 4px;
+    transition: color 0.2s;
+    opacity: 0;
+  }
+
+  .todo-item:hover .del-btn { opacity: 1; }
+  .del-btn:hover { color: var(--accent2); }
+
+  /* ─── Empty state ─── */
+  .empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    display: none;
+  }
+
+  .empty.visible { display: block; }
+
+  /* ─── Clear button ─── */
+  .bottom-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+  }
+
+  .clear-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0.4rem 1rem;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+
+  .clear-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* ─── Jotai badge ─── */
+  .jotai-badge {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 0.3rem 0.8rem;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <header>
+    <div class="eyebrow">// powered by Jotai vanilla</div>
+    <h1>My<br><span>ToDo</span>s</h1>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num accent" id="stat-total">0</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-active">0</div>
+        <div class="stat-label">Active</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num accent2" id="stat-done">0</div>
+        <div class="stat-label">Done</div>
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+  </header>
+
+  <div class="input-row">
+    <input type="text" id="todo-input" placeholder="新しいタスクを入力…" />
+    <button class="add-btn" id="add-btn">追加</button>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="active">Active</button>
+    <button class="filter-btn" data-filter="done">Done</button>
+  </div>
+
+  <ul id="todo-list"></ul>
+  <div class="empty" id="empty-state">タスクがありません ✦</div>
+
+  <div class="bottom-row">
+    <button class="clear-btn" id="clear-btn">完了済みを削除</button>
+  </div>
+</div>
+<div class="jotai-badge">Jotai/vanilla</div>
+
+<!-- Jotai vanilla via CDN (ESM) -->
+<script type="module">
+// ─── Jotai vanilla ───────────────────────────────────────────
+import { createStore, atom } from 'https://esm.sh/jotai@2.9.0/vanilla';
+
+const store = createStore();
+
+// ── Atoms ──
+const todosAtom = atom([
+  { id: 1, text: 'Jotaiの仕組みを理解する', done: false },
+  { id: 2, text: 'バニラJSで状態管理する', done: true },
+  { id: 3, text: 'カウンター付きToDoを作る', done: false },
+]);
+const filterAtom = atom('all'); // 'all' | 'active' | 'done'
+let nextId = 4;
+
+// ── Derived (computed) atoms ──
+const filteredAtom = atom((get) => {
+  const todos = get(todosAtom);
+  const filter = get(filterAtom);
+  if (filter === 'active') return todos.filter(t => !t.done);
+  if (filter === 'done')   return todos.filter(t => t.done);
+  return todos;
+});
+
+const statsAtom = atom((get) => {
+  const todos = get(todosAtom);
+  const done = todos.filter(t => t.done).length;
+  return { total: todos.length, done, active: todos.length - done };
+});
+
+// ── Actions ──
+function addTodo(text) {
+  if (!text.trim()) return;
+  store.set(todosAtom, prev => [...prev, { id: nextId++, text: text.trim(), done: false }]);
+}
+
+function toggleTodo(id) {
+  store.set(todosAtom, prev => prev.map(t => t.id === id ? { ...t, done: !t.done } : t));
+}
+
+function deleteTodo(id) {
+  store.set(todosAtom, prev => prev.filter(t => t.id !== id));
+}
+
+function clearDone() {
+  store.set(todosAtom, prev => prev.filter(t => !t.done));
+}
+
+function setFilter(f) {
+  store.set(filterAtom, f);
+}
+
+// ─── UI rendering ─────────────────────────────────────────────
+const listEl    = document.getElementById('todo-list');
+const emptyEl   = document.getElementById('empty-state');
+const statTotal = document.getElementById('stat-total');
+const statActive= document.getElementById('stat-active');
+const statDone  = document.getElementById('stat-done');
+const progress  = document.getElementById('progress-bar');
+
+function renderList() {
+  const items = store.get(filteredAtom);
+  listEl.innerHTML = '';
+
+  emptyEl.classList.toggle('visible', items.length === 0);
+
+  items.forEach(todo => {
+    const li = document.createElement('li');
+    li.className = 'todo-item' + (todo.done ? ' done' : '');
+
+    li.innerHTML = `
+      <button class="check-btn ${todo.done ? 'checked' : ''}" data-id="${todo.id}" aria-label="完了切り替え">
+        <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+          <path d="M1 5l3.5 3.5L11 1" stroke="#0e0e10" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <span class="todo-text">${escapeHtml(todo.text)}</span>
+      <button class="del-btn" data-id="${todo.id}" aria-label="削除">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
+    `;
+    listEl.appendChild(li);
+  });
+}
+
+function renderStats() {
+  const { total, done, active } = store.get(statsAtom);
+  statTotal.textContent = total;
+  statActive.textContent = active;
+  statDone.textContent   = done;
+  const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+  progress.style.width = pct + '%';
+}
+
+function render() {
+  renderList();
+  renderStats();
+}
+
+// ─── Subscribe to atoms ───────────────────────────────────────
+store.sub(todosAtom,  render);
+store.sub(filterAtom, render);
+
+// ─── DOM events ──────────────────────────────────────────────
+const input  = document.getElementById('todo-input');
+const addBtn = document.getElementById('add-btn');
+
+addBtn.addEventListener('click', () => {
+  addTodo(input.value);
+  input.value = '';
+  input.focus();
+});
+
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { addTodo(input.value); input.value = ''; }
+});
+
+listEl.addEventListener('click', e => {
+  const checkBtn = e.target.closest('.check-btn');
+  const delBtn   = e.target.closest('.del-btn');
+  if (checkBtn) toggleTodo(Number(checkBtn.dataset.id));
+  if (delBtn)   deleteTodo(Number(delBtn.dataset.id));
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    setFilter(btn.dataset.filter);
+  });
+});
+
+document.getElementById('clear-btn').addEventListener('click', clearDone);
+
+// ─── Helpers ─────────────────────────────────────────────────
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── Initial render ───────────────────────────────────────────
+render();
+</script>
+</body>
+</html>

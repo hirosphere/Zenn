@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jotai ToDo — Tailwind</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          hand: ['Caveat', 'cursive'],
+          body: ['"Noto Sans JP"', 'sans-serif'],
+        },
+        colors: {
+          paper: '#fdf8f0',
+          'paper-dark': '#f5ede0',
+          ink:   '#2c1f14',
+          'ink-light': '#6b5344',
+          tape:  '#f5d76e',
+          red:   '#e05252',
+          green: '#4caf7d',
+          blue:  '#5b8dee',
+          line:  '#e2d5c4',
+        },
+        keyframes: {
+          pop: {
+            '0%': { opacity: '0', transform: 'scale(0.92) translateY(6px)' },
+            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+          },
+          strike: {
+            '0%':   { width: '0%' },
+            '100%': { width: '100%' },
+          },
+          wiggle: {
+            '0%,100%': { transform: 'rotate(-1deg)' },
+            '50%':     { transform: 'rotate(1deg)' },
+          }
+        },
+        animation: {
+          pop: 'pop 0.25s cubic-bezier(0.34,1.56,0.64,1) both',
+          wiggle: 'wiggle 0.3s ease-in-out',
+        },
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'Noto Sans JP', sans-serif; }
+
+  /* lined paper background */
+  .paper-bg {
+    background-color: #fdf8f0;
+    background-image:
+      repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        #e2d5c4 31px,
+        #e2d5c4 32px
+      );
+    background-size: 100% 32px;
+  }
+
+  /* red margin line */
+  .margin-line::before {
+    content: '';
+    position: absolute;
+    left: 3.5rem;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: #f0a0a0;
+    opacity: 0.6;
+  }
+
+  /* tape strip */
+  .tape {
+    background: rgba(245, 215, 110, 0.65);
+    backdrop-filter: blur(2px);
+    transform: rotate(-1.5deg);
+  }
+
+  /* checkbox custom */
+  .cb { appearance: none; }
+
+  /* strikethrough line animation */
+  .strike-wrap { position: relative; display: inline; }
+  .strike-line {
+    position: absolute;
+    left: 0; top: 50%;
+    height: 2px;
+    background: #e05252;
+    border-radius: 2px;
+    transform: translateY(-50%);
+    transition: width 0.35s ease;
+    width: 0%;
+  }
+  .done-text .strike-line { width: 100%; }
+  .done-text { color: #a89080; }
+
+  /* hole punches */
+  .hole {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #e8ddd0;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+  }
+
+  /* filter tab active */
+  .tab-active {
+    background: #2c1f14;
+    color: #fdf8f0;
+  }
+
+  /* progress fill */
+  #prog-fill { transition: width 0.5s ease; }
+
+  /* item enter animation */
+  .todo-item { animation: pop 0.25s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+  /* delete btn reveal */
+  .todo-row { position: relative; }
+  .del-btn { opacity: 0; transition: opacity 0.15s; }
+  .todo-row:hover .del-btn { opacity: 1; }
+</style>
+</head>
+<body class="min-h-full paper-bg flex justify-center py-12 px-4">
+
+<!-- Notebook card -->
+<div class="relative w-full max-w-lg">
+
+  <!-- Hole punches (left margin) -->
+  <div class="absolute left-3 top-8 flex flex-col gap-8 z-10">
+    <div class="hole"></div>
+    <div class="hole"></div>
+    <div class="hole"></div>
+  </div>
+
+  <!-- Tape strip on top -->
+  <div class="tape absolute -top-4 left-1/2 -translate-x-1/2 w-24 h-7 rounded-sm z-10"></div>
+
+  <!-- Main card -->
+  <div class="relative margin-line bg-paper/80 rounded-2xl shadow-2xl shadow-ink/10 border border-line overflow-hidden pl-16 pr-6 pt-10 pb-8">
+
+    <!-- Header -->
+    <div class="mb-6">
+      <p class="font-body text-xs tracking-widest text-ink-light uppercase mb-1">// Jotai × Tailwind CSS</p>
+      <h1 class="font-hand text-6xl text-ink leading-none">My Todos</h1>
+      <p class="font-hand text-xl text-ink-light mt-1">今日のタスクリスト ✏️</p>
+    </div>
+
+    <!-- Stats row -->
+    <div class="flex gap-3 mb-5 flex-wrap">
+      <div class="flex-1 min-w-[80px] bg-paper-dark border border-line rounded-xl p-3 text-center">
+        <div id="stat-total" class="font-hand text-4xl text-ink leading-none">0</div>
+        <div class="font-body text-[10px] text-ink-light uppercase tracking-widest mt-0.5">Total</div>
+      </div>
+      <div class="flex-1 min-w-[80px] bg-blue/10 border border-blue/20 rounded-xl p-3 text-center">
+        <div id="stat-active" class="font-hand text-4xl text-blue leading-none">0</div>
+        <div class="font-body text-[10px] text-blue/70 uppercase tracking-widest mt-0.5">Active</div>
+      </div>
+      <div class="flex-1 min-w-[80px] bg-green/10 border border-green/20 rounded-xl p-3 text-center">
+        <div id="stat-done" class="font-hand text-4xl text-green leading-none">0</div>
+        <div class="font-body text-[10px] text-green/70 uppercase tracking-widest mt-0.5">Done</div>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="mb-6">
+      <div class="flex justify-between items-center mb-1">
+        <span class="font-hand text-sm text-ink-light">進捗</span>
+        <span id="prog-pct" class="font-hand text-sm text-ink-light">0%</span>
+      </div>
+      <div class="h-2.5 bg-line rounded-full overflow-hidden">
+        <div id="prog-fill" class="h-full bg-gradient-to-r from-green to-blue rounded-full" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="border-t border-line mb-5"></div>
+
+    <!-- Input -->
+    <div class="flex gap-2 mb-5">
+      <input
+        id="todo-input"
+        type="text"
+        placeholder="新しいタスクを追加…"
+        class="flex-1 bg-paper-dark border border-line rounded-xl px-4 py-2.5 font-body text-sm text-ink placeholder-ink-light/50 outline-none focus:border-blue/50 focus:ring-2 focus:ring-blue/10 transition"
+      />
+      <button
+        id="add-btn"
+        class="bg-ink text-paper font-hand text-lg px-5 py-2 rounded-xl hover:bg-ink-light active:scale-95 transition-all"
+      >追加</button>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="flex gap-1.5 mb-4">
+      <button data-filter="all"    class="filter-btn tab-active font-body text-xs tracking-wider px-3.5 py-1.5 rounded-lg transition-all">All</button>
+      <button data-filter="active" class="filter-btn font-body text-xs tracking-wider px-3.5 py-1.5 rounded-lg border border-line text-ink-light hover:border-ink transition-all">Active</button>
+      <button data-filter="done"   class="filter-btn font-body text-xs tracking-wider px-3.5 py-1.5 rounded-lg border border-line text-ink-light hover:border-ink transition-all">Done</button>
+    </div>
+
+    <!-- Todo list -->
+    <ul id="todo-list" class="flex flex-col gap-2 min-h-[2rem]"></ul>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="hidden text-center py-10">
+      <p class="font-hand text-3xl text-ink-light">なにもないよ ☕</p>
+      <p class="font-body text-xs text-ink-light/60 mt-1">タスクを追加してみよう</p>
+    </div>
+
+    <!-- Bottom row -->
+    <div class="flex justify-end mt-5">
+      <button id="clear-btn" class="font-body text-xs text-ink-light/60 border border-line rounded-lg px-3 py-1.5 hover:border-red hover:text-red transition-all">完了済みを削除</button>
+    </div>
+
+    <!-- Footer stamp -->
+    <div class="mt-6 pt-4 border-t border-line text-center">
+      <span class="font-hand text-sm text-ink-light/50">Powered by Jotai/vanilla ⚛️</span>
+    </div>
+  </div>
+</div>
+
+<!-- Jotai vanilla via ESM -->
+<script type="module">
+import { createStore, atom } from 'https://esm.sh/jotai@2.9.0/vanilla';
+
+// ── Store & Atoms ──────────────────────────────────────────────
+const store = createStore();
+
+const todosAtom = atom([
+  { id: 1, text: 'Jotaiの仕組みを理解する 📖',      done: false },
+  { id: 2, text: 'Tailwind CSSでデザインする 🎨',   done: true  },
+  { id: 3, text: 'バニラJSで状態管理を試す ⚡',     done: false },
+]);
+const filterAtom = atom('all');
+let nextId = 4;
+
+const filteredAtom = atom(get => {
+  const todos = get(todosAtom);
+  const f = get(filterAtom);
+  if (f === 'active') return todos.filter(t => !t.done);
+  if (f === 'done')   return todos.filter(t => t.done);
+  return todos;
+});
+
+const statsAtom = atom(get => {
+  const todos = get(todosAtom);
+  const done = todos.filter(t => t.done).length;
+  return { total: todos.length, done, active: todos.length - done };
+});
+
+// ── Actions ────────────────────────────────────────────────────
+const addTodo    = text => { if (text.trim()) store.set(todosAtom, p => [...p, { id: nextId++, text: text.trim(), done: false }]); };
+const toggleTodo = id  => store.set(todosAtom, p => p.map(t => t.id === id ? { ...t, done: !t.done } : t));
+const deleteTodo = id  => store.set(todosAtom, p => p.filter(t => t.id !== id));
+const clearDone  = ()  => store.set(todosAtom, p => p.filter(t => !t.done));
+const setFilter  = f   => store.set(filterAtom, f);
+
+// ── DOM refs ───────────────────────────────────────────────────
+const listEl    = document.getElementById('todo-list');
+const emptyEl   = document.getElementById('empty-state');
+const input     = document.getElementById('todo-input');
+const statTotal = document.getElementById('stat-total');
+const statAct   = document.getElementById('stat-active');
+const statDone  = document.getElementById('stat-done');
+const progFill  = document.getElementById('prog-fill');
+const progPct   = document.getElementById('prog-pct');
+
+// ── Render ─────────────────────────────────────────────────────
+function renderList() {
+  const items = store.get(filteredAtom);
+  listEl.innerHTML = '';
+  emptyEl.classList.toggle('hidden', items.length !== 0);
+
+  items.forEach(todo => {
+    const li = document.createElement('li');
+    li.className = 'todo-item todo-row flex items-center gap-3 bg-paper-dark/60 border border-line rounded-xl px-4 py-3 group';
+
+    // checkbox
+    const chk = document.createElement('button');
+    chk.type = 'button';
+    chk.dataset.id = todo.id;
+    chk.className = 'check-btn flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all '
+      + (todo.done
+          ? 'bg-green border-green text-paper'
+          : 'border-line hover:border-green');
+    chk.innerHTML = todo.done
+      ? `<svg class="w-3 h-3" viewBox="0 0 12 9" fill="none"><path d="M1 4.5l3 3L11 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+      : '';
+
+    // text
+    const textWrap = document.createElement('span');
+    textWrap.className = 'flex-1 font-body text-sm ' + (todo.done ? 'done-text' : 'text-ink');
+    textWrap.innerHTML = `<span class="strike-wrap">${escapeHtml(todo.text)}<span class="strike-line"></span></span>`;
+
+    // delete
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.dataset.id = todo.id;
+    del.className = 'del-btn text-ink-light hover:text-red transition-colors';
+    del.innerHTML = `<svg class="w-4 h-4" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+
+    li.append(chk, textWrap, del);
+    listEl.appendChild(li);
+  });
+}
+
+function renderStats() {
+  const { total, done, active } = store.get(statsAtom);
+  statTotal.textContent = total;
+  statAct.textContent   = active;
+  statDone.textContent  = done;
+  const pct = total === 0 ? 0 : Math.round(done / total * 100);
+  progFill.style.width  = pct + '%';
+  progPct.textContent   = pct + '%';
+}
+
+function render() { renderList(); renderStats(); }
+
+// ── Subscribe ──────────────────────────────────────────────────
+store.sub(todosAtom,  render);
+store.sub(filterAtom, render);
+
+// ── Events ─────────────────────────────────────────────────────
+document.getElementById('add-btn').addEventListener('click', () => {
+  addTodo(input.value); input.value = ''; input.focus();
+});
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { addTodo(input.value); input.value = ''; }
+});
+
+listEl.addEventListener('click', e => {
+  const chk = e.target.closest('.check-btn');
+  const del = e.target.closest('.del-btn');
+  if (chk) toggleTodo(Number(chk.dataset.id));
+  if (del) deleteTodo(Number(del.dataset.id));
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.classList.remove('tab-active', 'border-transparent');
+      b.classList.add('border-line', 'text-ink-light');
+    });
+    btn.classList.add('tab-active');
+    btn.classList.remove('border-line', 'text-ink-light');
+    setFilter(btn.dataset.filter);
+  });
+});
+
+document.getElementById('clear-btn').addEventListener('click', clearDone);
+
+// ── Helpers ────────────────────────────────────────────────────
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>矩形波減衰音 二重奏</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        mono: ['Share Tech Mono', 'monospace'],
+        display: ['VT323', 'monospace'],
+      },
+      colors: {
+        crt: {
+          green: '#00ff41',
+          dimgreen: '#00aa2b',
+          darkgreen: '#003d10',
+          bg: '#030f05',
+          scan: '#001a07',
+        }
+      },
+      keyframes: {
+        blink: { '0%,100%': { opacity: '1' }, '50%': { opacity: '0' } },
+        scanline: { '0%': { transform: 'translateY(-100%)' }, '100%': { transform: 'translateY(100vh)' } },
+        flicker: { '0%,100%': { opacity: '1' }, '92%': { opacity: '1' }, '93%': { opacity: '0.8' }, '94%': { opacity: '1' } },
+        pulse_glow: {
+          '0%,100%': { boxShadow: '0 0 8px #00ff41, 0 0 20px #00ff41' },
+          '50%': { boxShadow: '0 0 16px #00ff41, 0 0 40px #00ff41, 0 0 60px #00aa2b' }
+        }
+      },
+      animation: {
+        blink: 'blink 1s step-end infinite',
+        scanline: 'scanline 8s linear infinite',
+        flicker: 'flicker 4s infinite',
+        pulse_glow: 'pulse_glow 2s ease-in-out infinite',
+      }
+    }
+  }
+}
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    background: #030f05;
+    font-family: 'Share Tech Mono', monospace;
+    color: #00ff41;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .crt-overlay {
+    position: fixed; inset: 0; pointer-events: none; z-index: 100;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.12) 0px,
+      rgba(0,0,0,0.12) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  }
+  .crt-vignette {
+    position: fixed; inset: 0; pointer-events: none; z-index: 99;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.75) 100%);
+  }
+  .scanline-anim {
+    position: fixed; top: 0; left: 0; width: 100%; height: 80px;
+    background: linear-gradient(to bottom, transparent, rgba(0,255,65,0.03), transparent);
+    pointer-events: none; z-index: 98;
+    animation: scanline 8s linear infinite;
+  }
+  .screen-glow {
+    box-shadow: 0 0 30px rgba(0,255,65,0.15), inset 0 0 60px rgba(0,255,65,0.05);
+  }
+  .btn-crt {
+    background: transparent;
+    border: 1px solid #00ff41;
+    color: #00ff41;
+    font-family: 'VT323', monospace;
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+    padding: 6px 20px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.1s;
+    text-shadow: 0 0 8px #00ff41;
+  }
+  .btn-crt::before {
+    content: '';
+    position: absolute; inset: -2px;
+    border: 1px solid rgba(0,255,65,0.3);
+  }
+  .btn-crt:hover {
+    background: rgba(0,255,65,0.1);
+    box-shadow: 0 0 12px #00ff41, inset 0 0 12px rgba(0,255,65,0.1);
+    text-shadow: 0 0 16px #00ff41;
+  }
+  .btn-crt:active { transform: scale(0.96); }
+  .btn-crt.active {
+    background: rgba(0,255,65,0.2);
+    box-shadow: 0 0 20px #00ff41, inset 0 0 20px rgba(0,255,65,0.15);
+  }
+  .btn-crt:disabled {
+    opacity: 0.3; cursor: not-allowed;
+  }
+  .slider-crt {
+    -webkit-appearance: none;
+    width: 100%; height: 4px;
+    background: #003d10;
+    outline: none;
+    border: 1px solid #00aa2b;
+  }
+  .slider-crt::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 20px;
+    background: #00ff41;
+    cursor: pointer;
+    box-shadow: 0 0 8px #00ff41;
+  }
+  .slider-crt::-moz-range-thumb {
+    width: 14px; height: 20px;
+    background: #00ff41;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 8px #00ff41;
+  }
+  canvas#waveCanvas {
+    display: block;
+    image-rendering: pixelated;
+  }
+  .note-grid {
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    gap: 2px;
+  }
+  .note-cell {
+    height: 12px;
+    background: #003d10;
+    border: 1px solid #004d15;
+    transition: background 0.05s;
+  }
+  .note-cell.active { background: #00ff41; box-shadow: 0 0 6px #00ff41; }
+  .note-cell.ch2.active { background: #00aaff; box-shadow: 0 0 6px #00aaff; }
+  .label-glow { text-shadow: 0 0 8px #00ff41; }
+  .title-glow { text-shadow: 0 0 20px #00ff41, 0 0 40px #00aa2b; }
+  .separator { border: none; border-top: 1px solid #003d10; }
+  .panel-border {
+    border: 1px solid #00aa2b;
+    box-shadow: 0 0 10px rgba(0,255,65,0.1), inset 0 0 10px rgba(0,255,65,0.03);
+  }
+  @keyframes note-flash {
+    0% { opacity: 1; }
+    100% { opacity: 0.3; }
+  }
+  .playing-icon span {
+    display: inline-block;
+    animation: note-flash 0.5s ease-in-out infinite alternate;
+  }
+  .playing-icon span:nth-child(2) { animation-delay: 0.15s; }
+  .playing-icon span:nth-child(3) { animation-delay: 0.3s; }
+</style>
+</head>
+<body class="animate-flicker">
+<div class="crt-overlay"></div>
+<div class="crt-vignette"></div>
+<div class="scanline-anim"></div>
+
+<div class="min-h-screen flex flex-col items-center justify-center p-4 py-8">
+
+  <!-- Title -->
+  <div class="mb-6 text-center">
+    <h1 class="font-display text-5xl md:text-6xl title-glow tracking-widest">矩形波減衰音二重奏</h1>
+    <p class="font-mono text-xs text-crt-dimgreen tracking-widest mt-1">◈ モルダウ / Die Moldau — B. SMETANA ◈</p>
+  </div>
+
+  <!-- Main Panel -->
+  <div class="w-full max-w-3xl panel-border screen-glow p-5 space-y-5">
+
+    <!-- Waveform Display -->
+    <div class="panel-border p-2 bg-crt-bg">
+      <div class="flex justify-between items-center mb-1">
+        <span class="font-display text-lg label-glow tracking-wider">OSCILLOSCOPE</span>
+        <div class="playing-icon font-display text-xl" id="playingIcon" style="display:none; color:#00ff41;">
+          <span>♩</span><span>♪</span><span>♫</span>
+        </div>
+      </div>
+      <canvas id="waveCanvas" class="w-full" height="80" style="width:100%;"></canvas>
+    </div>
+
+    <!-- Note Grid -->
+    <div class="panel-border p-3 bg-crt-bg space-y-2">
+      <div class="flex justify-between">
+        <span class="font-display text-base label-glow">CH.1 <span class="text-xs font-mono" style="color:#00ff41;">▶ MELODY</span></span>
+        <span class="font-mono text-xs text-crt-dimgreen">16 STEPS</span>
+      </div>
+      <div class="note-grid" id="grid1"></div>
+      <div class="mt-2">
+        <span class="font-display text-base" style="color:#00aaff; text-shadow:0 0 8px #00aaff;">CH.2 <span class="text-xs font-mono">▶ COUNTER</span></span>
+      </div>
+      <div class="note-grid" id="grid2"></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="panel-border p-3 bg-crt-bg space-y-4">
+      <!-- Play/Stop/Pause buttons -->
+      <div class="flex gap-3 items-center flex-wrap">
+        <button class="btn-crt" id="startBtn">▶ 開始</button>
+        <button class="btn-crt" id="pauseBtn" disabled>❙❙ 中断</button>
+        <button class="btn-crt" id="stopBtn" disabled>■ 停止</button>
+        <div class="flex-1 text-right font-display text-xl text-crt-dimgreen" id="statusDisplay">STANDBY_</div>
+      </div>
+
+      <hr class="separator">
+
+      <!-- Tempo -->
+      <div class="space-y-1">
+        <div class="flex justify-between items-center">
+          <label class="font-display text-base label-glow">TEMPO</label>
+          <span class="font-display text-2xl label-glow" id="tempoDisplay">120 BPM</span>
+        </div>
+        <input type="range" class="slider-crt" id="tempoSlider" min="60" max="240" value="120">
+      </div>
+
+      <!-- Transpose -->
+      <div class="space-y-1">
+        <div class="flex justify-between items-center">
+          <label class="font-display text-base label-glow">TRANSPOSE</label>
+          <span class="font-display text-2xl label-glow" id="transposeDisplay">±0 ST</span>
+        </div>
+        <input type="range" class="slider-crt" id="transposeSlider" min="-12" max="12" value="0">
+      </div>
+
+      <!-- Decay -->
+      <div class="space-y-1">
+        <div class="flex justify-between items-center">
+          <label class="font-display text-base label-glow">DECAY</label>
+          <span class="font-display text-2xl label-glow" id="decayDisplay">0.30 SEC</span>
+        </div>
+        <input type="range" class="slider-crt" id="decaySlider" min="0.03" max="5.0" step="0.01" value="0.30">        <div class="flex justify-between font-mono text-xs text-crt-dimgreen mt-1">
+          <span>SHARP</span><span>&#8592;  ENVELOPE  &#8594;</span><span>LONG</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info bar -->
+    <div class="flex justify-between text-crt-dimgreen font-mono text-xs">
+      <span id="phraseLabel">◈ PHRASE 1/4 ◈ MOLDAU</span>
+      <span id="stepCounter">STEP: --</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── Melody data ───────────────────────────────────────────────────
+// MIDI-like note numbers (60=C4). -1 = rest
+// モルダウ（スメタナ）主題 — ニ短調 (D minor), 3/4拍子を8分音符16stepで近似
+// 各配列は1ループ=16ステップ。複数フレーズを順番に切り替える。
+// MIDI: D4=62, E4=64, F4=65, G4=67, A4=69, Bb4=70, C5=72, D5=74
+//       D3=50, A3=57, F3=53, C3=48
+
+const PHRASES_CH1 = [
+  // フレーズ1: D-F-A-D5 上昇〜主題前半
+  [62, 65, 69, 74,  72, 69, 67, 65,  67, 65, 64, 62,  64, 62, -1, -1],
+  // フレーズ2: 主題後半・解決
+  [62, 65, 69, 74,  72, 74, 72, 69,  65, 67, 65, 64,  62, -1, -1, -1],
+  // フレーズ3: 上昇反復
+  [69, 70, 69, 67,  65, 67, 65, 64,  62, 64, 62, 60,  62, -1, -1, -1],
+  // フレーズ4: 高音部クライマックス
+  [74, 72, 74, 77,  76, 74, 72, 71,  69, 71, 69, 67,  65, 67, 65, 62],
+];
+
+const PHRASES_CH2 = [
+  // 低音：i - V - i - V (Dm - A - Dm - A)
+  [50, -1, 57, -1,  50, -1, 57, -1,  50, -1, 57, -1,  50, -1, 57, -1],
+  [50, -1, 57, -1,  50, -1, 57, -1,  53, -1, 57, -1,  50, -1, -1, -1],
+  [57, -1, 53, -1,  50, -1, 53, -1,  57, -1, 50, -1,  57, -1, 57, -1],
+  [50, -1, 57, -1,  53, -1, 60, -1,  57, -1, 53, -1,  50, -1, 50, -1],
+];
+
+let phraseIndex = 0;
+let MELODY_CH1 = PHRASES_CH1[phraseIndex];
+let MELODY_CH2 = PHRASES_CH2[phraseIndex];
+
+// ─── Note frequency ────────────────────────────────────────────────
+function midiToFreq(midi) {
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
+
+// ─── AudioContext & state ──────────────────────────────────────────
+let audioCtx = null;
+let playing = false;
+let currentStep = 0;
+let schedulerTimer = null;
+let nextNoteTime = 0;
+let analyserNode = null;
+let gainMaster = null;
+const LOOKAHEAD = 0.1;
+let animFrame = null;
+
+// Merge both channels for analysis
+let analyserDataL = null;
+let analyserDataR = null;
+
+// ─── Square wave with decay ────────────────────────────────────────
+function getDecayTime() {
+  return parseFloat(document.getElementById('decaySlider').value);
+}
+
+function playSquareNote(freq, startTime, duration, volume = 0.18) {
+  if (!audioCtx || freq <= 0) return null;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'square';
+  osc.frequency.setValueAtTime(freq, startTime);
+
+  const decaySec = getDecayTime();
+  // Attack: instant, then decay over decaySec seconds
+  gain.gain.setValueAtTime(volume, startTime);
+  gain.gain.exponentialRampToValueAtTime(0.0001, startTime + decaySec);
+
+  osc.connect(gain);
+  gain.connect(gainMaster);
+
+  osc.start(startTime);
+  osc.stop(startTime + Math.max(decaySec, duration) + 0.01);
+  return osc;
+}
+
+// ─── Scheduler ────────────────────────────────────────────────────
+function getStepDuration() {
+  const bpm = parseInt(document.getElementById('tempoSlider').value);
+  return (60 / bpm) / 2; // 8th notes
+}
+
+function scheduleNote(step, time) {
+  const transpose = parseInt(document.getElementById('transposeSlider').value);
+  const dur = getStepDuration();
+
+  const n1 = MELODY_CH1[step];
+  const n2 = MELODY_CH2[step];
+
+  if (n1 >= 0) playSquareNote(midiToFreq(n1 + transpose), time, dur * 0.8, 0.15);
+  if (n2 >= 0) playSquareNote(midiToFreq(n2 + transpose), time, dur * 0.8, 0.1);
+}
+
+function scheduler() {
+  while (nextNoteTime < audioCtx.currentTime + LOOKAHEAD) {
+    scheduleNote(currentStep % 16, nextNoteTime);
+    nextNoteTime += getStepDuration();
+    currentStep = (currentStep + 1) % 16;
+    if (currentStep === 0) {
+      // フレーズを次へ進める
+      phraseIndex = (phraseIndex + 1) % PHRASES_CH1.length;
+      MELODY_CH1 = PHRASES_CH1[phraseIndex];
+      MELODY_CH2 = PHRASES_CH2[phraseIndex];
+      buildGrid('grid1', MELODY_CH1, '');
+      buildGrid('grid2', MELODY_CH2, 'ch2');
+    }
+  }
+  schedulerTimer = setTimeout(scheduler, 25);
+}
+
+// ─── UI: grids ────────────────────────────────────────────────────
+function buildGrid(id, melody, cls='') {
+  const g = document.getElementById(id);
+  g.innerHTML = '';
+  melody.forEach((n, i) => {
+    const cell = document.createElement('div');
+    cell.className = `note-cell ${cls}`;
+    cell.id = `${id}_cell_${i}`;
+    g.appendChild(cell);
+  });
+}
+
+function updateGrids(step) {
+  for (let i = 0; i < 16; i++) {
+    const c1 = document.getElementById(`grid1_cell_${i}`);
+    const c2 = document.getElementById(`grid2_cell_${i}`);
+    if (c1) c1.className = `note-cell ${i === step && MELODY_CH1[i] >= 0 ? 'active' : ''}`;
+    if (c2) c2.className = `note-cell ch2 ${i === step && MELODY_CH2[i] >= 0 ? 'active' : ''}`;
+  }
+}
+
+// ─── Oscilloscope ─────────────────────────────────────────────────
+const canvas = document.getElementById('waveCanvas');
+const ctx2d = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width = canvas.offsetWidth * window.devicePixelRatio || canvas.offsetWidth;
+  canvas.height = 80 * (window.devicePixelRatio || 1);
+  ctx2d.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function drawIdle() {
+  const W = canvas.offsetWidth, H = 80;
+  ctx2d.clearRect(0,0,W,H);
+  ctx2d.fillStyle = '#030f05';
+  ctx2d.fillRect(0,0,W,H);
+  ctx2d.strokeStyle = '#003d10';
+  ctx2d.lineWidth = 1;
+  ctx2d.beginPath();
+  ctx2d.moveTo(0, H/2);
+  ctx2d.lineTo(W, H/2);
+  ctx2d.stroke();
+  // Idle square wave ghost
+  ctx2d.strokeStyle = 'rgba(0,170,43,0.3)';
+  ctx2d.lineWidth = 1.5;
+  ctx2d.beginPath();
+  const seg = W / 8;
+  for (let i = 0; i < 8; i++) {
+    const x = i * seg;
+    const y = i % 2 === 0 ? H * 0.3 : H * 0.7;
+    if (i === 0) ctx2d.moveTo(x, y);
+    else ctx2d.lineTo(x, y);
+    ctx2d.lineTo(x + seg, y);
+  }
+  ctx2d.stroke();
+}
+
+function drawWave() {
+  if (!analyserNode) return;
+  const bufLen = analyserNode.frequencyBinCount;
+  const dataArr = new Uint8Array(bufLen);
+  analyserNode.getByteTimeDomainData(dataArr);
+
+  const W = canvas.offsetWidth, H = 80;
+  ctx2d.clearRect(0,0,W,H);
+  ctx2d.fillStyle = '#030f05';
+  ctx2d.fillRect(0,0,W,H);
+
+  // Grid lines
+  ctx2d.strokeStyle = '#001a07';
+  ctx2d.lineWidth = 0.5;
+  [H*0.25, H*0.5, H*0.75].forEach(y => {
+    ctx2d.beginPath(); ctx2d.moveTo(0,y); ctx2d.lineTo(W,y); ctx2d.stroke();
+  });
+
+  // Waveform
+  ctx2d.strokeStyle = '#00ff41';
+  ctx2d.lineWidth = 1.5;
+  ctx2d.shadowBlur = 6;
+  ctx2d.shadowColor = '#00ff41';
+  ctx2d.beginPath();
+  const sliceW = W / bufLen;
+  let x = 0;
+  for (let i = 0; i < bufLen; i++) {
+    const v = dataArr[i] / 128.0;
+    const y = (v * H) / 2;
+    i === 0 ? ctx2d.moveTo(x, y) : ctx2d.lineTo(x, y);
+    x += sliceW;
+  }
+  ctx2d.stroke();
+  ctx2d.shadowBlur = 0;
+}
+
+function drawLoop() {
+  if (playing) drawWave();
+  else drawIdle();
+  animFrame = requestAnimationFrame(drawLoop);
+}
+drawLoop();
+
+// ─── Step display update ───────────────────────────────────────────
+let displayStep = -1;
+setInterval(() => {
+  if (!playing) return;
+  const elapsed = audioCtx.currentTime;
+  const dur = getStepDuration();
+  const step = Math.floor(elapsed / dur) % 16;
+  if (step !== displayStep) {
+    displayStep = step;
+    updateGrids(step);
+    document.getElementById('stepCounter').textContent = `STEP: ${String(step+1).padStart(2,'0')}/16`;
+    document.getElementById('phraseLabel').textContent =
+      `◈ PHRASE ${phraseIndex+1}/4 ◈ MOLDAU`;
+  }
+}, 30);
+
+// ─── Controls ─────────────────────────────────────────────────────
+let paused = false;
+let pausedStep = 0; // step position saved on pause
+
+function setUIState(state) {
+  // states: 'stopped' | 'playing' | 'paused'
+  const startBtn  = document.getElementById('startBtn');
+  const pauseBtn  = document.getElementById('pauseBtn');
+  const stopBtn   = document.getElementById('stopBtn');
+  const statusEl  = document.getElementById('statusDisplay');
+  const iconEl    = document.getElementById('playingIcon');
+
+  if (state === 'stopped') {
+    startBtn.disabled = false; startBtn.classList.remove('active');
+    pauseBtn.disabled = true;  pauseBtn.classList.remove('active'); pauseBtn.textContent = '❙❙ 中断';
+    stopBtn.disabled  = true;
+    statusEl.textContent = 'STANDBY_';
+    iconEl.style.display = 'none';
+    document.getElementById('stepCounter').textContent = 'STEP: --';
+    displayStep = -1;
+  } else if (state === 'playing') {
+    startBtn.disabled = true;  startBtn.classList.add('active');
+    pauseBtn.disabled = false; pauseBtn.classList.remove('active'); pauseBtn.textContent = '❙❙ 中断';
+    stopBtn.disabled  = false;
+    statusEl.textContent = 'PLAYING...';
+    iconEl.style.display = 'inline';
+  } else if (state === 'paused') {
+    startBtn.disabled = true;
+    pauseBtn.disabled = false; pauseBtn.classList.add('active'); pauseBtn.textContent = '▶ 再開';
+    stopBtn.disabled  = false;
+    statusEl.textContent = 'PAUSED__';
+    iconEl.style.display = 'none';
+  }
+}
+
+document.getElementById('startBtn').addEventListener('click', () => {
+  if (playing) return;
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyserNode = audioCtx.createAnalyser();
+    analyserNode.fftSize = 2048;
+    gainMaster = audioCtx.createGain();
+    gainMaster.gain.value = 1.0;
+    gainMaster.connect(analyserNode);
+    analyserNode.connect(audioCtx.destination);
+  }
+  paused = false;
+  playing = true;
+  currentStep = 0;
+  phraseIndex = 0;
+  MELODY_CH1 = PHRASES_CH1[phraseIndex];
+  MELODY_CH2 = PHRASES_CH2[phraseIndex];
+  buildGrid('grid1', MELODY_CH1, '');
+  buildGrid('grid2', MELODY_CH2, 'ch2');
+  nextNoteTime = audioCtx.currentTime + 0.05;
+  scheduler();
+  setUIState('playing');
+});
+
+document.getElementById('pauseBtn').addEventListener('click', () => {
+  if (!audioCtx) return;
+
+  if (!paused) {
+    // → 中断
+    paused = true;
+    playing = false;
+    clearTimeout(schedulerTimer);
+    pausedStep = currentStep; // save position
+    // suspend AudioContext to silence lingering oscillators gracefully
+    audioCtx.suspend();
+    updateGrids(-1);
+    setUIState('paused');
+  } else {
+    // → 再開
+    paused = false;
+    playing = true;
+    audioCtx.resume().then(() => {
+      currentStep = pausedStep;
+      nextNoteTime = audioCtx.currentTime + 0.05;
+      scheduler();
+      setUIState('playing');
+    });
+  }
+});
+
+document.getElementById('stopBtn').addEventListener('click', () => {
+  playing = false;
+  paused = false;
+  clearTimeout(schedulerTimer);
+  if (audioCtx) audioCtx.resume(); // ensure not suspended
+  phraseIndex = 0;
+  MELODY_CH1 = PHRASES_CH1[phraseIndex];
+  MELODY_CH2 = PHRASES_CH2[phraseIndex];
+  buildGrid('grid1', MELODY_CH1, '');
+  buildGrid('grid2', MELODY_CH2, 'ch2');
+  updateGrids(-1);
+  setUIState('stopped');
+});
+
+document.getElementById('tempoSlider').addEventListener('input', e => {
+  document.getElementById('tempoDisplay').textContent = `${e.target.value} BPM`;
+});
+
+document.getElementById('transposeSlider').addEventListener('input', e => {
+  const v = parseInt(e.target.value);
+  document.getElementById('transposeDisplay').textContent =
+    v === 0 ? '±0 ST' : (v > 0 ? `+${v} ST` : `${v} ST`);
+});
+
+document.getElementById('decaySlider').addEventListener('input', e => {
+  const v = parseFloat(e.target.value).toFixed(2);
+  document.getElementById('decayDisplay').textContent = `${v} SEC`;
+});
+
+// ─── Init ─────────────────────────────────────────────────────────
+buildGrid('grid1', MELODY_CH1, '');
+buildGrid('grid2', MELODY_CH2, 'ch2');
+drawIdle();
+</script>
+</body>
+</html>
