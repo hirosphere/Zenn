@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSL Matrix Display</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --panel: #111118;
+    --border: #222233;
+    --text: #c8c8e0;
+    --accent: #4af;
+    --dim: #445;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    gap: 2.5rem;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(68,68,102,0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(68,68,102,0.12) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  header {
+    text-align: center;
+    letter-spacing: 0.3em;
+  }
+
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    letter-spacing: 0.25em;
+    background: linear-gradient(135deg, #88aaff 0%, #ff88cc 50%, #88ffcc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p {
+    font-size: 0.65rem;
+    color: var(--dim);
+    margin-top: 0.25rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+  }
+
+  /* Matrix */
+  .matrix-wrap {
+    position: relative;
+  }
+
+  .matrix {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    gap: 6px;
+    width: min(480px, 92vw);
+    height: min(480px, 92vw);
+    padding: 14px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    box-shadow: 0 0 60px rgba(68,170,255,0.06), 0 0 0 1px rgba(255,255,255,0.03) inset;
+  }
+
+  .cell {
+    border-radius: 3px;
+    cursor: crosshair;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    position: relative;
+  }
+
+  .cell:hover {
+    transform: scale(1.18);
+    z-index: 10;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  }
+
+  .cell .tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10,10,20,0.95);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.6rem;
+    padding: 4px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 100;
+    letter-spacing: 0.05em;
+  }
+
+  .cell:hover .tooltip { display: block; }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    width: min(480px, 92vw);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.6rem 1.8rem;
+  }
+
+  .control-row {
+    display: grid;
+    grid-template-columns: 1.6rem 1fr 3.6rem;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .control-row label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+  }
+
+  .control-row label.h-label { color: #ff8866; }
+  .control-row label.s-label { color: #88ffaa; }
+  .control-row label.l-label { color: #88ccff; }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  #hRange {
+    background: linear-gradient(to right,
+      hsl(0,80%,50%), hsl(60,80%,50%), hsl(120,80%,50%),
+      hsl(180,80%,50%), hsl(240,80%,50%), hsl(300,80%,50%), hsl(360,80%,50%));
+  }
+  #sRange {
+    background: linear-gradient(to right, #555, #0f0);
+  }
+  #lRange {
+    background: linear-gradient(to right, #000, #888, #fff);
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 6px rgba(255,255,255,0.4);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 6px rgba(255,255,255,0.4);
+    cursor: pointer;
+  }
+
+  .val {
+    font-size: 0.7rem;
+    text-align: right;
+    color: var(--text);
+    opacity: 0.7;
+    letter-spacing: 0.05em;
+  }
+
+  .mode-row {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+    margin-top: -0.4rem;
+  }
+
+  .mode-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--dim);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase;
+  }
+
+  .mode-btn.active, .mode-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(68,170,255,0.06);
+  }
+
+  /* axis labels on matrix edges */
+  .matrix-wrap {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    grid-template-rows: 1fr 18px;
+    gap: 4px;
+  }
+  .axis-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .axis-y { writing-mode: vertical-rl; transform: rotate(180deg); }
+  .axis-x { grid-column: 2; }
+  .axis-corner { /* empty */ }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>HSL Matrix</h1>
+  <p>9 × 9 Colour Space Display</p>
+</header>
+
+<div class="matrix-wrap">
+  <span class="axis-label axis-y" id="axisY">S ↑</span>
+  <div class="matrix" id="matrix"></div>
+  <span class="axis-corner"></span>
+  <span class="axis-label axis-x" id="axisX">H →</span>
+</div>
+
+<div class="controls">
+  <div class="mode-row">
+    <button class="mode-btn active" data-mode="hs">H × S</button>
+    <button class="mode-btn" data-mode="hl">H × L</button>
+    <button class="mode-btn" data-mode="sl">S × L</button>
+  </div>
+
+  <!-- H slider: base hue (center of H axis when H is not on an axis; fixed hue otherwise) -->
+  <div class="control-row" id="rowH">
+    <label class="h-label">H</label>
+    <input type="range" id="hRange" min="0" max="360" value="180">
+    <span class="val" id="hVal">180°</span>
+  </div>
+  <div class="control-row" id="rowS">
+    <label class="s-label">S</label>
+    <input type="range" id="sRange" min="0" max="100" value="70">
+    <span class="val" id="sVal">70%</span>
+  </div>
+  <div class="control-row" id="rowL">
+    <label class="l-label">L</label>
+    <input type="range" id="lRange" min="0" max="100" value="50">
+    <span class="val" id="lVal">50%</span>
+  </div>
+
+  <p style="font-size:0.58rem;color:var(--dim);text-align:center;margin-top:-0.6rem;letter-spacing:0.08em;">
+    グリッド軸以外のスライダーが固定値を制御します
+  </p>
+</div>
+
+<script>
+const matrixEl = document.getElementById('matrix');
+const N = 9;
+
+// mode: which two components vary across the grid
+// 'hs' → col=H (0–360), row=S (0–100 top to bottom inverted)
+// 'hl' → col=H, row=L
+// 'sl' → col=S, row=L
+let mode = 'hs';
+
+// base values (used for the component NOT on the grid axes)
+let baseH = 180, baseS = 70, baseL = 50;
+
+// Build cells
+const cells = [];
+for (let row = 0; row < N; row++) {
+  for (let col = 0; col < N; col++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    const tip = document.createElement('span');
+    tip.className = 'tooltip';
+    cell.appendChild(tip);
+    matrixEl.appendChild(cell);
+    cells.push({ el: cell, tip, row, col });
+  }
+}
+
+function getHSL(row, col) {
+  const t = col / (N - 1); // 0 (left) → 1 (right)
+  const u = (N - 1 - row) / (N - 1); // 0 (bottom) → 1 (top)
+
+  let h = baseH, s = baseS, l = baseL;
+
+  if (mode === 'hs') {
+    h = Math.round(t * 360);
+    s = Math.round(u * 100);
+  } else if (mode === 'hl') {
+    h = Math.round(t * 360);
+    l = Math.round(u * 100);
+  } else { // sl
+    s = Math.round(t * 100);
+    l = Math.round(u * 100);
+  }
+  return { h, s, l };
+}
+
+function render() {
+  cells.forEach(({ el, tip, row, col }) => {
+    const { h, s, l } = getHSL(row, col);
+    el.style.background = `hsl(${h},${s}%,${l}%)`;
+    tip.textContent = `H:${h}° S:${s}% L:${l}%`;
+  });
+}
+
+// Sliders
+const hRange = document.getElementById('hRange');
+const sRange = document.getElementById('sRange');
+const lRange = document.getElementById('lRange');
+const hVal   = document.getElementById('hVal');
+const sVal   = document.getElementById('sVal');
+const lVal   = document.getElementById('lVal');
+const rowH   = document.getElementById('rowH');
+const rowS   = document.getElementById('rowS');
+const rowL   = document.getElementById('rowL');
+const axisX  = document.getElementById('axisX');
+const axisY  = document.getElementById('axisY');
+
+const axisLabels = {
+  hs: { x: 'H →', y: 'S ↑' },
+  hl: { x: 'H →', y: 'L ↑' },
+  sl: { x: 'S →', y: 'L ↑' },
+};
+
+// Which rows are "on the axis" (vary across the grid) per mode
+const axisRows = {
+  hs: ['rowH', 'rowS'],
+  hl: ['rowH', 'rowL'],
+  sl: ['rowS', 'rowL'],
+};
+
+function updateSliderStates() {
+  const onAxis = axisRows[mode];
+  [['rowH','hRange'], ['rowS','sRange'], ['rowL','lRange']].forEach(([rowId, rangeId]) => {
+    const isOnAxis = onAxis.includes(rowId);
+    const rowEl = document.getElementById(rowId);
+    const rangeEl = document.getElementById(rangeId);
+    // On-axis sliders: dimmed & disabled (the grid itself shows that dimension)
+    rowEl.style.opacity = isOnAxis ? '0.3' : '1';
+    rangeEl.disabled = isOnAxis;
+    rowEl.title = isOnAxis ? 'この成分はグリッドの軸として表示されています' : '';
+  });
+  axisX.textContent = axisLabels[mode].x;
+  axisY.textContent = axisLabels[mode].y;
+}
+
+function updateFromSliders() {
+  baseH = +hRange.value;
+  baseS = +sRange.value;
+  baseL = +lRange.value;
+  hVal.textContent = baseH + '°';
+  sVal.textContent = baseS + '%';
+  lVal.textContent = baseL + '%';
+  render();
+}
+
+hRange.addEventListener('input', updateFromSliders);
+sRange.addEventListener('input', updateFromSliders);
+lRange.addEventListener('input', updateFromSliders);
+
+// Mode buttons
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelector('.mode-btn.active').classList.remove('active');
+    btn.classList.add('active');
+    mode = btn.dataset.mode;
+    updateSliderStates();
+    render();
+  });
+});
+
+// Init
+updateSliderStates();
+updateFromSliders();
+</script>
+</body>
+</html>
