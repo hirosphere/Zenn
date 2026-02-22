@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grand Piano — 88 Keys</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Inconsolata:wght@300;400&display=swap');
+
+  :root {
+    --bg: #0a0a0c;
+    --surface: #111115;
+    --border: #2a2a35;
+    --gold: #c9a84c;
+    --gold-light: #e8c87a;
+    --ivory: #f5f0e8;
+    --ebony: #1a1a1f;
+    --text: #8a8a9a;
+    --text-bright: #d4d0c8;
+    --active-white: #fffde8;
+    --active-black: #4a3a00;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-bright);
+    font-family: 'Inconsolata', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 50% at 50% 0%, #1a1508 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, #0d0d18 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1400px;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    letter-spacing: 0.3em;
+  }
+
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: var(--gold-light);
+    letter-spacing: 0.15em;
+    line-height: 1;
+  }
+
+  .header p {
+    font-size: 0.65rem;
+    color: var(--text);
+    letter-spacing: 0.5em;
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 40px;
+    position: relative;
+  }
+
+  .controls::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201,168,76,0.03) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    min-width: 160px;
+  }
+
+  .control-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .control-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .control-value {
+    font-size: 0.75rem;
+    color: var(--text-bright);
+    min-width: 45px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--gold);
+    border-radius: 0;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    background: var(--gold-light);
+    transform: scale(1.2);
+  }
+
+  .divider {
+    width: 1px;
+    height: 50px;
+    background: var(--border);
+  }
+
+  /* Octave info */
+  .octave-info {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--text);
+  }
+
+  /* Piano wrapper */
+  .piano-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: 20px;
+    cursor: grab;
+  }
+
+  .piano-wrapper::-webkit-scrollbar {
+    height: 4px;
+  }
+  .piano-wrapper::-webkit-scrollbar-track {
+    background: var(--surface);
+  }
+  .piano-wrapper::-webkit-scrollbar-thumb {
+    background: var(--gold);
+  }
+
+  /* Piano frame */
+  .piano-frame {
+    display: inline-flex;
+    flex-direction: column;
+    min-width: max-content;
+    background: linear-gradient(180deg, #1c1408 0%, #0d0b06 100%);
+    border: 2px solid #2a2010;
+    box-shadow: 
+      0 0 0 1px #3a3020,
+      0 20px 60px rgba(0,0,0,0.8),
+      0 0 80px rgba(201,168,76,0.05);
+    position: relative;
+  }
+
+  .piano-frame::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 20px;
+    background: linear-gradient(180deg, #2a2010, #1c1408);
+    border-bottom: 1px solid #3a3020;
+  }
+
+  /* Keys container */
+  .keys-container {
+    display: flex;
+    position: relative;
+    padding: 20px 16px 0;
+    height: 220px;
+  }
+
+  /* White key */
+  .key-white {
+    width: 28px;
+    height: 180px;
+    background: linear-gradient(180deg, #f8f3e8 0%, #ede8d8 40%, #f5f0e4 100%);
+    border: 1px solid #c8c0a8;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.05s;
+    box-shadow: 
+      inset 0 -3px 6px rgba(0,0,0,0.15),
+      inset 1px 0 0 rgba(255,255,255,0.5),
+      2px 4px 8px rgba(0,0,0,0.4);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .key-white:hover {
+    background: linear-gradient(180deg, #fffef5 0%, #f8f3e5 40%, #fff8ec 100%);
+  }
+
+  .key-white.active {
+    background: linear-gradient(180deg, #f0d870 0%, #d4a830 40%, #e8c050 100%);
+    box-shadow: 
+      inset 0 3px 6px rgba(0,0,0,0.2),
+      inset 1px 0 0 rgba(255,255,255,0.3),
+      1px 2px 4px rgba(0,0,0,0.4);
+    transform: translateY(2px);
+  }
+
+  .key-white .key-label {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    color: #a09080;
+    letter-spacing: 0.05em;
+    pointer-events: none;
+  }
+
+  .key-white.active .key-label {
+    color: #5a4000;
+  }
+
+  /* Black key */
+  .key-black {
+    width: 18px;
+    height: 115px;
+    background: linear-gradient(180deg, #2a2820 0%, #1a1810 50%, #252310 100%);
+    border-radius: 0 0 3px 3px;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    z-index: 2;
+    transition: background 0.05s;
+    box-shadow: 
+      2px 4px 10px rgba(0,0,0,0.7),
+      inset 1px 0 0 rgba(255,255,255,0.05),
+      inset -1px 0 0 rgba(0,0,0,0.3);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .key-black:hover {
+    background: linear-gradient(180deg, #3a3828 0%, #2a2818 50%, #353318 100%);
+  }
+
+  .key-black.active {
+    background: linear-gradient(180deg, #6a5810 0%, #4a3a08 50%, #5a4810 100%);
+    box-shadow: 
+      1px 2px 6px rgba(0,0,0,0.7),
+      inset 1px 0 0 rgba(255,255,255,0.05);
+    transform: translateY(2px);
+  }
+
+  /* Sustain pedal */
+  .pedal-area {
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+    gap: 20px;
+    border-top: 1px solid #2a2010;
+    background: linear-gradient(180deg, #0f0e08, #0a0908);
+  }
+
+  .pedal {
+    width: 60px;
+    height: 20px;
+    background: linear-gradient(180deg, #3a3020, #2a2010);
+    border: 1px solid #4a4028;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.45rem;
+    letter-spacing: 0.2em;
+    color: var(--text);
+    user-select: none;
+  }
+
+  .pedal:hover { background: linear-gradient(180deg, #4a4028, #3a3018); }
+  .pedal.active {
+    background: linear-gradient(180deg, #5a4808, #4a3808);
+    box-shadow: 0 0 12px rgba(201,168,76,0.3);
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+
+  /* Active notes display */
+  .note-display {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    flex-wrap: wrap;
+  }
+
+  .note-chip {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    font-style: italic;
+    letter-spacing: 0.1em;
+    animation: noteAppear 0.1s ease-out;
+  }
+
+  @keyframes noteAppear {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Keyboard shortcut indicator */
+  .keyboard-hint {
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    color: var(--text);
+    text-align: center;
+    opacity: 0.6;
+  }
+
+  /* Waveform selector */
+  .wave-buttons {
+    display: flex;
+    gap: 4px;
+  }
+
+  .wave-btn {
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Inconsolata', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .wave-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .wave-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--bg);
+  }
+
+  /* Glowing line accent */
+  .glow-line {
+    width: 200px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.4;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <h1>Grand Piano</h1>
+    <p>88 Keys — Web Synthesizer</p>
+  </div>
+
+  <div class="glow-line"></div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="control-group">
+      <span class="control-label">Volume</span>
+      <div class="control-row">
+        <input type="range" id="volume" min="0" max="100" value="70">
+        <span class="control-value" id="vol-val">70%</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="control-group">
+      <span class="control-label">Tuning</span>
+      <div class="control-row">
+        <input type="range" id="tuning" min="-50" max="50" value="0">
+        <span class="control-value" id="tune-val">±0 ct</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="control-group">
+      <span class="control-label">Timbre</span>
+      <div class="wave-buttons" id="waveform">
+        <button class="wave-btn active" data-wave="triangle">Pno</button>
+        <button class="wave-btn" data-wave="sine">Sine</button>
+        <button class="wave-btn" data-wave="square">Org</button>
+        <button class="wave-btn" data-wave="sawtooth">Str</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="control-group">
+      <span class="control-label">Reverb</span>
+      <div class="control-row">
+        <input type="range" id="reverb" min="0" max="100" value="20">
+        <span class="control-value" id="rev-val">20%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note display -->
+  <div class="note-display" id="noteDisplay">
+    <span style="font-size:0.6rem;letter-spacing:0.4em;color:var(--text)">— PLAY TO BEGIN —</span>
+  </div>
+
+  <!-- Piano -->
+  <div class="piano-wrapper" id="pianoWrapper">
+    <div class="piano-frame">
+      <div class="keys-container" id="piano"></div>
+      <div class="pedal-area">
+        <div class="pedal" id="pedalLeft">una corda</div>
+        <div class="pedal" id="pedalSustain">sustain</div>
+        <div class="pedal" id="pedalRight">sostenuto</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="keyboard-hint">
+    ASDFGHJK · WETYUOP — Middle Octave &nbsp;|&nbsp; Shift + keys for octave above &nbsp;|&nbsp; Space = Sustain
+  </div>
+
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// Audio Engine
+// ──────────────────────────────────────────────
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let ctx = null;
+let masterGain, reverbNode, reverbGain, dryGain;
+let waveform = 'triangle';
+let volume = 0.7;
+let tuningCents = 0;
+let reverbAmount = 0.2;
+let sustainOn = false;
+const activeNodes = new Map(); // note -> {osc, env}
+const sustainedNotes = new Set();
+
+function initAudio() {
+  if (ctx) return;
+  ctx = new AudioCtx();
+  masterGain = ctx.createGain();
+  masterGain.gain.value = volume;
+  masterGain.connect(ctx.destination);
+
+  // Reverb via convolver
+  reverbNode = ctx.createConvolver();
+  reverbGain = ctx.createGain();
+  dryGain = ctx.createGain();
+  reverbGain.gain.value = reverbAmount;
+  dryGain.gain.value = 1 - reverbAmount;
+
+  // Simple impulse response
+  buildImpulse(2.0);
+
+  dryGain.connect(masterGain);
+  reverbNode.connect(reverbGain);
+  reverbGain.connect(masterGain);
+}
+
+function buildImpulse(duration) {
+  if (!ctx) return;
+  const sr = ctx.sampleRate;
+  const len = sr * duration;
+  const buf = ctx.createBuffer(2, len, sr);
+  for (let c = 0; c < 2; c++) {
+    const d = buf.getChannelData(c);
+    for (let i = 0; i < len; i++) {
+      d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+    }
+  }
+  reverbNode.buffer = buf;
+}
+
+function midiToFreq(midi) {
+  return 440 * Math.pow(2, (midi - 69 + tuningCents / 100) / 12);
+}
+
+function playNote(midi) {
+  initAudio();
+  if (activeNodes.has(midi)) return;
+
+  const freq = midiToFreq(midi);
+  const osc = ctx.createOscillator();
+  osc.type = waveform;
+  osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+  const env = ctx.createGain();
+  // Attack/Decay/Sustain curve
+  const t = ctx.currentTime;
+  env.gain.setValueAtTime(0, t);
+  env.gain.linearRampToValueAtTime(0.8, t + 0.008);
+  env.gain.exponentialRampToValueAtTime(0.4, t + 0.3);
+
+  osc.connect(env);
+  env.connect(dryGain);
+  env.connect(reverbNode);
+  osc.start();
+
+  activeNodes.set(midi, { osc, env });
+}
+
+function releaseNote(midi) {
+  if (sustainOn) {
+    sustainedNotes.add(midi);
+    return;
+  }
+  stopNote(midi);
+}
+
+function stopNote(midi) {
+  const node = activeNodes.get(midi);
+  if (!node) return;
+  const { osc, env } = node;
+  const t = ctx.currentTime;
+  env.gain.cancelScheduledValues(t);
+  env.gain.setValueAtTime(env.gain.value, t);
+  env.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+  osc.stop(t + 0.41);
+  activeNodes.delete(midi);
+  sustainedNotes.delete(midi);
+}
+
+function setSustain(on) {
+  sustainOn = on;
+  if (!on) {
+    sustainedNotes.forEach(m => stopNote(m));
+    sustainedNotes.clear();
+  }
+}
+
+// ──────────────────────────────────────────────
+// Piano Layout — 88 keys, A0 (21) to C8 (108)
+// ──────────────────────────────────────────────
+const NOTE_NAMES = ['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+const BLACK_PATTERN = [false,true,false,true,false,false,true,false,true,false,true,false];
+
+const pianoEl = document.getElementById('piano');
+const whiteKeys = [];
+const keyMap = new Map(); // midi -> element
+
+// Build white key positions first for black key offset calculation
+let whiteCount = 0;
+const whitePositions = []; // [midi, xIndex]
+
+for (let midi = 21; midi <= 108; midi++) {
+  const pc = (midi) % 12; // pitch class, A=9
+  const noteIdx = ((midi - 21 + 9) % 12 + 12) % 12; // C-based
+  const isBlack = BLACK_PATTERN[noteIdx];
+  if (!isBlack) {
+    whitePositions.push({ midi, x: whiteCount });
+    whiteCount++;
+  }
+}
+
+// Container needs width
+const WHITE_W = 28;
+const BLACK_W = 18;
+pianoEl.style.width = (whiteCount * WHITE_W + 32) + 'px'; // +padding
+
+// Render
+let wIdx = 0;
+for (let midi = 21; midi <= 108; midi++) {
+  const noteIdx = ((midi - 21 + 9) % 12 + 12) % 12; // C-based
+  const isBlack = BLACK_PATTERN[noteIdx];
+  const noteName = NOTE_NAMES[noteIdx];
+  const octave = Math.floor((midi - 12) / 12);
+
+  if (!isBlack) {
+    const el = document.createElement('div');
+    el.className = 'key-white';
+    el.dataset.midi = midi;
+
+    // Show label on C keys
+    if (noteName === 'C') {
+      const lbl = document.createElement('span');
+      lbl.className = 'key-label';
+      lbl.textContent = 'C' + octave;
+      el.appendChild(lbl);
+    }
+
+    pianoEl.appendChild(el);
+    keyMap.set(midi, el);
+    whiteKeys.push({ el, x: wIdx });
+    wIdx++;
+  }
+}
+
+// Place black keys absolutely
+for (let midi = 21; midi <= 108; midi++) {
+  const noteIdx = ((midi - 21 + 9) % 12 + 12) % 12;
+  const isBlack = BLACK_PATTERN[noteIdx];
+  if (!isBlack) continue;
+
+  // Find left white key index
+  let leftWhiteIdx = -1;
+  for (let m = midi - 1; m >= 21; m--) {
+    const ni = ((m - 21 + 9) % 12 + 12) % 12;
+    if (!BLACK_PATTERN[ni]) {
+      const found = whiteKeys.find(w => w.el.dataset.midi == m);
+      if (found) { leftWhiteIdx = found.x; break; }
+    }
+  }
+
+  if (leftWhiteIdx < 0) continue;
+  const el = document.createElement('div');
+  el.className = 'key-black';
+  el.dataset.midi = midi;
+
+  const xPos = 16 + leftWhiteIdx * WHITE_W + WHITE_W - BLACK_W / 2;
+  el.style.left = xPos + 'px';
+  el.style.width = BLACK_W + 'px';
+
+  pianoEl.appendChild(el);
+  keyMap.set(midi, el);
+}
+
+// ──────────────────────────────────────────────
+// Interaction
+// ──────────────────────────────────────────────
+const noteDisplay = document.getElementById('noteDisplay');
+const activeVisual = new Set();
+
+function updateNoteDisplay() {
+  noteDisplay.innerHTML = '';
+  if (activeVisual.size === 0) {
+    noteDisplay.innerHTML = '<span style="font-size:0.6rem;letter-spacing:0.4em;color:var(--text)">— PLAY TO BEGIN —</span>';
+    return;
+  }
+  activeVisual.forEach(midi => {
+    const ni = ((midi - 21 + 9) % 12 + 12) % 12;
+    const name = NOTE_NAMES[ni];
+    const oct = Math.floor((midi - 12) / 12);
+    const chip = document.createElement('span');
+    chip.className = 'note-chip';
+    chip.textContent = name + oct;
+    noteDisplay.appendChild(chip);
+  });
+}
+
+function pressKey(midi) {
+  const el = keyMap.get(midi);
+  if (!el || el.classList.contains('active')) return;
+  el.classList.add('active');
+  activeVisual.add(midi);
+  playNote(midi);
+  updateNoteDisplay();
+}
+
+function liftKey(midi) {
+  const el = keyMap.get(midi);
+  if (!el) return;
+  el.classList.remove('active');
+  activeVisual.delete(midi);
+  releaseNote(midi);
+  updateNoteDisplay();
+}
+
+// Mouse / Touch
+let mouseDown = false;
+pianoEl.addEventListener('mousedown', e => {
+  const el = e.target.closest('[data-midi]');
+  if (!el) return;
+  mouseDown = true;
+  pressKey(+el.dataset.midi);
+  e.preventDefault();
+});
+pianoEl.addEventListener('mouseover', e => {
+  if (!mouseDown) return;
+  const el = e.target.closest('[data-midi]');
+  if (el) pressKey(+el.dataset.midi);
+});
+pianoEl.addEventListener('mouseout', e => {
+  if (!mouseDown) return;
+  const el = e.target.closest('[data-midi]');
+  if (el) liftKey(+el.dataset.midi);
+});
+window.addEventListener('mouseup', () => {
+  if (mouseDown) {
+    mouseDown = false;
+    activeVisual.forEach(m => liftKey(m));
+  }
+});
+
+// Touch
+pianoEl.addEventListener('touchstart', e => {
+  e.preventDefault();
+  Array.from(e.changedTouches).forEach(t => {
+    const el = document.elementFromPoint(t.clientX, t.clientY)?.closest('[data-midi]');
+    if (el) { el._touchId = t.identifier; pressKey(+el.dataset.midi); }
+  });
+}, { passive: false });
+pianoEl.addEventListener('touchmove', e => {
+  e.preventDefault();
+  Array.from(e.changedTouches).forEach(t => {
+    const el = document.elementFromPoint(t.clientX, t.clientY)?.closest('[data-midi]');
+    if (el) pressKey(+el.dataset.midi);
+  });
+}, { passive: false });
+pianoEl.addEventListener('touchend', e => {
+  e.preventDefault();
+  Array.from(e.changedTouches).forEach(t => {
+    activeVisual.forEach(m => liftKey(m));
+  });
+});
+
+// Keyboard mapping (ASDFGHJK + WETYUOP = C4-B4 + sharps)
+const keyboardMap = {
+  'a': 60, 'w': 61, 's': 62, 'e': 63, 'd': 64,
+  'f': 65, 't': 66, 'g': 67, 'y': 68, 'h': 69,
+  'u': 70, 'j': 71, 'k': 72, 'o': 73, 'l': 74,
+  'p': 75
+};
+const pressedKbd = new Set();
+window.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space') { setSustain(true); pedalSustainEl.classList.add('active'); e.preventDefault(); return; }
+  const key = e.key.toLowerCase();
+  const midi = keyboardMap[key];
+  if (!midi || pressedKbd.has(key)) return;
+  pressedKbd.add(key);
+  const offset = e.shiftKey ? 12 : 0;
+  pressKey(midi + offset);
+});
+window.addEventListener('keyup', e => {
+  if (e.code === 'Space') { setSustain(false); pedalSustainEl.classList.remove('active'); return; }
+  const key = e.key.toLowerCase();
+  if (!pressedKbd.has(key)) return;
+  pressedKbd.delete(key);
+  const midi = keyboardMap[key];
+  if (!midi) return;
+  liftKey(midi);
+  liftKey(midi + 12);
+});
+
+// ──────────────────────────────────────────────
+// Controls
+// ──────────────────────────────────────────────
+const volSlider = document.getElementById('volume');
+const volVal = document.getElementById('vol-val');
+volSlider.addEventListener('input', () => {
+  volume = volSlider.value / 100;
+  volVal.textContent = volSlider.value + '%';
+  if (masterGain) masterGain.gain.value = volume;
+});
+
+const tuneSlider = document.getElementById('tuning');
+const tuneVal = document.getElementById('tune-val');
+tuneSlider.addEventListener('input', () => {
+  tuningCents = +tuneSlider.value;
+  const sign = tuningCents > 0 ? '+' : tuningCents < 0 ? '' : '±';
+  tuneVal.textContent = sign + tuningCents + ' ct';
+});
+
+const revSlider = document.getElementById('reverb');
+const revVal = document.getElementById('rev-val');
+revSlider.addEventListener('input', () => {
+  reverbAmount = revSlider.value / 100;
+  revVal.textContent = revSlider.value + '%';
+  if (reverbGain) {
+    reverbGain.gain.value = reverbAmount;
+    dryGain.gain.value = 1 - reverbAmount * 0.8;
+  }
+});
+
+// Waveform
+document.getElementById('waveform').addEventListener('click', e => {
+  const btn = e.target.closest('.wave-btn');
+  if (!btn) return;
+  document.querySelectorAll('.wave-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  waveform = btn.dataset.wave;
+});
+
+// Pedals
+const pedalSustainEl = document.getElementById('pedalSustain');
+pedalSustainEl.addEventListener('mousedown', () => { setSustain(true); pedalSustainEl.classList.add('active'); });
+window.addEventListener('mouseup', () => {
+  if (sustainOn && !pressedKbd.has(' ')) { setSustain(false); pedalSustainEl.classList.remove('active'); }
+});
+
+// Scroll piano horizontally on load (center to middle C)
+window.addEventListener('load', () => {
+  const wrapper = document.getElementById('pianoWrapper');
+  // Middle C = midi 60, white key index ~27
+  const targetX = 27 * WHITE_W - wrapper.clientWidth / 2 + WHITE_W * 2;
+  wrapper.scrollLeft = Math.max(0, targetX);
+});
+</script>
+</body>
+</html>
